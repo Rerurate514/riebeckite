@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "62427b1a-a002-4f60-9f62-c6abdb18dc3f",
-    "publishedAt": "2026-11-13T06:47:32.430Z",
-    "publicationFingerprint": "1cbdb4bed5b3d0c323b7d711bb70745a41af95b64efbb45416273993523770fe",
+    "runId": "b378f5c7-415a-4e04-b5b6-fc7b901ad4c7",
+    "publishedAt": "2026-11-13T07:34:09.248Z",
+    "publicationFingerprint": "fd46ea0d0ea6157605b697fdf2ce12bff3e41d489ba2b56b30840603af8135a2",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -650,16 +650,16 @@
         "permalink": "/docs/framework/interactive-runtime",
         "title": "Interactive Runtime",
         "visibility": "public",
-        "fingerprint": "e1c36c7a840f181334ca0c3fb798a6012bdeb0223bfdbe5c13ccfc1585e7e716",
-        "contentFingerprint": "c715a83b6ce2b740885dd49db1234c66aec0aded5ae1f33b3efb767021f98ca1"
+        "fingerprint": "ba4b8ebfa80eb02371659cf731b719e0fc582b0015072436a672f715dc1dce7a",
+        "contentFingerprint": "d7aa7e79cb1a019f1ec2316fd98f6d19fd0736ae552ac094981f1d620632b786"
       },
       {
         "slug": "docs/framework/interactive-runtime.ja",
         "permalink": "/ja/docs/framework/interactive-runtime",
         "title": "Interactive Runtime",
         "visibility": "public",
-        "fingerprint": "c1ed8178ac2847191ebd785246cb9e71bb8acf756b2ae04825658c8e199579c7",
-        "contentFingerprint": "951fd6a643f805f098ce975e3b315a87963fd8048b892ebd2522a29c655c5930"
+        "fingerprint": "0c08f4da6da566a7c52e0f291b5c20ced137e3702000d2645fa28d45f35d8f43",
+        "contentFingerprint": "002d9cb3b2a109e5d150da565ff197e4d3301c51241e4dd8a71570633d52cb16"
       },
       {
         "slug": "docs/framework/observability",
@@ -826,32 +826,32 @@
         "permalink": "/docs/framework/release",
         "title": "Release Operations",
         "visibility": "public",
-        "fingerprint": "1cd297e56de173f1cd20cc1978d2808c64341ef0b5512b36c39eb2f2f0eca3dc",
-        "contentFingerprint": "2840f1ddf123a4869f549e060f330c04144d38e5d8be85af6e604a51e87f18bc"
+        "fingerprint": "569384c1031f0500657153efeb6ccc28558a7f1d42ff687f564a2bd6e3ad9878",
+        "contentFingerprint": "b34d298a4758e8c8d986c74a3052bab962159d5bc789729b55d898f558056041"
       },
       {
         "slug": "docs/framework/release.ja",
         "permalink": "/ja/docs/framework/release",
         "title": "リリース作業",
         "visibility": "public",
-        "fingerprint": "e061cc19c650aeb5ff60d341fbfcb478f46102e68ca46f260108705d551b1051",
-        "contentFingerprint": "a2d4942b0698b43f2c39459afc8a1a876d95ec213bab5f9cd5d444f7074f73f7"
+        "fingerprint": "c7eef710eb1edcb79c88ad7e9276b88b2525b00b1440af24dbc8961f5dc463a9",
+        "contentFingerprint": "b4fcf2948433cb66990db76b2f5743a94587a6a3c1f43a00526b3cffc0e8146d"
       },
       {
         "slug": "docs/framework/spa-navigation",
         "permalink": "/docs/framework/spa-navigation",
         "title": "SPA Navigation",
         "visibility": "public",
-        "fingerprint": "be4566aea0f50e7986990cb5f70e44f5c933adc98de2f88f506fec86081bd194",
-        "contentFingerprint": "c8a05bc5f3fe98bd6a71d17c266380364928bec75d08639ff6ecb6d47c37d278"
+        "fingerprint": "6046148e769416dd31b8f45cec1a146c687a5ccf9a50b7d5de2e19cb9c5ca07a",
+        "contentFingerprint": "de4c47680ff669279e928739fe86618b3703492f65a74cd3fb5e8fae3e19d2f7"
       },
       {
         "slug": "docs/framework/spa-navigation.ja",
         "permalink": "/ja/docs/framework/spa-navigation",
         "title": "SPAナビゲーションの構成",
         "visibility": "public",
-        "fingerprint": "a8fbaee1bab731f82cd6547ab79ef471f7c8109339df7dbf2c9fd60812fe2042",
-        "contentFingerprint": "094b8055eede85278b9f7bf85e1c0ea174a593b66f4d5ab893270b2fa602eb7f"
+        "fingerprint": "433599a6573c0c22090c7e29b1054c82ad8add6bacf930027e7ac6081e7ad489",
+        "contentFingerprint": "61cb926100c992a11efb2daf28824d2ef8896c186c5450dc47e6707fdcb446f4"
       },
       {
         "slug": "docs/framework/spa-runtime",
@@ -890,16 +890,16 @@
         "permalink": "/docs/framework/spa-runtime/initializers",
         "title": "Initializers",
         "visibility": "public",
-        "fingerprint": "6d9517aef0f8e22dd07b3de316ff67abe8fca5ec4aa745fe7e213f66a8a58e12",
-        "contentFingerprint": "8540be91e7c5b7aa40dcbdb50aab6f7177d9bd70b396fc6c4095e272c22ed6f9"
+        "fingerprint": "09b1c98197b3a6b5322fc93c6e8e149e5289e69afde13f65469c259b11c87c7a",
+        "contentFingerprint": "2c3757d0fe3f211e252ac3c5f542f51ac8395128bceb04c52ac2c9f524bf0293"
       },
       {
         "slug": "docs/framework/spa-runtime/initializers.ja",
         "permalink": "/ja/docs/framework/spa-runtime/initializers",
         "title": "初期化処理",
         "visibility": "public",
-        "fingerprint": "8175826018fa79e6bf52d946e955418c53b277831a75cb44dbabd24a577f9944",
-        "contentFingerprint": "c9c3ec65ec39910e9d573c4715ea02b44df884d1d3ecfa0bade6ee854a7ae988"
+        "fingerprint": "5af4aef660a37af23485056965d8c2982373f909e5155e377dbdff682508f29a",
+        "contentFingerprint": "d4bfd60cdd45f1b3f6c8921cde1e38d42ea420f739be664d0e0ae521a6d99178"
       },
       {
         "slug": "docs/framework/spa-runtime/metadata",
@@ -2522,8 +2522,8 @@
         "permalink": "/docs/glossary/plugin",
         "title": "Plugin",
         "visibility": "public",
-        "fingerprint": "9ccd48fae8d3ec30b69ad3848b799afb8a291d914167914983d075b7024052f6",
-        "contentFingerprint": "476fe103990e8005af3529ece0f529fd253830f3890daea5de04c164cc02dccc"
+        "fingerprint": "44cc79bcfd86e15f5071f39959c18f1a654457d97025f1e801a135cd8c7c433a",
+        "contentFingerprint": "0b24231896db2481e59e41e889b1c51bc3e03ea50891992d94e98c5dbf197504"
       },
       {
         "slug": "docs/glossary/plugin-cache",
@@ -2594,8 +2594,8 @@
         "permalink": "/ja/docs/glossary/plugin",
         "title": "プラグイン（Plugin）",
         "visibility": "public",
-        "fingerprint": "8af110ff4b5db4e27c98dea26c684463e18de2faf69614039d93fcd6e77babd3",
-        "contentFingerprint": "0574666605cb4d5d3fab0294d5eac4fb95fe1b79cbdaf209d2773d0e5dfb52a5"
+        "fingerprint": "1f30ceeefa085351a5850d09553ef0978f78e4f93fc9aa9abc9ad8f8d8edf469",
+        "contentFingerprint": "96464d96c66a602f7c78e2118448b1fc55fb0356db9142000d7ed008c9b15869"
       },
       {
         "slug": "docs/glossary/presentation-layer",
@@ -4266,16 +4266,16 @@
         "permalink": "/docs/plugins/code-tabs",
         "title": "Code Tabs",
         "visibility": "public",
-        "fingerprint": "e4c2129960f06fa768b2b3d7d9c8c7f5359c2e863456f0560d410435be551b54",
-        "contentFingerprint": "a57f5e04afbc2e2906e0896a0aa8bd4c98dd79aaf81dc27a48de1ef559b760a3"
+        "fingerprint": "129c2df60345f2fc7b992107da08072ed3706a120efcadb23b8b9e144695affd",
+        "contentFingerprint": "71a0a4e8b44952d825fb21eb73ce667aedd3e08d2e2aa07a121b836217bc30bc"
       },
       {
         "slug": "docs/plugins/code-tabs.ja",
         "permalink": "/ja/docs/plugins/code-tabs",
         "title": "Code Tabs",
         "visibility": "public",
-        "fingerprint": "6d0fa6b2a10883d72aa92c293eef47d1e847da59ba0dbbfb43fecd4812b5117e",
-        "contentFingerprint": "ce1befa9cf04e200eff9e4703da2057edc26a84c56e7f4b0196b688117896dc2"
+        "fingerprint": "8d052cdf5f6bc24749fff47d1317f2277214c38ac95dcc07631c4b82d57b1153",
+        "contentFingerprint": "114c9fa915738e170dc79f7d5e2552e5193714e2042970ac4802d8a08e310ddf"
       },
       {
         "slug": "docs/plugins/color-mode",
@@ -5098,16 +5098,16 @@
         "permalink": "/docs/plugins/recipes/assets-and-client-entries",
         "title": "Add CSS and Browser Behavior",
         "visibility": "public",
-        "fingerprint": "7aeafac1c65bccad097a0e1214f602cb7a845326eab8468677eb613dc8e4e155",
-        "contentFingerprint": "c162ed0b4c5d65c777aa9d79ff11cd285dba18688ff0285df15d0f172efc8c06"
+        "fingerprint": "9151a9fb6ccc40f59cf95d6691f32ca21492f4598b90d5d4f75726124d40629c",
+        "contentFingerprint": "49922f554b030f274a3435e356ffea0677f86b0fd77ffc3717f63a162b7b3413"
       },
       {
         "slug": "docs/plugins/recipes/assets-and-client-entries.ja",
         "permalink": "/ja/docs/plugins/recipes/assets-and-client-entries",
         "title": "CSS とブラウザ動作を追加する",
         "visibility": "public",
-        "fingerprint": "2fc2d0ed49d6230776adfce179b5bf55ae1cb809a006fd8995a0158ffcfc0e76",
-        "contentFingerprint": "a488400680f8723ea979e3c8b2b5098528af49bbce42ff4a795f6e5ed84921dc"
+        "fingerprint": "df8b70169e77c48ed40842a96a651a6a65602d1e0f3305d7db6148761da86ee3",
+        "contentFingerprint": "cb9d15aaac6a0b8aa5ab7dd189703d996cfffb5889b7678a7c7b1abe4d48a391"
       },
       {
         "slug": "docs/plugins/recipes/cache",
@@ -6314,16 +6314,16 @@
         "permalink": "/docs/reference/plugin-api/ui-and-assets",
         "title": "UI, assets, and runtime",
         "visibility": "public",
-        "fingerprint": "44e488fd4ccb2fe17c8ae5122335d679d48d1553d26c6dfce340f0b6fdaa647c",
-        "contentFingerprint": "412ed073a79aabbc40df6715c68a6a68af59cf00966b8d3f840c9c57b86681a7"
+        "fingerprint": "6e0c215c9e1293e01b931d0a1e3a8a05a67b61e12594c014584011ba4de83155",
+        "contentFingerprint": "0bfe2129c4a3e85b005dfabef41b675977822ac2b57ab111e430211eab1cbe8c"
       },
       {
         "slug": "docs/reference/plugin-api/ui-and-assets.ja",
         "permalink": "/ja/docs/reference/plugin-api/ui-and-assets",
         "title": "UI・アセット・実行時連携",
         "visibility": "public",
-        "fingerprint": "c440fd6fd71ec008ce80d1497c28928e059b6d864733738d39614713a5bcd416",
-        "contentFingerprint": "9ad3d9b5a288036864e2b35c2a44d65158de5fdeb6ba68224d8fb87e1459b41a"
+        "fingerprint": "feba807d910d619cdf3ada7c2e884faa37bbc2100ce690ea9e9372c56d846f7b",
+        "contentFingerprint": "46fa346568fa1af135f3523891b308e7d3dcb87da10bdd39be7f38a6c00a6a1e"
       },
       {
         "slug": "docs/reference/preview",
@@ -6378,16 +6378,16 @@
         "permalink": "/docs/releases",
         "title": "Release Notes",
         "visibility": "public",
-        "fingerprint": "7d396efa818ec4d6ea7bd93605801c1b8c340aedf65524f4c29f5adf7cb8f420",
-        "contentFingerprint": "ead4d4c504286683dc25a842be165de806ce142aa834a0a84496a075f25fe9ca"
+        "fingerprint": "f530456a7bb87d0c7e0c8cd416baf6067ef3d01d9b3c26e013258b92428e0a5d",
+        "contentFingerprint": "73d4534ccf34bb59a7ed882a8e9f3b6ee085943e9e503436cf5ff90f266e875c"
       },
       {
         "slug": "docs/releases.ja",
         "permalink": "/ja/docs/releases",
         "title": "リリースノート",
         "visibility": "public",
-        "fingerprint": "747e55307ab8ff437ddeeed6c7d856db3eb1e5c33e4d96dfb2aea6a84bd0365c",
-        "contentFingerprint": "f830451fc93e0eaf75e82e3eef8aca371b0b8d01134bfcf69a41c1a1a6b33152"
+        "fingerprint": "843695b0b0353c6fe254eaa12c3e9f82f21ab29a21e05e91ef0c5d110a582b16",
+        "contentFingerprint": "5fe6e45ed789d4745158dc593d948bdce431405148edfe711f8a32185396fe4e"
       },
       {
         "slug": "docs/security",
@@ -6822,7 +6822,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "7160dc56cf260d2fd859f11a4d23d7abb64dbd0a0f85cebda8694f8ca5082010",
+    "artifactFingerprint": "f9d0b5f54a89c4ce627db3b7fbb7a682952ec3b930b4069f2702d58e14753ee9",
     "provider": "cloudflare-workers"
   }
 }

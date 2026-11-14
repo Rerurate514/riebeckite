@@ -142,9 +142,18 @@ test("plugin dev previews a real local plugin", async () => {
       90_000,
     );
     await page.reload({ waitUntil: "networkidle0", timeout: 120_000 });
-    await page.waitForSelector("[data-plugin-dev-restart]", {
-      timeout: 60_000,
-    });
+    for (let attempt = 0; ; attempt += 1) {
+      try {
+        await page.waitForSelector("[data-plugin-dev-restart]", {
+          timeout: 60_000,
+        });
+        break;
+      } catch (error) {
+        if (attempt >= 4 || !String(error).includes("DOM.resolveNode")) {
+          throw error;
+        }
+      }
+    }
     assert.deepEqual(pageErrors, []);
   } finally {
     if (running) await stopCli(running.child);

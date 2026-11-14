@@ -1,9 +1,11 @@
+import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import {
   errors,
   expect,
   expectedRiebeckiteSpec,
+  repositoryRoot,
   scaffoldDir,
 } from "./check_scaffold_shared.mjs";
 
@@ -12,13 +14,22 @@ export function expectConfigPassesBiome(root, label) {
   if (!fs.existsSync(configPath)) return;
 
   try {
-    execSync(`npx --no-install biome lint "${configPath}"`, {
-      cwd: repositoryRoot,
-      stdio: "inherit",
-    });
-  } catch {
+    execFileSync(
+      process.execPath,
+      [
+        path.join(repositoryRoot, "node_modules", "@biomejs", "biome", "bin", "biome"),
+        "lint",
+        configPath,
+      ],
+      { cwd: repositoryRoot, stdio: "pipe" },
+    );
+  } catch (error) {
+    const detail =
+      error instanceof Error && "stderr" in error
+        ? String(error.stderr).trim().split("\n").slice(0, 3).join(" | ")
+        : String(error);
     errors.push(
-      `${label}: generated riebeckite.config.ts must pass biome lint`,
+      `${label}: generated riebeckite.config.ts must pass biome lint (${detail})`,
     );
   }
 }

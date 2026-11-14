@@ -1,3 +1,6 @@
+import fs from "node:fs/promises";
+import path from "node:path";
+
 export async function directoryBytes(directory) {
   const entries = await fs
     .readdir(directory, { withFileTypes: true })

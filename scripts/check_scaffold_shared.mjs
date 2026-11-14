@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -36,10 +37,22 @@ export function expectConfigPassesBiome(root, label) {
   if (!fs.existsSync(configPath)) return;
 
   try {
-    execSync(`npx --no-install biome lint "${configPath}"`, {
-      cwd: repositoryRoot,
-      stdio: "inherit",
-    });
+    execFileSync(
+      process.execPath,
+      [
+        path.join(
+          repositoryRoot,
+          "node_modules",
+          "@biomejs",
+          "biome",
+          "bin",
+          "biome",
+        ),
+        "lint",
+        configPath,
+      ],
+      { cwd: repositoryRoot, stdio: "pipe" },
+    );
   } catch {
     errors.push(
       `${label}: generated riebeckite.config.ts must pass biome lint`,

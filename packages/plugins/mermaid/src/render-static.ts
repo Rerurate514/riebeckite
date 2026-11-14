@@ -2,33 +2,22 @@ import { access } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import type { Browser, Page } from "puppeteer";
+import type { Browser } from "puppeteer";
+import {
+  MERMAID_HEADLESS_MODE,
+  MERMAID_PUPPETEER_BROWSER,
+  MERMAID_SCRIPT_SUBPATH,
+  type MermaidSessionDependencies,
+  PUPPETEER_PACKAGE,
+  RENDER_TIMEOUT_MS,
+  renderMermaidInPage,
+  type SessionState,
+} from "./render-static_helpers.js";
 import type {
   MermaidBuildRenderErrorKind,
   MermaidBuildRenderResult,
   MermaidRenderSession,
 } from "./types.js";
-
-const RENDER_TIMEOUT_MS = 30_000;
-const MERMAID_SCRIPT_SUBPATH = "mermaid/dist/mermaid.min.js";
-const PUPPETEER_PACKAGE = "puppeteer";
-
-const MERMAID_HEADLESS_MODE = "shell" as const;
-const MERMAID_PUPPETEER_BROWSER = "chrome-headless-shell";
-
-type MermaidSessionDependencies = {
-  /**
-   * Overrides browser launch. Tests inject a fake browser so session
-   * lifecycle can be asserted without launching Chrome.
-   */
-  launch?: () => Promise<Browser>;
-  timeoutMs?: number;
-};
-
-type SessionState = {
-  browser: Browser;
-  page: Page;
-};
 
 /**
  * Creates a build-scoped Mermaid render session.
@@ -179,48 +168,6 @@ export function createMermaidRenderSession(
  * body first so leftover DOM from a previous (possibly failed) render
  * cannot leak into this one.
  */
-async function renderMermaidInPage(
-  id: string,
-  source: string,
-  theme: string,
-): Promise<unknown> {
-  const mermaid = (
-    globalThis as typeof globalThis & {
-      mermaid?: {
-        initialize(options: Record<string, unknown>): void;
-        render(
-          id: string,
-          source: string,
-        ): Promise<{ svg: string }> | { svg: string };
-      };
-    }
-  ).mermaid;
-  if (!mermaid) {
-    return {
-      ok: false,
-      kind: "renderer-error",
-      message: "Mermaid script is not loaded.",
-    };
-  }
-  try {
-    document.body.innerHTML = "";
-    mermaid.initialize({
-      startOnLoad: false,
-      securityLevel: "strict",
-      theme,
-      deterministicIds: true,
-      deterministicIDSeed: id,
-    });
-    const { svg } = await mermaid.render(id, source);
-    return { ok: true, svg };
-  } catch (error) {
-    return {
-      ok: false,
-      kind: "invalid-diagram",
-      message: error instanceof Error ? error.message : String(error),
-    };
-  }
-}
 
 async function defaultLaunchBrowser(): Promise<Browser> {
   const puppeteer = await importPuppeteer();

@@ -3,14 +3,20 @@ import type {
   ContentManifest,
   ContentManifestEntry,
 } from "../types/content_manifest.js";
+import {
+  type ContentAssetDuplicateGroup,
+  type ContentAssetFormatSummary,
+  type ContentAssetInspectionOptions,
+  type ContentAssetOptimization,
+  type ContentAssetUsage,
+  collectDependencyReferences,
+  DEFAULT_LARGE_ASSET_BYTES,
+  LEGACY_IMAGE_EXTENSIONS,
+  MODERN_FORMAT_BYTES,
+  referencedBy,
+} from "./asset_inspection_helpers.js";
 import { isImagePath, normalizeContentPath } from "./attachment.js";
 import type { ContentSource, ContentSourceEntry } from "./content_source.js";
-
-export const DEFAULT_LARGE_ASSET_BYTES = 512 * 1024;
-const MODERN_FORMAT_BYTES = 100 * 1024;
-const LEGACY_IMAGE_EXTENSIONS = new Set(["png", "jpg", "jpeg", "gif", "bmp"]);
-
-export type ContentAssetUsage = "used" | "possibly-unused" | "unused";
 
 export type ContentAssetInspectionEntry = {
   readonly path: string;
@@ -21,26 +27,6 @@ export type ContentAssetInspectionEntry = {
   readonly references: readonly string[];
   readonly usage: ContentAssetUsage;
   readonly reasons: readonly string[];
-};
-
-export type ContentAssetDuplicateGroup = {
-  readonly hash: string;
-  readonly size: number;
-  readonly paths: readonly string[];
-};
-
-export type ContentAssetOptimization = {
-  readonly path: string;
-  readonly size: number;
-  readonly kind: "large" | "modern-format";
-  readonly recommendation: string;
-};
-
-export type ContentAssetFormatSummary = {
-  readonly extension: string;
-  readonly kind: "image" | "asset";
-  readonly count: number;
-  readonly bytes: number;
 };
 
 export type ContentAssetInspection = {
@@ -61,12 +47,6 @@ export type ContentAssetInspection = {
   readonly assets: readonly ContentAssetInspectionEntry[];
   readonly duplicates: readonly ContentAssetDuplicateGroup[];
   readonly optimizations: readonly ContentAssetOptimization[];
-};
-
-export type ContentAssetInspectionOptions = {
-  readonly largeAssetBytes?: number;
-  readonly isContentPath?: (path: string) => boolean;
-  readonly contentDependencies?: ReadonlyMap<string, readonly string[]>;
 };
 
 export async function inspectContentAssets(
@@ -124,38 +104,6 @@ export async function inspectContentAssets(
   }
   inspected.sort((left, right) => left.path.localeCompare(right.path, "en"));
   return buildReport(inspected, largeThresholdBytes);
-}
-
-function referencedBy(
-  entries: readonly ContentManifestEntry[] | undefined,
-): readonly ContentManifestEntry[] {
-  return entries ?? [];
-}
-
-function collectDependencyReferences(
-  manifest: ContentManifest,
-  dependencies: ReadonlyMap<string, readonly string[]> | undefined,
-): ReadonlyMap<string, readonly ContentManifestEntry[]> {
-  const references = new Map<string, ContentManifestEntry[]>();
-  if (!dependencies) return references;
-  const entriesByPath = new Map(
-    manifest.entries.flatMap((entry) =>
-      entry.sourcePath
-        ? [[normalizeContentPath(entry.sourcePath), entry] as const]
-        : [],
-    ),
-  );
-  for (const [sourcePath, paths] of dependencies) {
-    const source = entriesByPath.get(normalizeContentPath(sourcePath));
-    if (!source) continue;
-    for (const dependencyPath of paths) {
-      const key = normalizeContentPath(dependencyPath);
-      const values = references.get(key) ?? [];
-      values.push(source);
-      references.set(key, values);
-    }
-  }
-  return references;
 }
 
 function resolveUsage(
@@ -335,3 +283,12 @@ function extensionOf(path: string): string {
 function toBytes(content: string | Uint8Array): Uint8Array {
   return typeof content === "string" ? Buffer.from(content, "utf8") : content;
 }
+
+export type {
+  ContentAssetDuplicateGroup,
+  ContentAssetFormatSummary,
+  ContentAssetInspectionOptions,
+  ContentAssetOptimization,
+  ContentAssetUsage,
+} from "./asset_inspection_helpers.js";
+export { DEFAULT_LARGE_ASSET_BYTES } from "./asset_inspection_helpers.js";

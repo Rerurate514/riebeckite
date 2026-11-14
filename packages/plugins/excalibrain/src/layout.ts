@@ -1,59 +1,14 @@
+import { ROLE_ANCHOR, ROLE_ORDER, ROLE_REGION } from "./layout_helpers.js";
 import { resolveExcaliBrainOptions } from "./options.js";
 import type {
   ExcaliBrainGraph,
   ExcaliBrainLayout,
   ExcaliBrainNode,
-  ExcaliBrainNodeRole,
   ExcaliBrainOptions,
   ExcaliBrainPositionedLink,
   ExcaliBrainPositionedNode,
-  ExcaliBrainRegion,
   ExcaliBrainRole,
 } from "./types.js";
-
-export const EXCALIBRAIN_REGION_ORDER: readonly ExcaliBrainRegion[] = [
-  "parents",
-  "children",
-  "left-friends",
-  "right-friends",
-  "previous",
-  "next",
-  "siblings",
-];
-
-const ROLE_ORDER: readonly ExcaliBrainRole[] = [
-  "parent",
-  "child",
-  "leftFriend",
-  "rightFriend",
-  "previous",
-  "next",
-  "sibling",
-];
-
-const ROLE_REGION: Record<ExcaliBrainNodeRole, ExcaliBrainRegion> = {
-  parent: "parents",
-  child: "children",
-  leftFriend: "left-friends",
-  rightFriend: "right-friends",
-  previous: "previous",
-  next: "next",
-  sibling: "siblings",
-  center: "center",
-};
-
-const ROLE_ANCHOR: Record<
-  ExcaliBrainRole,
-  { angle: number; radius: "near" | "far" }
-> = {
-  parent: { angle: -90, radius: "near" },
-  child: { angle: 90, radius: "near" },
-  leftFriend: { angle: 180, radius: "near" },
-  rightFriend: { angle: 0, radius: "near" },
-  previous: { angle: 180, radius: "far" },
-  next: { angle: 0, radius: "far" },
-  sibling: { angle: 0, radius: "far" },
-};
 
 const SIBLING_ANGLES = [-135, -45, 135, 45] as const;
 const NODE_HEIGHT = 36;
@@ -333,3 +288,5 @@ function clamp(value: number, min: number, max: number): number {
   const upper = Math.max(min, max);
   return Math.min(Math.max(value, min), upper);
 }
+
+export { EXCALIBRAIN_REGION_ORDER } from "./layout_helpers.js";

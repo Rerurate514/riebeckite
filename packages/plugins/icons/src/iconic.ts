@@ -1,53 +1,22 @@
 import { normalizeColor } from "./color.js";
-import { isEmoji } from "./emoji.js";
+import {
+  ARRAY_OPERATORS,
+  applyToBoolean,
+  applyToDate,
+  applyToNumber,
+  BOOLEAN_OPERATORS,
+  type IconicDiagnosticReporter,
+  type IconicResolution,
+  NUMBER_OPERATORS,
+  type SourceValue,
+  STRING_OPERATORS,
+} from "./iconic_helpers.js";
 import type {
   IconicData,
   IconicRule,
   IconicValue,
   IconTarget,
 } from "./types.js";
-
-type IconicResolution = {
-  readonly icon?: string;
-  readonly color?: string;
-  readonly rule?: string;
-};
-
-export type IconicDiagnosticReporter = (
-  rule: IconicRule,
-  message: string,
-) => void;
-
-const BOOLEAN_OPERATORS = new Set(["isTrue", "isFalse"]);
-const ARRAY_OPERATORS = new Set([
-  "includes",
-  "allAre",
-  "allContain",
-  "allStartWith",
-  "allEndWith",
-  "allMatch",
-  "anyContain",
-  "anyStartWith",
-  "anyEndWith",
-  "anyMatch",
-  "noneContain",
-  "noneStartWith",
-  "noneEndWith",
-  "noneMatch",
-  "countIs",
-  "countIsLess",
-  "countIsMore",
-]);
-const NUMBER_OPERATORS = new Set(["equals", "isLess", "isMore", "isDivisible"]);
-const STRING_OPERATORS = new Set([
-  "is",
-  "contains",
-  "startsWith",
-  "endsWith",
-  "matches",
-  "hasValue",
-  "hasProperty",
-]);
 
 export function resolveIconic(
   data: IconicData,
@@ -77,18 +46,6 @@ export function resolveIconic(
     ...(color ? { color } : {}),
     ...(rule ? { rule: rule.name ?? rule.id } : {}),
   };
-}
-
-export function resolveIconicReference(icon: string): string {
-  if (isEmoji(icon)) return `emoji:${icon}`;
-  if (/^lucide-/.test(icon)) return `lucide:${icon.slice(7)}`;
-  if (icon.includes(":")) {
-    const [namespace, ...rest] = icon.split(":");
-    if (namespace === "lucide" || namespace === "emoji") {
-      return `${namespace}:${rest.join(":")}`;
-    }
-  }
-  return `lucide:${icon}`;
 }
 
 function matchesRule(
@@ -136,17 +93,6 @@ function evaluateCondition(
   if (result === undefined) return undefined;
   return negate ? !result : result;
 }
-
-type SourceValue =
-  | { readonly kind: "string"; readonly value: string }
-  | { readonly kind: "array"; readonly value: readonly string[] }
-  | { readonly kind: "boolean"; readonly value: boolean }
-  | { readonly kind: "date"; readonly value: Date }
-  | {
-      readonly kind: "property";
-      readonly value: unknown;
-      readonly exists: boolean;
-    };
 
 function readSource(
   source: string,
@@ -337,53 +283,6 @@ function applyToArray(
   }
 }
 
-function applyToNumber(
-  value: number,
-  operator: string,
-  expected: string,
-): boolean | undefined {
-  const number = Number(expected);
-  if (!Number.isFinite(number)) return false;
-  switch (operator) {
-    case "is":
-    case "equals":
-      return value === number;
-    case "isLess":
-      return value < number;
-    case "isMore":
-      return value > number;
-    case "isDivisible":
-      return number !== 0 && value % number === 0;
-    default:
-      return undefined;
-  }
-}
-
-function applyToBoolean(
-  value: boolean,
-  operator: string,
-  expected: string,
-): boolean | undefined {
-  if (operator !== "is") return undefined;
-  return value === (expected === "true");
-}
-
-function applyToDate(
-  value: Date,
-  operator: string,
-  expected: string,
-): boolean | undefined {
-  if (!["is", "isLess", "isMore", "equals"].includes(operator)) {
-    return undefined;
-  }
-  const date = new Date(expected);
-  if (Number.isNaN(date.getTime())) return false;
-  const time = value.getTime();
-  if (operator === "isLess") return time < date.getTime();
-  if (operator === "isMore") return time > date.getTime();
-  return time === date.getTime();
-}
-
 function safeRegex(pattern: string): RegExp {
   try {
     return new RegExp(pattern.length > 512 ? "" : pattern);
@@ -395,3 +294,6 @@ function safeRegex(pattern: string): RegExp {
 function toBoolean(value: unknown): boolean {
   return value === true || value === "true";
 }
+
+export type { IconicDiagnosticReporter } from "./iconic_helpers.js";
+export { resolveIconicReference } from "./iconic_helpers.js";

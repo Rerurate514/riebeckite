@@ -1,6 +1,14 @@
 import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
 import { slug } from "github-slugger";
 import { buildCanvasLayout } from "./parse.js";
+import {
+  CANVAS_NOTE_HREF,
+  type RenderCanvasInput,
+  renderAssetPreview,
+  renderGroupBackground,
+  renderNodeStyle,
+  WIKILINK_PATTERN,
+} from "./render_helpers.js";
 import type {
   CanvasDocument,
   CanvasEdge,
@@ -9,29 +17,7 @@ import type {
   CanvasLayoutNode,
   CanvasNode,
   CanvasResolver,
-  ResolvedCanvasOptions,
 } from "./types.js";
-
-export const CANVAS_NOTE_HREF = "#riebeckite-canvas-note";
-
-const WIKILINK_PATTERN = /(!?)\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|([^\]]+))?\]\]/g;
-
-export type RenderCanvasInput = {
-  document: CanvasDocument;
-  source: string;
-  options: ResolvedCanvasOptions;
-  resolver: CanvasResolver;
-};
-
-export function renderCanvasPage(input: {
-  title: string;
-  canvas: string;
-}): string {
-  const heading = input.title
-    ? `<h1 class="rb-canvas-page__title">${escapeHtml(input.title)}</h1>`
-    : "";
-  return `<main class="rb-canvas-page">${heading}${input.canvas}</main>`;
-}
 
 export function renderCanvas(input: RenderCanvasInput): string {
   const { document, source, options, resolver } = input;
@@ -196,61 +182,6 @@ function renderInline(value: string, resolver: CanvasResolver): string {
     .replace(/\*([^*]+)\*/g, "<em>$1</em>");
 }
 
-function renderAssetPreview(url: string, label: string): string {
-  const safeUrl = escapeHtmlAttribute(url);
-  const extension = url.split("?")[0]?.split(".").at(-1)?.toLowerCase();
-  if (
-    ["png", "jpg", "jpeg", "gif", "webp", "svg", "avif"].includes(
-      extension ?? "",
-    )
-  ) {
-    return `<a class="rb-canvas__asset" href="${safeUrl}"><img src="${safeUrl}" alt="${escapeHtmlAttribute(label)}" loading="lazy" /></a>`;
-  }
-  if (extension === "pdf")
-    return `<a class="rb-canvas__node-link" href="${safeUrl}">${escapeHtml(label)}</a>`;
-  if (["mp3", "wav", "ogg", "m4a"].includes(extension ?? ""))
-    return `<audio controls src="${safeUrl}"></audio>`;
-  if (["mp4", "webm", "mov"].includes(extension ?? ""))
-    return `<video controls preload="metadata" src="${safeUrl}"></video>`;
-  return `<a class="rb-canvas__node-link" href="${safeUrl}">${escapeHtml(label)}</a>`;
-}
-
-function renderGroupBackground(
-  background: string,
-  style: CanvasNode["backgroundStyle"],
-  resolver: CanvasResolver,
-): string {
-  const link = resolver.resolveFile(background);
-  if (link.kind !== "asset") return "";
-  const mode = style === "repeat" ? "repeat" : "no-repeat";
-  const size =
-    style === "cover" ? "cover" : style === "ratio" ? "contain" : "auto";
-  return ` data-canvas-background="${escapeHtmlAttribute(link.url)}" data-canvas-background-repeat="${mode}" data-canvas-background-size="${size}"`;
-}
-
-function renderNodeStyle(node: CanvasLayoutNode, background: string): string {
-  const declarations = [
-    `left:${node.x}px`,
-    `top:${node.y}px`,
-    `width:${node.width}px`,
-    `height:${node.height}px`,
-    `z-index:${node.zIndex}`,
-  ];
-  if (node.color && /^#[0-9a-f]{6}$/i.test(node.color))
-    declarations.push(`--rb-canvas-node-color:${node.color}`);
-  if (background) {
-    const image = background.match(/data-canvas-background="([^"]*)"/)?.[1];
-    const repeat = background.match(
-      /data-canvas-background-repeat="([^"]*)"/,
-    )?.[1];
-    const size = background.match(/data-canvas-background-size="([^"]*)"/)?.[1];
-    if (image) declarations.push(`background-image:url(&quot;${image}&quot;)`);
-    if (repeat) declarations.push(`background-repeat:${repeat}`);
-    if (size) declarations.push(`background-size:${size}`);
-  }
-  return declarations.join(";");
-}
-
 function renderColorAttribute(color: string | undefined, name: string): string {
   if (!color) return "";
   if (/^[1-6]$/.test(color) || /^#[0-9a-fA-F]{6}$/.test(color)) {
@@ -357,3 +288,6 @@ function hash(value: string): string {
     result = (result * 31 + value.charCodeAt(index)) | 0;
   return (result >>> 0).toString(36);
 }
+
+export type { RenderCanvasInput } from "./render_helpers.js";
+export { CANVAS_NOTE_HREF, renderCanvasPage } from "./render_helpers.js";

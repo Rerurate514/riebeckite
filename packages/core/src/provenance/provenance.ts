@@ -10,38 +10,12 @@ import type {
   PluginHookExecution,
 } from "../plugin/plugin_runtime.js";
 import type { ContentManifest } from "../types/content_manifest.js";
-
-export const PROVENANCE_VERSION = 1;
-export const MAX_PROVENANCE_HISTORY = 10;
-
-export type ProvenanceSource = {
-  readonly id: string;
-  readonly contentId: string;
-  readonly path: string;
-  readonly fingerprint: string;
-  readonly type: "markdown" | "file";
-  readonly visibility:
-    | "public"
-    | "draft"
-    | "scheduled"
-    | "unlisted"
-    | "unknown";
-  readonly evidence: "deterministic";
-};
-
-export type ProvenanceTransform = {
-  readonly id: string;
-  readonly type: "content-processing" | "plugin-hook" | "derived-view";
-  readonly producer: string;
-  readonly inputs: readonly string[];
-  readonly outputs: readonly string[];
-  readonly status: "executed" | "reused" | "not-executed" | "opaque" | "failed";
-  readonly evidence: "measured" | "deterministic" | "unobservable";
-  readonly sequence?: number;
-  readonly hook?: string;
-  readonly effect?: "opaque";
-  readonly durationMs?: number;
-};
+import {
+  MAX_PROVENANCE_HISTORY,
+  PROVENANCE_VERSION,
+  type ProvenanceSource,
+  type ProvenanceTransform,
+} from "./provenance_helpers.js";
 
 export type ProvenanceOutput = {
   readonly id: string;
@@ -311,3 +285,12 @@ function compareRecords<T extends { id: string }>(
       .sort(),
   };
 }
+
+export type {
+  ProvenanceSource,
+  ProvenanceTransform,
+} from "./provenance_helpers.js";
+export {
+  MAX_PROVENANCE_HISTORY,
+  PROVENANCE_VERSION,
+} from "./provenance_helpers.js";

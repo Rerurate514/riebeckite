@@ -1,12 +1,23 @@
-import {
-  type ApiLifecycleDefinition,
-  buildOutputPlan,
-  type ContentManager,
-  compareOutputPlan,
-  type Diagnostic,
-  type ResolvedRiebeckiteConfig,
+import type {
+  ApiLifecycleDefinition,
+  ContentManager,
+  Diagnostic,
+  ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import { collectApiLifecycleDiagnostics } from "./api.js";
+import {
+  compareDiagnostics,
+  fromCoreDiagnostic,
+  skipped,
+} from "./collect_output_plan.js";
+import {
+  collectContentDiagnostics,
+  collectOutputDiagnostics,
+  configurationDiagnostics,
+  environmentDiagnostics,
+  pluginDiagnostics,
+  themeDiagnostics,
+} from "./collect_sources.js";
 import { createDiagnosticFingerprint } from "./fingerprint.js";
 import type {
   DevelopmentDiagnostic,
@@ -14,6 +25,11 @@ import type {
   DevelopmentDiagnosticReport,
   DevelopmentDiagnosticSeverity,
 } from "./model.js";
+
+export {
+  createDiagnosticFromError,
+  diagnoseOutputPlan,
+} from "./collect_output_plan.js";
 
 type InspectableContent = Pick<
   ContentManager,
@@ -78,72 +94,6 @@ export async function collectDevelopmentDiagnostics(
   };
 }
 
-async function collectContentDiagnostics(
-  content: InspectableContent,
-  diagnostics: DevelopmentDiagnostic[],
-): Promise<void> {
-  try {
-    const inspection = await content.inspect();
-    diagnostics.push(...inspection.diagnostics.map(fromCoreDiagnostic));
-  } catch (error) {
-    diagnostics.push(
-      createDiagnosticFromError(
-        "content",
-        "CONTENT_INSPECTION_FAILED",
-        "Content inspection failed.",
-        error,
-      ),
-    );
-  }
-}
-
-async function collectOutputDiagnostics(
-  content: InspectableContent,
-  actualOutputPaths: Iterable<string> | undefined,
-  diagnostics: DevelopmentDiagnostic[],
-): Promise<void> {
-  try {
-    const changes = await content.getOutputChangeSet();
-    const plan = buildOutputPlan({
-      inventory: [...changes.affected, ...changes.unchanged],
-      removed: changes.removed,
-      affectedPaths: new Set(changes.affected.map((output) => output.path)),
-      cacheAvailable: changes.unchanged.length > 0,
-    });
-    diagnostics.push(...diagnoseOutputPlan(plan, actualOutputPaths));
-  } catch (error) {
-    diagnostics.push(
-      createDiagnosticFromError(
-        "output",
-        "OUTPUT_INSPECTION_FAILED",
-        "Output inspection failed.",
-        error,
-      ),
-    );
-  }
-}
-
-export function createDiagnosticFromError(
-  category: DevelopmentDiagnosticCategory,
-  code: string,
-  message: string,
-  _error: unknown,
-): DevelopmentDiagnostic {
-  return {
-    fingerprint: createDiagnosticFingerprint({
-      code,
-      category,
-      subject: { kind: subjectKindFor(category) },
-      message,
-    }),
-    code,
-    category,
-    severity: "error",
-    message,
-    subject: { kind: subjectKindFor(category) },
-  };
-}
-
 export function sortDevelopmentDiagnostics(
   diagnostics: readonly DevelopmentDiagnostic[],
 ): readonly DevelopmentDiagnostic[] {
@@ -201,261 +151,4 @@ export function filterDevelopmentDiagnostics(
     diagnostics,
     summary: summarizeDevelopmentDiagnostics(diagnostics),
   };
-}
-
-function environmentDiagnostics(): readonly DevelopmentDiagnostic[] {
-  const [major = 0, minor = 0] = process.versions.node.split(".").map(Number);
-  const supported = major === 20 ? minor >= 19 : major >= 22;
-  if (supported) return [];
-  return [
-    {
-      fingerprint: createDiagnosticFingerprint({
-        code: "ENV_NODE_VERSION",
-        category: "environment",
-        subject: { kind: "environment", value: process.versions.node },
-        message:
-          "Node.js does not satisfy Riebeckite's supported version range.",
-      }),
-      code: "ENV_NODE_VERSION",
-      category: "environment",
-      severity: "error",
-      message: "Node.js does not satisfy Riebeckite's supported version range.",
-      subject: { kind: "environment", value: process.versions.node },
-      fix: {
-        kind: "manual",
-        description: "Use Node.js ^20.19.0 or >=22.12.0.",
-      },
-    },
-  ];
-}
-
-function configurationDiagnostics(
-  config: ResolvedRiebeckiteConfig,
-): readonly DevelopmentDiagnostic[] {
-  return config.content.directory
-    ? []
-    : [
-        {
-          fingerprint: createDiagnosticFingerprint({
-            code: "CONFIG_CONTENT_DIRECTORY",
-            category: "configuration",
-            subject: { kind: "configuration" },
-            message: "Content directory is not resolved.",
-          }),
-          code: "CONFIG_CONTENT_DIRECTORY",
-          category: "configuration",
-          severity: "error",
-          message: "Content directory is not resolved.",
-          subject: { kind: "configuration" },
-        },
-      ];
-}
-
-function pluginDiagnostics(
-  config: ResolvedRiebeckiteConfig,
-): readonly DevelopmentDiagnostic[] {
-  const names = new Set<string>();
-  const diagnostics: DevelopmentDiagnostic[] = [];
-  for (const plugin of config.plugins) {
-    if (!plugin.name)
-      diagnostics.push({
-        fingerprint: createDiagnosticFingerprint({
-          code: "PLUGIN_INVALID_DEFINITION",
-          category: "plugins",
-          subject: { kind: "plugin" },
-          message: "A resolved plugin has no name.",
-        }),
-        code: "PLUGIN_INVALID_DEFINITION",
-        category: "plugins",
-        severity: "error",
-        message: "A resolved plugin has no name.",
-        subject: { kind: "plugin" },
-      });
-    if (names.has(plugin.name))
-      diagnostics.push({
-        fingerprint: createDiagnosticFingerprint({
-          code: "PLUGIN_DUPLICATE_ID",
-          category: "plugins",
-          subject: { kind: "plugin", value: plugin.name },
-          plugin: plugin.name,
-          message: `Plugin ID "${plugin.name}" is declared more than once.`,
-        }),
-        code: "PLUGIN_DUPLICATE_ID",
-        category: "plugins",
-        severity: "error",
-        message: `Plugin ID "${plugin.name}" is declared more than once.`,
-        subject: { kind: "plugin", value: plugin.name },
-        plugin: plugin.name,
-      });
-    names.add(plugin.name);
-  }
-  return diagnostics;
-}
-
-function themeDiagnostics(
-  config: ResolvedRiebeckiteConfig,
-): readonly DevelopmentDiagnostic[] {
-  return config.theme.styles.every((style) => style.moduleSpecifier)
-    ? []
-    : [
-        {
-          fingerprint: createDiagnosticFingerprint({
-            code: "THEME_INVALID_STYLE",
-            category: "theme",
-            subject: { kind: "theme" },
-            message: "A resolved theme style has no module specifier.",
-          }),
-          code: "THEME_INVALID_STYLE",
-          category: "theme",
-          severity: "error",
-          message: "A resolved theme style has no module specifier.",
-          subject: { kind: "theme" },
-        },
-      ];
-}
-
-export function diagnoseOutputPlan(
-  plan: ReturnType<typeof buildOutputPlan>,
-  actualOutputPaths?: Iterable<string>,
-): readonly DevelopmentDiagnostic[] {
-  const diagnostics: DevelopmentDiagnostic[] = plan.conflicts.map(
-    (conflict) => ({
-      fingerprint: createDiagnosticFingerprint({
-        code: "OUTPUT_OWNER_CONFLICT",
-        category: "output",
-        subject: { kind: "output", value: conflict.path },
-        message: `Multiple owners declare ${conflict.path}.`,
-      }),
-      code: "OUTPUT_OWNER_CONFLICT",
-      category: "output",
-      severity: "error",
-      message: `Multiple owners declare ${conflict.path}.`,
-      subject: { kind: "output", value: conflict.path },
-      details: conflict.owners.join(", "),
-    }),
-  );
-  if (!actualOutputPaths) return diagnostics;
-  const comparison = compareOutputPlan(plan, actualOutputPaths);
-  diagnostics.push(
-    ...comparison.missingInPlan.map((path) =>
-      outputDiagnostic("OUTPUT_MISSING_IN_PLAN", "error", path),
-    ),
-  );
-  diagnostics.push(
-    ...comparison.missingInDist.map((path) =>
-      outputDiagnostic("OUTPUT_MISSING_IN_DIST", "error", path),
-    ),
-  );
-  diagnostics.push(
-    ...comparison.unknown.map((path) =>
-      outputDiagnostic("OUTPUT_UNKNOWN", "warning", path),
-    ),
-  );
-  diagnostics.push(
-    ...comparison.publicationViolations.map((path) =>
-      outputDiagnostic("OUTPUT_PUBLICATION_VIOLATION", "error", path),
-    ),
-  );
-  return diagnostics;
-}
-
-function outputDiagnostic(
-  code: string,
-  severity: "error" | "warning",
-  path: string,
-): DevelopmentDiagnostic {
-  return {
-    fingerprint: createDiagnosticFingerprint({
-      code,
-      category: "output",
-      subject: { kind: "output", value: path },
-      message: `${path} violates the output plan.`,
-    }),
-    code,
-    category: "output",
-    severity,
-    message: `${path} violates the output plan.`,
-    subject: { kind: "output", value: path },
-  };
-}
-
-function fromCoreDiagnostic(diagnostic: Diagnostic): DevelopmentDiagnostic {
-  return {
-    fingerprint: createDiagnosticFingerprint({
-      code: diagnostic.code.toUpperCase().replaceAll("-", "_"),
-      category: "content",
-      subject: { kind: "content", value: diagnostic.slug ?? diagnostic.target },
-      location: diagnostic.filePath
-        ? {
-            file: diagnostic.filePath,
-            line: diagnostic.line,
-            column: diagnostic.column,
-          }
-        : undefined,
-      plugin: diagnostic.pluginName,
-      message: diagnostic.message,
-    }),
-    code: diagnostic.code.toUpperCase().replaceAll("-", "_"),
-    category: "content",
-    severity: diagnostic.severity,
-    message: diagnostic.message,
-    subject: { kind: "content", value: diagnostic.slug ?? diagnostic.target },
-    location: diagnostic.filePath
-      ? {
-          file: diagnostic.filePath,
-          line: diagnostic.line,
-          column: diagnostic.column,
-        }
-      : undefined,
-    plugin: diagnostic.pluginName,
-    fix: diagnostic.suggestion
-      ? { kind: "manual", description: diagnostic.suggestion }
-      : undefined,
-  };
-}
-
-function skipped(
-  category: DevelopmentDiagnosticCategory,
-  code: string,
-  message: string,
-): DevelopmentDiagnostic {
-  return {
-    fingerprint: createDiagnosticFingerprint({
-      code,
-      category,
-      subject: { kind: subjectKindFor(category) },
-      message,
-    }),
-    code,
-    category,
-    severity: "info",
-    status: "unavailable",
-    message,
-    subject: { kind: subjectKindFor(category) },
-  };
-}
-
-function compareDiagnostics(
-  left: DevelopmentDiagnostic,
-  right: DevelopmentDiagnostic,
-): number {
-  const leftKey = [
-    left.category,
-    left.code,
-    left.location?.file ?? "",
-    left.message,
-    left.fingerprint,
-  ].join("\0");
-  const rightKey = [
-    right.category,
-    right.code,
-    right.location?.file ?? "",
-    right.message,
-    right.fingerprint,
-  ].join("\0");
-  return leftKey < rightKey ? -1 : leftKey > rightKey ? 1 : 0;
-}
-
-function subjectKindFor(category: DevelopmentDiagnosticCategory) {
-  return category === "plugins" ? "plugin" : category;
 }

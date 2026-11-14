@@ -8,26 +8,21 @@ import {
   visitElements,
 } from "./hast.js";
 import { resolveMapOptions } from "./options.js";
+import { describeMap, normalizeMapInput, parseMapSource } from "./parse.js";
 import {
-  describeMap,
-  formatCoordinates,
-  normalizeMapInput,
-  openStreetMapUrl,
-  parseMapSource,
-} from "./parse.js";
+  buildMarker,
+  DIAGNOSTIC_SOURCE,
+  STATIC_IMAGE_WIDTH,
+} from "./rehype_helpers.js";
 import type {
   ElementNode,
   HastNode,
   MapData,
-  MapMarker,
   MapOptions,
   MapPayload,
   ParentNode,
   ResolvedMapOptions,
 } from "./types.js";
-
-const DIAGNOSTIC_SOURCE = "@riebeckite/plugin-map";
-const STATIC_IMAGE_WIDTH = 640;
 
 /**
  * Replaces every fenced `map` code block with a map figure, and prepends a
@@ -230,35 +225,6 @@ function buildStatic(
     { className: `${base}__static`, dataRrMapStatic: "true" },
     children,
   );
-}
-
-function buildMarker(
-  marker: MapMarker,
-  zoom: number,
-  base: string,
-): ElementNode {
-  const coordinates = formatCoordinates(marker);
-  const label = marker.label ? `${marker.label} · ${coordinates}` : coordinates;
-  const children: HastNode[] = [
-    element(
-      "a",
-      {
-        className: `${base}__link`,
-        href: openStreetMapUrl(marker, zoom),
-        target: "_blank",
-        rel: "noopener noreferrer",
-      },
-      [text(label)],
-    ),
-  ];
-  if (marker.description) {
-    children.push(
-      element("span", { className: `${base}__description` }, [
-        text(` — ${marker.description}`),
-      ]),
-    );
-  }
-  return element("li", { className: `${base}__marker` }, children);
 }
 
 function resolveStaticImage(

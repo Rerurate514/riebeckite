@@ -1,4 +1,5 @@
 import type {
+  ContentManifest,
   ContentMigrationBatch,
   ContentMigrationDiagnostic,
   ContentMigrationListEntry,
@@ -12,6 +13,13 @@ import type {
 
 export type FutureContentSource = ContentSource & {
   readonly changes: ReadonlyMap<string, Uint8Array | null>;
+};
+
+export type ContentMigrationAnalysis = {
+  readonly manifest: ContentManifest;
+  readonly locations: ReadonlyMap<string, { readonly permalink: string }>;
+  readonly publicationFingerprint: string;
+  readonly derivedViews: number;
 };
 
 export type ContentMigrationPlanFile = {

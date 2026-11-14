@@ -21,38 +21,24 @@ import { siteRiebeckiteExternals } from "./site_externals.js";
 import { createRiebeckiteSsg } from "./ssg.js";
 import type { RiebeckiteSsgOptions } from "./ssg_plugin.js";
 import {
+  callPluginHook,
+  callPluginHookSynchronously,
+  defaultSsrExternals,
+  isBareImport,
+  isInDirectory,
+  type RiebeckiteIntegrationOptions,
+} from "./vite_plugin_helpers.js";
+import {
   type ResolvedHonoxApplication,
   resolveHonoxApplication,
 } from "./vite_runner.js";
 import { createWorkspacePackageAliases } from "./workspace_packages.js";
-
-export type RiebeckiteIntegrationOptions = {
-  configRoot?: string;
-  workspaceRoot?: string;
-  appRoot?: string;
-  configFile?: string;
-  bridgeToken?: string;
-};
 
 /**
  * SSR externals Riebeckite's own runtime requires the application to leave
  * external. These are internal to the integration: sites should not have to
  * restate the Vite `environments.ssr.resolve.external` list.
  */
-export const defaultSsrExternals = [
-  "hono",
-  "hono/html",
-  "hono/jsx",
-  "hono/jsx/jsx-runtime",
-  "extend",
-  "debug",
-  "node:fs/promises",
-  "node:path",
-  "parse-numeric-range",
-  "slugify",
-  "vfile-matter",
-  "yaml",
-] as const;
 
 export type RiebeckiteViteOptions = RiebeckiteIntegrationOptions & {
   /** Extra SSR externals appended after Riebeckite's defaults. */
@@ -190,22 +176,6 @@ function contentBareImportResolver(
   };
 }
 
-function isBareImport(source: string): boolean {
-  return (
-    !source.startsWith(".") &&
-    !path.isAbsolute(source) &&
-    !source.startsWith("\0") &&
-    !source.startsWith("node:")
-  );
-}
-
-function isInDirectory(filePath: string, directory: string): boolean {
-  const relative = path.relative(directory, filePath);
-  return (
-    relative !== "" && !relative.startsWith("..") && !path.isAbsolute(relative)
-  );
-}
-
 function contentVitePluginBridge(getPlugins: () => readonly Plugin[]): Plugin {
   return {
     name: "riebeckite-content-vite-plugins",
@@ -284,34 +254,6 @@ function contentVitePluginBridge(getPlugins: () => readonly Plugin[]): Plugin {
   };
 }
 
-async function callPluginHook(
-  hook: unknown,
-  context: unknown,
-  ...arguments_: unknown[]
-): Promise<unknown> {
-  const handler =
-    typeof hook === "function"
-      ? hook
-      : typeof hook === "object" && hook !== null && "handler" in hook
-        ? hook.handler
-        : undefined;
-  return typeof handler === "function"
-    ? handler.call(context, ...arguments_)
-    : undefined;
-}
-
-function callPluginHookSynchronously(hook: unknown, context: unknown): unknown {
-  const handler =
-    typeof hook === "function"
-      ? hook
-      : typeof hook === "object" && hook !== null && "handler" in hook
-        ? hook.handler
-        : undefined;
-  return typeof handler === "function"
-    ? handler.call(context, context)
-    : undefined;
-}
-
 function requireApplication(
   application: ResolvedHonoxApplication | undefined,
 ): ResolvedHonoxApplication {
@@ -369,3 +311,6 @@ function riebeckiteSsrExternals(
     },
   };
 }
+
+export type { RiebeckiteIntegrationOptions } from "./vite_plugin_helpers.js";
+export { defaultSsrExternals } from "./vite_plugin_helpers.js";

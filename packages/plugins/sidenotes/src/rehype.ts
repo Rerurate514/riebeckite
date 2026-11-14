@@ -1,5 +1,15 @@
 import { resolveSidenotesOptions } from "./options.js";
 import {
+  BLOCK_TAG_NAMES,
+  type BlockContainer,
+  FOOTNOTE_ID_PREFIX_PATTERN,
+  FOOTNOTE_REFERENCE_ATTRIBUTE,
+  FOOTNOTES_SECTION_ATTRIBUTE,
+  type FootnoteNote,
+  type Insertion,
+  PLACEMENT_ATTRIBUTE,
+} from "./rehype_helpers.js";
+import {
   renderHastChildren,
   renderSidenotesNote,
   renderSidenotesReference,
@@ -24,63 +34,8 @@ import type {
  * section by default and, with `placement: "margin"`, rewrites the definitions
  * into notes next to their references.
  */
-const FOOTNOTE_REFERENCE_ATTRIBUTE = "dataFootnoteRef";
-const FOOTNOTES_SECTION_ATTRIBUTE = "dataFootnotes";
-const FOOTNOTE_ID_PREFIX_PATTERN = /^(?:user-content-)?fn-(.+)$/;
-const PLACEMENT_ATTRIBUTE = "data-rr-sidenotes-placement";
 
 /** Element tags that can contain a footnote reference in flow content. */
-const BLOCK_TAG_NAMES = new Set([
-  "article",
-  "aside",
-  "blockquote",
-  "dd",
-  "div",
-  "dl",
-  "dt",
-  "figcaption",
-  "figure",
-  "footer",
-  "h1",
-  "h2",
-  "h3",
-  "h4",
-  "h5",
-  "h6",
-  "header",
-  "li",
-  "main",
-  "ol",
-  "p",
-  "pre",
-  "section",
-  "table",
-  "tbody",
-  "td",
-  "tfoot",
-  "th",
-  "thead",
-  "tr",
-  "ul",
-]);
-
-type FootnoteNote = {
-  key: string;
-  bodyHtml: string;
-  index: string;
-  used: boolean;
-};
-
-type BlockContainer = {
-  container: HastElementNode;
-  parent: HastElementNode | null;
-};
-
-type Insertion = {
-  parent: HastElementNode;
-  container: HastElementNode;
-  htmls: string[];
-};
 
 export function rehypeSidenotes(options: SidenotesOptions = {}) {
   const resolved = resolveSidenotesOptions(options);

@@ -1,16 +1,18 @@
 import type { Diagnostic, DiagnosticSeverity } from "@riebeckite/core";
 import { resolveInspectOptions } from "./options.js";
 import {
+  hasAccessibleName,
+  type InspectionContext,
+  QUALITY_PLUGIN_NAME,
+} from "./rules_helpers.js";
+import {
   attribute,
   type HtmlElement,
-  hasNonEmptyAttribute,
   maskIgnoredRegions,
   scanElements,
   textContent,
 } from "./scanner.js";
 import type { InspectOptions, ResolvedInspectOptions } from "./types.js";
-
-export const QUALITY_PLUGIN_NAME = "quality";
 
 /**
  * Stable diagnostic codes emitted by this package. Codes are part of the
@@ -27,11 +29,6 @@ export const RULE_CODES = {
 } as const;
 
 export type RuleCode = (typeof RULE_CODES)[keyof typeof RULE_CODES];
-
-type InspectionContext = {
-  html: string;
-  elements: readonly HtmlElement[];
-};
 
 type Rule = (context: InspectionContext) => Diagnostic[];
 
@@ -271,15 +268,6 @@ function tableNoHeader({ elements }: InspectionContext): Diagnostic[] {
   return diagnostics;
 }
 
-function hasAccessibleName(element: HtmlElement): boolean {
-  if (hasNonEmptyAttribute(element, "aria-label")) return true;
-  if (hasNonEmptyAttribute(element, "title")) return true;
-  return scanElements(element.content).some(
-    (candidate) =>
-      candidate.tag === "img" && hasNonEmptyAttribute(candidate, "alt"),
-  );
-}
-
 function headingLevel(tag: string): number | null {
   if (tag.length !== 2 || tag[0] !== "h") return null;
   const level = Number.parseInt(tag[1] ?? "", 10);
@@ -326,3 +314,5 @@ function createDiagnostic(
     ...extra,
   };
 }
+
+export { QUALITY_PLUGIN_NAME } from "./rules_helpers.js";

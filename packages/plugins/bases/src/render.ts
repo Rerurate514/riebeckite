@@ -4,7 +4,15 @@ import {
   escapeHtmlAttribute,
 } from "@riebeckite/core";
 import { matchesCondition } from "./evaluate.js";
-import { DEFAULT_COLUMNS } from "./parse.js";
+import {
+  BUILTIN_LABELS,
+  DATE_ONLY,
+  LINK_PROPERTIES,
+  resolveLimit,
+  selectViews,
+  TAG_PROPERTIES,
+  TITLE_PROPERTIES,
+} from "./render_helpers.js";
 import {
   type BasesGroup,
   groupBasesEntries,
@@ -13,29 +21,6 @@ import {
   summarizeBasesValues,
 } from "./transform.js";
 import type { BasesOptions, BasesSpec, BasesView } from "./types.js";
-
-const TITLE_PROPERTIES = new Set(["file.name", "file.title", "title", "name"]);
-const LINK_PROPERTIES = new Set([
-  "file.link",
-  "file.permalink",
-  "file.url",
-  "permalink",
-  "url",
-]);
-const TAG_PROPERTIES = new Set(["file.tags", "tags"]);
-
-const BUILTIN_LABELS: Record<string, string> = {
-  "file.name": "Name",
-  "file.path": "Path",
-  "file.slug": "Slug",
-  "file.folder": "Folder",
-  "file.title": "Title",
-  "file.link": "Link",
-  "file.permalink": "Permalink",
-  "file.tags": "Tags",
-};
-
-const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
 
 /** Renders a compiled Base definition to HTML. */
 export function renderBases(
@@ -60,43 +45,6 @@ export function renderBases(
 }
 
 /** Renders an inline error when a placeholder cannot be resolved. */
-export function renderBasesError(
-  message: string,
-  options: BasesOptions,
-): string {
-  const className = options.className ?? "rb-bases";
-  return `<div class="${escapeHtmlAttribute(className)} ${escapeHtmlAttribute(className)}--error" role="status">${escapeHtml(message)}</div>`;
-}
-
-function selectViews(
-  spec: BasesSpec,
-  requested: string | undefined,
-): BasesView[] {
-  const configured = spec.views;
-  if (requested && requested.trim() !== "") {
-    const target = requested.trim().toLowerCase();
-    const matches = configured.filter(
-      (view) => view.name?.toLowerCase() === target,
-    );
-    if (matches.length > 0) return matches;
-  }
-  if (configured.length > 0) return [...configured];
-
-  const properties = Object.keys(spec.properties);
-  return [
-    {
-      type: "table",
-      columns: properties.length > 0 ? properties : [...DEFAULT_COLUMNS],
-    },
-  ];
-}
-
-function resolveLimit(limit: number | undefined): number {
-  if (typeof limit === "number" && Number.isFinite(limit) && limit >= 0) {
-    return Math.floor(limit);
-  }
-  return 100;
-}
 
 function renderView(
   view: BasesView,
@@ -349,3 +297,5 @@ function formatDate(value: Date): string {
   if (!Number.isFinite(time)) return "";
   return value.toISOString().slice(0, 10);
 }
+
+export { renderBasesError } from "./render_helpers.js";

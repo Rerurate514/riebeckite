@@ -1,10 +1,10 @@
-import type {
-  CliCommandDefinition,
-  CliCommandRegistry,
-  CliOptionDefinition,
-} from "./types.js";
-
-export type CliShell = "bash" | "zsh" | "powershell";
+import {
+  type CliShell,
+  optionWords,
+  type Transition,
+  visibleCommands,
+} from "./completion_helpers.js";
+import type { CliCommandDefinition, CliCommandRegistry } from "./types.js";
 
 export function generateCompletion(
   registry: CliCommandRegistry,
@@ -23,21 +23,6 @@ export function parseCliShell(value: string): CliShell | undefined {
   return value === "bash" || value === "zsh" || value === "powershell"
     ? value
     : undefined;
-}
-
-type Transition = {
-  readonly from: string;
-  readonly token: string;
-  readonly to: string;
-};
-
-function visibleCommands(
-  registry: CliCommandRegistry,
-): readonly CliCommandDefinition[] {
-  return registry.registrations
-    .map((registration) => registration.command)
-    .filter((command) => !command.hidden)
-    .toSorted((left, right) => left.id.localeCompare(right.id));
 }
 
 function transitions(registry: CliCommandRegistry): Transition[] {
@@ -74,21 +59,6 @@ function commandAt(
   path: string,
 ): CliCommandDefinition | undefined {
   return visibleCommands(registry).find((command) => command.id === path);
-}
-
-function optionWords(option: CliOptionDefinition): string[] {
-  if (option.type === "boolean") {
-    return option.negatable
-      ? [`--${option.name}`, `--no-${option.name}`]
-      : [`--${option.name}`];
-  }
-  const words = [`--${option.name}`];
-  if (option.type === "enum") {
-    for (const value of option.values ?? []) {
-      words.push(`--${option.name}=${value}`);
-    }
-  }
-  return words;
 }
 
 function wordsForPath(registry: CliCommandRegistry, path: string): string[] {
@@ -319,3 +289,5 @@ function powershellSingleQuote(value: string): string {
 function sanitizeDescription(value: string): string {
   return value.replace(/[\r\n]+/g, " ").replace(/:/g, " -");
 }
+
+export type { CliShell } from "./completion_helpers.js";

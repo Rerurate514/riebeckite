@@ -1,52 +1,28 @@
 import path from "node:path";
 import {
-  type CliCommandContext,
   type CliCommandDefinition,
   type CliCommandInput,
   CliUsageError,
-  cliArgument,
-  cliBoolean,
   cliExample,
-  cliNumber,
-  cliString,
   defineCliCommand,
 } from "@riebeckite/core";
-import {
-  type ContentMigrationApplyResult,
-  type ContentMigrationPlan,
-  type ContentMigrationRollbackOutcome,
-  FileSystemContentMigration,
+import type {
+  ContentMigrationApplyResult,
+  ContentMigrationPlan,
+  ContentMigrationRollbackOutcome,
 } from "@riebeckite/node";
-import { FRONTMATTER_PRESETS, frontmatterPresetRegistry } from "./presets.js";
-
-const JSON_OPTION = cliBoolean("json", {
-  description: "Write machine-readable JSON to stdout.",
-});
-const APPLY_OPTION = cliBoolean("apply", {
-  description: "Write the changes instead of printing a dry run.",
-});
-const PRESET_OPTION = cliString("preset", {
-  description: "Frontmatter preset to run.",
-  valueName: "name",
-  repeatable: true,
-});
-const PLAN_OPTION = cliString("plan", {
-  description: "Use a previously saved migration plan.",
-  valueName: "path",
-});
-const OUT_OPTION = cliString("out", {
-  description: "Write the plan to a file.",
-  valueName: "path",
-});
-const LIMIT_OPTION = cliNumber("limit", {
-  description: "Maximum number of history runs.",
-  integer: true,
-  min: 0,
-});
-const TARGET_ARGUMENT = cliArgument("target", {
-  description: "Plan ID or migration ID to roll back.",
-  required: true,
-});
+import {
+  APPLY_OPTION,
+  createMigration,
+  JSON_OPTION,
+  LIMIT_OPTION,
+  OUT_OPTION,
+  PLAN_OPTION,
+  PRESET_OPTION,
+  readPresetsInput,
+  TARGET_ARGUMENT,
+} from "./commands_helpers.js";
+import { FRONTMATTER_PRESETS } from "./presets.js";
 
 export function createFrontmatterCommands(): readonly CliCommandDefinition[] {
   return [
@@ -237,30 +213,10 @@ function rollbackCommand(): CliCommandDefinition {
   });
 }
 
-async function createMigration(
-  project: Awaited<ReturnType<CliCommandContext["loadProject"]>>,
-  presetIds?: readonly string[],
-) {
-  return new FileSystemContentMigration({
-    contentDirectory: project.contentRoot,
-    registry: frontmatterPresetRegistry(presetIds),
-    config: project.config,
-    plugins: project.config?.plugins,
-    buildTime: new Date(),
-  });
-}
-
 function requirePreset(input: CliCommandInput): string | undefined {
   return readPresetsInput(input).length === 0
     ? "Pass at least one --preset."
     : undefined;
-}
-
-function readPresetsInput(input: CliCommandInput): readonly string[] {
-  const value = input.options.preset;
-  return Array.isArray(value)
-    ? value.filter((entry): entry is string => typeof entry === "string")
-    : [];
 }
 
 function readPresets(input: CliCommandInput): readonly string[] {

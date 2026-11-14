@@ -63,6 +63,7 @@ Do not introduce a reverse dependency from Core to HonoX, Vite, a specific Plugi
 - For NodeNext/ESM, ensure runtime imports resolve after compilation without relying on `tsx`.
 - Do not interpret cumulative duration from parallel work as wall-clock duration.
 - Avoid unrelated refactors in a focused change. Preserve uncommitted user work.
+- All commits, PRs, and `gh` operations must use the identity `Rerurate514 <rerurateyuto@gmail.com>`. At the start of every session, check `git config user.name` and `git config user.email`; when they differ, set them with `git config --local` before any commit. Never include `vibe` in branch names.
 
 ## Implementation workflow
 

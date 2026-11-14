@@ -1,6 +1,6 @@
 import type { PipelineOptions } from "../pipeline.js";
 import type { ResolvedRiebeckiteConfig } from "../types/resolved_riebeckite_config.js";
-import type { ContentManagerContext } from "./content_manager_context.js";
+import { asContentManagerContext } from "./content_manager_context.js";
 import { ContentManagerMethodsB } from "./content_manager_methods_b.js";
 import { initializeContentManager } from "./content_manager_state.js";
 import type { ContentSource } from "./content_source.js";
@@ -13,7 +13,7 @@ export class ContentManager extends ContentManagerMethodsB {
   ) {
     super();
     initializeContentManager(
-      this as unknown as ContentManagerContext,
+      asContentManagerContext(this),
       content,
       _exclude,
       pipelineOptions,

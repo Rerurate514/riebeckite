@@ -79,3 +79,9 @@ export interface ContentBuildCoordinatorContext {
     changeSet: ContentChangeSet,
   ): Promise<ReadonlyMap<string, readonly string[]>>;
 }
+
+export function asContentBuildCoordinatorContext<Self>(
+  self: Self,
+): ContentBuildCoordinatorContext {
+  return self as ContentBuildCoordinatorContext;
+}

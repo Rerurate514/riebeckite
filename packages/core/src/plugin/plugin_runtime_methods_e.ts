@@ -19,7 +19,7 @@ import {
   resolvePageImpl,
   resolveRouteImpl,
 } from "./plugin_runtime_pages.js";
-import type { PluginRuntimeContext } from "./plugin_runtime_state_types.js";
+import { asPluginRuntimeContext } from "./plugin_runtime_state_types.js";
 
 export class PluginRuntimeMethodsE extends PluginRuntimeMethodsD {
   resolvePage = async (
@@ -28,7 +28,7 @@ export class PluginRuntimeMethodsE extends PluginRuntimeMethodsD {
     contentIndex: Map<string, string>,
   ): Promise<ResolvedPluginPage | null> =>
     await resolvePageImpl(
-      this as unknown as PluginRuntimeContext,
+      asPluginRuntimeContext(this),
       pathname,
       manifest,
       contentIndex,
@@ -40,7 +40,7 @@ export class PluginRuntimeMethodsE extends PluginRuntimeMethodsD {
     contentIndex: Map<string, string>,
   ): Promise<ResolvedPluginPage | null | undefined> =>
     await resolveRouteImpl(
-      this as unknown as PluginRuntimeContext,
+      asPluginRuntimeContext(this),
       pathname,
       manifest,
       contentIndex,
@@ -51,7 +51,7 @@ export class PluginRuntimeMethodsE extends PluginRuntimeMethodsD {
     contentIndex: Map<string, string>,
   ): Promise<readonly string[]> =>
     await getPagePathsImpl(
-      this as unknown as PluginRuntimeContext,
+      asPluginRuntimeContext(this),
       manifest,
       contentIndex,
     );
@@ -61,7 +61,7 @@ export class PluginRuntimeMethodsE extends PluginRuntimeMethodsD {
     contentIndex: Map<string, string>,
   ): Promise<ContentManifest["localization"] | undefined> =>
     await resolveContentLocalizationImpl(
-      this as unknown as PluginRuntimeContext,
+      asPluginRuntimeContext(this),
       manifest,
       contentIndex,
     );
@@ -71,7 +71,7 @@ export class PluginRuntimeMethodsE extends PluginRuntimeMethodsD {
     contentIndex: Map<string, string>,
   ): Promise<readonly PluginPageRoute[]> =>
     await getPageRoutesImpl(
-      this as unknown as PluginRuntimeContext,
+      asPluginRuntimeContext(this),
       manifest,
       contentIndex,
     );
@@ -81,7 +81,7 @@ export class PluginRuntimeMethodsE extends PluginRuntimeMethodsD {
     contentIndex: Map<string, string>,
   ): Promise<readonly OutputDescriptor[]> =>
     await getPageOutputsImpl(
-      this as unknown as PluginRuntimeContext,
+      asPluginRuntimeContext(this),
       manifest,
       contentIndex,
     );
@@ -89,10 +89,7 @@ export class PluginRuntimeMethodsE extends PluginRuntimeMethodsD {
   collectDiagnostics = async (
     contentIndex: Map<string, string>,
   ): Promise<Diagnostic[]> =>
-    await collectDiagnosticsImpl(
-      this as unknown as PluginRuntimeContext,
-      contentIndex,
-    );
+    await collectDiagnosticsImpl(asPluginRuntimeContext(this), contentIndex);
 
   observeHook = async <T>(
     plugin: RiebeckitePlugin,
@@ -100,12 +97,12 @@ export class PluginRuntimeMethodsE extends PluginRuntimeMethodsD {
     operation: () => Promise<T>,
   ): Promise<T> =>
     await observeHookImpl(
-      this as unknown as PluginRuntimeContext,
+      asPluginRuntimeContext(this),
       plugin,
       hook,
       operation,
     );
 
   observability = (): Observability =>
-    observabilityImpl(this as unknown as PluginRuntimeContext);
+    observabilityImpl(asPluginRuntimeContext(this));
 }

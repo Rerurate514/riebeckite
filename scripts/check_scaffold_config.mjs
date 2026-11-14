@@ -17,7 +17,14 @@ export function expectConfigPassesBiome(root, label) {
     execFileSync(
       process.execPath,
       [
-        path.join(repositoryRoot, "node_modules", "@biomejs", "biome", "bin", "biome"),
+        path.join(
+          repositoryRoot,
+          "node_modules",
+          "@biomejs",
+          "biome",
+          "bin",
+          "biome",
+        ),
         "lint",
         configPath,
       ],

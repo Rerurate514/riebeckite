@@ -16,17 +16,13 @@ import {
 import { directoryBytes, round1, toMb } from "./bench_ssg_util.mjs";
 
 export async function measure(siteRoot, scenario) {
-  const { stdout } = await execFileAsync(
-    process.execPath,
-    [entryScript],
-    {
-      env: {
-        ...process.env,
-        RIEBECKITE_BENCH_BUILD_ONCE: JSON.stringify({ siteRoot, scenario }),
-      },
-      maxBuffer: 1024 * 1024 * 32,
+  const { stdout } = await execFileAsync(process.execPath, [entryScript], {
+    env: {
+      ...process.env,
+      RIEBECKITE_BENCH_BUILD_ONCE: JSON.stringify({ siteRoot, scenario }),
     },
-  );
+    maxBuffer: 1024 * 1024 * 32,
+  });
   return JSON.parse(stdout.trim().split(/\r?\n/).at(-1));
 }
 
@@ -157,7 +153,6 @@ async function measurePersistentState(siteRoot) {
   );
   return result;
 }
-
 
 async function readTraceMetrics(traceFile) {
   let raw;

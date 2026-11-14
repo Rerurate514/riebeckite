@@ -1,5 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
+import {
+  repositoryRoot,
+  workspacePatterns,
+} from "./check_dependencies_config.mjs";
+import { readJson, toPosix } from "./check_dependencies_util.mjs";
 
 export function collectWorkspacePackages(root = repositoryRoot) {
   const packages = [];

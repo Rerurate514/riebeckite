@@ -39,4 +39,3 @@ export function median(values) {
 export function toMb(bytes) {
   return Math.round(bytes / 1024 / 1024);
 }
-

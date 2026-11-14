@@ -1,13 +1,10 @@
-import fs from "node:fs";
-import path from "node:path";
+import { expectHoverPreviewSelector } from "./check_scaffold_config.mjs";
+import { generate } from "./check_scaffold_presets.mjs";
 import {
-  errors,
   expect,
   expectedRiebeckiteSpec,
   readSiteFile,
 } from "./check_scaffold_shared.mjs";
-import { expectHoverPreviewSelector } from "./check_scaffold_config.mjs";
-import { generate } from "./check_scaffold_presets.mjs";
 
 export async function checkStarter(scaffoldRiebeckiteSite, tmpRoot) {
   const root = await generate(scaffoldRiebeckiteSite, tmpRoot, "starter", {
@@ -228,4 +225,3 @@ export async function checkEmpty(scaffoldRiebeckiteSite, tmpRoot) {
     "empty: content must be absent",
   );
 }
-

@@ -1,5 +1,23 @@
 import fs from "node:fs";
 import path from "node:path";
+import { builtins, repositoryRoot } from "./check_dependencies_config.mjs";
+import { collectWorkspacePackages } from "./check_dependencies_packages.mjs";
+import {
+  collectImports,
+  declaredDependencies,
+  exportsAllows,
+  forbiddenDependency,
+  isIntentionalNonImport,
+  isRiebeckitePackage,
+  isTestFile,
+  packageKind,
+  packageName,
+  readJson,
+  subpathOf,
+  toPosix,
+  typesPackageName,
+  walk,
+} from "./check_dependencies_util.mjs";
 
 export function analyzeWorkspace(options = {}) {
   const root = options.root ?? repositoryRoot;

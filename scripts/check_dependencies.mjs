@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import path from "node:path";
-import { scriptPath } from "./check_dependencies_config.mjs";
+import { repositoryRoot, scriptPath } from "./check_dependencies_config.mjs";
 
 export { analyzeWorkspace } from "./check_dependencies_analyze.mjs";
 export {

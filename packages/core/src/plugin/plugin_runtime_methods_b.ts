@@ -17,11 +17,11 @@ import {
   startBuildImpl,
 } from "./plugin_runtime_lifecycle.js";
 import { PluginRuntimeMethodsA } from "./plugin_runtime_methods_a.js";
-import type { PluginRuntimeContext } from "./plugin_runtime_state_types.js";
+import { asPluginRuntimeContext } from "./plugin_runtime_state_types.js";
 
 export class PluginRuntimeMethodsB extends PluginRuntimeMethodsA {
   startBuild = (contentIndex: Map<string, string>): Promise<void> =>
-    startBuildImpl(this as unknown as PluginRuntimeContext, contentIndex);
+    startBuildImpl(asPluginRuntimeContext(this), contentIndex);
 
   resolveExternalDependencies = async (
     contentIndex: Map<string, string>,
@@ -30,7 +30,7 @@ export class PluginRuntimeMethodsB extends PluginRuntimeMethodsA {
     readonly failures: readonly ExternalDependencyFailure[];
   }> =>
     await resolveExternalDependenciesImpl(
-      this as unknown as PluginRuntimeContext,
+      asPluginRuntimeContext(this),
       contentIndex,
     );
 
@@ -39,20 +39,20 @@ export class PluginRuntimeMethodsB extends PluginRuntimeMethodsA {
     contentIndex: Map<string, string>,
   ): Promise<readonly ContentPublicLocation[]> =>
     await resolveContentLocationsImpl(
-      this as unknown as PluginRuntimeContext,
+      asPluginRuntimeContext(this),
       entries,
       contentIndex,
     );
 
   canUseDevelopmentRouteManifest = (): boolean =>
-    canUseDevelopmentRouteManifestImpl(this as unknown as PluginRuntimeContext);
+    canUseDevelopmentRouteManifestImpl(asPluginRuntimeContext(this));
 
   runDevelopmentRouteGraphHook = async (
     entries: ContentManifestEntry[],
     contentIndex: Map<string, string>,
   ): Promise<void> =>
     await runDevelopmentRouteGraphHookImpl(
-      this as unknown as PluginRuntimeContext,
+      asPluginRuntimeContext(this),
       entries,
       contentIndex,
     );
@@ -62,7 +62,7 @@ export class PluginRuntimeMethodsB extends PluginRuntimeMethodsA {
     contentIndex: Map<string, string>,
   ): Promise<void> =>
     await runDevelopmentRouteManifestHookImpl(
-      this as unknown as PluginRuntimeContext,
+      asPluginRuntimeContext(this),
       manifest,
       contentIndex,
     );

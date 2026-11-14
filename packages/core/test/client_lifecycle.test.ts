@@ -220,7 +220,7 @@ test("runs an initializer cleanup once when unmounted twice", async () => {
 
 test("forwards the presence marker to initializers", async () => {
   const lifecycle = new ClientLifecycle<object>();
-  const marker = { isConnected: true } as unknown as Element;
+  const marker = { isConnected: true } as Element;
   let received: Element | undefined;
 
   await lifecycle.mount({

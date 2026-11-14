@@ -26,9 +26,6 @@ const lifecycleKinds: readonly ApiLifecycleKind[] = [
   "integration",
 ];
 
-const _semverPattern = /^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?$/;
-const _diagnosticCodePattern = /^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*$/;
-
 export class ApiLifecycleValidationError extends Error {
   readonly issues: readonly ApiLifecycleValidationIssue[];
 
@@ -40,7 +37,6 @@ export class ApiLifecycleValidationError extends Error {
 }
 
 const diagnosticCodePattern = /^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*$/;
-const semverPattern = /^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?$/;
 
 export function validateApiLifecycleDefinition(
   definition: ApiLifecycleDefinition,

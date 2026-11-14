@@ -2,7 +2,7 @@ import type {
   ExternalDependencyFailure,
   ExternalDependencySnapshot,
 } from "../types/external_dependency.js";
-import type { ContentBuildCoordinatorContext } from "./content_build_coordinator_context.js";
+import { asContentBuildCoordinatorContext } from "./content_build_coordinator_context.js";
 import type { ContentBuildPlan } from "./content_build_plan.js";
 import type {
   ContentBuildState,
@@ -25,7 +25,7 @@ export class ContentCoordinatorDelegatesB extends ContentCoordinatorDelegatesA {
     publishingBuildTime: Date,
   ): Promise<ContentBuildPlan> {
     return prepareImpl(
-      this as unknown as ContentBuildCoordinatorContext,
+      asContentBuildCoordinatorContext(this),
       incremental,
       pipelineFingerprint,
       fullContentRegenerationRequired,
@@ -41,7 +41,7 @@ export class ContentCoordinatorDelegatesB extends ContentCoordinatorDelegatesA {
     changeSet: ContentChangeSet,
   ): Promise<ReadonlyMap<string, readonly string[]>> {
     return getContentAliasesImpl(
-      this as unknown as ContentBuildCoordinatorContext,
+      asContentBuildCoordinatorContext(this),
       currentEntries,
       previousState,
       changeSet,

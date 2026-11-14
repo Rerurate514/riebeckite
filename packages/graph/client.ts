@@ -2,10 +2,10 @@ import { createAnimationController } from "./client_animation.js";
 import { createCameraController } from "./client_camera.js";
 import { createDrawing } from "./client_draw.js";
 import { createEventHandlers } from "./client_events.js";
-import type {
-  GraphRenderer,
-  GraphRendererOptions,
-  RendererContext,
+import {
+  asRendererContext,
+  type GraphRenderer,
+  type GraphRendererOptions,
 } from "./client_types.js";
 import { createNoopRenderer, readColors } from "./client_utils.js";
 
@@ -25,7 +25,7 @@ export function createGraphRenderer(
     return createNoopRenderer();
   }
 
-  const r = {
+  const r = asRendererContext({
     canvas,
     ctx: context,
     callbacks: options,
@@ -55,7 +55,7 @@ export function createGraphRenderer(
     reveal: new Map(),
     colors: readColors(canvas),
     reducedMotion: options.reducedMotion ?? false,
-  } as unknown as RendererContext;
+  });
 
   Object.assign(
     r,

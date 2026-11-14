@@ -1,4 +1,4 @@
-export const inspectorClientI18nPart1 = String.raw`const inspectorLanguageStorageKey = "riebeckite-inspector-language";
+export const inspectorClientI18nPart1 = `const inspectorLanguageStorageKey = "riebeckite-inspector-language";
 let inspectorLanguage = readInspectorLanguage();
 const inspectorTranslations = {
   "Ctrl+Alt+R · drag the left edge to resize": "Ctrl+Alt+R ・ 左端をドラッグして幅を変更",

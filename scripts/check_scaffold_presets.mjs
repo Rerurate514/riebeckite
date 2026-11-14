@@ -3,7 +3,6 @@ import fs from "node:fs";
 import path from "node:path";
 import {
   errors,
-  expect,
   expectConfigPassesBiome,
   repositoryRoot,
 } from "./check_scaffold_shared.mjs";

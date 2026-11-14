@@ -291,6 +291,11 @@
       "type": true
     },
     {
+      "name": "ClientInitializerRoot",
+      "value": false,
+      "type": true
+    },
+    {
       "name": "ClientResourceScope",
       "value": false,
       "type": true
@@ -1024,6 +1029,11 @@
       "name": "createClientEntry",
       "value": true,
       "type": false
+    },
+    {
+      "name": "CreateClientEntryOptions",
+      "value": false,
+      "type": true
     },
     {
       "name": "createContentFormatRegistry",

@@ -1,8 +1,7 @@
 ---
 date: 2026-10-31
 title: Derived Data
-sidebar:
-  label: Derived Data
+sidebar.label: Derived Data
 ---
 
 # Derived Data

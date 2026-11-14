@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: プラグインキャッシュ（Plugin Cache）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # プラグインキャッシュ（Plugin Cache）

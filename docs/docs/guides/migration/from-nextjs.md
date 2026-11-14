@@ -2,8 +2,7 @@
 date: 2026-10-11
 title: Migrate from Next.js static export
 private: true
-sidebar:
-  label: From Next.js static export
+sidebar.label: From Next.js static export
 ---
 # Migrate from Next.js static export
 

@@ -1,9 +1,8 @@
 ---
 date: 2026-10-20
 title: プラグイン機能別レシピ
-sidebar:
-  label: プラグイン機能別レシピ
-  order: 0
+sidebar.label: プラグイン機能別レシピ
+sidebar.order: 0
 ---
 # プラグイン機能別レシピ
 

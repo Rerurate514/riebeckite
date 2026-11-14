@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: Navigation
-sidebar:
-  label: Navigation
-  order: 10
+sidebar.label: Navigation
+sidebar.order: 10
 ---
 
 # Navigation

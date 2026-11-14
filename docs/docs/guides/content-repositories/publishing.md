@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Publication and troubleshooting
-sidebar:
-  label: Publication and troubleshooting
-  order: 30
+sidebar.label: Publication and troubleshooting
+sidebar.order: 30
 ---
 # Publication and troubleshooting
 

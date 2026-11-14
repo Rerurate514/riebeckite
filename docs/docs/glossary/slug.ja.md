@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: Slug（内部の検索キー）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # Slug（内部の検索キー）

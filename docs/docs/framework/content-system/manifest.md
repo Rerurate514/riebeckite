@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Manifest
-sidebar:
-  label: Manifest
-  order: 30
+sidebar.label: Manifest
+sidebar.order: 30
 ---
 # Manifest
 

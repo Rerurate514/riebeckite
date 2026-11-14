@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: セットアップ
-sidebar:
-  label: セットアップ
-  order: 10
+sidebar.label: セットアップ
+sidebar.order: 10
 ---
 # セットアップ
 

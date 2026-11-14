@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Markdown
-sidebar:
-  label: Markdown
-  order: 20
+sidebar.label: Markdown
+sidebar.order: 20
 ---
 # Markdown
 

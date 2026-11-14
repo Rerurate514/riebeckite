@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: エンドポイント（Endpoint）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # エンドポイント（Endpoint）

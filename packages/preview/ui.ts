@@ -1,14 +1,18 @@
+import { createLoadingController } from "@riebeckite/ui/loading";
 import {
-  createLoadingController,
-  type LoadingController,
-} from "@riebeckite/ui/loading";
-import { createPreviewDocument } from "./src/document.js";
+  readFixtureMarkdown,
+  readPageMarkdown,
+} from "./preview_ui_fixtures.js";
+import { readInput, updatePageSelect } from "./preview_ui_inputs.js";
+import {
+  isThemeSettingEvent,
+  updateThemeSettings,
+} from "./preview_ui_render.js";
+import type { PreviewElements } from "./preview_ui_types.js";
 import { mountThemePreview as mountThemePreviewImplementation } from "./src/theme-preview.js";
 import {
   createPreviewUiController,
-  type PreviewUiInput,
   type PreviewUiResponse,
-  type PreviewUiState,
 } from "./src/ui-controller.js";
 import type {
   PreviewUiMessages,
@@ -37,25 +41,10 @@ export type {
   PreviewUiSelectors,
 } from "./src/ui-types.js";
 
-const defaultSelectors: PreviewUiSelectors = {
-  root: "[data-plugin-preview]",
-  markdown: "[data-preview-markdown]",
-  fixture: "[data-preview-fixture-select]",
-  page: "[data-preview-page-select]",
-  frame: "[data-preview-frame]",
-  theme: "[data-preview-theme]",
-  mode: "[data-preview-mode]",
-  status: "[data-preview-status]",
-  diagnostics: "[data-preview-diagnostics]",
-  option: "[data-preview-option]",
-};
-
-const defaultMessages: PreviewUiMessages = {
-  rendering: "Rendering",
-  rendered: "Rendered",
-  checkDiagnostics: "Check diagnostics",
-  requestFailure: "The preview could not be rendered. Try again.",
-};
+import { requireElement } from "./preview_ui_inputs.js";
+import { renderState } from "./preview_ui_render.js";
+import { requestPreview } from "./preview_ui_request.js";
+import { defaultMessages, defaultSelectors } from "./preview_ui_types.js";
 
 export function mountThemePreview(
   root: HTMLElement,
@@ -201,283 +190,4 @@ export function mountPreview(
     controller.dispose();
     lifetime.abort();
   };
-}
-
-function readPageMarkdown(
-  root: HTMLElement,
-  fixtureId: string,
-  pageId: string,
-): string | undefined {
-  return readFixturePages(root.dataset.previewPages, fixtureId)?.pages.find(
-    (page) => page.id === pageId,
-  )?.markdown;
-}
-
-type PreviewElements = {
-  readonly frame: HTMLIFrameElement;
-  readonly theme: HTMLSelectElement;
-  readonly mode: HTMLSelectElement;
-  readonly status: HTMLElement;
-  readonly diagnostics: HTMLUListElement;
-  readonly loading: LoadingController;
-  frameRevision: number;
-  readonly themeStyles: Readonly<Record<string, string>>;
-  readonly themeAttributes: Readonly<
-    Record<string, Readonly<Record<string, string>>>
-  >;
-  readonly themeSettings: PreviewUiOptions["themeSettings"];
-  readonly articleTitle: PreviewUiOptions["articleTitle"];
-  readonly contentStyles: readonly string[];
-  readonly pluginStyles: readonly string[];
-  readonly messages: PreviewUiMessages;
-};
-
-function renderState(state: PreviewUiState, elements: PreviewElements): void {
-  elements.frameRevision += 1;
-  if (state.kind === "rendering") {
-    elements.loading.start();
-    elements.status.textContent = elements.messages.rendering;
-    return;
-  }
-  const revision = elements.frameRevision;
-  elements.loading.start();
-  const themeStyle = elements.themeStyles[elements.theme.value];
-  const themeSettings = elements.themeSettings?.(elements.theme.value);
-  elements.frame.srcdoc = createPreviewDocument({
-    html: state.response.html,
-    styles: [
-      themeStyle ?? elements.themeStyles.default ?? "",
-      ...elements.contentStyles,
-      ...elements.pluginStyles,
-    ],
-    themeName:
-      elements.theme.value === "default" ? "riebeckite" : elements.theme.value,
-    colorMode:
-      elements.mode.value === "dark" || elements.mode.value === "system"
-        ? elements.mode.value
-        : "light",
-    articleTitle: elements.articleTitle,
-    themeSettingsStyle: themeSettings?.style,
-    themeAttributes:
-      themeSettings?.attributes ??
-      elements.themeAttributes[elements.theme.value],
-  });
-  elements.diagnostics.replaceChildren(
-    ...state.response.diagnostics.map((diagnostic) => {
-      const item = document.createElement("li");
-      item.dataset.severity = diagnostic.severity;
-      item.textContent = diagnostic.message;
-      return item;
-    }),
-  );
-  const settle = () => {
-    if (revision !== elements.frameRevision) return;
-    elements.loading.stop();
-    elements.status.textContent = state.response.diagnostics.some(
-      (item) => item.severity === "error",
-    )
-      ? elements.messages.checkDiagnostics
-      : elements.messages.rendered;
-  };
-  if (state.response.html.length === 0) {
-    settle();
-    return;
-  }
-  elements.frame.addEventListener("load", settle, { once: true });
-}
-
-function isThemeSettingEvent(event: Event): boolean {
-  return (
-    event.target instanceof Element &&
-    event.target.closest("[data-preview-theme-settings]") !== null
-  );
-}
-
-function updateThemeSettings(elements: PreviewElements): void {
-  const document = elements.frame.contentDocument;
-  const settings = elements.themeSettings?.(elements.theme.value);
-  if (!document || !settings) return;
-  for (const element of document.querySelectorAll(":root, .rb-theme-root")) {
-    for (const attribute of [...element.attributes]) {
-      if (attribute.name.startsWith("data-rb-setting-"))
-        element.removeAttribute(attribute.name);
-    }
-    for (const [name, value] of Object.entries(settings.attributes))
-      element.setAttribute(name, value);
-  }
-  const style = document.querySelector<HTMLStyleElement>(
-    "style[data-rb-preview-theme-settings]",
-  );
-  if (style) style.textContent = settings.style;
-}
-
-function readInput(
-  root: HTMLElement,
-  markdown: HTMLTextAreaElement,
-  fixture: HTMLSelectElement,
-  selectors: PreviewUiSelectors,
-): PreviewUiInput {
-  return {
-    markdown: markdown.value,
-    pluginId: root.dataset.previewPlugin,
-    fixtureId: fixture.value,
-    pageId: readPageId(root, selectors.page),
-    options: readOptions(root, selectors.option),
-  };
-}
-
-function readPageId(root: HTMLElement, selector: string): string | undefined {
-  const page = root.querySelector<HTMLSelectElement>(selector);
-  return page && !page.closest("label")?.hidden
-    ? page.value || undefined
-    : undefined;
-}
-
-type FixturePages = {
-  readonly currentPageId?: string;
-  readonly pages: readonly FixturePage[];
-};
-
-type FixturePage = {
-  readonly id: string;
-  readonly title: string;
-  readonly markdown: string;
-};
-
-function updatePageSelect(
-  root: HTMLElement,
-  selector: string,
-  fixtureId: string,
-): void {
-  const select = root.querySelector<HTMLSelectElement>(selector);
-  const label = select?.closest("label");
-  if (!select || !label) return;
-  const fixture = readFixturePages(root.dataset.previewPages, fixtureId);
-  const pages = fixture?.pages ?? [];
-  label.hidden = pages.length < 2;
-  select.replaceChildren(
-    ...pages.map((page) => {
-      const option = document.createElement("option");
-      option.value = page.id;
-      option.textContent = page.title;
-      option.selected = page.id === fixture?.currentPageId;
-      return option;
-    }),
-  );
-}
-
-function readFixtureMarkdown(
-  root: HTMLElement,
-  fixtureId: string,
-): string | undefined {
-  return readSerializedMarkdown(root.dataset.previewFixtures, fixtureId);
-}
-
-function readSerializedMarkdown(
-  serialized: string | undefined,
-  id: string,
-): string | undefined {
-  if (!serialized) return undefined;
-  try {
-    const parsed: unknown = JSON.parse(serialized);
-    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
-      return undefined;
-    }
-    const value = (parsed as Record<string, unknown>)[id];
-    return typeof value === "string" ? value : undefined;
-  } catch {
-    return undefined;
-  }
-}
-
-function readFixturePages(
-  serialized: string | undefined,
-  fixtureId: string,
-): FixturePages | undefined {
-  if (!serialized) return undefined;
-  try {
-    const parsed: unknown = JSON.parse(serialized);
-    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
-      return undefined;
-    }
-    const value = (parsed as Record<string, unknown>)[fixtureId];
-    if (!value || typeof value !== "object" || Array.isArray(value)) {
-      return undefined;
-    }
-    const record = value as Record<string, unknown>;
-    if (!Array.isArray(record.pages)) return undefined;
-    const pages = record.pages.flatMap((page) => {
-      if (!page || typeof page !== "object" || Array.isArray(page)) return [];
-      const item = page as Record<string, unknown>;
-      return typeof item.id === "string" &&
-        typeof item.title === "string" &&
-        typeof item.markdown === "string"
-        ? [{ id: item.id, title: item.title, markdown: item.markdown }]
-        : [];
-    });
-    if (pages.length !== record.pages.length) return undefined;
-    return {
-      pages,
-      ...(typeof record.currentPageId === "string"
-        ? { currentPageId: record.currentPageId }
-        : {}),
-    };
-  } catch {
-    return undefined;
-  }
-}
-
-function readOptions(
-  root: HTMLElement,
-  selector: string,
-): Record<string, unknown> {
-  const options: Record<string, unknown> = {};
-  root.querySelectorAll(selector).forEach((element) => {
-    const input = element as HTMLInputElement | HTMLSelectElement;
-    const name = input.dataset.previewOption;
-    if (!name) return;
-    if (input instanceof HTMLInputElement && input.type === "checkbox") {
-      options[name] = input.checked;
-    } else if (input.type === "number") {
-      if (input.value !== "") options[name] = Number(input.value);
-    } else {
-      options[name] = input.value;
-    }
-  });
-  return options;
-}
-
-async function requestPreview(
-  input: PreviewUiInput,
-  signal: AbortSignal,
-  requestFailure: string,
-  endpoint = "/api/playground",
-): Promise<PreviewUiResponse | undefined> {
-  try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(input),
-      signal,
-    });
-    if (!response.ok) throw new Error("Preview request failed.");
-    return (await response.json()) as PreviewUiResponse;
-  } catch (error) {
-    if (error instanceof DOMException && error.name === "AbortError") {
-      return undefined;
-    }
-    return {
-      html: "",
-      diagnostics: [{ severity: "error", message: requestFailure }],
-    };
-  }
-}
-
-function requireElement<Element extends HTMLElement>(
-  root: HTMLElement,
-  selector: string,
-): Element {
-  const element = root.querySelector(selector);
-  if (!element) throw new Error(`Missing preview element: ${selector}`);
-  return element as Element;
 }

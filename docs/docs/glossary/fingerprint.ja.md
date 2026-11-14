@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: フィンガープリント（Fingerprint）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # フィンガープリント（Fingerprint）

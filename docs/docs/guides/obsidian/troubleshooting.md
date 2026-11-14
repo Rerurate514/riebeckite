@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Troubleshooting
-sidebar:
-  label: Troubleshooting
-  order: 40
+sidebar.label: Troubleshooting
+sidebar.order: 40
 ---
 # Troubleshooting
 

@@ -1,9 +1,8 @@
 ---
 date: 2026-10-20
 title: "Share a Site Component"
-sidebar:
-  label: "7. Share a Site Component"
-  order: 7
+sidebar.label: "7. Share a Site Component"
+sidebar.order: 7
 ---
 # Share a Site Component
 

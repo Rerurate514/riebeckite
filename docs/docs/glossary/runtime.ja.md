@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: 実行環境（Runtime）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # 実行環境（Runtime）

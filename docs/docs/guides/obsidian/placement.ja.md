@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: Vaultの置き場所
-sidebar:
-  label: Vaultの置き場所
-  order: 20
+sidebar.label: Vaultの置き場所
+sidebar.order: 20
 ---
 # Vaultの置き場所
 

@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: Typography and article layout
-sidebar:
-  label: Typography and article layout
-  order: 20
+sidebar.label: Typography and article layout
+sidebar.order: 20
 ---
 
 This page is part of [Themes in Depth](../theme-system.md) and covers typography and article layout.

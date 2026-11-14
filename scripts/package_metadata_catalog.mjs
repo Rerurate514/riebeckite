@@ -1,0 +1,15 @@
+export const catalogDependencies = {
+  "@types/mdast": "^4.0.4",
+  "@types/node": "^24.5.2",
+  "@types/sanitize-html": "^2.16.2",
+  "@types/unist": "^3.0.3",
+  esbuild: "^0.28.2",
+  hono: "^4.13.18",
+  "lucide-static": "^1.61.0",
+  "remark-parse": "^11.0.0",
+  "sanitize-html": "^2.18.1",
+  unified: "^11.0.5",
+  "unist-util-visit": "^5.1.0",
+  "vfile-matter": "^5.0.1",
+  vite: "^8.3.5",
+};

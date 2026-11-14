@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: コンテンツフック（Content Hook）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # コンテンツフック（Content Hook）

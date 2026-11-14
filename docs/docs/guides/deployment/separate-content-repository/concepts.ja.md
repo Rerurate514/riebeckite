@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: 仕組みと構成
-sidebar:
-  label: 仕組みと構成
-  order: 10
+sidebar.label: 仕組みと構成
+sidebar.order: 10
 ---
 # 仕組みと構成
 

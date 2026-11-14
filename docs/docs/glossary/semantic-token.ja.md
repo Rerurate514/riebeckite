@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: セマンティックトークン（Semantic Token）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 # セマンティックトークン（Semantic Token）
 

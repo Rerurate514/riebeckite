@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Theme and plugins
-sidebar:
-  label: Theme and plugins
-  order: 20
+sidebar.label: Theme and plugins
+sidebar.order: 20
 ---
 # Theme and plugins
 

@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Development and checks
-sidebar:
-  label: Development and checks
-  order: 20
+sidebar.label: Development and checks
+sidebar.order: 20
 ---
 # Development and checks
 

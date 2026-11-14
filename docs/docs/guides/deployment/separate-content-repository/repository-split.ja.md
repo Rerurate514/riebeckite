@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: リポジトリ分離
-sidebar:
-  label: リポジトリ分離
-  order: 20
+sidebar.label: リポジトリ分離
+sidebar.order: 20
 ---
 # リポジトリ分離
 

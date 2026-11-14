@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Integration
-sidebar:
-  label: Integration
-  order: 30
+sidebar.label: Integration
+sidebar.order: 30
 ---
 # Integration
 

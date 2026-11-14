@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Setup
-sidebar:
-  label: Setup
-  order: 20
+sidebar.label: Setup
+sidebar.order: 20
 ---
 # Setup
 

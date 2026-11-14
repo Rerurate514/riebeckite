@@ -1,9 +1,8 @@
 ---
 date: 2026-11-05
 title: コンテンツの場所
-sidebar:
-  label: コンテンツの場所
-  order: 21
+sidebar.label: コンテンツの場所
+sidebar.order: 21
 ---
 # コンテンツの場所
 

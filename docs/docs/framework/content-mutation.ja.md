@@ -1,8 +1,7 @@
 ---
 date: 2026-11-01
 title: コンテンツ変更システム
-sidebar:
-  label: コンテンツ変更
+sidebar.label: コンテンツ変更
 ---
 # コンテンツ変更システム
 

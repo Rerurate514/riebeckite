@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: サイト設定（Site Config）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # サイト設定（Site Config）

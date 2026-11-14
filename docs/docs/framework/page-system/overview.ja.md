@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: 概要
-sidebar:
-  label: 概要
-  order: 10
+sidebar.label: 概要
+sidebar.order: 10
 ---
 # 概要
 

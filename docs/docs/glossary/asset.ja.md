@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: アセット（Asset）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # アセット（Asset）

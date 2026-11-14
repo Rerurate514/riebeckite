@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: サイトとの接続
-sidebar:
-  label: サイトとの接続
-  order: 30
+sidebar.label: サイトとの接続
+sidebar.order: 30
 ---
 # サイトとの接続
 

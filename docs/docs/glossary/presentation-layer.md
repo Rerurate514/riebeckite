@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: Presentation Layer
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # Presentation Layer

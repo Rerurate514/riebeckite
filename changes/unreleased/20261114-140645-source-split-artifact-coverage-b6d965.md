@@ -1,0 +1,41 @@
+---
+packages:
+  - "@riebeckite/diagram"
+  - "@riebeckite/diagnostics"
+  - "@riebeckite/preview"
+  - "@riebeckite/analytics-cloudflare"
+  - "@riebeckite/plugin-analytics"
+  - "@riebeckite/plugin-bases"
+  - "@riebeckite/plugin-calculator"
+  - "@riebeckite/plugin-canvas"
+  - "@riebeckite/plugin-citations"
+  - "@riebeckite/plugin-d2"
+  - "@riebeckite/plugin-dataview"
+  - "@riebeckite/plugin-diagnostics"
+  - "@riebeckite/plugin-excalibrain"
+  - "@riebeckite/plugin-excalidraw"
+  - "@riebeckite/plugin-frontmatter-transformer"
+  - "@riebeckite/plugin-graphviz"
+  - "@riebeckite/plugin-icons"
+  - "@riebeckite/plugin-image-optimizer"
+  - "@riebeckite/plugin-markmap"
+  - "@riebeckite/plugin-meta-bind"
+  - "@riebeckite/plugin-marp"
+  - "@riebeckite/plugin-mermaid"
+  - "@riebeckite/plugin-obsidian-markdown"
+  - "@riebeckite/plugin-permalink"
+  - "@riebeckite/plugin-quality"
+  - "@riebeckite/plugin-rich-embed"
+  - "@riebeckite/plugin-sidenotes"
+  - "@riebeckite/plugin-source-files"
+  - "@riebeckite/plugin-vega-lite"
+  - "@riebeckite/plugin-wavedrom"
+type: changed
+breaking: false
+migration: ""
+pr: ""
+issue: ""
+adr: ""
+---
+
+Restructure oversized source files into per-feature modules. The published module layout changes, but the behavior and the public API are unchanged.

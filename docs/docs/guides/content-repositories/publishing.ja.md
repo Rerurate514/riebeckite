@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: 公開とトラブルシューティング
-sidebar:
-  label: 公開とトラブルシューティング
-  order: 30
+sidebar.label: 公開とトラブルシューティング
+sidebar.order: 30
 ---
 # 公開とトラブルシューティング
 

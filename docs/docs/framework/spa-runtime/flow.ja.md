@@ -1,9 +1,8 @@
 ---
 date: 2026-10-23
 title: ページ遷移
-sidebar:
-  label: ページ遷移
-  order: 10
+sidebar.label: ページ遷移
+sidebar.order: 10
 ---
 # ページ遷移
 

@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Installation
-sidebar:
-  label: Installation
-  order: 20
+sidebar.label: Installation
+sidebar.order: 20
 ---
 # Installation
 

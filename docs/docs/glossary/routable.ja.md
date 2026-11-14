@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: ルーティング対象（Routable）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # ルーティング対象（Routable）

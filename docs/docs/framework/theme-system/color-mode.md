@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: Color mode
-sidebar:
-  label: Color mode
-  order: 10
+sidebar.label: Color mode
+sidebar.order: 10
 ---
 
 This page is part of [Themes in Depth](../theme-system.md) and covers color mode.

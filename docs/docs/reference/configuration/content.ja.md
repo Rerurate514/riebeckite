@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: コンテンツの設定
-sidebar:
-  label: コンテンツの設定
-  order: 20
+sidebar.label: コンテンツの設定
+sidebar.order: 20
 ---
 # コンテンツの設定
 

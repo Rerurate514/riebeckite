@@ -1,8 +1,7 @@
 ---
 date: 2026-10-16
 title: プラグインの Site コンポーネント（Plugin site component）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # プラグインの Site コンポーネント（Plugin site component）

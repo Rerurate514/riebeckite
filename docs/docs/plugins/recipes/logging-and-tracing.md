@@ -1,9 +1,8 @@
 ---
 date: 2026-10-20
 title: "Log and Trace"
-sidebar:
-  label: "15. Log and Trace"
-  order: 15
+sidebar.label: "15. Log and Trace"
+sidebar.order: 15
 ---
 # Log and Trace
 

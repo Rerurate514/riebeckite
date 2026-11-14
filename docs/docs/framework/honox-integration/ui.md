@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: UI primitives
-sidebar:
-  label: UI primitives
-  order: 10
+sidebar.label: UI primitives
+sidebar.order: 10
 ---
 # UI primitives
 

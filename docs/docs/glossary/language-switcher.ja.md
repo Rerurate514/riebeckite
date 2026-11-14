@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: 言語スイッチャー（Language Switcher）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # 言語スイッチャー（Language Switcher）

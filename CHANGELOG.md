@@ -45,6 +45,9 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 - Text attachments such as `.txt`, `.log`, and `.json` are embedded as an escaped code block preview with the file name, format, size, and download link below it. The new `preview` option selects which extensions preview, and files over 256 KiB, binary files, and invalid UTF-8 keep the existing attachment card.
   Packages: `@riebeckite/plugin-attachment`
 
+- When SPA navigation is enabled, the build now reports an error diagnostic for every generated HTML page that lacks `<main id="main-content">`. Redirect pages are skipped. `riebeckite check` fails on these diagnostics by default.
+  Packages: `@riebeckite/honox`
+
 ### Changed
 
 - **Breaking:** Align the public API types with the values the runtime actually produces, and replace the places that hid errors behind a double type assertion with validation. `@riebeckite/core` gains `parseYaml` for YAML parsing and fixture builders for content manifests and plugin contexts. `ClientRuntimeInvokeOptions.capability` is now typed as `RuntimeCapability`, `JsonValue` accepts readonly arrays and `undefined` property values, and defaulted options and arguments of `defineCliCommand` are typed with the accepted values instead of the default literal. `@riebeckite/node` reports a corrupt migration plan as `The migration plan is missing or corrupt.` instead of failing with an internal error.
@@ -80,6 +83,9 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 - **Breaking:** Replace the positional `createClientEntry` signature with a single options object. Client entries can set `root: "document"` when their presence marker lives in the site shell, receive the matched marker as `context.marker`, and app-scoped conditional entries are re-evaluated after SPA navigation.
   Packages: `@riebeckite/core`, `@riebeckite/honox`, `@riebeckite/cli`, `@riebeckite/plugin-search`
   Migration: Replace the positional createClientEntry arguments with an options object: createClientEntry(\"name\", { moduleSpecifier, exportName, publicConfig, scope, initializerArguments, presenceSelector, root, runtimeEntries }). Set root: \"document\" for a page entry whose presence marker is outside main#main-content.
+
+- Restructure oversized source files into per-feature modules. The published module layout changes, but the behavior and the public API are unchanged.
+  Packages: `@riebeckite/diagram`, `@riebeckite/diagnostics`, `@riebeckite/preview`, `@riebeckite/analytics-cloudflare`, `@riebeckite/plugin-analytics`, `@riebeckite/plugin-bases`, `@riebeckite/plugin-calculator`, `@riebeckite/plugin-canvas`, `@riebeckite/plugin-citations`, `@riebeckite/plugin-d2`, `@riebeckite/plugin-dataview`, `@riebeckite/plugin-diagnostics`, `@riebeckite/plugin-excalibrain`, `@riebeckite/plugin-excalidraw`, `@riebeckite/plugin-frontmatter-transformer`, `@riebeckite/plugin-graphviz`, `@riebeckite/plugin-icons`, `@riebeckite/plugin-image-optimizer`, `@riebeckite/plugin-markmap`, `@riebeckite/plugin-meta-bind`, `@riebeckite/plugin-marp`, `@riebeckite/plugin-mermaid`, `@riebeckite/plugin-obsidian-markdown`, `@riebeckite/plugin-permalink`, `@riebeckite/plugin-quality`, `@riebeckite/plugin-rich-embed`, `@riebeckite/plugin-sidenotes`, `@riebeckite/plugin-source-files`, `@riebeckite/plugin-vega-lite`, `@riebeckite/plugin-wavedrom`
 
 ### Fixed
 

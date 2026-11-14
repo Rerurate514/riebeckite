@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Accessibility
-sidebar:
-  label: Accessibility
-  order: 70
+sidebar.label: Accessibility
+sidebar.order: 70
 ---
 # Accessibility
 

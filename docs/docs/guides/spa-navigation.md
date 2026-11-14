@@ -170,7 +170,9 @@ initial page load.
 - Only same-origin GET links are handled. Cross-origin links, forms, downloads,
   and new-tab links are left to the browser.
 - A missing `main#main-content` or a failed fetch falls back to a full document
-  load.
+  load. With SPA enabled, the build reports a `spa-missing-main-content` error
+  diagnostic for every generated page without that element (redirect pages are
+  skipped), and `riebeckite check` fails on it by default.
 - The runtime fetches history entries unless a fresh cached response is
   available. The cache is short-lived, so offline back/forward is not reliable.
 - Page-specific `<script>` and stylesheet changes are not applied. Use islands

@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Translations
-sidebar:
-  label: Translations
-  order: 20
+sidebar.label: Translations
+sidebar.order: 20
 ---
 # Translations
 

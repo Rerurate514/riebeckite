@@ -2,8 +2,7 @@
 date: 2026-10-11
 title: Jekyll から移行する
 private: true
-sidebar:
-  label: Jekyll から
+sidebar.label: Jekyll から
 ---
 # Jekyll から移行する
 

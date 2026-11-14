@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: ブロックID（Block ID）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # ブロックID（Block ID）

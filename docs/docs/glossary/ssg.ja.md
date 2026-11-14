@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: SSG（静的サイト生成）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # SSG（静的サイト生成）

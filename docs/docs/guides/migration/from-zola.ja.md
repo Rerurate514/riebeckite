@@ -2,8 +2,7 @@
 date: 2026-10-11
 title: Zola から移行する
 private: true
-sidebar:
-  label: Zola から
+sidebar.label: Zola から
 ---
 # Zola から移行する
 

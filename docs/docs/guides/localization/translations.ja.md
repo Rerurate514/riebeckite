@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: 翻訳の対応付け
-sidebar:
-  label: 翻訳の対応付け
-  order: 20
+sidebar.label: 翻訳の対応付け
+sidebar.order: 20
 ---
 # 翻訳の対応付け
 

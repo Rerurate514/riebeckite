@@ -71,7 +71,7 @@ function toNavigationEntry(
   const segments = relativePath.split("/").filter(Boolean);
   const isIndex = ["index", "README"].includes(segments.at(-1) ?? "");
   const sidebar = readSidebarFrontmatter(
-    "frontmatter" in entry ? entry.frontmatter.sidebar : undefined,
+    "frontmatter" in entry ? entry.frontmatter : undefined,
   );
   return {
     entry,
@@ -112,21 +112,46 @@ function stripFilenameLanguage(
   return segments.join("/");
 }
 
-function readSidebarFrontmatter(value: unknown): DocsSidebarFrontmatter {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
-  const record = value as Record<string, unknown>;
+function readSidebarFrontmatter(
+  frontmatter: Record<string, unknown> | undefined,
+): DocsSidebarFrontmatter {
+  const nested = frontmatter?.sidebar;
+  const record =
+    !nested || typeof nested !== "object" || Array.isArray(nested)
+      ? {}
+      : (nested as Record<string, unknown>);
+  const flat = frontmatter ?? {};
+  const label = firstString(flat["sidebar.label"], record.label);
+  const order = firstNumber(flat["sidebar.order"], record.order);
+  const hidden = firstBoolean(flat["sidebar.hidden"], record.hidden);
+  const collapsed = firstBoolean(flat["sidebar.collapsed"], record.collapsed);
   return {
-    ...(typeof record.label === "string" && record.label.trim()
-      ? { label: record.label.trim() }
-      : {}),
-    ...(typeof record.order === "number" && Number.isFinite(record.order)
-      ? { order: record.order }
-      : {}),
-    ...(typeof record.hidden === "boolean" ? { hidden: record.hidden } : {}),
-    ...(typeof record.collapsed === "boolean"
-      ? { collapsed: record.collapsed }
-      : {}),
+    ...(label === undefined ? {} : { label }),
+    ...(order === undefined ? {} : { order }),
+    ...(hidden === undefined ? {} : { hidden }),
+    ...(collapsed === undefined ? {} : { collapsed }),
   };
+}
+
+function firstString(...values: readonly unknown[]): string | undefined {
+  for (const value of values) {
+    if (typeof value === "string" && value.trim()) return value.trim();
+  }
+  return undefined;
+}
+
+function firstNumber(...values: readonly unknown[]): number | undefined {
+  for (const value of values) {
+    if (typeof value === "number" && Number.isFinite(value)) return value;
+  }
+  return undefined;
+}
+
+function firstBoolean(...values: readonly unknown[]): boolean | undefined {
+  for (const value of values) {
+    if (typeof value === "boolean") return value;
+  }
+  return undefined;
 }
 
 function resolveTitle(

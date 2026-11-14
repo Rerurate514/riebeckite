@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Workflow
-sidebar:
-  label: Workflow
-  order: 30
+sidebar.label: Workflow
+sidebar.order: 30
 ---
 # Workflow
 

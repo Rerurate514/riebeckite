@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: Design tokens
-sidebar:
-  label: Design tokens
-  order: 30
+sidebar.label: Design tokens
+sidebar.order: 30
 ---
 
 This page is part of [Themes in Depth](../theme-system.md) and covers design tokens.

@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: キャッシュの無効化（Cache Invalidation）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # キャッシュの無効化（Cache Invalidation）

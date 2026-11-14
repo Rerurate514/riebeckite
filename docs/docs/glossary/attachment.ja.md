@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: 添付ファイル（Attachment）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # 添付ファイル（Attachment）

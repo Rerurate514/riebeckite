@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: Client entry
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # Client entry

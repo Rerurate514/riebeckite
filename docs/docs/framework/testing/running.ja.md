@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: 実行
-sidebar:
-  label: 実行
-  order: 10
+sidebar.label: 実行
+sidebar.order: 10
 ---
 # 実行
 

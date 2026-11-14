@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: パッケージ構成
-sidebar:
-  label: パッケージ構成
-  order: 10
+sidebar.label: パッケージ構成
+sidebar.order: 10
 ---
 # パッケージ構成
 

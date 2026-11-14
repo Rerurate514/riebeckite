@@ -2,8 +2,7 @@
 date: 2026-10-11
 title: Migrate from VitePress
 private: true
-sidebar:
-  label: From VitePress
+sidebar.label: From VitePress
 ---
 # Migrate from VitePress
 

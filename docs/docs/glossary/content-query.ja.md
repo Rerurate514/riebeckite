@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: コンテンツクエリ（Content Query）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # コンテンツクエリ（Content Query）

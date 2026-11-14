@@ -1,8 +1,7 @@
 ---
 date: 2026-10-06
 title: Core API
-sidebar:
-  label: Core API
+sidebar.label: Core API
 ---
 # Core API
 

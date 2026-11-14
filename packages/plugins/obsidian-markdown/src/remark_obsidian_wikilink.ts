@@ -1,12 +1,26 @@
-import {
-  attachmentUrl,
-  escapeHtmlAttribute,
-  isAttachmentPath,
-  isImagePath,
-} from "@riebeckite/core";
-import { slug } from "github-slugger";
-import type { Content, Html, Paragraph, Parent, Root, Text } from "mdast";
+import { attachmentUrl } from "@riebeckite/core";
+import type { Content, Parent, Root, Text } from "mdast";
 import { visit } from "unist-util-visit";
+import {
+  createAttachmentFallbackLink,
+  createImageEmbedNode,
+  createNoteEmbedNode,
+  createUnresolvedEmbedNode,
+  splitParagraphEmbeds,
+} from "./wikilink_embeds.js";
+import {
+  BROKEN_WIKILINK_CLASS,
+  buildAssetsUrl,
+  parseFragment,
+  resolveTarget,
+  slugifyFragment,
+  WIKILINK_CLASS,
+  WIKILINK_PATTERN,
+  type WikilinkFragment,
+} from "./wikilink_shared.js";
+
+export type { WikilinkFragment } from "./wikilink_shared.js";
+export { escapeWikilinkAliasPipesInTables } from "./wikilink_tables.js";
 
 export interface WikilinkOptions {
   contentIndex: Map<string, string>;
@@ -27,58 +41,6 @@ export interface WikilinkOptions {
     embed: boolean;
     fragment?: string;
   }) => Promise<string | null>;
-}
-
-export type WikilinkFragment =
-  | { kind: "heading"; value: string }
-  | { kind: "block"; value: string };
-
-const WIKILINK_PATTERN =
-  "(!)?\\[\\[([^\\]|#]*)(?:#([^\\]|]+))?(?:\\|([^\\]]+))?\\]\\]";
-const WIKILINK_CLASS = "rr-obsidian-wikilink";
-const BROKEN_WIKILINK_CLASS = `${WIKILINK_CLASS} rr-obsidian-wikilink--broken`;
-
-export function escapeWikilinkAliasPipesInTables(markdown: string): string {
-  const lines = markdown.split("\n");
-  let inCodeFence = false;
-
-  for (let index = 0; index < lines.length; index += 1) {
-    const line = lines[index] ?? "";
-    if (/^\s*(?:`{3,}|~{3,})/.test(line)) {
-      inCodeFence = !inCodeFence;
-      continue;
-    }
-    if (
-      inCodeFence ||
-      !isTableDelimiter(line) ||
-      index === 0 ||
-      !lines[index - 1]?.includes("|")
-    ) {
-      continue;
-    }
-
-    lines[index - 1] = escapeWikilinkAliasPipes(lines[index - 1] ?? "");
-    for (let row = index + 1; lines[row]?.includes("|"); row += 1) {
-      lines[row] = escapeWikilinkAliasPipes(lines[row] ?? "");
-    }
-  }
-
-  return lines.join("\n");
-}
-
-function isTableDelimiter(line: string): boolean {
-  return (
-    line.includes("|") &&
-    /^\s*\|?\s*:?-+:?\s*(?:\|\s*:?-+:?\s*)*\|?\s*$/.test(line)
-  );
-}
-
-function escapeWikilinkAliasPipes(line: string): string {
-  return line.replace(
-    /(!?\[\[[^\]\r\n]*?)\|([^\]\r\n]*\]\])/g,
-    (match, prefix: string, suffix: string) =>
-      prefix.endsWith("\\") ? match : `${prefix}\\|${suffix}`,
-  );
 }
 
 export function remarkObsidianWikilink(opt: WikilinkOptions) {
@@ -266,204 +228,4 @@ export function remarkObsidianWikilink(opt: WikilinkOptions) {
       parent.children.splice(index, 1, ...newNodes);
     }
   }
-}
-
-function createImageEmbedNode(
-  url: string,
-  alias: string | undefined,
-  target: string,
-): Html {
-  const size = parseImageSize(alias);
-  const alt = size ? target : (alias ?? target);
-  const dimensions = size
-    ? `${size.width ? ` width="${size.width}"` : ""}${size.height ? ` height="${size.height}"` : ""}`
-    : "";
-  return {
-    type: "html",
-    value: `<div class="rr-obsidian-wikilink-image-embed"><img src="${escapeHtmlAttribute(url)}" alt="${escapeHtmlAttribute(alt)}"${dimensions} loading="lazy" decoding="async" /></div>`,
-  };
-}
-
-function parseImageSize(
-  alias: string | undefined,
-): { width?: number; height?: number } | null {
-  const match = alias?.trim().match(/^(\d+)(?:x(\d+))?$/);
-  if (!match) return null;
-  const width = Number(match[1]);
-  const height = match[2] ? Number(match[2]) : undefined;
-  if (!Number.isSafeInteger(width) || width <= 0) return null;
-  if (height !== undefined && (!Number.isSafeInteger(height) || height <= 0)) {
-    return null;
-  }
-  return height === undefined ? { width } : { width, height };
-}
-
-function splitParagraphEmbeds(tree: Root): void {
-  const splits = new Map<Parent, { index: number; blocks: Content[] }[]>();
-
-  visit(tree, "paragraph", (node, index, parent) => {
-    if (!parent || index === undefined) return;
-    const blocks = splitParagraphContent(node);
-    if (!blocks) return;
-
-    const entries = splits.get(parent) ?? [];
-    entries.push({ index, blocks });
-    splits.set(parent, entries);
-  });
-
-  for (const [owner, entries] of splits) {
-    for (const { index, blocks } of [...entries].sort(
-      (a, b) => b.index - a.index,
-    )) {
-      owner.children.splice(index, 1, ...blocks);
-    }
-  }
-}
-
-function splitParagraphContent(paragraph: Paragraph): Content[] | null {
-  if (!paragraph.children.some(isBlockEmbedHtml)) return null;
-
-  const segments: Content[][] = [];
-  let current: Content[] = [];
-
-  for (const child of paragraph.children) {
-    if (isBlockEmbedHtml(child)) {
-      segments.push(current);
-      current = [];
-      segments.push([child]);
-    } else {
-      current.push(child);
-    }
-  }
-  segments.push(current);
-
-  const blocks: Content[] = [];
-  for (const segment of segments) {
-    if (segment.length === 0) continue;
-    if (segment.every(isBlankContent)) continue;
-    if (segment.length === 1 && isBlockEmbedHtml(segment[0])) {
-      blocks.push(segment[0]);
-    } else {
-      blocks.push({
-        type: "paragraph",
-        children: segment,
-      } as Paragraph);
-    }
-  }
-
-  return blocks.length > 0 ? blocks : null;
-}
-
-function isBlankContent(child: Content): boolean {
-  return child.type === "text" && child.value.trim() === "";
-}
-
-function isBlockEmbedHtml(child: Content): child is Html {
-  if (child.type !== "html") return false;
-  const value = child.value;
-  return (
-    value.startsWith('<div class="rr-obsidian-wikilink-image-embed') ||
-    value.startsWith('<div class="rr-obsidian-wikilink-embed') ||
-    value.startsWith("<figure") ||
-    value.startsWith("<aside")
-  );
-}
-
-function createNoteEmbedNode(
-  slug: string,
-  fragment: WikilinkFragment | null,
-  html: string,
-): Html {
-  const fragmentAttribute = fragment
-    ? ` data-wikilink-fragment="${escapeHtmlAttribute(fragment.kind === "block" ? `^${fragment.value}` : fragment.value)}"`
-    : "";
-  return {
-    type: "html",
-    value: `<div class="rr-obsidian-wikilink-embed" data-wikilink-embed="${escapeHtmlAttribute(slug)}"${fragmentAttribute}><span class="rr-obsidian-wikilink-embed__label">Embedded: ${escapeHtmlAttribute(slug)}</span>${html}</div>`,
-  };
-}
-
-function createUnresolvedEmbedNode(
-  rawDestination: string,
-  url: string,
-): Content {
-  return {
-    type: "link",
-    url,
-    data: {
-      hProperties: {
-        class: "rr-obsidian-wikilink-embed-unresolved",
-      },
-    },
-    children: [
-      {
-        type: "text",
-        value: `[[Unresolved embed: ${rawDestination}]]`,
-      },
-    ],
-  };
-}
-
-type Resolved = {
-  kind: "note" | "image" | "attachment";
-  value: string;
-};
-
-function resolveTarget(
-  target: string,
-  contentIndex: Map<string, string>,
-  sourceSlug: string | undefined,
-): Resolved | null {
-  if (!target) {
-    return sourceSlug ? { kind: "note", value: sourceSlug } : null;
-  }
-
-  const value = contentIndex.get(target.toLowerCase());
-  if (!value) return null;
-
-  const kind = isImagePath(value)
-    ? "image"
-    : isAttachmentPath(value)
-      ? "attachment"
-      : "note";
-
-  return { kind, value };
-}
-
-function createAttachmentFallbackLink(
-  path: string,
-  label: string,
-  url: string,
-): Html {
-  return {
-    type: "html",
-    value: `<a class="rr-obsidian-wikilink rr-obsidian-wikilink--attachment" href="${escapeHtmlAttribute(url)}" download>${escapeHtmlAttribute(label || path)}</a>`,
-  };
-}
-
-function buildAssetsUrl(assetPath: string, assetBase: string): string {
-  const normalizedBase = assetBase.endsWith("/") ? assetBase : `${assetBase}/`;
-  const encodePath = assetPath.split("/").map(encodeURIComponent).join("/");
-  return `${normalizedBase}${encodePath}`;
-}
-
-function slugifyHeading(heading: string): string {
-  return slug(heading.trim());
-}
-
-function parseFragment(
-  rawFragment: string | undefined,
-): WikilinkFragment | null {
-  const value = rawFragment?.trim();
-  if (!value) return null;
-  if (value.startsWith("^")) {
-    const blockId = value.slice(1).trim();
-    return blockId ? { kind: "block", value: blockId } : null;
-  }
-  return { kind: "heading", value };
-}
-
-function slugifyFragment(fragment: WikilinkFragment): string {
-  if (fragment.kind === "block") return fragment.value;
-  return slugifyHeading(fragment.value);
 }

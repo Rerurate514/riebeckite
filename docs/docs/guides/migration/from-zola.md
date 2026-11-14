@@ -2,8 +2,7 @@
 date: 2026-10-11
 title: Migrate from Zola
 private: true
-sidebar:
-  label: From Zola
+sidebar.label: From Zola
 ---
 # Migrate from Zola
 

@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Content processing
-sidebar:
-  label: Content processing
-  order: 20
+sidebar.label: Content processing
+sidebar.order: 20
 ---
 # Content processing
 

@@ -1,9 +1,8 @@
 ---
 date: 2026-10-20
 title: "Change Public URLs"
-sidebar:
-  label: "4. Change Public URLs"
-  order: 4
+sidebar.label: "4. Change Public URLs"
+sidebar.order: 4
 ---
 # Change Public URLs
 

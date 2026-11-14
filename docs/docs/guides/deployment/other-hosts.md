@@ -1,9 +1,8 @@
 ---
 date: 2026-11-01
 title: Deploy to other hosts
-sidebar:
-  label: Other hosts
-  order: 50
+sidebar.label: Other hosts
+sidebar.order: 50
 ---
 # Deploy to other hosts
 

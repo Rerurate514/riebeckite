@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: 最初のコンテンツ
-sidebar:
-  label: 最初のコンテンツ
-  order: 30
+sidebar.label: 最初のコンテンツ
+sidebar.order: 30
 ---
 # 最初のコンテンツ
 

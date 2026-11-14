@@ -1,9 +1,8 @@
 ---
 date: 2026-10-20
 title: "Extend the Content Graph"
-sidebar:
-  label: "5. Extend the Content Graph"
-  order: 5
+sidebar.label: "5. Extend the Content Graph"
+sidebar.order: 5
 ---
 # Extend the Content Graph
 

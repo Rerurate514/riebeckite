@@ -1,9 +1,8 @@
 ---
 date: 2026-10-20
 title: "SEO をカスタマイズする"
-sidebar:
-  label: "10. SEO をカスタマイズする"
-  order: 10
+sidebar.label: "10. SEO をカスタマイズする"
+sidebar.order: 10
 ---
 # SEO をカスタマイズする
 

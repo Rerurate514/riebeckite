@@ -1,9 +1,8 @@
 ---
 date: 2026-10-20
 title: "ファイルを生成する"
-sidebar:
-  label: "13. ファイルを生成する"
-  order: 13
+sidebar.label: "13. ファイルを生成する"
+sidebar.order: 13
 ---
 # ファイルを生成する
 

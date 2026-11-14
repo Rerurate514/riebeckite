@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: 添付ファイルとメディアの公開
-sidebar:
-  label: 添付ファイルとメディアの公開
-  order: 40
+sidebar.label: 添付ファイルとメディアの公開
+sidebar.order: 40
 ---
 # 添付ファイルとメディアの公開
 

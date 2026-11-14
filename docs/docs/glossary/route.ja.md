@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: ルート（Route）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # ルート（Route）

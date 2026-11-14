@@ -1,9 +1,8 @@
 ---
 date: 2026-10-20
 title: "埋め込みファイルを描画する"
-sidebar:
-  label: "2. 埋め込みファイルを描画する"
-  order: 2
+sidebar.label: "2. 埋め込みファイルを描画する"
+sidebar.order: 2
 ---
 # 埋め込みファイルを描画する
 

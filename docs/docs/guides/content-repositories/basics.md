@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Basics
-sidebar:
-  label: Basics
-  order: 10
+sidebar.label: Basics
+sidebar.order: 10
 ---
 # Basics
 

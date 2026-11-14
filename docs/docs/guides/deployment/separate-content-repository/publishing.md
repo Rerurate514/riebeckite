@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Publication and verification
-sidebar:
-  label: Publication and verification
-  order: 30
+sidebar.label: Publication and verification
+sidebar.order: 30
 ---
 # Publication and verification
 

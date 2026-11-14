@@ -1,37 +1,16 @@
 import type { Diagnostic } from "@riebeckite/core";
+import {
+  BUILTIN_MACROS,
+  type EntryParseResult,
+  findEntryClose,
+  NON_ENTRY_TYPES,
+  SUPPORTED_TYPES,
+} from "./bibliography_helpers.js";
 import type { BibliographyEntry, ParsedBibliography } from "./types.js";
 
-const SUPPORTED_TYPES = new Set(["article", "book", "inproceedings", "misc"]);
-
 /** Entry types that carry no citation key and are ignored on purpose. */
-const NON_ENTRY_TYPES = new Set(["comment", "preamble", "string"]);
 
 /** Macros defined by BibTeX styles rather than by `@string`. */
-const BUILTIN_MACROS = new Set([
-  "jan",
-  "feb",
-  "mar",
-  "apr",
-  "may",
-  "jun",
-  "jul",
-  "aug",
-  "sep",
-  "oct",
-  "nov",
-  "dec",
-]);
-
-type EntryParseResult =
-  | {
-      readonly kind: "entry";
-      readonly entry: BibliographyEntry;
-      readonly nextIndex: number;
-      readonly diagnostics: Diagnostic[];
-    }
-  | { readonly kind: "skipped"; readonly nextIndex: number }
-  | { readonly kind: "ignored" }
-  | { readonly kind: "malformed"; readonly reason: string };
 
 export function parseBibliography(
   source: string,
@@ -126,47 +105,6 @@ function parseEntry(
     nextIndex: close + 1,
     diagnostics: fields.diagnostics,
   };
-}
-
-function findEntryClose(text: string, openIndex: number): number {
-  const open = text[openIndex];
-  let depth = 0;
-  let braceDepth = 0;
-  let quoted = false;
-
-  for (let index = openIndex; index < text.length; index += 1) {
-    const char = text[index];
-    if (char === '"' && text[index - 1] !== "\\") {
-      quoted = !quoted;
-      continue;
-    }
-    if (quoted) continue;
-
-    if (open === "{") {
-      if (char === "{") depth += 1;
-      else if (char === "}") {
-        depth -= 1;
-        if (depth === 0) return index;
-      }
-      continue;
-    }
-
-    if (char === "{") {
-      braceDepth += 1;
-      continue;
-    }
-    if (char === "}") {
-      braceDepth -= 1;
-      continue;
-    }
-    if (braceDepth > 0) continue;
-    if (char === "(") depth += 1;
-    else if (char === ")") {
-      depth -= 1;
-      if (depth === 0) return index;
-    }
-  }
-  return -1;
 }
 
 function findTopLevelComma(input: string): number {

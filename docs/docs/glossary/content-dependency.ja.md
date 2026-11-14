@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: コンテンツ依存関係（Content Dependency）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # コンテンツ依存関係（Content Dependency）

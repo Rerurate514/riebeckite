@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Policy
-sidebar:
-  label: Policy
-  order: 50
+sidebar.label: Policy
+sidebar.order: 50
 ---
 # Policy
 

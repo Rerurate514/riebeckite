@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: Plugin configuration
-sidebar:
-  label: Plugin configuration
-  order: 60
+sidebar.label: Plugin configuration
+sidebar.order: 60
 ---
 
 # Plugins and themes

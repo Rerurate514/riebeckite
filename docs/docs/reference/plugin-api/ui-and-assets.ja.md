@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: UI・アセット・実行時連携
-sidebar:
-  label: UI・アセット・実行時連携
-  order: 30
+sidebar.label: UI・アセット・実行時連携
+sidebar.order: 30
 ---
 # UI・アセット・実行時連携
 

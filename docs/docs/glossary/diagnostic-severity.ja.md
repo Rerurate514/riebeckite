@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: 診断の重大度（Diagnostic Severity）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # 診断の重大度（Diagnostic Severity）

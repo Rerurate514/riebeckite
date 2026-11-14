@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Site and content
-sidebar:
-  label: Site and content
-  order: 10
+sidebar.label: Site and content
+sidebar.order: 10
 ---
 # Site and content
 

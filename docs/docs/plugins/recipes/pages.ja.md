@@ -1,9 +1,8 @@
 ---
 date: 2026-10-20
 title: "独立したページを追加する"
-sidebar:
-  label: "6. 独立したページを追加する"
-  order: 6
+sidebar.label: "6. 独立したページを追加する"
+sidebar.order: 6
 ---
 # 独立したページを追加する
 

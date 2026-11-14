@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: How it works
-sidebar:
-  label: How it works
-  order: 10
+sidebar.label: How it works
+sidebar.order: 10
 ---
 # How it works
 

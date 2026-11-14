@@ -1,8 +1,7 @@
 ---
 date: 2026-11-01
 title: Content Mutation System
-sidebar:
-  label: Content Mutation
+sidebar.label: Content Mutation
 ---
 # Content Mutation System
 

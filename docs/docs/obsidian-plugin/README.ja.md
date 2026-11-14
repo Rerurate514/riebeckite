@@ -1,9 +1,8 @@
 ---
 date: 2026-11-04
 title: Obsidian 向け Riebeckite
-sidebar:
-  label: Obsidianプラグイン
-  order: 25
+sidebar.label: Obsidianプラグイン
+sidebar.order: 25
 publish: false
 ---
 # Obsidian 向け Riebeckite

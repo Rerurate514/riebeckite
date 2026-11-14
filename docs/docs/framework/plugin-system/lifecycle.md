@@ -4,9 +4,8 @@ title: Dependencies, context, and lifecycle
 series: plugins-in-depth-en
 series_order: 1
 series_title: Plugins in Depth
-sidebar:
-  label: Dependencies, context, and lifecycle
-  order: 10
+sidebar.label: Dependencies, context, and lifecycle
+sidebar.order: 10
 ---
 
 This page is part of [Plugins in Depth](../plugin-system.md) and covers dependencies, plugin context, and lifecycle.

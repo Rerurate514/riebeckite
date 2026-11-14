@@ -1,9 +1,8 @@
 ---
 date: 2026-11-01
 title: External-site E2E
-sidebar:
-  label: External-site E2E
-  order: 40
+sidebar.label: External-site E2E
+sidebar.order: 40
 ---
 # External-site E2E
 

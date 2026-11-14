@@ -2,8 +2,7 @@
 date: 2026-10-11
 title: Astro から移行する
 private: true
-sidebar:
-  label: Astro から
+sidebar.label: Astro から
 ---
 # Astro から移行する
 

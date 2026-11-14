@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Distribution and package layout
-sidebar:
-  label: Distribution and package layout
-  order: 40
+sidebar.label: Distribution and package layout
+sidebar.order: 40
 ---
 # Distribution and package layout
 

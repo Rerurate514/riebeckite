@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: 公開範囲（Visibility）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # 公開範囲（Visibility）

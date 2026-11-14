@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: プリセット（Preset）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # プリセット（Preset）

@@ -1,8 +1,7 @@
 ---
 date: 2026-11-04
 title: エディタ連携
-sidebar:
-  label: エディタ連携
+sidebar.label: エディタ連携
 ---
 # エディタ連携
 

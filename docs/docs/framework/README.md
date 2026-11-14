@@ -1,10 +1,9 @@
 ---
 date: 2026-10-06
 title: Framework
-sidebar:
-  label: Framework
-  order: 60
-  collapsed: true
+sidebar.label: Framework
+sidebar.order: 60
+sidebar.collapsed: true
 ---
 # Framework
 

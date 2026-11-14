@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: コンテンツインデックス（Content Index）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # コンテンツインデックス（Content Index）

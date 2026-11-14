@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: 公開ルールと検証
-sidebar:
-  label: 公開ルールと検証
-  order: 30
+sidebar.label: 公開ルールと検証
+sidebar.order: 30
 ---
 # 公開ルールと検証
 

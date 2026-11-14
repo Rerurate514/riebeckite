@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: 開発と検証
-sidebar:
-  label: 開発と検証
-  order: 20
+sidebar.label: 開発と検証
+sidebar.order: 20
 ---
 # 開発と検証
 

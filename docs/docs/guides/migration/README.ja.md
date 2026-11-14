@@ -2,9 +2,8 @@
 date: 2026-10-11
 title: 移行ガイド
 private: true
-sidebar:
-  label: 移行ガイド
-  order: 100
+sidebar.label: 移行ガイド
+sidebar.order: 100
 ---
 # 移行ガイド
 

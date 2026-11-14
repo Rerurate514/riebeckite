@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Quick Start
-sidebar:
-  label: Quick Start
-  order: 10
+sidebar.label: Quick Start
+sidebar.order: 10
 ---
 # Quick Start
 

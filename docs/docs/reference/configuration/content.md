@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: Content selection
-sidebar:
-  label: Content selection and ContentSource
-  order: 20
+sidebar.label: Content selection and ContentSource
+sidebar.order: 20
 ---
 
 # Content selection

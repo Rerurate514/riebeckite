@@ -1,9 +1,8 @@
 ---
 date: 2026-10-20
 title: "Transform Markdown or HTML"
-sidebar:
-  label: "1. Transform Markdown or HTML"
-  order: 1
+sidebar.label: "1. Transform Markdown or HTML"
+sidebar.order: 1
 ---
 # Transform Markdown or HTML
 

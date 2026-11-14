@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: ナビゲーションの設定
-sidebar:
-  label: ナビゲーションの設定
-  order: 10
+sidebar.label: ナビゲーションの設定
+sidebar.order: 10
 ---
 # Navigation の設定
 

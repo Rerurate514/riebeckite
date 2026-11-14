@@ -1,9 +1,8 @@
 ---
 date: 2026-10-20
 title: Markdown / HTML を変換する
-sidebar:
-  label: "1. Markdown / HTML を変換する"
-  order: 1
+sidebar.label: "1. Markdown / HTML を変換する"
+sidebar.order: 1
 ---
 # Markdown / HTML を変換する
 

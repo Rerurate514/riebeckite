@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
-import puppeteer from "puppeteer";
+import puppeteer, { type Browser } from "puppeteer";
 import { writeRiebeckiteAssetEntries } from "../src/asset_entries.js";
 
 test("asset entries are not rewritten when their contents are unchanged", async () => {
@@ -105,7 +105,18 @@ test("generated entries import the framework, plugin, and theme stylesheets", as
 });
 
 test("cascade layers keep theme above plugins and unlayered site CSS above both", async () => {
-  const browser = await puppeteer.launch({ headless: true });
+  let browser: Browser;
+  try {
+    browser = await puppeteer.launch({
+      headless: "shell",
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
+  } catch {
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
+  }
   try {
     const page = await browser.newPage();
     await page.setContent(`

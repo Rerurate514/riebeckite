@@ -1,14 +1,11 @@
 import { createHash } from "node:crypto";
-
-const LOCK_VERSION = 1;
-
-export type RedirectStatus = 301 | 302 | 307 | 308;
-
-export type RouteLockRoute = {
-  permalink: string;
-  contentHash: string;
-  id?: string;
-};
+import {
+  LOCK_VERSION,
+  type RedirectStatus,
+  type RenameDiagnostic,
+  type RouteLockRoute,
+  type RouteLockSourceEntry,
+} from "./lock_helpers.js";
 
 export type RouteLockRedirect = {
   from: string;
@@ -24,14 +21,6 @@ export type RouteLock = {
 };
 
 export type RedirectRule = RouteLock["redirects"][number];
-
-export type RenameDiagnostic = {
-  code: string;
-  severity: "info" | "warning" | "error";
-  message: string;
-  slug?: string;
-  suggestion?: string;
-};
 
 export type DiffRoutesResult = {
   lock: RouteLock;
@@ -49,12 +38,6 @@ export type DiffRoutesOptions = {
  * routable entries should reach this function so this module stays free of any
  * runtime Core import.
  */
-export type RouteLockSourceEntry = {
-  slug: string;
-  permalink: string;
-  frontmatter: Record<string, unknown>;
-  html: string;
-};
 
 export function hashContent(html: string): string {
   return createHash("sha256").update(html, "utf8").digest("hex");
@@ -345,3 +328,10 @@ function sortedKeys(routes: Record<string, RouteLockRoute>): string[] {
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
+
+export type {
+  RedirectStatus,
+  RenameDiagnostic,
+  RouteLockRoute,
+  RouteLockSourceEntry,
+} from "./lock_helpers.js";

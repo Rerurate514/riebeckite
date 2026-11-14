@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Boundaries
-sidebar:
-  label: Boundaries
-  order: 30
+sidebar.label: Boundaries
+sidebar.order: 30
 ---
 # Boundaries
 

@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: 未使用アセット（Unused Asset）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # 未使用アセット（Unused Asset）

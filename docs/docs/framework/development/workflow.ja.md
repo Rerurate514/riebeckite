@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: 変更の流れ
-sidebar:
-  label: 変更の流れ
-  order: 20
+sidebar.label: 変更の流れ
+sidebar.order: 20
 ---
 # 変更の流れ
 

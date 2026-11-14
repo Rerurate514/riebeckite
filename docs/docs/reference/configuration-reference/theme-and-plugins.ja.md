@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: テーマとプラグイン
-sidebar:
-  label: テーマとプラグイン
-  order: 20
+sidebar.label: テーマとプラグイン
+sidebar.order: 20
 ---
 # テーマとプラグイン
 

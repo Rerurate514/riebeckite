@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: 公開設定・キャッシュ・SPA
-sidebar:
-  label: 公開設定・キャッシュ・SPA
-  order: 30
+sidebar.label: 公開設定・キャッシュ・SPA
+sidebar.order: 30
 ---
 # 公開設定・キャッシュ・SPA
 

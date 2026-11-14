@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Publishing
-sidebar:
-  label: Publishing
-  order: 40
+sidebar.label: Publishing
+sidebar.order: 40
 ---
 # Publishing
 

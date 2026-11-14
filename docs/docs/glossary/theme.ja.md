@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: テーマ（Theme）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 # テーマ（Theme）
 テーマはRiebeckiteサイトの表示層（色、タイポグラフィ、余白、レイアウト、記事スタイル）を担い、コンテンツの意味やアプリケーション構造は変えません。

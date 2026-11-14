@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: リファレンス
-sidebar:
-  label: リファレンス
-  order: 40
+sidebar.label: リファレンス
+sidebar.order: 40
 ---
 # リファレンス
 

@@ -1,9 +1,8 @@
 ---
 date: 2026-11-05
 title: 一体型セットアップ
-sidebar:
-  label: 一体型セットアップ
-  order: 22
+sidebar.label: 一体型セットアップ
+sidebar.order: 22
 ---
 # 一体型セットアップ
 

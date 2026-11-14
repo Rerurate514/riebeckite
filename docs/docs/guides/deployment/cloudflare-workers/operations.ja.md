@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: 運用
-sidebar:
-  label: 運用
-  order: 20
+sidebar.label: 運用
+sidebar.order: 20
 ---
 # 運用
 

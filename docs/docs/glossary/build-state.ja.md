@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: ビルド状態（Build State）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # ビルド状態（Build State）

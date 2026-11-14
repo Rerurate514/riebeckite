@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: 境界
-sidebar:
-  label: 境界
-  order: 30
+sidebar.label: 境界
+sidebar.order: 30
 ---
 # 境界
 

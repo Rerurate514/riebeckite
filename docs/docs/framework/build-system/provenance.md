@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Data Provenance
-sidebar:
-  label: Data Provenance
-  order: 10
+sidebar.label: Data Provenance
+sidebar.order: 10
 ---
 # Data Provenance
 

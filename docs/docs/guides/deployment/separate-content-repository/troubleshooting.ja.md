@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: トラブルシューティング
-sidebar:
-  label: トラブルシューティング
-  order: 40
+sidebar.label: トラブルシューティング
+sidebar.order: 40
 ---
 # トラブルシューティング
 

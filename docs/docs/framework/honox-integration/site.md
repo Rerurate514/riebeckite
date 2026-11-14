@@ -1,9 +1,8 @@
 ---
 date: 2026-09-28
 title: Site application contract
-sidebar:
-  label: Site application contract
-  order: 20
+sidebar.label: Site application contract
+sidebar.order: 20
 ---
 # Site application contract
 

@@ -1,9 +1,8 @@
 ---
 date: 2026-10-23
 title: 初期化処理
-sidebar:
-  label: 初期化処理
-  order: 30
+sidebar.label: 初期化処理
+sidebar.order: 30
 ---
 # 初期化処理
 

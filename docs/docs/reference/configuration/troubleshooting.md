@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: Troubleshooting an external vault
-sidebar:
-  label: Troubleshooting an external vault
-  order: 80
+sidebar.label: Troubleshooting an external vault
+sidebar.order: 80
 ---
 
 # Troubleshooting an external vault

@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: コンテンツ処理
-sidebar:
-  label: コンテンツ処理
-  order: 20
+sidebar.label: コンテンツ処理
+sidebar.order: 20
 ---
 # コンテンツ処理
 

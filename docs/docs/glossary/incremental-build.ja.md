@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: 増分ビルド（Incremental Build）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # 増分ビルド（Incremental Build）

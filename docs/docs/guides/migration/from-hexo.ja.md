@@ -2,8 +2,7 @@
 date: 2026-10-11
 title: Hexo から移行する
 private: true
-sidebar:
-  label: Hexo から
+sidebar.label: Hexo から
 ---
 # Hexo から移行する
 

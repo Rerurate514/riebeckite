@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: hreflang（言語別URLの宣言）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # hreflang（言語別URLの宣言）

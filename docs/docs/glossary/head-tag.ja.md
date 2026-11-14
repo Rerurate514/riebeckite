@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: headタグ（Head Tag）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # headタグ（Head Tag）

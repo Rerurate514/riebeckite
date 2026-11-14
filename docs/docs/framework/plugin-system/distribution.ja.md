@@ -4,9 +4,8 @@ title: プラグインの配布と検証
 series: plugins-in-depth-ja
 series_order: 3
 series_title: プラグイン作成の詳細
-sidebar:
-  label: 配布と検証
-  order: 30
+sidebar.label: 配布と検証
+sidebar.order: 30
 ---
 # プラグインの配布と検証
 

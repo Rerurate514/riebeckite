@@ -1,9 +1,8 @@
 ---
 date: 2026-10-23
 title: Flow
-sidebar:
-  label: Flow
-  order: 10
+sidebar.label: Flow
+sidebar.order: 10
 ---
 # Flow
 

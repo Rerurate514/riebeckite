@@ -1,9 +1,8 @@
 ---
 date: 2026-10-20
 title: Plugin Recipes
-sidebar:
-  label: Plugin Recipes
-  order: 0
+sidebar.label: Plugin Recipes
+sidebar.order: 0
 ---
 # Plugin Recipes
 

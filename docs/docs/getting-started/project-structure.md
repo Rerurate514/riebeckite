@@ -1,9 +1,8 @@
 ---
 date: 2026-11-05
 title: Project Structure
-sidebar:
-  label: Project Structure
-  order: 20
+sidebar.label: Project Structure
+sidebar.order: 20
 ---
 # Project Structure
 

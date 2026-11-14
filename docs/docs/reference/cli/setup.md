@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Setup and creation
-sidebar:
-  label: Setup and creation
-  order: 10
+sidebar.label: Setup and creation
+sidebar.order: 10
 ---
 # Setup and creation
 

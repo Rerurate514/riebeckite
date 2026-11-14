@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: Filesystem roots and external vaults
-sidebar:
-  label: Filesystem roots and external vaults
-  order: 30
+sidebar.label: Filesystem roots and external vaults
+sidebar.order: 30
 ---
 
 # Filesystem roots and external vaults

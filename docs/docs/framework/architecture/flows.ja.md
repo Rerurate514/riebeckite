@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: 処理の流れ
-sidebar:
-  label: 処理の流れ
-  order: 20
+sidebar.label: 処理の流れ
+sidebar.order: 20
 ---
 # 処理の流れ
 

@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: Page Type
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # Page Type

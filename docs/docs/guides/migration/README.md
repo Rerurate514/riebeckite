@@ -2,9 +2,8 @@
 date: 2026-10-11
 title: Migration Guides
 private: true
-sidebar:
-  label: Migration Guides
-  order: 100
+sidebar.label: Migration Guides
+sidebar.order: 100
 ---
 # Migration Guides
 

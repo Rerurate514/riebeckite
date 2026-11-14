@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: Folder Page
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # Folder Page

@@ -1,9 +1,8 @@
 ---
 date: 2026-11-01
 title: Preview API
-sidebar:
-  label: Preview API
-  order: 35
+sidebar.label: Preview API
+sidebar.order: 35
 ---
 # Preview API
 

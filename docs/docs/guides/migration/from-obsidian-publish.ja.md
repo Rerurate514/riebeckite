@@ -2,8 +2,7 @@
 date: 2026-10-11
 title: Obsidian Publish から移行する
 private: true
-sidebar:
-  label: Obsidian Publish から
+sidebar.label: Obsidian Publish から
 ---
 # Obsidian Publish から移行する
 

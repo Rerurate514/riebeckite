@@ -1,9 +1,8 @@
 ---
 date: 2026-10-20
 title: "派生データをキャッシュする"
-sidebar:
-  label: "12. 派生データをキャッシュする"
-  order: 12
+sidebar.label: "12. 派生データをキャッシュする"
+sidebar.order: 12
 ---
 # 派生データをキャッシュする
 

@@ -2,8 +2,7 @@
 date: 2026-10-11
 title: Hugo から移行する
 private: true
-sidebar:
-  label: Hugo から
+sidebar.label: Hugo から
 ---
 # Hugo から移行する
 

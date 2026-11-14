@@ -2,8 +2,7 @@
 date: 2026-10-11
 title: Migrate from Quartz
 private: true
-sidebar:
-  label: From Quartz
+sidebar.label: From Quartz
 ---
 # Migrate from Quartz
 

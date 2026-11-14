@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: The basic contract
-sidebar:
-  label: The basic contract
-  order: 10
+sidebar.label: The basic contract
+sidebar.order: 10
 ---
 # The basic contract
 

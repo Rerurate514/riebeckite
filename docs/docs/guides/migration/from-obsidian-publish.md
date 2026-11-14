@@ -2,8 +2,7 @@
 date: 2026-10-11
 title: Migrate from Obsidian Publish
 private: true
-sidebar:
-  label: From Obsidian Publish
+sidebar.label: From Obsidian Publish
 ---
 # Migrate from Obsidian Publish
 

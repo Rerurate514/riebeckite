@@ -1,9 +1,8 @@
 ---
 date: 2026-10-14
 title: Glossary
-sidebar:
-  label: Glossary
-  order: 70
+sidebar.label: Glossary
+sidebar.order: 70
 ---
 
 # Glossary

@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: レイアウト
-sidebar:
-  label: レイアウト
-  order: 10
+sidebar.label: レイアウト
+sidebar.order: 10
 ---
 # レイアウト
 

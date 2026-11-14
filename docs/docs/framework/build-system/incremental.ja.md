@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: 増分ビルド
-sidebar:
-  label: 増分ビルド
-  order: 20
+sidebar.label: 増分ビルド
+sidebar.order: 20
 ---
 # 増分ビルド
 

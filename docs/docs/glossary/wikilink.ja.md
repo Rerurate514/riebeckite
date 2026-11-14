@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: WikiLink（ノート間リンク）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # WikiLink（ノート間リンク）

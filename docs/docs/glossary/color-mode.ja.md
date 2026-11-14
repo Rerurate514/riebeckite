@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: カラーモード（Color Mode）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 
 # カラーモード（Color Mode）

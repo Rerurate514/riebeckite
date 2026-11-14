@@ -1,9 +1,8 @@
 ---
 date: 2026-10-23
 title: Metadata
-sidebar:
-  label: Metadata
-  order: 20
+sidebar.label: Metadata
+sidebar.order: 20
 ---
 # Metadata
 

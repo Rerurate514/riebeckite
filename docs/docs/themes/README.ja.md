@@ -1,10 +1,9 @@
 ---
 date: 2026-09-30
 title: テーマ
-sidebar:
-  label: テーマ
-  order: 50
-  collapsed: true
+sidebar.label: テーマ
+sidebar.order: 50
+sidebar.collapsed: true
 ---
 
 # テーマ

@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Plugins and CSS
-sidebar:
-  label: Plugins and CSS
-  order: 30
+sidebar.label: Plugins and CSS
+sidebar.order: 30
 ---
 # Plugins and CSS
 

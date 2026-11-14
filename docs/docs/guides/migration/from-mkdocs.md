@@ -2,8 +2,7 @@
 date: 2026-10-11
 title: Migrate from MkDocs
 private: true
-sidebar:
-  label: From MkDocs
+sidebar.label: From MkDocs
 ---
 # Migrate from MkDocs
 

@@ -1,5 +1,6 @@
 import path from "node:path";
 import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
+import { spaDiagnostics } from "./spa_diagnostics.js";
 
 /**
  * Applies the application root to a resolved Riebeckite configuration. The
@@ -12,6 +13,10 @@ export function resolveHonoxConfig(
 ): ResolvedRiebeckiteConfig {
   return {
     ...config,
+    plugins:
+      config.spa === undefined
+        ? config.plugins
+        : [...config.plugins, spaDiagnostics()],
     buildDirectory: path.join(appRoot, ".riebeckite"),
     outputDirectory: path.join(appRoot, "dist"),
     content: {

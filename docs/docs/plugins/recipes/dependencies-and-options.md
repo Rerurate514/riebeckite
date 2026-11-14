@@ -1,9 +1,8 @@
 ---
 date: 2026-10-20
 title: "Declare Dependencies and Validate Options"
-sidebar:
-  label: "14. Declare Dependencies and Validate Options"
-  order: 14
+sidebar.label: "14. Declare Dependencies and Validate Options"
+sidebar.order: 14
 ---
 # Declare Dependencies and Validate Options
 

@@ -1,8 +1,7 @@
 ---
 date: 2026-10-14
 title: 出力一覧（Output Inventory）
-sidebar:
-  hidden: true
+sidebar.hidden: true
 ---
 # 出力一覧（Output Inventory）
 

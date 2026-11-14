@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: ページの流れと定義
-sidebar:
-  label: ページの流れと定義
-  order: 20
+sidebar.label: ページの流れと定義
+sidebar.order: 20
 ---
 # ページの流れと定義
 

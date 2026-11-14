@@ -1,9 +1,8 @@
 ---
 date: 2026-10-08
 title: プラグインの設定
-sidebar:
-  label: プラグインの設定
-  order: 60
+sidebar.label: プラグインの設定
+sidebar.order: 60
 ---
 # プラグインの設定
 

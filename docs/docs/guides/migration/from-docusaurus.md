@@ -2,8 +2,7 @@
 date: 2026-10-11
 title: Migrate from Docusaurus
 private: true
-sidebar:
-  label: From Docusaurus
+sidebar.label: From Docusaurus
 ---
 # Migrate from Docusaurus
 

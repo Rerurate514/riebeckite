@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: Writing notes
-sidebar:
-  label: Writing notes
-  order: 30
+sidebar.label: Writing notes
+sidebar.order: 30
 ---
 # Writing notes
 

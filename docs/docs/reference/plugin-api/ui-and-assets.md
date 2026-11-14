@@ -1,9 +1,8 @@
 ---
 date: 2026-10-06
 title: UI, assets, and runtime
-sidebar:
-  label: UI, assets, and runtime
-  order: 30
+sidebar.label: UI, assets, and runtime
+sidebar.order: 30
 ---
 # UI, assets, and runtime
 

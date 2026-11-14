@@ -41,7 +41,7 @@ export type PluginHookExecution = {
 import { PluginRuntimeMethodsE } from "./plugin_runtime_methods_e.js";
 import { assertUniqueDerivedViewIds } from "./plugin_runtime_shared.js";
 import { initializePluginRuntime } from "./plugin_runtime_state.js";
-import type { PluginRuntimeContext } from "./plugin_runtime_state_types.js";
+import { asPluginRuntimeContext } from "./plugin_runtime_state_types.js";
 
 export class PluginRuntime extends PluginRuntimeMethodsE {
   private pipelineOptions!: PipelineOptions;
@@ -55,10 +55,7 @@ export class PluginRuntime extends PluginRuntimeMethodsE {
 
   constructor(pipelineOptions: PipelineOptions = {}) {
     super();
-    initializePluginRuntime(
-      this as unknown as PluginRuntimeContext,
-      pipelineOptions,
-    );
+    initializePluginRuntime(asPluginRuntimeContext(this), pipelineOptions);
   }
 
   getMarkdownComponents() {

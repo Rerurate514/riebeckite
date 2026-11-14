@@ -20,14 +20,11 @@ import {
   registerAssetTransformsImpl,
   runAssetTransformsImpl,
 } from "./plugin_runtime_outputs.js";
-import type { PluginRuntimeContext } from "./plugin_runtime_state_types.js";
+import { asPluginRuntimeContext } from "./plugin_runtime_state_types.js";
 
 export class PluginRuntimeMethodsC extends PluginRuntimeMethodsB {
   runAssetTransforms = async (manifest: ContentManifest): Promise<void> =>
-    await runAssetTransformsImpl(
-      this as unknown as PluginRuntimeContext,
-      manifest,
-    );
+    await runAssetTransformsImpl(asPluginRuntimeContext(this), manifest);
 
   registerAssetTransforms = (
     plugin: RiebeckitePlugin,
@@ -35,28 +32,24 @@ export class PluginRuntimeMethodsC extends PluginRuntimeMethodsB {
     referencedBy: ReadonlyMap<string, readonly ContentManifestEntry[]>,
   ): void =>
     registerAssetTransformsImpl(
-      this as unknown as PluginRuntimeContext,
+      asPluginRuntimeContext(this),
       plugin,
       outputs,
       referencedBy,
     );
 
   derivedCache = (): PluginCache =>
-    derivedCacheImpl(this as unknown as PluginRuntimeContext);
+    derivedCacheImpl(asPluginRuntimeContext(this));
 
   cacheFor = (plugin: RiebeckitePlugin): PluginCache =>
-    cacheForImpl(this as unknown as PluginRuntimeContext, plugin);
+    cacheForImpl(asPluginRuntimeContext(this), plugin);
 
   createContext = (contentIndex: Map<string, string>): PluginContextBase =>
-    createContextImpl(this as unknown as PluginRuntimeContext, contentIndex);
+    createContextImpl(asPluginRuntimeContext(this), contentIndex);
 
   createPluginContext = <TContext extends PluginContextBase>(
     plugin: RiebeckitePlugin,
     context: TContext,
   ): PluginContextWithCache<TContext> =>
-    createPluginContextImpl(
-      this as unknown as PluginRuntimeContext,
-      plugin,
-      context,
-    );
+    createPluginContextImpl(asPluginRuntimeContext(this), plugin, context);
 }

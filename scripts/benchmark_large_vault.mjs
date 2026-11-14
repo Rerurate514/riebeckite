@@ -1,7 +1,12 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { baseDir, repeatCount, scenarioFilter, sizes } from "./bench_lv_config.mjs";
-import { measure } from "./bench_lv_measure.mjs";
+import {
+  baseDir,
+  repeatCount,
+  scenarioFilter,
+  sizes,
+} from "./bench_lv_config.mjs";
+import { measure, summarizeSamples } from "./bench_lv_measure.mjs";
 import {
   append,
   generateVault,
@@ -9,7 +14,6 @@ import {
   renameMove,
   writeNote,
 } from "./bench_lv_site.mjs";
-import { summarizeSamples } from "./bench_lv_measure.mjs";
 
 for (const size of sizes) {
   const samplesByScenario = new Map();

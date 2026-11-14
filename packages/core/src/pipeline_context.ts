@@ -72,3 +72,7 @@ export interface PipelineContext {
   cacheFor(plugin: RiebeckitePlugin, observability: Observability): PluginCache;
   derivedCache(): PluginCache;
 }
+
+export function asPipelineContext<Self>(self: Self): PipelineContext {
+  return self as PipelineContext;
+}

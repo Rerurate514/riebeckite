@@ -88,6 +88,18 @@ export const PACKAGES: PackageSpec[] = [
     name: "@riebeckite/plugin-responsive-image",
   },
   {
+    directory: "packages/plugins/lightbox",
+    name: "@riebeckite/plugin-lightbox",
+  },
+  {
+    directory: "packages/plugins/seo",
+    name: "@riebeckite/plugin-seo",
+  },
+  {
+    directory: "packages/plugins/folder-pages",
+    name: "@riebeckite/plugin-folder-pages",
+  },
+  {
     directory: "packages/plugins/image-optimizer",
     name: "@riebeckite/plugin-image-optimizer",
   },

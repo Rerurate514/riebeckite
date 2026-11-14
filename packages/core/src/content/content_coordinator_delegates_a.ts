@@ -7,7 +7,7 @@ import type {
   ExternalDependencyFailure,
   ExternalDependencySnapshot,
 } from "../types/external_dependency.js";
-import type { ContentBuildCoordinatorContext } from "./content_build_coordinator_context.js";
+import { asContentBuildCoordinatorContext } from "./content_build_coordinator_context.js";
 import type { ContentBuildPlan } from "./content_build_plan.js";
 import type { ManifestHookCacheEntry } from "./content_build_state.js";
 import {
@@ -28,7 +28,7 @@ export class ContentCoordinatorDelegatesA {
     publishingBuildTime = new Date(),
   ): Promise<ContentBuildPlan> {
     return getPlanImpl(
-      this as unknown as ContentBuildCoordinatorContext,
+      asContentBuildCoordinatorContext(this),
       incremental,
       pipelineFingerprint,
       fullContentRegenerationRequired,
@@ -58,7 +58,7 @@ export class ContentCoordinatorDelegatesA {
     provenance?: BuildProvenance,
   ): Promise<void> {
     return commitImpl(
-      this as unknown as ContentBuildCoordinatorContext,
+      asContentBuildCoordinatorContext(this),
       plan,
       manifest,
       pipelineFingerprint,
@@ -79,7 +79,7 @@ export class ContentCoordinatorDelegatesA {
     cacheHits: ReadonlySet<string>,
   ): Promise<void> {
     return attachFinalOutputArtifactsImpl(
-      this as unknown as ContentBuildCoordinatorContext,
+      asContentBuildCoordinatorContext(this),
       buildId,
       fingerprints,
       cacheHits,

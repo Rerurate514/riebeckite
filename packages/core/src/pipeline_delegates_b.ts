@@ -5,7 +5,7 @@ import type {
 } from "./content/content_dependency_tracker.js";
 import type { ContentSource } from "./content/content_source.js";
 import type { Observability } from "./observability.js";
-import type { PipelineContext } from "./pipeline_context.js";
+import { asPipelineContext } from "./pipeline_context.js";
 import { PipelineDelegatesA } from "./pipeline_delegates_a.js";
 import {
   cacheForImpl,
@@ -30,32 +30,21 @@ export class PipelineDelegatesB extends PipelineDelegatesA {
     slug: string,
     dependencies: readonly CachedContentDependency[],
   ): void =>
-    reportContentDependenciesImpl(
-      this as unknown as PipelineContext,
-      slug,
-      dependencies,
-    );
+    reportContentDependenciesImpl(asPipelineContext(this), slug, dependencies);
 
   contentPipelineFingerprint = (slug: string, source: string): string =>
-    contentPipelineFingerprintImpl(
-      this as unknown as PipelineContext,
-      slug,
-      source,
-    );
+    contentPipelineFingerprintImpl(asPipelineContext(this), slug, source);
 
   findInvalidDependency = async (
     dependencies: readonly CachedContentDependency[],
   ): Promise<CachedContentDependency | null> =>
-    await findInvalidDependencyImpl(
-      this as unknown as PipelineContext,
-      dependencies,
-    );
+    await findInvalidDependencyImpl(asPipelineContext(this), dependencies);
 
   getPermalink = (slug: string): string =>
-    getPermalinkImpl(this as unknown as PipelineContext, slug);
+    getPermalinkImpl(asPipelineContext(this), slug);
 
   resolveLinkDependency = (id: string): string =>
-    resolveLinkDependencyImpl(this as unknown as PipelineContext, id);
+    resolveLinkDependencyImpl(asPipelineContext(this), id);
 
   recordNoteLinkDependencies = (
     markdown: string,
@@ -63,7 +52,7 @@ export class PipelineDelegatesB extends PipelineDelegatesA {
     sourcePath: string,
   ): void =>
     recordNoteLinkDependenciesImpl(
-      this as unknown as PipelineContext,
+      asPipelineContext(this),
       markdown,
       dependencyTracker,
       sourcePath,
@@ -73,7 +62,7 @@ export class PipelineDelegatesB extends PipelineDelegatesA {
     processor: ReturnType<typeof unified>,
     plugin: unknown,
     options?: unknown,
-  ) => useImpl(this as unknown as PipelineContext, processor, plugin, options);
+  ) => useImpl(asPipelineContext(this), processor, plugin, options);
 
   createNoteEmbedRenderer = (
     embedDepth: number,
@@ -82,7 +71,7 @@ export class PipelineDelegatesB extends PipelineDelegatesA {
     currentSlug: string | undefined,
   ): MarkdownPipelineContext["renderNoteEmbed"] =>
     createNoteEmbedRendererImpl(
-      this as unknown as PipelineContext,
+      asPipelineContext(this),
       embedDepth,
       embedTrail,
       dependencyTracker,
@@ -90,22 +79,18 @@ export class PipelineDelegatesB extends PipelineDelegatesA {
     );
 
   resolvePlugins = (): RiebeckitePlugin[] =>
-    resolvePluginsImpl(this as unknown as PipelineContext);
+    resolvePluginsImpl(asPipelineContext(this));
 
   createContentRenderer = (
     contentSource: ContentSource | undefined,
   ): MarkdownPipelineContext["renderContent"] =>
-    createContentRendererImpl(
-      this as unknown as PipelineContext,
-      contentSource,
-    );
+    createContentRendererImpl(asPipelineContext(this), contentSource);
 
   cacheFor = (
     plugin: RiebeckitePlugin,
     observability: Observability,
   ): PluginCache =>
-    cacheForImpl(this as unknown as PipelineContext, plugin, observability);
+    cacheForImpl(asPipelineContext(this), plugin, observability);
 
-  derivedCache = (): PluginCache =>
-    derivedCacheImpl(this as unknown as PipelineContext);
+  derivedCache = (): PluginCache => derivedCacheImpl(asPipelineContext(this));
 }

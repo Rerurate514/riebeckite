@@ -216,3 +216,7 @@ export interface PluginRuntimeContext {
   observability(): Observability;
   plugins(): RiebeckitePlugin[];
 }
+
+export function asPluginRuntimeContext<Self>(self: Self): PluginRuntimeContext {
+  return self as PluginRuntimeContext;
+}

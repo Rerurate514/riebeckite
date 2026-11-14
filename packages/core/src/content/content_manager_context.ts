@@ -183,3 +183,9 @@ export interface ContentManagerContext {
   emitPublicImageAssets(manifest: ContentManifest): Promise<void>;
   observability(): Observability;
 }
+
+export function asContentManagerContext<Self>(
+  self: Self,
+): ContentManagerContext {
+  return self as ContentManagerContext;
+}

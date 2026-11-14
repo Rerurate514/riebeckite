@@ -1,7 +1,7 @@
 import { createContentDependencyTracker } from "./content/content_dependency_tracker.js";
 import type { PersistentContentCache } from "./content/content_persistent_cache.js";
 import type { DerivedViewRegistry } from "./derived/derived_view.js";
-import type { PipelineContext } from "./pipeline_context.js";
+import { asPipelineContext } from "./pipeline_context.js";
 import { PipelineDelegatesB } from "./pipeline_delegates_b.js";
 import { initializePipeline } from "./pipeline_state.js";
 import type { PipelineOptions } from "./pipeline_types.js";
@@ -33,7 +33,7 @@ export class Pipeline extends PipelineDelegatesB {
   ) {
     super();
     initializePipeline(
-      this as unknown as PipelineContext,
+      asPipelineContext(this),
       contentIndex,
       permalinks,
       getMarkdownBySlug,

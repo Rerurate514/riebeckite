@@ -34,66 +34,63 @@ import {
   getPluginMetadataImpl,
   setPageMarkdownRendererImpl,
 } from "./plugin_runtime_accessors.js";
-import type { PluginRuntimeContext } from "./plugin_runtime_state_types.js";
+import { asPluginRuntimeContext } from "./plugin_runtime_state_types.js";
 
 export class PluginRuntimeMethodsA {
   getDiagnostics = (): Diagnostic[] =>
-    getDiagnosticsImpl(this as unknown as PluginRuntimeContext);
+    getDiagnosticsImpl(asPluginRuntimeContext(this));
 
   getDerivedViews = (): DerivedViewRegistry =>
-    getDerivedViewsImpl(this as unknown as PluginRuntimeContext);
+    getDerivedViewsImpl(asPluginRuntimeContext(this));
 
   getDerivedViewInspection = (): readonly DerivedViewInspection[] =>
-    getDerivedViewInspectionImpl(this as unknown as PluginRuntimeContext);
+    getDerivedViewInspectionImpl(asPluginRuntimeContext(this));
 
   setPageMarkdownRenderer = (
     renderer: (markdown: string) => Promise<string>,
   ): void =>
-    setPageMarkdownRendererImpl(
-      this as unknown as PluginRuntimeContext,
-      renderer,
-    );
+    setPageMarkdownRendererImpl(asPluginRuntimeContext(this), renderer);
 
   getManifestHookMetrics = (): ManifestHookMetrics =>
-    getManifestHookMetricsImpl(this as unknown as PluginRuntimeContext);
+    getManifestHookMetricsImpl(asPluginRuntimeContext(this));
 
   getPluginMetadata = (): readonly ResolvedPluginMetadata[] =>
-    getPluginMetadataImpl(this as unknown as PluginRuntimeContext);
+    getPluginMetadataImpl(asPluginRuntimeContext(this));
 
   getPluginInventory = (): readonly ResolvedPluginMetadata[] =>
-    getPluginInventoryImpl(this as unknown as PluginRuntimeContext);
+    getPluginInventoryImpl(asPluginRuntimeContext(this));
 
   getPluginHookExecutions = (): readonly PluginHookExecution[] =>
-    getPluginHookExecutionsImpl(this as unknown as PluginRuntimeContext);
+    getPluginHookExecutionsImpl(asPluginRuntimeContext(this));
 
   collectInspectorTabs = async (): Promise<readonly InspectorTabSnapshot[]> =>
-    await collectInspectorTabsImpl(this as unknown as PluginRuntimeContext);
+    await collectInspectorTabsImpl(asPluginRuntimeContext(this));
 
   getNoChangeFastPathBlockReason = (
     previousCache: readonly ManifestHookCacheEntry[],
     pipelineFingerprint: string | undefined,
   ): string | undefined =>
     getNoChangeFastPathBlockReasonImpl(
-      this as unknown as PluginRuntimeContext,
+      asPluginRuntimeContext(this),
       previousCache,
       pipelineFingerprint,
     );
 
   getManifestHookCache = (): readonly ManifestHookCacheEntry[] =>
-    getManifestHookCacheImpl(this as unknown as PluginRuntimeContext);
+    getManifestHookCacheImpl(asPluginRuntimeContext(this));
 
   enableBuildTime = (): void =>
-    enableBuildTimeImpl(this as unknown as PluginRuntimeContext);
+    enableBuildTimeImpl(asPluginRuntimeContext(this));
 
   collectClientEntries = (): PluginClientEntry[] =>
-    collectClientEntriesImpl(this as unknown as PluginRuntimeContext);
+    collectClientEntriesImpl(asPluginRuntimeContext(this));
 
   collectGeneratedOutputs = (): GeneratedOutput[] =>
-    collectGeneratedOutputsImpl(this as unknown as PluginRuntimeContext);
+    collectGeneratedOutputsImpl(asPluginRuntimeContext(this));
 
   emitCoreAsset = (path: string, content: GeneratedOutputContent): void =>
-    emitCoreAssetImpl(this as unknown as PluginRuntimeContext, path, content);
+    emitCoreAssetImpl(asPluginRuntimeContext(this), path, content);
 
   getContentOutputDependencies = (): ContentOutputDependencyResolver =>
-    getContentOutputDependenciesImpl(this as unknown as PluginRuntimeContext);
+    getContentOutputDependenciesImpl(asPluginRuntimeContext(this));
 }

@@ -32,7 +32,7 @@ import {
   getReusedContentCountImpl,
   recordFinalHtmlDiagnosticsImpl,
 } from "./content_manager_cache.js";
-import type { ContentManagerContext } from "./content_manager_context.js";
+import { asContentManagerContext } from "./content_manager_context.js";
 import {
   getBacklinksImpl,
   getPublicAssetReferencesImpl,
@@ -67,62 +67,56 @@ import type { OutputChangeSet } from "./output_dependency.js";
 
 export class ContentManagerMethodsA {
   getAllPosts = async (): Promise<ContentPostReference[]> =>
-    await getAllPostsImpl(this as unknown as ContentManagerContext);
+    await getAllPostsImpl(asContentManagerContext(this));
 
   scan = async (): Promise<readonly ContentSourceEntry[]> =>
-    await scanImpl(this as unknown as ContentManagerContext);
+    await scanImpl(asContentManagerContext(this));
 
   getContentDependencies = async (): Promise<
     ReadonlyMap<string, readonly string[]>
-  > =>
-    await getContentDependenciesImpl(this as unknown as ContentManagerContext);
+  > => await getContentDependenciesImpl(asContentManagerContext(this));
 
   getPost = async (slug: string): Promise<string> =>
-    await getPostImpl(this as unknown as ContentManagerContext, slug);
+    await getPostImpl(asContentManagerContext(this), slug);
 
   getContentPaths = async (): Promise<Map<string, string[]>> =>
-    await getContentPathsImpl(this as unknown as ContentManagerContext);
+    await getContentPathsImpl(asContentManagerContext(this));
 
   getContentPath = async (slug: string): Promise<string> =>
-    await getContentPathImpl(this as unknown as ContentManagerContext, slug);
+    await getContentPathImpl(asContentManagerContext(this), slug);
 
   getPublicAssetReferences = async (): Promise<PublicAssetReferences> =>
-    await getPublicAssetReferencesImpl(
-      this as unknown as ContentManagerContext,
-    );
+    await getPublicAssetReferencesImpl(asContentManagerContext(this));
 
   getContentIndex = async (
     plan?: ContentBuildPlan,
   ): Promise<Map<string, string>> =>
-    await getContentIndexImpl(this as unknown as ContentManagerContext, plan);
+    await getContentIndexImpl(asContentManagerContext(this), plan);
 
   getProcessedContent = async (slug: string): Promise<PostContent> =>
-    await getProcessedContentImpl(
-      this as unknown as ContentManagerContext,
-      slug,
-    );
+    await getProcessedContentImpl(asContentManagerContext(this), slug);
 
   processContent = async (slug: string): Promise<PostContent> =>
-    await processContentImpl(this as unknown as ContentManagerContext, slug);
+    await processContentImpl(asContentManagerContext(this), slug);
 
   getManifest = async (
     options?: ContentBuildOptions,
   ): Promise<ContentManifest> =>
-    await getManifestImpl(this as unknown as ContentManagerContext, options);
+    await getManifestImpl(asContentManagerContext(this), options);
 
   getRouteManifest = async (): Promise<ContentManifest> =>
-    await getRouteManifestImpl(this as unknown as ContentManagerContext);
+    await getRouteManifestImpl(asContentManagerContext(this));
 
   getRequestManifest = async (): Promise<ContentManifest> =>
-    await getRequestManifestImpl(this as unknown as ContentManagerContext);
+    await getRequestManifestImpl(asContentManagerContext(this));
 
   buildRouteManifest = async (): Promise<ContentManifest> =>
-    await buildRouteManifestImpl(this as unknown as ContentManagerContext);
+    await buildRouteManifestImpl(asContentManagerContext(this));
 
   buildManifest = async (
     options?: ContentBuildOptions,
   ): Promise<ContentManifest> =>
-    await buildManifestImpl(this as unknown as ContentManagerContext, options);
+    await buildManifestImpl(asContentManagerContext(this), options);
 
   collectManifestEntries = async (
     plan: ContentBuildPlan,
@@ -132,7 +126,7 @@ export class ContentManagerMethodsA {
     entries: ContentManifestEntry[];
   }> =>
     await collectManifestEntriesImpl(
-      this as unknown as ContentManagerContext,
+      asContentManagerContext(this),
       plan,
       locations,
     );
@@ -147,7 +141,7 @@ export class ContentManagerMethodsA {
     cacheManifestEntries: readonly ContentManifestEntry[];
   }> =>
     await assembleManifestImpl(
-      this as unknown as ContentManagerContext,
+      asContentManagerContext(this),
       entries,
       contentIndex,
       locations,
@@ -160,7 +154,7 @@ export class ContentManagerMethodsA {
     plan: ContentBuildPlan,
   ): Promise<OutputChangeSet> =>
     await finalizeManifestOutputsImpl(
-      this as unknown as ContentManagerContext,
+      asContentManagerContext(this),
       manifest,
       contentIndex,
       plan,
@@ -174,7 +168,7 @@ export class ContentManagerMethodsA {
     outputChangeSet: OutputChangeSet,
   ): Promise<void> =>
     await recordCompletedBuildImpl(
-      this as unknown as ContentManagerContext,
+      asContentManagerContext(this),
       manifest,
       plan,
       cacheManifestEntries,
@@ -183,28 +177,25 @@ export class ContentManagerMethodsA {
     );
 
   build = async (options: ContentBuildOptions = {}): Promise<ContentManifest> =>
-    await buildImpl(this as unknown as ContentManagerContext, options);
+    await buildImpl(asContentManagerContext(this), options);
 
   getProcessedContentCount = (): number =>
-    getProcessedContentCountImpl(this as unknown as ContentManagerContext);
+    getProcessedContentCountImpl(asContentManagerContext(this));
 
   getReusedContentCount = (): number =>
-    getReusedContentCountImpl(this as unknown as ContentManagerContext);
+    getReusedContentCountImpl(asContentManagerContext(this));
 
   getManifestHookMetrics = (): ManifestHookMetrics =>
-    getManifestHookMetricsImpl(this as unknown as ContentManagerContext);
+    getManifestHookMetricsImpl(asContentManagerContext(this));
 
   getCompletedBuildSnapshot = (): CompletedContentBuildSnapshot | undefined =>
-    getCompletedBuildSnapshotImpl(this as unknown as ContentManagerContext);
+    getCompletedBuildSnapshotImpl(asContentManagerContext(this));
 
   recordFinalHtmlDiagnostics = (diagnostics: readonly Diagnostic[]): void =>
-    recordFinalHtmlDiagnosticsImpl(
-      this as unknown as ContentManagerContext,
-      diagnostics,
-    );
+    recordFinalHtmlDiagnosticsImpl(asContentManagerContext(this), diagnostics);
 
   getProvenance = (): BuildProvenance | undefined =>
-    getProvenanceImpl(this as unknown as ContentManagerContext);
+    getProvenanceImpl(asContentManagerContext(this));
 
   attachFinalOutputArtifacts = async (
     buildId: string,
@@ -212,7 +203,7 @@ export class ContentManagerMethodsA {
     cacheHits: ReadonlySet<string>,
   ): Promise<void> =>
     await attachFinalOutputArtifactsImpl(
-      this as unknown as ContentManagerContext,
+      asContentManagerContext(this),
       buildId,
       fingerprints,
       cacheHits,
@@ -222,28 +213,19 @@ export class ContentManagerMethodsA {
     options: ContentBuildOptions = {},
   ): Promise<string | undefined> =>
     await getNoChangeFastPathBlockReasonImpl(
-      this as unknown as ContentManagerContext,
+      asContentManagerContext(this),
       options,
     );
 
   getFullRegenerationReasons = async (): Promise<
     readonly FullRegenerationReason[]
-  > =>
-    await getFullRegenerationReasonsImpl(
-      this as unknown as ContentManagerContext,
-    );
+  > => await getFullRegenerationReasonsImpl(asContentManagerContext(this));
 
   getOutputChangeSet = async (
     options: ContentBuildOptions = {},
   ): Promise<OutputChangeSet> =>
-    await getOutputChangeSetImpl(
-      this as unknown as ContentManagerContext,
-      options,
-    );
+    await getOutputChangeSetImpl(asContentManagerContext(this), options);
 
   getBacklinks = async (targetSlug: string): Promise<Backlink[]> =>
-    await getBacklinksImpl(
-      this as unknown as ContentManagerContext,
-      targetSlug,
-    );
+    await getBacklinksImpl(asContentManagerContext(this), targetSlug);
 }

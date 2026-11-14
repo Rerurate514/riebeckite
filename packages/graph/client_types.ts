@@ -119,3 +119,7 @@ export type RendererContext = {
   onContextMenu(event: MouseEvent): void;
   onKeyDown(event: KeyboardEvent): void;
 };
+
+export function asRendererContext<Self>(self: Self): RendererContext {
+  return self as RendererContext;
+}

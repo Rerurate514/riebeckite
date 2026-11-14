@@ -1,7 +1,8 @@
 ---
 title: リリースノート
-sidebar.label: リリースノート
-sidebar.order: 7
+sidebar:
+  label: リリースノート
+  order: 7
 ---
 # リリースノート
 
@@ -75,6 +76,9 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 - **Breaking:** Replace the positional `createClientEntry` signature with a single options object. Client entries can set `root: "document"` when their presence marker lives in the site shell, receive the matched marker as `context.marker`, and app-scoped conditional entries are re-evaluated after SPA navigation.
   Packages: `@riebeckite/core`, `@riebeckite/honox`, `@riebeckite/cli`, `@riebeckite/plugin-search`
   Migration: Replace the positional createClientEntry arguments with an options object: createClientEntry(\"name\", { moduleSpecifier, exportName, publicConfig, scope, initializerArguments, presenceSelector, root, runtimeEntries }). Set root: \"document\" for a page entry whose presence marker is outside main#main-content.
+
+- Restructure oversized source files into per-feature modules. The published module layout changes, but the behavior and the public API are unchanged.
+  Packages: `@riebeckite/diagram`, `@riebeckite/diagnostics`, `@riebeckite/preview`, `@riebeckite/analytics-cloudflare`, `@riebeckite/plugin-analytics`, `@riebeckite/plugin-bases`, `@riebeckite/plugin-calculator`, `@riebeckite/plugin-canvas`, `@riebeckite/plugin-citations`, `@riebeckite/plugin-d2`, `@riebeckite/plugin-dataview`, `@riebeckite/plugin-diagnostics`, `@riebeckite/plugin-excalibrain`, `@riebeckite/plugin-excalidraw`, `@riebeckite/plugin-frontmatter-transformer`, `@riebeckite/plugin-graphviz`, `@riebeckite/plugin-icons`, `@riebeckite/plugin-image-optimizer`, `@riebeckite/plugin-markmap`, `@riebeckite/plugin-meta-bind`, `@riebeckite/plugin-marp`, `@riebeckite/plugin-mermaid`, `@riebeckite/plugin-obsidian-markdown`, `@riebeckite/plugin-permalink`, `@riebeckite/plugin-quality`, `@riebeckite/plugin-rich-embed`, `@riebeckite/plugin-sidenotes`, `@riebeckite/plugin-source-files`, `@riebeckite/plugin-vega-lite`, `@riebeckite/plugin-wavedrom`
 
 ### Fixed
 

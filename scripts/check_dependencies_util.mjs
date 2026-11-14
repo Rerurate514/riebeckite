@@ -1,6 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import ts from "typescript";
+import {
+  ignoredDirectories,
+  nonImportedDependencies,
+  packageKinds,
+  sourceExtensions,
+} from "./check_dependencies_config.mjs";
 
 export function toPosix(value) {
   return value.split(path.sep).join("/");

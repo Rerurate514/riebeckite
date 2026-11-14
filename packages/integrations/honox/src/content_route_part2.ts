@@ -1,6 +1,7 @@
 import { type ContentManifest, htmlOutputPath } from "@riebeckite/core";
 import type { Handler } from "hono";
 
+// biome-ignore lint/suspicious/noExplicitAny: Hono's Handler generics (env/path/response) are intentionally left open so any route handler can pass through.
 export function ssgEnumerableHandler<H extends Handler<any, any, any>>(
   handler: H,
 ): H {

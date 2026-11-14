@@ -1,16 +1,15 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { measure, runBuild } from "./bench_ssg_measure.mjs";
-import { createSite } from "./bench_ssg_site.mjs";
 import {
   cacheStateMode,
   contentStatePaths,
   repeatCount,
-  scenarios,
   shouldRun,
   sizes,
   workRoot,
 } from "./bench_ssg_shared.mjs";
+import { createSite } from "./bench_ssg_site.mjs";
 import { summarize } from "./bench_ssg_util.mjs";
 
 async function applyCacheStateMode(siteRoot) {

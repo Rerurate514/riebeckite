@@ -105,18 +105,7 @@ test("generated entries import the framework, plugin, and theme stylesheets", as
 });
 
 test("cascade layers keep theme above plugins and unlayered site CSS above both", async () => {
-  let browser: Browser;
-  try {
-    browser = await puppeteer.launch({
-      headless: "shell",
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
-  } catch {
-    browser = await puppeteer.launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
-  }
+  const browser = await launchBrowser();
   try {
     const page = await browser.newPage();
     await page.setContent(`
@@ -165,3 +154,19 @@ test("cascade layers keep theme above plugins and unlayered site CSS above both"
     await browser.close();
   }
 });
+
+async function launchBrowser(): Promise<Browser> {
+  const args =
+    process.platform === "linux"
+      ? ["--no-sandbox", "--disable-setuid-sandbox"]
+      : [];
+  const errors: unknown[] = [];
+  for (const headless of ["shell", true] as const) {
+    try {
+      return await puppeteer.launch({ headless, args });
+    } catch (error) {
+      errors.push(error);
+    }
+  }
+  throw new AggregateError(errors, "Puppeteer could not launch a browser.");
+}

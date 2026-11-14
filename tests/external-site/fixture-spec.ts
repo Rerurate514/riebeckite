@@ -1,199 +1,58 @@
-import type { PackageSpec } from "@riebeckite/test/e2e";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import {
+  collectWorkspacePackageClosure,
+  type PackageSpec,
+} from "@riebeckite/test/e2e";
 
-export const PACKAGES: PackageSpec[] = [
-  { directory: "packages/core", name: "@riebeckite/core" },
-  { directory: "packages/node", name: "@riebeckite/node" },
-  { directory: "packages/diagram", name: "@riebeckite/diagram" },
-  { directory: "packages/diagnostics", name: "@riebeckite/diagnostics" },
-  { directory: "packages/ui", name: "@riebeckite/ui" },
-  { directory: "packages/cli", name: "@riebeckite/cli" },
-  {
-    directory: "packages/integrations/analytics-cloudflare",
-    name: "@riebeckite/analytics-cloudflare",
-  },
-  { directory: "packages/integrations/honox", name: "@riebeckite/honox" },
-  {
-    directory: "packages/dev-inspector",
-    name: "@riebeckite/dev-inspector",
-  },
-  { directory: "packages/spa", name: "@riebeckite/spa" },
-  { directory: "packages/themes/default", name: "@riebeckite/theme-default" },
-  {
-    directory: "packages/plugins/obsidian-markdown",
-    name: "@riebeckite/plugin-obsidian-markdown",
-  },
-  {
-    directory: "packages/plugins/d2",
-    name: "@riebeckite/plugin-d2",
-  },
-  {
-    directory: "packages/plugins/autocardlink",
-    name: "@riebeckite/plugin-autocardlink",
-  },
-  {
-    directory: "packages/plugins/attachment",
-    name: "@riebeckite/plugin-attachment",
-  },
-  {
-    directory: "packages/plugins/code-annotations",
-    name: "@riebeckite/plugin-code-annotations",
-  },
-  {
-    directory: "packages/plugins/code-enhance",
-    name: "@riebeckite/plugin-code-enhance",
-  },
-  {
-    directory: "packages/plugins/highlight",
-    name: "@riebeckite/plugin-highlight",
-  },
-  { directory: "packages/plugins/toc", name: "@riebeckite/plugin-toc" },
-  {
-    directory: "packages/plugins/navigation",
-    name: "@riebeckite/plugin-navigation",
-  },
-  {
-    directory: "packages/plugins/backlinks",
-    name: "@riebeckite/plugin-backlinks",
-  },
-  {
-    directory: "packages/plugins/breadcrumbs",
-    name: "@riebeckite/plugin-breadcrumbs",
-  },
-  { directory: "packages/plugins/bases", name: "@riebeckite/plugin-bases" },
-  {
-    directory: "packages/plugins/canvas",
-    name: "@riebeckite/plugin-canvas",
-  },
-  { directory: "packages/plugins/query", name: "@riebeckite/plugin-query" },
-  { directory: "packages/plugins/alias", name: "@riebeckite/plugin-alias" },
-  { directory: "packages/plugins/kanban", name: "@riebeckite/plugin-kanban" },
-  {
-    directory: "packages/plugins/dataview",
-    name: "@riebeckite/plugin-dataview",
-  },
-  {
-    directory: "packages/plugins/properties",
-    name: "@riebeckite/plugin-properties",
-  },
-  {
-    directory: "packages/plugins/recent-posts",
-    name: "@riebeckite/plugin-recent-posts",
-  },
-  {
-    directory: "packages/plugins/related-posts",
-    name: "@riebeckite/plugin-related-posts",
-  },
-  {
-    directory: "packages/plugins/responsive-image",
-    name: "@riebeckite/plugin-responsive-image",
-  },
-  {
-    directory: "packages/plugins/lightbox",
-    name: "@riebeckite/plugin-lightbox",
-  },
-  {
-    directory: "packages/plugins/seo",
-    name: "@riebeckite/plugin-seo",
-  },
-  {
-    directory: "packages/plugins/folder-pages",
-    name: "@riebeckite/plugin-folder-pages",
-  },
-  {
-    directory: "packages/plugins/image-optimizer",
-    name: "@riebeckite/plugin-image-optimizer",
-  },
-  {
-    directory: "packages/plugins/svg-optimizer",
-    name: "@riebeckite/plugin-svg-optimizer",
-  },
-  {
-    directory: "packages/plugins/rich-embed",
-    name: "@riebeckite/plugin-rich-embed",
-  },
-  { directory: "packages/plugins/search", name: "@riebeckite/plugin-search" },
-  {
-    directory: "packages/plugins/color-mode",
-    name: "@riebeckite/plugin-color-mode",
-  },
-  {
-    directory: "packages/plugins/diagnostics",
-    name: "@riebeckite/plugin-diagnostics",
-  },
-  {
-    directory: "packages/plugins/docs",
-    name: "@riebeckite/plugin-docs",
-  },
-  {
-    directory: "packages/plugins/plantuml",
-    name: "@riebeckite/plugin-plantuml",
-  },
-  { directory: "packages/plugins/series", name: "@riebeckite/plugin-series" },
-  {
-    directory: "packages/plugins/taxonomy",
-    name: "@riebeckite/plugin-taxonomy",
-  },
-  {
-    directory: "packages/plugins/analytics",
-    name: "@riebeckite/plugin-analytics",
-  },
-  { directory: "packages/plugins/media", name: "@riebeckite/plugin-media" },
-  { directory: "packages/plugins/mdx", name: "@riebeckite/plugin-mdx" },
-  {
-    directory: "packages/plugins/graphviz",
-    name: "@riebeckite/plugin-graphviz",
-  },
-  {
-    directory: "packages/plugins/chartjs",
-    name: "@riebeckite/plugin-chartjs",
-  },
-  {
-    directory: "packages/plugins/citations",
-    name: "@riebeckite/plugin-citations",
-  },
-  {
-    directory: "packages/plugins/hover-preview",
-    name: "@riebeckite/plugin-hover-preview",
-  },
-  {
-    directory: "packages/plugins/flashcards",
-    name: "@riebeckite/plugin-flashcards",
-  },
-  {
-    directory: "packages/plugins/shortcodes",
-    name: "@riebeckite/plugin-shortcodes",
-  },
-  {
-    directory: "packages/plugins/vega-lite",
-    name: "@riebeckite/plugin-vega-lite",
-  },
-  {
-    directory: "packages/plugins/wavedrom",
-    name: "@riebeckite/plugin-wavedrom",
-  },
-  {
-    directory: "packages/plugins/ux",
-    name: "@riebeckite/plugin-ux",
-  },
-  { directory: "packages/plugins/marp", name: "@riebeckite/plugin-marp" },
-  { directory: "packages/plugins/qr-code", name: "@riebeckite/plugin-qr-code" },
-  {
-    directory: "packages/plugins/markmap",
-    name: "@riebeckite/plugin-markmap",
-  },
-  {
-    directory: "packages/plugins/excalibrain",
-    name: "@riebeckite/plugin-excalibrain",
-  },
-  {
-    directory: "packages/plugins/discord-embed",
-    name: "@riebeckite/plugin-discord-embed",
-  },
-  {
-    directory: "packages/create-riebeckite",
-    name: "create-riebeckite",
-  },
-];
+const here = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(here, "..", "..");
+const fixtureRoot = path.join(here, "fixture", "site");
+const starterManifest = path.join(
+  repoRoot,
+  "packages",
+  "create-riebeckite",
+  "test",
+  "__golden__",
+  "scaffold",
+  "starter",
+  "package.json",
+);
+
+type Manifest = {
+  readonly dependencies?: Readonly<Record<string, string>>;
+  readonly devDependencies?: Readonly<Record<string, string>>;
+};
+
+function packageNamesFromFixture(directory: string): string[] {
+  return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const file = path.join(directory, entry.name);
+    if (entry.isDirectory()) return packageNamesFromFixture(file);
+    if (!entry.isFile()) return [];
+    return [
+      ...fs
+        .readFileSync(file, "utf8")
+        .matchAll(/from\s+["'](@riebeckite\/[^/"']+)/g),
+    ].map((match) => match[1] as string);
+  });
+}
+
+function collectExternalSitePackages(): readonly PackageSpec[] {
+  const starter = JSON.parse(
+    fs.readFileSync(starterManifest, "utf8"),
+  ) as Manifest;
+  const starterPackages = [
+    ...Object.keys(starter.dependencies ?? {}),
+    ...Object.keys(starter.devDependencies ?? {}),
+  ].filter((name) => name.startsWith("@riebeckite/"));
+  return collectWorkspacePackageClosure(repoRoot, [
+    ...packageNamesFromFixture(fixtureRoot),
+    ...starterPackages,
+  ]);
+}
+
+export const PACKAGES = collectExternalSitePackages();
 
 export const HOME_MARKER = "RIEBECKITE_EXTERNAL_HOME_MARKER";
 export const NOTE_MARKER = "RIEBECKITE_EXTERNAL_NOTE_MARKER";

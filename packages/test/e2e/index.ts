@@ -39,6 +39,7 @@ export { formatBytes } from "./format.js";
 export { escapeRegExp, extractScriptPayloads } from "./html.js";
 export { createLogger, type Logger } from "./logger.js";
 export {
+  collectWorkspacePackageClosure,
   type PackageSpec,
   type PackedPackage,
   type PackedPackages,

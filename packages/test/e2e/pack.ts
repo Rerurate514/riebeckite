@@ -31,6 +31,72 @@ export interface PackPackagesOptions {
   logger: Logger;
 }
 
+type PackageManifest = {
+  readonly dependencies?: Readonly<Record<string, string>>;
+  readonly name?: string;
+  readonly version: string;
+};
+
+function readWorkspacePackages(repoRoot: string): Map<string, string> {
+  const packages = new Map<string, string>();
+  const visit = (relative: string): void => {
+    const directory = path.join(repoRoot, relative);
+    const entries = fs.readdirSync(directory, { withFileTypes: true });
+    if (
+      entries.some((entry) => entry.isFile() && entry.name === "package.json")
+    ) {
+      const manifest = JSON.parse(
+        fs.readFileSync(path.join(directory, "package.json"), "utf8"),
+      ) as PackageManifest;
+      if (manifest.name) packages.set(manifest.name, relative);
+      return;
+    }
+    for (const entry of entries) {
+      if (
+        !entry.isDirectory() ||
+        entry.name === "node_modules" ||
+        entry.name.startsWith(".")
+      ) {
+        continue;
+      }
+      visit(path.join(relative, entry.name));
+    }
+  };
+  visit("packages");
+  return packages;
+}
+
+export function collectWorkspacePackageClosure(
+  repoRoot: string,
+  seeds: readonly string[],
+): readonly PackageSpec[] {
+  const directories = readWorkspacePackages(repoRoot);
+  const seen = new Set<string>();
+  const packages: PackageSpec[] = [];
+  const queue = [...seeds];
+  while (queue.length > 0) {
+    const name = queue.shift();
+    if (name === undefined || seen.has(name)) continue;
+    seen.add(name);
+    const directory = directories.get(name);
+    if (directory === undefined) {
+      throw new Error(
+        `External package test requires workspace package "${name}", but no matching package was found.`,
+      );
+    }
+    packages.push({ directory, name });
+    const manifest = JSON.parse(
+      fs.readFileSync(path.join(repoRoot, directory, "package.json"), "utf8"),
+    ) as PackageManifest;
+    for (const dependency of Object.keys(manifest.dependencies ?? {})) {
+      if (directories.has(dependency) && !seen.has(dependency)) {
+        queue.push(dependency);
+      }
+    }
+  }
+  return packages.sort((left, right) => left.name.localeCompare(right.name));
+}
+
 function assertPackArtifacts(packageDir: string, pkg: PackageSpec): void {
   const manifest = JSON.parse(
     fs.readFileSync(path.join(packageDir, "package.json"), "utf8"),
@@ -50,16 +116,6 @@ interface PackedResult {
   version: string;
   tarball: string;
 }
-
-/**
- * Pack every package with `pnpm pack` into `tarballDir`, using a
- * limited-concurrency pool. Returns a map from package name to its tarball and
- * version. The first failure rejects the returned promise.
- */
-type PackageManifest = {
-  readonly dependencies?: Readonly<Record<string, string>>;
-  readonly version: string;
-};
 
 function packageLevels(
   repoRoot: string,

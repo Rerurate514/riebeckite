@@ -31,6 +31,43 @@ async function writePackFixture(root: string, name: string): Promise<void> {
   );
 }
 
+test("collectWorkspacePackageClosure includes newly added workspace dependencies", async () => {
+  await withTemporaryDirectory("riebeckite-package-closure-", async (root) => {
+    for (const [directory, manifest] of [
+      [
+        "packages/plugin",
+        {
+          name: "@fixture/plugin",
+          version: "1.0.0",
+          dependencies: { "@fixture/internal": "workspace:*" },
+        },
+      ],
+      ["packages/internal", { name: "@fixture/internal", version: "1.0.0" }],
+    ] as const) {
+      await fs.mkdir(path.join(root, directory), { recursive: true });
+      await fs.writeFile(
+        path.join(root, directory, "package.json"),
+        JSON.stringify(manifest),
+      );
+    }
+    const { collectWorkspacePackageClosure } = await import("../e2e/index.js");
+    assert.deepEqual(
+      collectWorkspacePackageClosure(root, ["@fixture/plugin"]),
+      [
+        {
+          directory: path.join("packages", "internal"),
+          name: "@fixture/internal",
+        },
+        { directory: path.join("packages", "plugin"), name: "@fixture/plugin" },
+      ],
+    );
+    assert.throws(
+      () => collectWorkspacePackageClosure(root, ["@fixture/missing"]),
+      /requires workspace package "@fixture\/missing"/,
+    );
+  });
+});
+
 test("packPackages packs isolated prebuilt artifacts without running lifecycle scripts or pnpmfile hooks", async () => {
   await withTemporaryDirectory("riebeckite-pack-", async (root) => {
     await Promise.all([

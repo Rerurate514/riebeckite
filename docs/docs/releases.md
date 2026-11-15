@@ -41,6 +41,9 @@ The Unreleased section lists changes that are merged but not yet published to np
 - When SPA navigation is enabled, the build now reports an error diagnostic for every generated HTML page that lacks `<main id="main-content">`. Redirect pages are skipped. `riebeckite check` fails on these diagnostics by default.
   Packages: `@riebeckite/honox`
 
+- Expose `collectWorkspacePackageClosure` from the E2E helpers so external-site tests pack the full workspace dependency closure of the packages under test, keeping packed tarballs installable without manual dependency lists.
+  Packages: `@riebeckite/test`
+
 ### Changed
 
 - **Breaking:** Align the public API types with the values the runtime actually produces, and replace the places that hid errors behind a double type assertion with validation. `@riebeckite/core` gains `parseYaml` for YAML parsing and fixture builders for content manifests and plugin contexts. `ClientRuntimeInvokeOptions.capability` is now typed as `RuntimeCapability`, `JsonValue` accepts readonly arrays and `undefined` property values, and defaulted options and arguments of `defineCliCommand` are typed with the accepted values instead of the default literal. `@riebeckite/node` reports a corrupt migration plan as `The migration plan is missing or corrupt.` instead of failing with an internal error.

@@ -1,4 +1,4 @@
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { collectChanges, finalizeRelease } from "./changelog.mjs";
 import {
   checkArtifactCoverage,

@@ -2,8 +2,8 @@ import type { Point, RendererContext } from "./client_types.js";
 import { MAX_SCALE, MIN_SCALE } from "./client_types.js";
 import { clamp } from "./client_utils.js";
 
-export function createCameraController() {
-  function resize(r: RendererContext): void {
+export function createCameraController(r: RendererContext) {
+  function resize(): void {
     const rect = r.canvas.getBoundingClientRect();
     const width = Math.max(1, Math.round(rect.width));
     const height = Math.max(1, Math.round(rect.height));
@@ -23,7 +23,7 @@ export function createCameraController() {
     r.requestFrame();
   }
 
-  function fitView(r: RendererContext): void {
+  function fitView(): void {
     if (r.visible.nodes.length === 0) {
       r.camera = { x: r.size.width / 2, y: r.size.height / 2, scale: 1 };
       return;
@@ -62,13 +62,13 @@ export function createCameraController() {
     };
   }
 
-  function resetView(r: RendererContext): void {
+  function resetView(): void {
     r.pendingFit = false;
     r.fitView();
     r.requestFrame();
   }
 
-  function focusNode(r: RendererContext, id: string): void {
+  function focusNode(id: string): void {
     const node = r.simulation?.nodes.find((entry) => entry.id === id);
     if (!node) return;
     r.pendingFit = false;
@@ -80,7 +80,7 @@ export function createCameraController() {
     r.requestFrame();
   }
 
-  function zoomBy(r: RendererContext, factor: number, origin?: Point): void {
+  function zoomBy(factor: number, origin?: Point): void {
     r.pendingFit = false;
     const center = origin ?? { x: r.size.width / 2, y: r.size.height / 2 };
     const scale = clamp(r.camera.scale * factor, MIN_SCALE, MAX_SCALE);

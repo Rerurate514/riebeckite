@@ -2,8 +2,8 @@ import type { Point, RendererContext } from "./client_types.js";
 import { clamp, truncateLabel, withAlpha } from "./client_utils.js";
 import type { VisibleGraphNode } from "./index.js";
 
-export function createDrawing() {
-  function draw(r: RendererContext): void {
+export function createDrawing(r: RendererContext) {
+  function draw(): void {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     r.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     r.ctx.clearRect(0, 0, r.size.width, r.size.height);
@@ -160,7 +160,6 @@ export function createDrawing() {
   }
 
   function drawArrow(
-    r: RendererContext,
     sx: number,
     sy: number,
     tx: number,
@@ -186,19 +185,11 @@ export function createDrawing() {
     r.ctx.fill();
   }
 
-  function toScreen(
-    r: RendererContext,
-    x: number,
-    y: number,
-  ): [number, number] {
+  function toScreen(x: number, y: number): [number, number] {
     return [r.camera.x + x * r.camera.scale, r.camera.y + y * r.camera.scale];
   }
 
-  function toWorld(
-    r: RendererContext,
-    clientX: number,
-    clientY: number,
-  ): Point {
+  function toWorld(clientX: number, clientY: number): Point {
     const rect = r.canvas.getBoundingClientRect();
     return {
       x: (clientX - rect.left - r.camera.x) / r.camera.scale,
@@ -206,11 +197,7 @@ export function createDrawing() {
     };
   }
 
-  function hitTest(
-    r: RendererContext,
-    clientX: number,
-    clientY: number,
-  ): VisibleGraphNode | null {
+  function hitTest(clientX: number, clientY: number): VisibleGraphNode | null {
     if (!r.input) return null;
     const rect = r.canvas.getBoundingClientRect();
     const x = clientX - rect.left;
@@ -235,7 +222,7 @@ export function createDrawing() {
     return best?.node ?? null;
   }
 
-  function relatedIds(r: RendererContext): Set<string> {
+  function relatedIds(): Set<string> {
     const origin = r.hoveredId;
     const related = new Set<string>();
     if (!origin) return related;
@@ -247,7 +234,7 @@ export function createDrawing() {
     return related;
   }
 
-  function nodeColor(r: RendererContext, node: VisibleGraphNode): string {
+  function nodeColor(node: VisibleGraphNode): string {
     if (node.color) return node.color;
     switch (node.kind) {
       case "unresolved":
@@ -261,7 +248,6 @@ export function createDrawing() {
   }
 
   function segmentVisible(
-    r: RendererContext,
     x1: number,
     y1: number,
     x2: number,

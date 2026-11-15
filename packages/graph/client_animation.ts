@@ -7,8 +7,8 @@ import {
   createGraphSimulation,
 } from "./index.js";
 
-export function createAnimationController() {
-  function update(r: RendererContext, next: GraphRendererInput): void {
+export function createAnimationController(r: RendererContext) {
+  function update(next: GraphRendererInput): void {
     if (r.destroyed) return;
     const previousMode = r.input?.mode;
     const previousCenter = r.input?.centerId;
@@ -61,13 +61,13 @@ export function createAnimationController() {
     r.requestFrame();
   }
 
-  function setSelected(r: RendererContext, id: string | null): void {
+  function setSelected(id: string | null): void {
     if (r.selectedId === id) return;
     r.selectedId = id;
     r.requestFrame();
   }
 
-  function playAnimation(r: RendererContext): void {
+  function playAnimation(): void {
     if (r.reducedMotion || r.visible.nodes.length === 0) {
       r.animationCutoff = 1;
       r.animating = false;
@@ -82,19 +82,19 @@ export function createAnimationController() {
     r.requestFrame();
   }
 
-  function stopAnimation(r: RendererContext): void {
+  function stopAnimation(): void {
     r.animating = false;
     r.animationCutoff = 1;
     r.callbacks.onAnimationChange?.(false);
     r.requestFrame();
   }
 
-  function requestFrame(r: RendererContext): void {
+  function requestFrame(): void {
     if (r.destroyed || r.paused || r.frameHandle !== null) return;
     r.frameHandle = requestAnimationFrame(r.frame);
   }
 
-  function frame(r: RendererContext, time: number): void {
+  function frame(time: number): void {
     r.frameHandle = null;
     if (r.destroyed) return;
     if (r.animating) {

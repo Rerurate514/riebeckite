@@ -59,10 +59,10 @@ export function createGraphRenderer(
 
   Object.assign(
     r,
-    createCameraController(),
-    createDrawing(),
+    createCameraController(r),
+    createDrawing(r),
     createEventHandlers(r),
-    createAnimationController(),
+    createAnimationController(r),
   );
 
   const resizeObserver = new ResizeObserver(() => r.resize());

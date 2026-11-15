@@ -50,6 +50,7 @@ export default defineConfig({
     ...riebeckiteVite({
       appRoot,
       workspaceRoot,
+      warmContent: true,
       ssg: { concurrency: 8 },
     }),
     build(),

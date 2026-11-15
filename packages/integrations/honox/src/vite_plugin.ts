@@ -41,6 +41,7 @@ import { createWorkspacePackageAliases } from "./workspace_packages.js";
  */
 
 export type RiebeckiteViteOptions = RiebeckiteIntegrationOptions & {
+  warmContent?: boolean;
   /** Extra SSR externals appended after Riebeckite's defaults. */
   ssrExternals?: readonly string[];
   /** SSG overrides. A normal site does not need them. */
@@ -48,7 +49,7 @@ export type RiebeckiteViteOptions = RiebeckiteIntegrationOptions & {
 };
 
 export function riebeckite(
-  options: RiebeckiteIntegrationOptions = {},
+  options: RiebeckiteViteOptions = {},
   onApplicationResolved?: (application: ResolvedHonoxApplication) => void,
 ): Plugin[] {
   let resolvedConfig: ResolvedRiebeckiteConfig | undefined;
@@ -121,6 +122,10 @@ export function riebeckite(
     contentBareImportResolver(() => requireApplication(application)),
     riebeckiteClientModule(getConfig),
     riebeckiteRuntimeModules(() => requireApplication(application)),
+    riebeckiteContentWarmup(
+      options.warmContent ?? false,
+      () => requireApplication(application),
+    ),
     riebeckiteContentAssets({
       appRoot: () => requireApplication(application).appRoot,
       contentRoot: () => requireApplication(application).contentRoot,
@@ -158,6 +163,32 @@ export function riebeckite(
       },
     }),
   ];
+}
+
+export function riebeckiteContentWarmup(
+  enabled: boolean,
+  getApplication: () => ResolvedHonoxApplication,
+): Plugin {
+  return {
+    name: "riebeckite-content-warmup",
+    apply: "serve",
+    configureServer(server) {
+      if (!enabled || !server.httpServer) return;
+      server.httpServer.once("listening", () => {
+        const { appRoot } = getApplication();
+        void loadContentModule(server, appRoot)
+          .then(async (module) => await module.content?.getManifest?.())
+          .catch((error: unknown) => {
+            server.config.logger.error(
+              "Riebeckite content warmup failed.",
+              {
+                error: error instanceof Error ? error : new Error(String(error)),
+              },
+            );
+          });
+      });
+    },
+  };
 }
 
 function contentBareImportResolver(

@@ -12,8 +12,19 @@ type RiebeckiteContentAssetsOptions = {
 
 type ContentAssetEntry = { assets?: ReadonlyArray<{ path: string }> };
 
-type PublicContentManifest = {
+type GeneratedOutputEntry = {
+  path: string;
+  content?: Uint8Array | string;
+};
+
+export type PublicContentManifest = {
   publicEntries?: ReadonlyArray<ContentAssetEntry>;
+  generatedOutputs?: ReadonlyArray<GeneratedOutputEntry>;
+};
+
+type PublicContentAssets = {
+  readonly paths: ReadonlySet<string>;
+  readonly generated: ReadonlyMap<string, Uint8Array | string>;
 };
 
 type AssetRequest = {
@@ -40,6 +51,7 @@ const IMAGE_CONTENT_TYPES: Record<string, string> = {
   gif: "image/gif",
   svg: "image/svg+xml",
   webp: "image/webp",
+  avif: "image/avif",
   bmp: "image/bmp",
 };
 
@@ -55,19 +67,25 @@ export function riebeckiteContentAssets(
       const base = server.config.base;
       const publicDir = server.config.publicDir;
       let cachedManifest: unknown;
-      let cachedPaths = new Set<string>();
+      let cachedAssets: PublicContentAssets = {
+        paths: new Set<string>(),
+        generated: new Map<string, Uint8Array | string>(),
+      };
 
-      const resolvePublicImagePaths = async (): Promise<Set<string>> => {
+      const resolvePublicAssets = async (): Promise<PublicContentAssets> => {
         const module = await loadContentModule(server, options.appRoot());
         const manifest = (await module.content?.getManifest?.()) as
           | PublicContentManifest
           | undefined;
-        if (!manifest) return new Set();
+        if (!manifest) return { paths: new Set(), generated: new Map() };
         if (manifest !== cachedManifest) {
           cachedManifest = manifest;
-          cachedPaths = collectPublicImagePaths(manifest);
+          cachedAssets = {
+            paths: collectPublicImagePaths(manifest),
+            generated: collectGeneratedImageContents(manifest),
+          };
         }
-        return cachedPaths;
+        return cachedAssets;
       };
 
       const middleware: AssetMiddleware = async (request, response, next) => {
@@ -77,7 +95,7 @@ export function riebeckiteContentAssets(
             return;
           }
           const logicalPath = toContentPath(request.url, base);
-          if (!logicalPath || !isImagePath(logicalPath)) {
+          if (!logicalPath) {
             next();
             return;
           }
@@ -90,13 +108,9 @@ export function riebeckiteContentAssets(
             next();
             return;
           }
-          const available = await resolvePublicImagePaths();
-          if (!available.has(logicalPath)) {
-            next();
-            return;
-          }
-          const file = path.join(contentRoot, logicalPath);
-          if (!isPathInsideDirectory(contentRoot, file)) {
+          const available = await resolvePublicAssets();
+          const generated = available.generated.get(logicalPath);
+          if (generated === undefined && !available.paths.has(logicalPath)) {
             next();
             return;
           }
@@ -104,16 +118,17 @@ export function riebeckiteContentAssets(
             next();
             return;
           }
-          const content = await fs.readFile(file);
-          response.statusCode = 200;
-          response.setHeader("Content-Type", contentType);
-          response.setHeader("Content-Length", String(content.byteLength));
-          response.setHeader("Cache-Control", "no-cache");
-          if (request.method === "HEAD") {
-            response.end();
+          if (generated !== undefined) {
+            sendImage(request, response, contentType, generated);
             return;
           }
-          response.end(content);
+          const file = path.join(contentRoot, logicalPath);
+          if (!isPathInsideDirectory(contentRoot, file)) {
+            next();
+            return;
+          }
+          const content = await fs.readFile(file);
+          sendImage(request, response, contentType, content);
           return;
         } catch {
           next();
@@ -138,6 +153,19 @@ export function collectPublicImagePaths(
     }
   }
   return paths;
+}
+
+export function collectGeneratedImageContents(
+  manifest: PublicContentManifest,
+): Map<string, Uint8Array | string> {
+  const contents = new Map<string, Uint8Array | string>();
+  for (const output of manifest.generatedOutputs ?? []) {
+    if (output.content === undefined) continue;
+    const normalized = normalizeContentPath(output.path);
+    if (!imageContentType(normalized)) continue;
+    contents.set(normalized, output.content);
+  }
+  return contents;
 }
 
 export async function collectSiteOwnedOutputPaths(
@@ -199,6 +227,24 @@ export function imageContentType(logicalPath: string): string | undefined {
   const extension = logicalPath.split("/").at(-1)?.split(".").at(-1);
   if (!extension) return undefined;
   return IMAGE_CONTENT_TYPES[extension.toLowerCase()];
+}
+
+function sendImage(
+  request: AssetRequest,
+  response: AssetResponse,
+  contentType: string,
+  content: Uint8Array | string,
+): void {
+  const body = typeof content === "string" ? Buffer.from(content) : content;
+  response.statusCode = 200;
+  response.setHeader("Content-Type", contentType);
+  response.setHeader("Content-Length", String(body.byteLength));
+  response.setHeader("Cache-Control", "no-cache");
+  if (request.method === "HEAD") {
+    response.end();
+    return;
+  }
+  response.end(body);
 }
 
 async function hasSiteOwnedFile(

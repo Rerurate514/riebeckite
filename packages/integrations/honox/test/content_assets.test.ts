@@ -16,6 +16,7 @@ import {
 
 type ManifestFixture = {
   publicEntries: Array<{ assets: Array<{ path: string }> }>;
+  generatedOutputs?: Array<{ path: string; content?: Uint8Array | string }>;
 };
 
 type AssetServerFake = {
@@ -62,7 +63,10 @@ function createClient(
   fake: AssetServerFake,
   appRoot: string,
 ): {
-  get(url: string): Promise<{
+  get(
+    url: string,
+    method?: string,
+  ): Promise<{
     status: number;
     headers: Record<string, string>;
     body: Buffer;
@@ -88,7 +92,7 @@ function createClient(
   hook(fake.server);
 
   return {
-    get: async (url: string) => {
+    get: async (url: string, method = "GET") => {
       const headers: Record<string, string> = {};
       const chunks: Buffer[] = [];
       let nexted = false;
@@ -105,7 +109,7 @@ function createClient(
       };
       await new Promise<void>((resolve) => {
         settle = resolve;
-        handler?.({ method: "GET", url }, response, () => {
+        handler?.({ method, url }, response, () => {
           nexted = true;
           settle();
         });
@@ -174,6 +178,7 @@ describe("imageContentType", () => {
   it("maps known image extensions", () => {
     assert.equal(imageContentType("attachments/a.png"), "image/png");
     assert.equal(imageContentType("attachments/a.JPG"), "image/jpeg");
+    assert.equal(imageContentType("attachments/a.avif"), "image/avif");
     assert.equal(imageContentType("attachments/a.pdf"), undefined);
   });
 });
@@ -254,6 +259,80 @@ describe("riebeckiteContentAssets", () => {
     assert.equal(fake.manifestCalls() <= 2, true);
   });
 
+  it("serves plugin-generated image variants that exist only in memory", async () => {
+    const appRoot = createTempRoot();
+    writeFile(path.join(appRoot, "vault/attachments"), "sample.png", "SOURCE");
+    const fake = createServer({
+      appRoot,
+      publicDir: path.join(appRoot, "public"),
+      manifest: {
+        publicEntries: [{ assets: [{ path: "attachments/sample.png" }] }],
+        generatedOutputs: [
+          {
+            path: "attachments/sample-640.webp",
+            content: Buffer.from("VARIANT-WEBP"),
+          },
+          {
+            path: "attachments/sample-640.avif",
+            content: Buffer.from("VARIANT-AVIF"),
+          },
+        ],
+      },
+    });
+    const client = createClient(fake, appRoot);
+
+    const webp = await client.get("/attachments/sample-640.webp");
+    const avif = await client.get("/attachments/sample-640.avif");
+
+    assert.equal(webp.nexted, false);
+    assert.equal(webp.status, 200);
+    assert.equal(webp.headers["Content-Type"], "image/webp");
+    assert.equal(webp.body.toString("utf8"), "VARIANT-WEBP");
+    assert.equal(avif.nexted, false);
+    assert.equal(avif.headers["Content-Type"], "image/avif");
+    assert.equal(avif.body.toString("utf8"), "VARIANT-AVIF");
+  });
+
+  it("answers HEAD for generated variants without a body", async () => {
+    const appRoot = createTempRoot();
+    const fake = createServer({
+      appRoot,
+      publicDir: path.join(appRoot, "public"),
+      manifest: {
+        publicEntries: [{ assets: [{ path: "attachments/sample.png" }] }],
+        generatedOutputs: [
+          { path: "attachments/sample-640.webp", content: "VARIANT" },
+        ],
+      },
+    });
+    const client = createClient(fake, appRoot);
+
+    const response = await client.get("/attachments/sample-640.webp", "HEAD");
+
+    assert.equal(response.nexted, false);
+    assert.equal(response.status, 200);
+    assert.equal(response.headers["Content-Length"], "7");
+    assert.equal(response.body.byteLength, 0);
+  });
+
+  it("does not serve deferred generated outputs", async () => {
+    const appRoot = createTempRoot();
+    const fake = createServer({
+      appRoot,
+      publicDir: path.join(appRoot, "public"),
+      manifest: {
+        publicEntries: [{ assets: [{ path: "attachments/sample.png" }] }],
+        generatedOutputs: [{ path: "attachments/sample-640.webp" }],
+      },
+    });
+    const client = createClient(fake, appRoot);
+
+    assert.equal(
+      (await client.get("/attachments/sample-640.webp")).nexted,
+      true,
+    );
+  });
+
   it("does not serve assets that no public entry references", async () => {
     const appRoot = createTempRoot();
     writeFile(
@@ -325,6 +404,9 @@ describe("riebeckiteContentAssets", () => {
       publicDir: path.join(appRoot, "public"),
       manifest: {
         publicEntries: [{ assets: [{ path: "attachments/sample.png" }] }],
+        generatedOutputs: [
+          { path: "attachments/sample.png", content: "GENERATED" },
+        ],
       },
     });
     const client = createClient(fake, appRoot);

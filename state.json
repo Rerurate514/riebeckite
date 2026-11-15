@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "a1806839-14fc-4402-9997-1a5589c87f8a",
-    "publishedAt": "2026-11-15T05:23:14.336Z",
-    "publicationFingerprint": "33b11ebc8f62900e01b0c13e6f7efba6417315b5af7d8318bd14bcef1ea5479f",
+    "runId": "9bdb9387-e192-40ef-9511-82899286edb7",
+    "publishedAt": "2026-11-15T09:07:22.256Z",
+    "publicationFingerprint": "5500c830ea437f54a911fbf020261b13e5ef5188d83ab10b727e931f1c47650a",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -3690,16 +3690,16 @@
         "permalink": "/docs/guides/editor-integration",
         "title": "Editor integration",
         "visibility": "public",
-        "fingerprint": "562c56ed4dc46e0f41d9617a29f70c834ceb846724c841f96010ea3c24aebbc7",
-        "contentFingerprint": "9a0fff04b00c67e66d5c49aa9382ed0076ec43c207f7ad9e7020588772f4f26d"
+        "fingerprint": "9273217a8c20dbe21347e37f321798194800610ca6247559788f500af94ba81e",
+        "contentFingerprint": "ef7bd07d0330dae08f680040126243fdee8ca252194b50f2911f567a7a5da0b9"
       },
       {
         "slug": "docs/guides/editor-integration.ja",
         "permalink": "/ja/docs/guides/editor-integration",
         "title": "エディタ連携",
         "visibility": "public",
-        "fingerprint": "95eb2b72ffacfa3959cf0847bec3c9050a51e11ae0398f53b185d81a078ecd43",
-        "contentFingerprint": "705978f51a531267fa370178619b8f207c20dc835beba6caed4cc1f5cf80b9a9"
+        "fingerprint": "1d08eaa10a017f6f44e6e2eac1be2aea879a74e69d221a90c24de8cbb8c83297",
+        "contentFingerprint": "87eee803b8e0274972f53858ab31cfe026a762c740f61f17f5f8cbef362f7ff2"
       },
       {
         "slug": "docs/guides/local-plugin-development",
@@ -5610,16 +5610,16 @@
         "permalink": "/docs/plugins/showcase/knowledge-and-data",
         "title": "knowledge-and-data",
         "visibility": "public",
-        "fingerprint": "dbd69e99b1ad0f32d441b0e8bd2d6362cc6844c2589bc584ce5a0b7d61559f88",
-        "contentFingerprint": "3b776457625b4857805f54c016fbaa2cc0861ebbfd6c86defae1a1e0c3e35ca9"
+        "fingerprint": "0c195566e1b954e3ed475a16417e5d519ee617a252e8fb386749430285fbd581",
+        "contentFingerprint": "ea61ea322419f6d87d7a5097c7f4d0b4c41020a4c17b84a4992b40f97b0f043a"
       },
       {
         "slug": "docs/plugins/showcase/knowledge-and-data.ja",
         "permalink": "/ja/docs/plugins/showcase/knowledge-and-data",
         "title": "ナレッジとデータ",
         "visibility": "public",
-        "fingerprint": "bf7c272ee66e5bcade1c5df19d4a9760baa04279e279e3e7c027c00589a23a3a",
-        "contentFingerprint": "49bf2848276a6278a145ac44debbfe2e1b283e7a6e8820beba16a382a9642457"
+        "fingerprint": "81e18ffe3ebd537666c7b1ff4a04965cbc54e1710dd98660f280db6765a5b132",
+        "contentFingerprint": "a6d07378b03cf18312d89069ede3c255c2525421530757eb3ba9b99d89040a65"
       },
       {
         "slug": "docs/plugins/showcase/media",
@@ -5802,16 +5802,16 @@
         "permalink": "/docs/plugins/vault-heatmap",
         "title": "Vault Heatmap",
         "visibility": "public",
-        "fingerprint": "74f46f7d80e2fcb841ca621dd7e4d0b80f7f4efc7512e2ba28f2144c1697475e",
-        "contentFingerprint": "8fe9aa1ec75ee24fafdb822b5bf7fd090f630790895a0c0d84caf120d181dd42"
+        "fingerprint": "76dd04689add1ee1f5e7d39af6a72b2c94a7b93b8a5c8ad132129960a53a7b56",
+        "contentFingerprint": "6ced3d1aee9c0cfbbb98a56a40d37944771c1da3a6abcf87fc902010e1d79c29"
       },
       {
         "slug": "docs/plugins/vault-heatmap.ja",
         "permalink": "/ja/docs/plugins/vault-heatmap",
         "title": "Vault Heatmap",
         "visibility": "public",
-        "fingerprint": "57be13c015eb34d6487369c254248d66c1e230518172f4cae2255edc4acd445c",
-        "contentFingerprint": "ea241448f60bfe6a43558bdd649cabf1cb7798094e84b54a6483c0893e4ddd6b"
+        "fingerprint": "87136262e980acf4a252754fad8b64ddf1e501a634a79dbf39aabdc039125c92",
+        "contentFingerprint": "dda99e26aa8fdfe4aa6a5143ebad0be832dc310e7ae1fb3cd49a88e660cda68b"
       },
       {
         "slug": "docs/plugins/vega-lite",
@@ -6378,16 +6378,16 @@
         "permalink": "/docs/releases",
         "title": "Release Notes",
         "visibility": "public",
-        "fingerprint": "4193bedbe2fe11388fb03853a529d85cafa6a28c11fa78c6fa6236721018e3d6",
-        "contentFingerprint": "f177621f52772c85a42b17458f686d1e8e7acd7a2dc18a72f064e74b529457f0"
+        "fingerprint": "daf1233c6d7e148b9fe5306668f4118d08eb533f7ea81b8565c3b1c19416533f",
+        "contentFingerprint": "f2afacf942201091ecc8edeb11cbcd57457983bdd5786e6e26411b953f1d17b1"
       },
       {
         "slug": "docs/releases.ja",
         "permalink": "/ja/docs/releases",
         "title": "リリースノート",
         "visibility": "public",
-        "fingerprint": "3edc576cf50b6dab625abdcc0f90eb6962f4df89951c02961ad051b6186d8afb",
-        "contentFingerprint": "e8643aeec8a67be7a908e94d091c4429d124eeb0cf795bfae43005a5dc1889b6"
+        "fingerprint": "7aaca88ad0c1d6be6943f7e295bb7bb62ead7fbf7a3845ec5482d94563f7c5bc",
+        "contentFingerprint": "de1b6eb2eb7129216ef847e7752a9c1ed49071b3053604ba7a8f4e23e24bbc8e"
       },
       {
         "slug": "docs/security",
@@ -6822,7 +6822,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "9970d2a71b06769e479be384c0d379bba2c7e61ebfacfbfd79636407c7204888",
+    "artifactFingerprint": "ade9b03186f8f2e576885398d3c883ed3b3a5f752ce4ce76a0eaee9cec5ee507",
     "provider": "cloudflare-workers"
   }
 }

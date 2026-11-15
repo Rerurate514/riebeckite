@@ -5,7 +5,7 @@ disabled by default; mutations require a separate explicit capability. Start a
 site with an explicit pairing token:
 
 ```sh
-riebeckite dev --bridge-token <at-least-32-character-token>
+RIEBECKITE_BRIDGE_TOKEN=<at-least-32-character-token> riebeckite dev
 ```
 
 The public development-server URL exposes `GET /__riebeckite/bridge/bootstrap`.

@@ -3,7 +3,7 @@
 Bridge はエディタ連携用の開発時限定 API です。読み取り機能は標準で無効で、変更機能には別の明示的なCapabilityが必要です。32文字以上のペアリングトークンを明示してサイトを起動してください。
 
 ```sh
-riebeckite dev --bridge-token <at-least-32-character-token>
+RIEBECKITE_BRIDGE_TOKEN=<at-least-32-character-token> riebeckite dev
 ```
 
 開発サーバーの `GET /__riebeckite/bridge/bootstrap` に `x-riebeckite-bridge-token` を付けて要求すると、loopback 限定のプライベート origin を返します。その origin に対し、同じトークンと `x-riebeckite-bridge-protocol: 1` を付けて要求します。

@@ -18,7 +18,7 @@ Read the documents that match the change before editing. These rules supplement,
 |File split, merge, size review, or dependency-boundary change|[Source Health](./source-health.md)|
 |Public contract, architecture boundary, design-principle exception, or release policy change|[Architecture Decision Records](./adr/README.md)|
 
-When a task spans categories, read every corresponding document. For public API behavior, configuration, or user-facing commands, also consult the matching human documentation under `../en/` or `../ja/` so implementation and documentation remain aligned.
+When a task spans categories, read every corresponding document. For public API behavior, configuration, or user-facing commands, also consult the matching human documentation under `../docs/` (`X.md` for English, `X.ja.md` for Japanese) so implementation and documentation remain aligned.
 
 ## Repository map and ownership
 
@@ -33,7 +33,7 @@ website/                concrete application: routes, islands, site UI
 docs/
   agents/               this rule-oriented guide
   agents/adr/           architecture decision records
-  en/, ja/              human-facing documentation
+  docs/                 human-facing documentation (.md with .ja.md translations)
 changes/
   unreleased/           pending user-facing change entries
   released/<version>/   archived entries and release notes

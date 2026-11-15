@@ -16,8 +16,7 @@
     var(--rr-autocardlink-border) 6%,
     transparent
   );
-  --rr-autocardlink-card-height: 152px;
-  --rr-autocardlink-image-max-height: 15rem;
+  --rr-autocardlink-card-height: 8em;
 
   position: relative;
   container-type: inline-size;
@@ -46,13 +45,15 @@
 
 .rr-cardlink__body {
   display: flex;
-  min-height: var(--rr-autocardlink-card-height, 152px);
+  height: var(--rr-autocardlink-card-height, 8em);
+  overflow: hidden;
 }
 
 .rr-cardlink__image-frame {
   box-sizing: border-box;
   flex: none;
   align-self: stretch;
+  max-width: 50%;
   overflow: clip;
   border-right: 1px solid var(--rr-autocardlink-border);
   background: var(--rr-autocardlink-surface);
@@ -62,16 +63,18 @@
   box-sizing: border-box;
   display: block;
   width: auto;
+  max-width: 100%;
   height: 100%;
   margin: 0;
+  object-fit: cover;
 }
 
 .rr-cardlink__content {
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 8px;
-  padding: 16px;
+  gap: 0.18em;
+  padding: 0.5em 0.6em;
   min-width: 0;
 }
 
@@ -88,7 +91,7 @@
   overflow: hidden;
   color: var(--rr-autocardlink-muted);
   font-size: 0.875em;
-  line-height: 1.7;
+  line-height: 1.4;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: var(--rr-autocardlink-description-max-line, 3);
   line-clamp: var(--rr-autocardlink-description-max-line, 3);
@@ -100,20 +103,28 @@
   line-clamp: unset;
 }
 
+.rr-cardlink--description-unlimited .rr-cardlink__body {
+  height: auto;
+  min-height: var(--rr-autocardlink-card-height, 8em);
+}
+
+.rr-cardlink--description-unlimited .rr-cardlink__image-frame {
+  align-self: flex-start;
+  height: var(--rr-autocardlink-card-height, 8em);
+}
+
 .rr-cardlink__meta {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-top: auto;
-  padding-top: 8px;
-  border-top: 1px solid var(--rr-autocardlink-rule);
   color: var(--rr-autocardlink-accent);
   font-size: 0.8125em;
 }
 
 .rr-cardlink__favicon {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   margin: 0;
 }
 
@@ -164,7 +175,7 @@
   stroke-width: 2;
 }
 
-@container (max-width: 480px) {
+@container (max-width: 500px) {
   .rr-cardlink__description {
     display: none;
   }
@@ -179,7 +190,7 @@
   }
 }
 
-@container (max-width: 320px) {
+@container (max-width: 300px) {
   .rr-cardlink__image-frame {
     display: none;
   }
@@ -189,23 +200,5 @@
   .rr-cardlink__copy {
     opacity: 1;
     visibility: visible;
-  }
-}
-
-@media (max-width: 700px) {
-  .rr-cardlink__body {
-    display: block;
-    height: auto;
-  }
-
-  .rr-cardlink__image-frame {
-    border-right: 0;
-    border-bottom: 1px solid var(--rr-autocardlink-border);
-  }
-
-  .rr-cardlink__image {
-    width: 100%;
-    height: auto;
-    max-height: var(--rr-autocardlink-image-max-height, 15rem);
   }
 }

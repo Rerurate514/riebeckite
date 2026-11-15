@@ -134,8 +134,8 @@ Mutation is disabled unless both `RIEBECKITE_BRIDGE_MUTATION_TOKEN` and
 `RIEBECKITE_BRIDGE_MUTATION_APPROVAL_TOKEN` are set to separate values of at
 least 32 characters before starting the development server. They are environment
 variables rather than command-line options, so they are not exposed in process
-arguments. This is a separate capability: the read token can create a plan; the
-mutation token can apply an already approved plan but cannot approve one. `POST
+arguments. This is a separate capability: the mutation token can create a plan
+and apply an already approved plan, but cannot approve one. `POST
 /__riebeckite/bridge/v1/mutations/plan` accepts existing content mutation
 operations and returns the unmodified `ContentMutationPlan`. A human must review
 the persisted plan in an interactive terminal with `riebeckite bridge approve

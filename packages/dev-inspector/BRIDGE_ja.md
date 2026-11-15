@@ -85,7 +85,7 @@ Publication 応答では、`entry` と `publication` の両方に `publishAt` �
 
 プライベートリスナーは `127.0.0.1` だけに bind し、非 loopback の Host・接続、`Origin`、転送ヘッダーを拒否します。CORS は有効にしません。トークン不正は 403、Protocol 非互換は `INCOMPATIBLE_PROTOCOL` と対応 Version を含む 426 です。トークンを API 応答に含めることもありません。
 
-変更 API は、開発サーバーの起動前に32文字以上で互いに異なる `RIEBECKITE_BRIDGE_MUTATION_TOKEN` と `RIEBECKITE_BRIDGE_MUTATION_APPROVAL_TOKEN` を環境変数として設定した場合だけ有効です。コマンドライン引数に秘密情報を渡さないため、プロセス引数に露出しません。読み取りトークンは Plan を作成できるだけです。Mutation Token は承認済み Plan を適用できますが、承認できません。`POST /__riebeckite/bridge/v1/mutations/plan` は既存の Content Mutation Operation を受け取り、元の `ContentMutationPlan` を返します。人間は対話端末で `riebeckite bridge approve <plan-id>` を実行し、永続化された Plan を確認してから承認します。サーバーは承認トークンで署名された Plan ID と内容ハッシュ、5分の期限、一回限りの使用状態を検証してから `POST /mutations/<plan-id>/apply` を実行します。承認トークンと Bearer 型の承認 ID は HTTP、URL、API 応答に渡しません。Apply は既存の fingerprint、lock、journal、backup、パス検証を利用します。承認または fingerprint の検証で Apply が拒否された場合は、`applied: false` と既存の `conflicts` 形式、HTTP 409 を返します。承認による拒否は次のコードで区別します。
+変更 API は、開発サーバーの起動前に32文字以上で互いに異なる `RIEBECKITE_BRIDGE_MUTATION_TOKEN` と `RIEBECKITE_BRIDGE_MUTATION_APPROVAL_TOKEN` を環境変数として設定した場合だけ有効です。コマンドライン引数に秘密情報を渡さないため、プロセス引数に露出しません。Mutation Token はPlanの作成と、承認済み Plan の適用ができますが、承認はできません。`POST /__riebeckite/bridge/v1/mutations/plan` は既存の Content Mutation Operation を受け取り、元の `ContentMutationPlan` を返します。人間は対話端末で `riebeckite bridge approve <plan-id>` を実行し、永続化された Plan を確認してから承認します。サーバーは承認トークンで署名された Plan ID と内容ハッシュ、5分の期限、一回限りの使用状態を検証してから `POST /mutations/<plan-id>/apply` を実行します。承認トークンと Bearer 型の承認 ID は HTTP、URL、API 応答に渡しません。Apply は既存の fingerprint、lock、journal、backup、パス検証を利用します。承認または fingerprint の検証で Apply が拒否された場合は、`applied: false` と既存の `conflicts` 形式、HTTP 409 を返します。承認による拒否は次のコードで区別します。
 
 | コード | 条件 | 復旧手順 |
 | --- | --- | --- |

@@ -12,7 +12,10 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 ## [Unreleased]
 
-No user-facing changes recorded.
+### Fixed
+
+- The development inspector registers its bridge middleware before other Vite plugins, so the bridge endpoint answers first when another plugin also handles the same request.
+  Packages: `@riebeckite/dev-inspector`
 
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.48...HEAD
 

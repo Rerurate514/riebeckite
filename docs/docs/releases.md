@@ -14,7 +14,10 @@ The Unreleased section lists changes that are merged but not yet published to np
 
 ## Unreleased
 
-No user-facing changes recorded.
+### Fixed
+
+- The development inspector registers its bridge middleware before other Vite plugins, so the bridge endpoint answers first when another plugin also handles the same request.
+  Packages: `@riebeckite/dev-inspector`
 
 ## 0.0.48 - 2026-11-15
 

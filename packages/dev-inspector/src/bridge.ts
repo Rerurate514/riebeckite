@@ -23,6 +23,7 @@ export function riebeckiteBridge(options: RiebeckiteBridgeOptions): Plugin {
   return {
     name: "riebeckite-bridge",
     apply: "serve",
+    enforce: "pre",
     configureServer(server) {
       const token = options.token;
       if (!token || token.length < 32) return;

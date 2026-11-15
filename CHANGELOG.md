@@ -12,6 +12,12 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 ## [Unreleased]
 
+No user-facing changes recorded.
+
+[Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.49...HEAD
+
+## [0.0.49] - 2026-11-15
+
 ### Fixed
 
 - The development inspector registers its bridge middleware before other Vite plugins, so the bridge endpoint answers first when another plugin also handles the same request.
@@ -20,7 +26,10 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 - Rebuilding a package removes its previous output directory first, so a published package no longer carries build files left behind by earlier builds. `@riebeckite/cli` 0.0.48 shipped hundreds of unreferenced chunk files that made the unpacked package about 25 MB larger than the built output.
   Packages: `@riebeckite/cli`
 
-[Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.48...HEAD
+- The graph renderer no longer throws while it is created. Its camera, drawing, and animation controllers now receive the renderer context when they are created, so resizing, updating, zooming, and drawing use that context instead of a missing argument. Local graphs and the garden explorer draw again instead of leaving an empty canvas.
+  Packages: `@riebeckite/graph`
+
+[0.0.49]: https://github.com/Rerurate514/riebeckite/compare/v0.0.48...v0.0.49
 
 ## [0.0.48] - 2026-11-15
 

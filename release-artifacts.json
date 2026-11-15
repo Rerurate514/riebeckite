@@ -2,13 +2,13 @@
   "version": 1,
   "packages": {
     "@riebeckite/analytics-cloudflare": "1699c60c49fd5fa13b209277cff403b86e627be6afd4161d48a2715ded48e7b2",
-    "@riebeckite/cli": "9624db470546b6a06e8c80104130cca16c5cc57948d14373c0b66aa8186af32b",
+    "@riebeckite/cli": "3eab2515f31eeba1b602099462e16ef8836979895fcdc03ce7392e22c9afef5b",
     "@riebeckite/core": "b88ba338a58a89c37081b55352ccff3f42efafd6a4ae17479a049fff2fdf1019",
-    "@riebeckite/dev-inspector": "0926bdd24aece91c0c0587e3b25c1dce337df8a77fdb4d716761e20b316be039",
+    "@riebeckite/dev-inspector": "aabb94f114ac5bf3fc847af9bc06958ae3868f1869def5540d017bb95efd690f",
     "@riebeckite/diagnostics": "4d1beb0ef8c1f8fc3f1f34fa4ebbd977541bc750077c3b6d6dc3fc125e0d492d",
     "@riebeckite/diagram": "7292ad822513f557bca79d6441fcc9e490ec30ea2053db6df991cbfc5e30d019",
     "@riebeckite/git-history": "045b97db9bf4521266f557f336ed5561eb1c484d1b96def37d4f1525dae29a4d",
-    "@riebeckite/graph": "8d6800cd7abc4c8d1726014370884e94939a1b7cbb6489a73a659d8313c5044d",
+    "@riebeckite/graph": "2cead1bb993085fd3f1d251f7b94f1a32f465d57889ab609b53e166ad0902b75",
     "@riebeckite/honox": "d7d9966526d6b210596055ca979322f6da2a18daec7dadd69a62da7fb1d07ccb",
     "@riebeckite/node": "56ba29291fce4af1410a3cb506e91b19afe523ec472863ddf28da8982b0683e9",
     "@riebeckite/og-image": "47df0399228ce9520c34e969b163d396f05bbc6f9772e3c0cf4594e995be9be9",
@@ -117,6 +117,6 @@
     "@riebeckite/theme-tokyonight": "1d6a6fe13fb472f5695d1ae726febfd9b15df53c0f40a19677e844571c182cb5",
     "@riebeckite/ui": "39952e735469d7596980545d1683733a72284987e569af1ffdb45c8cf8048bbd",
     "@riebeckite/webmention-cloudflare": "2de644d5b9fd119c2073c6b4894505b0a1eb8b1713a0614c51638bf90c349233",
-    "create-riebeckite": "ac142057842b64f1cf6d233ddd8755ce0d19ff2be5d88fcc2ae2435785713f90"
+    "create-riebeckite": "fec267317c4413f8263f8d9030503a964178265527b65454a2ac87bc8bd40f4c"
   }
 }

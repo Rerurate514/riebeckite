@@ -1,7 +1,7 @@
 {
   "version": 1,
   "packages": {
-    "@riebeckite/analytics-cloudflare": "13bc474a77f0975f0cfec2302d5e1aa7abaa1308c50171085d1161acb9b167a9",
+    "@riebeckite/analytics-cloudflare": "1699c60c49fd5fa13b209277cff403b86e627be6afd4161d48a2715ded48e7b2",
     "@riebeckite/cli": "9624db470546b6a06e8c80104130cca16c5cc57948d14373c0b66aa8186af32b",
     "@riebeckite/core": "b88ba338a58a89c37081b55352ccff3f42efafd6a4ae17479a049fff2fdf1019",
     "@riebeckite/dev-inspector": "0926bdd24aece91c0c0587e3b25c1dce337df8a77fdb4d716761e20b316be039",

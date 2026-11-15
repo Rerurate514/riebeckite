@@ -70,6 +70,22 @@ test("a root README change does not change the artifact hash", () => {
   assert.equal(hashPackageArtifacts(root, directory).hash, before);
 });
 
+test("line endings in a published file do not change the artifact hash", () => {
+  const root = createRoot();
+  const directory = "packages/example";
+
+  writePackage(root, directory, {
+    contents: { "dist/index.js": "export const value = 1;\n" },
+  });
+  const before = hashPackageArtifacts(root, directory).hash;
+
+  writePackage(root, directory, {
+    contents: { "dist/index.js": "export const value = 1;\r\n" },
+  });
+
+  assert.equal(hashPackageArtifacts(root, directory).hash, before);
+});
+
 test("a published file change changes the artifact hash", () => {
   const root = createRoot();
   const directory = "packages/example";

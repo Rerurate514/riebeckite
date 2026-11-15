@@ -102,6 +102,11 @@ function getConcurrencyLimit() {
 }
 
 function runBuild(directory, manifest) {
+  fs.rmSync(path.join(repositoryRoot, directory, "dist"), {
+    recursive: true,
+    force: true,
+  });
+
   return new Promise((resolve, reject) => {
     const shellCommand = process.platform === "win32";
     const child = shellCommand

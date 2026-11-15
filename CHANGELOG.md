@@ -17,6 +17,9 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 - The development inspector registers its bridge middleware before other Vite plugins, so the bridge endpoint answers first when another plugin also handles the same request.
   Packages: `@riebeckite/dev-inspector`
 
+- Rebuilding a package removes its previous output directory first, so a published package no longer carries build files left behind by earlier builds. `@riebeckite/cli` 0.0.48 shipped hundreds of unreferenced chunk files that made the unpacked package about 25 MB larger than the built output.
+  Packages: `@riebeckite/cli`
+
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.48...HEAD
 
 ## [0.0.48] - 2026-11-15

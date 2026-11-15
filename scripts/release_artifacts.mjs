@@ -35,6 +35,14 @@ function sha256(buffer) {
   return crypto.createHash("sha256").update(buffer).digest("hex");
 }
 
+function hashPublishedFile(buffer) {
+  return sha256(
+    buffer.includes(0)
+      ? buffer
+      : Buffer.from(buffer.toString("utf8").replaceAll("\r\n", "\n")),
+  );
+}
+
 function hashManifest(manifest) {
   const { version: _version, ...rest } = manifest;
   return sha256(JSON.stringify(rest));
@@ -101,7 +109,7 @@ export function hashPackageArtifacts(root, directory) {
   const files = published
     .map((absolute) => ({
       relative: path.relative(packageRoot, absolute).split(path.sep).join("/"),
-      hash: sha256(fs.readFileSync(absolute)),
+      hash: hashPublishedFile(fs.readFileSync(absolute)),
     }))
     .sort((left, right) => left.relative.localeCompare(right.relative));
 

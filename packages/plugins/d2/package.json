@@ -1,6 +1,6 @@
 {
   "name": "@riebeckite/plugin-d2",
-  "version": "0.0.50",
+  "version": "0.1.0",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -22,8 +22,13 @@
   },
   "dependencies": {
     "@d2lang/d2": "^0.1.34",
-    "@riebeckite/core": "workspace:*",
     "@riebeckite/diagram": "workspace:*"
+  },
+  "peerDependencies": {
+    "@riebeckite/core": "workspace:^"
+  },
+  "devDependencies": {
+    "@riebeckite/core": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

@@ -1,6 +1,6 @@
 {
   "name": "@riebeckite/ui",
-  "version": "0.0.50",
+  "version": "0.1.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -88,8 +88,13 @@
     "./styles/loading.css": "./styles/loading.css"
   },
   "dependencies": {
-    "@riebeckite/core": "workspace:*",
     "hono": "catalog:"
+  },
+  "peerDependencies": {
+    "@riebeckite/core": "workspace:^"
+  },
+  "devDependencies": {
+    "@riebeckite/core": "workspace:*"
   },
   "scripts": {
     "build": "node ../../scripts/build_package.mjs",

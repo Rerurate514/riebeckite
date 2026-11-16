@@ -1,6 +1,6 @@
 {
   "name": "@riebeckite/honox",
-  "version": "0.0.50",
+  "version": "0.1.0",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -40,10 +40,11 @@
   },
   "dependencies": {
     "@babel/parser": "^7.29.3",
-    "@riebeckite/core": "workspace:*",
     "@riebeckite/dev-inspector": "workspace:*",
     "@riebeckite/node": "workspace:*",
+    "@riebeckite/og-image": "workspace:*",
     "@riebeckite/plugin-color-mode": "workspace:*",
+    "@riebeckite/runtime": "workspace:*",
     "@riebeckite/spa": "workspace:*",
     "@riebeckite/ui": "workspace:*",
     "esbuild": "catalog:",
@@ -51,7 +52,11 @@
     "honox": "0.1.62",
     "vite": "catalog:"
   },
+  "peerDependencies": {
+    "@riebeckite/core": "workspace:^"
+  },
   "devDependencies": {
+    "@riebeckite/core": "workspace:*",
     "@d2lang/d2": "^0.1.34",
     "@hono/node-server": "2.1.8",
     "@hono/vite-build": "^1.11.1",

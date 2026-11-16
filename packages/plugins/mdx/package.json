@@ -1,6 +1,6 @@
 {
   "name": "@riebeckite/plugin-mdx",
-  "version": "0.0.50",
+  "version": "0.1.0",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -15,11 +15,16 @@
   },
   "dependencies": {
     "@mdx-js/rollup": "^3.1.1",
-    "@riebeckite/core": "workspace:*",
     "remark-mdx": "^3.1.1",
     "remark-parse": "catalog:",
     "remark-stringify": "^11.0.0",
     "unified": "catalog:"
+  },
+  "peerDependencies": {
+    "@riebeckite/core": "workspace:^"
+  },
+  "devDependencies": {
+    "@riebeckite/core": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

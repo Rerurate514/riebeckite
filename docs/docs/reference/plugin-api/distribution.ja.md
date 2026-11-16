@@ -134,7 +134,7 @@ await build({
 }
 ```
 
-`prepack` でビルドするようにしておけば、`npm pack` と `npm publish` が常に最新の成果物を含むようになります。`@riebeckite/core` は `dependencies` に置くのが最も簡単です。サイト側と同じインスタンスを共有したい場合は `peerDependencies` でもかまいません。インポートする変換用の依存関係（`unist-util-visit`、`unified`、remark や rehype のパッケージなど）は `dependencies` に宣言してください。公開するパッケージの `exports` を TypeScript のソース（`./index.ts`）へ向けないでください。
+`prepack` でビルドするようにしておけば、`npm pack` と `npm publish` が常に最新の成果物を含むようになります。プラグインは `@riebeckite/core` を `peerDependencies` と `devDependencies` の両方に宣言してください。実行時のインスタンスはサイト側が提供し、開発用依存はプラグインのビルドとテストに使います。インポートする変換用の依存関係（`unist-util-visit`、`unified`、remark や rehype のパッケージなど）は `dependencies` に宣言してください。公開するパッケージの `exports` を TypeScript のソース（`./index.ts`）へ向けないでください。
 
 公式のプラグインも、可能な限り同じ公開 API の利用者として実装します。
 

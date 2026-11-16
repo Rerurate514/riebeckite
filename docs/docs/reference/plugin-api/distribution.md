@@ -70,9 +70,9 @@ there is no client).
 ```
 
 Building in `prepack` keeps `npm pack` / `npm publish` shipping fresh output.
-Putting `@riebeckite/core` in `dependencies` is the simplest choice; use
-`peerDependencies` instead when the site should provide the module instance.
-Declare each transform dependency you import (`unist-util-visit`, `unified`,
+Plugins must declare `@riebeckite/core` in both `peerDependencies` and
+`devDependencies`: the site provides the runtime instance and the development
+dependency builds and tests the plugin. Declare each transform dependency you import (`unist-util-visit`, `unified`,
 remark/rehype packages) in `dependencies`, and never point a published `exports`
 entry at TypeScript source (`./index.ts`).
 

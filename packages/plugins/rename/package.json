@@ -1,6 +1,6 @@
 {
   "name": "@riebeckite/plugin-rename",
-  "version": "0.0.50",
+  "version": "0.1.0",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -13,10 +13,11 @@
       "default": "./dist/index.js"
     }
   },
-  "dependencies": {
-    "@riebeckite/core": "workspace:*"
+  "peerDependencies": {
+    "@riebeckite/core": "workspace:^"
   },
   "devDependencies": {
+    "@riebeckite/core": "workspace:*",
     "tsx": "^4.22.4"
   },
   "publishConfig": {

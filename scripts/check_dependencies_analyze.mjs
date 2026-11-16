@@ -35,6 +35,7 @@ export function analyzeWorkspace(options = {}) {
   const findings = [];
   const usage = new Map(packages.map((pkg) => [pkg.name, new Set()]));
   const runtimeEdges = new Map(packages.map((pkg) => [pkg.name, new Set()]));
+  const coreUsage = new Set();
   const filesByPackage = new Map();
 
   for (const pkg of packages) {
@@ -58,6 +59,9 @@ export function analyzeWorkspace(options = {}) {
         }
         if (builtins.has(specifier)) continue;
         const name = packageName(specifier);
+        if (name === "@riebeckite/core" && !isTestFile(relativeFile)) {
+          coreUsage.add(pkg.name);
+        }
         if (!declared.has(name) && !declared.has(typesPackageName(name))) {
           findings.push({
             severity: "error",
@@ -96,6 +100,23 @@ export function analyzeWorkspace(options = {}) {
 
   for (const pkg of packages) {
     const kind = packageKind(pkg);
+    if (
+      pkg.name !== "@riebeckite/core" &&
+      pkg.manifest.publishConfig?.access === "public" &&
+      coreUsage.has(pkg.name) &&
+      (pkg.manifest.dependencies?.["@riebeckite/core"] !== undefined ||
+        pkg.manifest.peerDependencies?.["@riebeckite/core"] !== "workspace:^" ||
+        pkg.manifest.devDependencies?.["@riebeckite/core"] !== "workspace:*")
+    ) {
+      findings.push({
+        severity: "error",
+        kind: "core-peer-dependency",
+        package: pkg.name,
+        specifier: "@riebeckite/core",
+        message:
+          'imports "@riebeckite/core" and must declare it as peerDependencies "workspace:^" and devDependencies "workspace:*"',
+      });
+    }
     for (const dependency of runtimeEdges.get(pkg.name) ?? []) {
       const reason = forbiddenDependency(kind, dependency, pkg.name);
       if (!reason) continue;

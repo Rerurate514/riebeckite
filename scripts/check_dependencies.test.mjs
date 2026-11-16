@@ -175,6 +175,43 @@ test("detects dynamic imports but ignores import-like template text", () => {
   assert.deepEqual(specifiers, ["hoisted-package"]);
 });
 
+test("requires public Core consumers to use a peer and development dependency", () => {
+  const root = createWorkspace([
+    ["packages/core", packageAt("@riebeckite/core"), { "index.ts": "" }],
+    [
+      "packages/plugin",
+      packageAt("@riebeckite/plugin-example", {
+        publishConfig: { access: "public" },
+        dependencies: { "@riebeckite/core": "workspace:*" },
+      }),
+      { "index.ts": 'import "@riebeckite/core";\n' },
+    ],
+  ]);
+  const findings = analyze(root).filter(
+    (finding) => finding.kind === "core-peer-dependency",
+  );
+  assert.equal(findings.length, 1);
+});
+
+test("accepts public Core consumers with the shared dependency declaration", () => {
+  const root = createWorkspace([
+    ["packages/core", packageAt("@riebeckite/core"), { "index.ts": "" }],
+    [
+      "packages/plugin",
+      packageAt("@riebeckite/plugin-example", {
+        publishConfig: { access: "public" },
+        peerDependencies: { "@riebeckite/core": "workspace:^" },
+        devDependencies: { "@riebeckite/core": "workspace:*" },
+      }),
+      { "index.ts": 'import type { X } from "@riebeckite/core";\n' },
+    ],
+  ]);
+  assert.deepEqual(
+    analyze(root).filter((finding) => finding.kind === "core-peer-dependency"),
+    [],
+  );
+});
+
 test("fails on forbidden reverse dependencies", () => {
   const root = createWorkspace([
     ["packages/cli", packageAt("@riebeckite/cli"), { "index.ts": "" }],

@@ -1,6 +1,6 @@
 {
   "name": "@riebeckite/preview",
-  "version": "0.0.50",
+  "version": "0.1.0",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -27,14 +27,17 @@
     "dist"
   ],
   "dependencies": {
-    "@riebeckite/core": "workspace:*",
     "@riebeckite/ui": "workspace:*",
     "rehype-parse": "^9.0.1",
     "rehype-sanitize": "^6.0.0",
     "rehype-stringify": "^10.0.1",
     "unified": "catalog:"
   },
+  "peerDependencies": {
+    "@riebeckite/core": "workspace:^"
+  },
   "devDependencies": {
+    "@riebeckite/core": "workspace:*",
     "@riebeckite/plugin-code-tabs": "workspace:*",
     "@riebeckite/plugin-obsidian-markdown": "workspace:*",
     "tsx": "^4.22.4"

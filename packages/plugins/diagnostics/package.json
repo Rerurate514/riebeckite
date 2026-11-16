@@ -1,6 +1,6 @@
 {
   "name": "@riebeckite/plugin-diagnostics",
-  "version": "0.0.50",
+  "version": "0.1.0",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -17,13 +17,16 @@
     "riebeckite-diagnostics": "./dist/bin.js"
   },
   "dependencies": {
-    "@riebeckite/core": "workspace:*",
     "@riebeckite/node": "workspace:*",
     "remark-parse": "catalog:",
     "unified": "catalog:",
     "unist-util-visit": "catalog:"
   },
+  "peerDependencies": {
+    "@riebeckite/core": "workspace:^"
+  },
   "devDependencies": {
+    "@riebeckite/core": "workspace:*",
     "@types/mdast": "catalog:",
     "@types/node": "catalog:",
     "tsx": "^4.22.4"

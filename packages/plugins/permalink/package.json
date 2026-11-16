@@ -1,6 +1,6 @@
 {
   "name": "@riebeckite/plugin-permalink",
-  "version": "0.0.50",
+  "version": "0.1.0",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -14,10 +14,13 @@
     }
   },
   "dependencies": {
-    "@riebeckite/core": "workspace:*",
     "yaml": "^2.9.0"
   },
+  "peerDependencies": {
+    "@riebeckite/core": "workspace:^"
+  },
   "devDependencies": {
+    "@riebeckite/core": "workspace:*",
     "@riebeckite/test": "workspace:*",
     "tsx": "^4.22.4"
   },

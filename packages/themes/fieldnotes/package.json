@@ -1,6 +1,6 @@
 {
   "name": "@riebeckite/theme-fieldnotes",
-  "version": "0.0.50",
+  "version": "0.1.0",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/src/index.js",
@@ -15,7 +15,10 @@
     "./style.css": "./styles/theme.css",
     "./styles/theme.css": "./styles/theme.css"
   },
-  "dependencies": {
+  "peerDependencies": {
+    "@riebeckite/core": "workspace:^"
+  },
+  "devDependencies": {
     "@riebeckite/core": "workspace:*"
   },
   "publishConfig": {

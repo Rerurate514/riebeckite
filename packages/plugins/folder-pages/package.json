@@ -1,6 +1,6 @@
 {
   "name": "@riebeckite/plugin-folder-pages",
-  "version": "0.0.50",
+  "version": "0.1.0",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -14,10 +14,11 @@
     },
     "./style.css": "./style.css"
   },
-  "dependencies": {
-    "@riebeckite/core": "workspace:*"
+  "peerDependencies": {
+    "@riebeckite/core": "workspace:^"
   },
   "devDependencies": {
+    "@riebeckite/core": "workspace:*",
     "@riebeckite/plugin-l10n": "workspace:*",
     "@riebeckite/plugin-taxonomy": "workspace:*",
     "tsx": "^4.22.4"

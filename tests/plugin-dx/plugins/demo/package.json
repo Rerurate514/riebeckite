@@ -35,10 +35,11 @@
     "prepack": "node ../../build-plugins.mjs .",
     "test": "node --import tsx --test \"test/*.test.ts\""
   },
-  "dependencies": {
-    "@riebeckite/core": "0.0.18"
+  "peerDependencies": {
+    "@riebeckite/core": "^0.1.0"
   },
   "devDependencies": {
+    "@riebeckite/core": "^0.1.0",
     "tsx": "^4.22.4",
     "typescript": "^5"
   }

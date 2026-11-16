@@ -1,6 +1,6 @@
 {
   "name": "@riebeckite/plugin-graphviz",
-  "version": "0.0.50",
+  "version": "0.1.0",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -21,9 +21,14 @@
     "./style.css": "./style.css"
   },
   "dependencies": {
-    "@riebeckite/core": "workspace:*",
     "@riebeckite/diagram": "workspace:*",
     "@viz-js/viz": "^3.31.0"
+  },
+  "peerDependencies": {
+    "@riebeckite/core": "workspace:^"
+  },
+  "devDependencies": {
+    "@riebeckite/core": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

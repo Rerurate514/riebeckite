@@ -1,6 +1,6 @@
 {
   "name": "@riebeckite/plugin-diff",
-  "version": "0.0.50",
+  "version": "0.1.0",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -27,12 +27,15 @@
     "./style.css": "./style.css"
   },
   "dependencies": {
-    "@riebeckite/core": "workspace:*",
     "@riebeckite/git-history": "workspace:*",
     "@riebeckite/ui": "workspace:*",
     "hono": "catalog:"
   },
+  "peerDependencies": {
+    "@riebeckite/core": "workspace:^"
+  },
   "devDependencies": {
+    "@riebeckite/core": "workspace:*",
     "@riebeckite/test": "workspace:*",
     "@types/node": "catalog:",
     "tsx": "^4.22.4"

@@ -1,16 +1,19 @@
 {
   "name": "@riebeckite/plugin-icons",
-  "version": "0.0.50",
+  "version": "0.1.0",
   "license": "Apache-2.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "dependencies": {
-    "@riebeckite/core": "workspace:*",
     "@types/mdast": "catalog:",
     "lucide-static": "catalog:",
     "sanitize-html": "catalog:"
   },
+  "peerDependencies": {
+    "@riebeckite/core": "workspace:^"
+  },
   "devDependencies": {
+    "@riebeckite/core": "workspace:*",
     "@types/sanitize-html": "catalog:",
     "remark-parse": "catalog:",
     "unified": "catalog:"

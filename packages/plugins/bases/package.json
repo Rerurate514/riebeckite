@@ -1,6 +1,6 @@
 {
   "name": "@riebeckite/plugin-bases",
-  "version": "0.0.50",
+  "version": "0.1.0",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -15,9 +15,14 @@
     "./style.css": "./style.css"
   },
   "dependencies": {
-    "@riebeckite/core": "workspace:*",
     "@types/mdast": "catalog:",
     "unist-util-visit": "catalog:"
+  },
+  "peerDependencies": {
+    "@riebeckite/core": "workspace:^"
+  },
+  "devDependencies": {
+    "@riebeckite/core": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

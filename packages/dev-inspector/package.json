@@ -1,6 +1,6 @@
 {
   "name": "@riebeckite/dev-inspector",
-  "version": "0.0.50",
+  "version": "0.1.0",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -14,12 +14,15 @@
     }
   },
   "dependencies": {
-    "@riebeckite/core": "workspace:*",
     "@riebeckite/diagnostics": "workspace:*",
     "@riebeckite/node": "workspace:*",
     "vite": "catalog:"
   },
+  "peerDependencies": {
+    "@riebeckite/core": "workspace:^"
+  },
   "devDependencies": {
+    "@riebeckite/core": "workspace:*",
     "@riebeckite/test": "workspace:*",
     "tsx": "^4.22.4"
   },

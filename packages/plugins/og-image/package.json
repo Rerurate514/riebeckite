@@ -1,6 +1,6 @@
 {
   "name": "@riebeckite/plugin-og-image",
-  "version": "0.0.50",
+  "version": "0.1.0",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -14,10 +14,16 @@
     }
   },
   "dependencies": {
-    "@riebeckite/core": "workspace:*",
     "@riebeckite/og-image": "workspace:*",
     "esbuild": "catalog:",
     "hono": "catalog:"
+  },
+  "peerDependencies": {
+    "@riebeckite/core": "workspace:^"
+  },
+  "devDependencies": {
+    "@riebeckite/core": "workspace:*",
+    "tsx": "^4.22.4"
   },
   "files": [
     "LICENSE",
@@ -46,9 +52,6 @@
     "open-graph",
     "og-image"
   ],
-  "devDependencies": {
-    "tsx": "^4.22.4"
-  },
   "publishConfig": {
     "access": "public"
   },

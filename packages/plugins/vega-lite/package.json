@@ -1,6 +1,6 @@
 {
   "name": "@riebeckite/plugin-vega-lite",
-  "version": "0.0.50",
+  "version": "0.1.0",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",
@@ -21,11 +21,16 @@
     "./style.css": "./style.css"
   },
   "dependencies": {
-    "@riebeckite/core": "workspace:*",
     "@riebeckite/diagram": "workspace:*",
     "vega": "^6.4.0",
     "vega-embed": "^7.3.0",
     "vega-lite": "^6.4.3"
+  },
+  "peerDependencies": {
+    "@riebeckite/core": "workspace:^"
+  },
+  "devDependencies": {
+    "@riebeckite/core": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

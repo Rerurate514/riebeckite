@@ -43,6 +43,7 @@ test("exposes its configuration in Development Inspector", async () => {
   const tab = plugin.inspector?.tabs[0];
 
   assert.equal(tab?.id, "og-image");
+  assert.equal(tab?.client, "@riebeckite/plugin-og-image/inspector");
   const data = await tab?.collect?.({} as never);
   assert.deepEqual(data, {
     kind: "key-value",

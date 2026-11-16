@@ -11,7 +11,8 @@
       "import": "./dist/index.js",
       "source": "./index.ts",
       "default": "./dist/index.js"
-    }
+    },
+    "./inspector": "./inspector.js"
   },
   "dependencies": {
     "@riebeckite/og-image": "workspace:*",
@@ -29,6 +30,7 @@
     "LICENSE",
     "README.md",
     "README_ja.md",
+    "inspector.js",
     "dist"
   ],
   "scripts": {

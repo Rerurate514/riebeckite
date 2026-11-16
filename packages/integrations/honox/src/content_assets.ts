@@ -15,6 +15,11 @@ type ContentAssetEntry = { assets?: ReadonlyArray<{ path: string }> };
 type GeneratedOutputEntry = {
   path: string;
   content?: Uint8Array | string;
+  generate?: () => Uint8Array | string | Promise<Uint8Array | string>;
+};
+
+type DeferredGeneratedImage = {
+  generate: () => Uint8Array | string | Promise<Uint8Array | string>;
 };
 
 export type PublicContentManifest = {
@@ -25,6 +30,7 @@ export type PublicContentManifest = {
 type PublicContentAssets = {
   readonly paths: ReadonlySet<string>;
   readonly generated: ReadonlyMap<string, Uint8Array | string>;
+  readonly deferred: ReadonlyMap<string, DeferredGeneratedImage>;
 };
 
 type AssetRequest = {
@@ -70,19 +76,29 @@ export function riebeckiteContentAssets(
       let cachedAssets: PublicContentAssets = {
         paths: new Set<string>(),
         generated: new Map<string, Uint8Array | string>(),
+        deferred: new Map<string, DeferredGeneratedImage>(),
       };
+      const deferredContents = new Map<string, Promise<Uint8Array | string>>();
 
       const resolvePublicAssets = async (): Promise<PublicContentAssets> => {
         const module = await loadContentModule(server, options.appRoot());
         const manifest = (await module.content?.getManifest?.()) as
           | PublicContentManifest
           | undefined;
-        if (!manifest) return { paths: new Set(), generated: new Map() };
+        if (!manifest) {
+          return {
+            paths: new Set(),
+            generated: new Map(),
+            deferred: new Map(),
+          };
+        }
         if (manifest !== cachedManifest) {
           cachedManifest = manifest;
+          deferredContents.clear();
           cachedAssets = {
             paths: collectPublicImagePaths(manifest),
             generated: collectGeneratedImageContents(manifest),
+            deferred: collectDeferredGeneratedImages(manifest),
           };
         }
         return cachedAssets;
@@ -110,7 +126,12 @@ export function riebeckiteContentAssets(
           }
           const available = await resolvePublicAssets();
           const generated = available.generated.get(logicalPath);
-          if (generated === undefined && !available.paths.has(logicalPath)) {
+          const deferred = available.deferred.get(logicalPath);
+          if (
+            generated === undefined &&
+            deferred === undefined &&
+            !available.paths.has(logicalPath)
+          ) {
             next();
             return;
           }
@@ -120,6 +141,15 @@ export function riebeckiteContentAssets(
           }
           if (generated !== undefined) {
             sendImage(request, response, contentType, generated);
+            return;
+          }
+          if (deferred !== undefined) {
+            const content = await resolveDeferredImage(
+              deferredContents,
+              logicalPath,
+              deferred,
+            );
+            sendImage(request, response, contentType, content);
             return;
           }
           const file = path.join(contentRoot, logicalPath);
@@ -166,6 +196,36 @@ export function collectGeneratedImageContents(
     contents.set(normalized, output.content);
   }
   return contents;
+}
+
+export function collectDeferredGeneratedImages(
+  manifest: PublicContentManifest,
+): Map<string, DeferredGeneratedImage> {
+  const outputs = new Map<string, DeferredGeneratedImage>();
+  for (const output of manifest.generatedOutputs ?? []) {
+    if (!output.generate) continue;
+    const normalized = normalizeContentPath(output.path);
+    if (!imageContentType(normalized)) continue;
+    outputs.set(normalized, { generate: output.generate });
+  }
+  return outputs;
+}
+
+async function resolveDeferredImage(
+  cache: Map<string, Promise<Uint8Array | string>>,
+  logicalPath: string,
+  output: DeferredGeneratedImage,
+): Promise<Uint8Array | string> {
+  const cached = cache.get(logicalPath);
+  if (cached) return await cached;
+  const content = Promise.resolve().then(output.generate);
+  cache.set(logicalPath, content);
+  try {
+    return await content;
+  } catch (error) {
+    cache.delete(logicalPath);
+    throw error;
+  }
 }
 
 export async function collectSiteOwnedOutputPaths(

@@ -83,6 +83,7 @@ export function ogImage(options: OgImageOptions = {}) {
             en: "Static Open Graph image configuration.",
             ja: "静的 Open Graph 画像の設定です。",
           },
+          client: "@riebeckite/plugin-og-image/inspector",
           collect: (context) => ({
             kind: "key-value",
             items: [

@@ -16,7 +16,11 @@ import {
 
 type ManifestFixture = {
   publicEntries: Array<{ assets: Array<{ path: string }> }>;
-  generatedOutputs?: Array<{ path: string; content?: Uint8Array | string }>;
+  generatedOutputs?: Array<{
+    path: string;
+    content?: Uint8Array | string;
+    generate?: () => Uint8Array | string | Promise<Uint8Array | string>;
+  }>;
 };
 
 type AssetServerFake = {
@@ -315,21 +319,68 @@ describe("riebeckiteContentAssets", () => {
     assert.equal(response.body.byteLength, 0);
   });
 
-  it("does not serve deferred generated outputs", async () => {
+  it("renders deferred generated images on demand and caches them", async () => {
     const appRoot = createTempRoot();
+    let renders = 0;
     const fake = createServer({
       appRoot,
       publicDir: path.join(appRoot, "public"),
       manifest: {
         publicEntries: [{ assets: [{ path: "attachments/sample.png" }] }],
-        generatedOutputs: [{ path: "attachments/sample-640.webp" }],
+        generatedOutputs: [
+          {
+            path: "_og/sample.png",
+            generate: () => {
+              renders += 1;
+              return Buffer.from(`OG-${renders}`);
+            },
+          },
+        ],
+      },
+    });
+    const client = createClient(fake, appRoot);
+
+    const first = await client.get("/_og/sample.png");
+    const second = await client.get("/_og/sample.png");
+    const head = await client.get("/_og/sample.png", "HEAD");
+
+    assert.equal(first.nexted, false);
+    assert.equal(first.status, 200);
+    assert.equal(first.headers["Content-Type"], "image/png");
+    assert.equal(first.body.toString("utf8"), "OG-1");
+    assert.equal(second.body.toString("utf8"), "OG-1");
+    assert.equal(head.status, 200);
+    assert.equal(head.body.byteLength, 0);
+    assert.equal(renders, 1);
+  });
+
+  it("renders deferred generated images again after a rebuild", async () => {
+    const appRoot = createTempRoot();
+    const fake = createServer({
+      appRoot,
+      publicDir: path.join(appRoot, "public"),
+      manifest: {
+        publicEntries: [],
+        generatedOutputs: [
+          { path: "_og/sample.png", generate: () => Buffer.from("OG-1") },
+        ],
       },
     });
     const client = createClient(fake, appRoot);
 
     assert.equal(
-      (await client.get("/attachments/sample-640.webp")).nexted,
-      true,
+      (await client.get("/_og/sample.png")).body.toString("utf8"),
+      "OG-1",
+    );
+    fake.setManifest({
+      publicEntries: [],
+      generatedOutputs: [
+        { path: "_og/sample.png", generate: () => Buffer.from("OG-2") },
+      ],
+    });
+    assert.equal(
+      (await client.get("/_og/sample.png")).body.toString("utf8"),
+      "OG-2",
     );
   });
 

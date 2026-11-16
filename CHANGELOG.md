@@ -19,6 +19,9 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 - Cache verified development route metadata between process restarts, including supported plugin route state, to reduce startup work for unchanged content.
   Packages: `@riebeckite/core`, `@riebeckite/plugin-l10n`, `@riebeckite/plugin-breadcrumbs`
 
+- Preview the current page's Open Graph image in the OG images Development Inspector tab. The development server renders deferred plugin images on demand instead of leaving them to the static build.
+  Packages: `@riebeckite/honox`, `@riebeckite/plugin-og-image`
+
 ### Changed
 
 - Mermaid diagrams line up with the article text. The plugin's figure kept the browser's default 40px side margins because the framework only sets the block margins on figures, and the diagram was centered inside its canvas, so every diagram sat narrower and indented compared with the surrounding text.

@@ -95,6 +95,8 @@ SVG remains supported and requires `layoutFingerprint` for cache invalidation.
 
 ## Development Inspector
 
-In development, the **OG images** tab shows the active preset, layout source,
-output prefix, and resolved palette. Image output remains deferred until the
-static build needs it.
+In development, the **OG images** tab previews the Open Graph image declared by
+the current page and shows the active preset, layout source, output prefix, and
+resolved palette. Generated images render on demand in the development server;
+the static build still renders them only when the output plan marks them
+affected.

@@ -9,7 +9,7 @@
     "@riebeckite/diagram": "7292ad822513f557bca79d6441fcc9e490ec30ea2053db6df991cbfc5e30d019",
     "@riebeckite/git-history": "045b97db9bf4521266f557f336ed5561eb1c484d1b96def37d4f1525dae29a4d",
     "@riebeckite/graph": "2cead1bb993085fd3f1d251f7b94f1a32f465d57889ab609b53e166ad0902b75",
-    "@riebeckite/honox": "d7d9966526d6b210596055ca979322f6da2a18daec7dadd69a62da7fb1d07ccb",
+    "@riebeckite/honox": "8171f4ab9747063be7064c19f0ee4de999b85ba924398cf770082e9ccb010c10",
     "@riebeckite/node": "56ba29291fce4af1410a3cb506e91b19afe523ec472863ddf28da8982b0683e9",
     "@riebeckite/og-image": "47df0399228ce9520c34e969b163d396f05bbc6f9772e3c0cf4594e995be9be9",
     "@riebeckite/plugin-alias": "0ac693eb0c983ad25bdd41409a4892f0d72ed69fde6f885265c46ae4ddd53e52",
@@ -17,7 +17,7 @@
     "@riebeckite/plugin-archive": "8d73594c42ef2d7f9a905795100c6327f4a77ae394dc08e6ebe649e44495a3ea",
     "@riebeckite/plugin-article-metadata": "74cabc0a4ef0660703744e3200ef6898cbf6a3083a9faf638a5943685e657fd8",
     "@riebeckite/plugin-attachment": "a2299e3259dbd389f771f92dc21380531d08318dd04496990a47f9646aff8c94",
-    "@riebeckite/plugin-autocardlink": "819c5be1890c64e3a8aaffe1b0c4480344c8df19954495da624c58c76cbbbe00",
+    "@riebeckite/plugin-autocardlink": "8b23584ed1029e2e10c97488c8d099c844dde95325ff07e7f7cb0b89d6cb3443",
     "@riebeckite/plugin-backlinks": "78f21d6798baed00f8b493297d7638a741463735490994ed020283655fce88a9",
     "@riebeckite/plugin-bases": "82dbb9a42a71f82371584ad8df2395f4bc05d4bea74632cf32f4ba0df5268a22",
     "@riebeckite/plugin-breadcrumbs": "b4adeca97fc80010920ff4656cdc36b0c241f7bf6d51fef0e28461fdca95e292",
@@ -117,6 +117,6 @@
     "@riebeckite/theme-tokyonight": "1d6a6fe13fb472f5695d1ae726febfd9b15df53c0f40a19677e844571c182cb5",
     "@riebeckite/ui": "39952e735469d7596980545d1683733a72284987e569af1ffdb45c8cf8048bbd",
     "@riebeckite/webmention-cloudflare": "2de644d5b9fd119c2073c6b4894505b0a1eb8b1713a0614c51638bf90c349233",
-    "create-riebeckite": "fec267317c4413f8263f8d9030503a964178265527b65454a2ac87bc8bd40f4c"
+    "create-riebeckite": "b64fec98f579c5c02510c2546bbd0beee9df0d69e1a9fde8bda3135a56b88e53"
   }
 }

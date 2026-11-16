@@ -1,4 +1,7 @@
 import assert from "node:assert/strict";
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import { test } from "node:test";
 import {
   buildOutputInventory,
@@ -66,6 +69,41 @@ test("collapses a README folder entry to the folder URL and redirects the old UR
   assert.equal(manifest.redirects.get("/folder/README")?.slug, "folder/README");
   assert.deepEqual(await content.getPagePaths(), []);
   assert.equal(await content.resolvePage("/folder/"), null);
+});
+
+test("persists development route state", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-folder-pages-"),
+  );
+  const files = {
+    "folder/index.md": "---\ntitle: Folder\npublish: true\n---\n# Folder\n",
+  };
+  const options = {
+    config: resolveConfig({
+      site: { title: "Test" },
+      content: { directory, filters: { publishStrategy: "explicit" } },
+      plugins: [folderPages()],
+    }),
+    isDevelopment: true,
+  };
+  try {
+    const first = new ContentManager(source(files), [], options);
+    assert.equal(
+      (await first.getRequestManifest()).bySlug.get("folder/index")?.permalink,
+      "/folder/",
+    );
+    await fs.access(
+      path.join(directory, ".riebeckite", "development-route-state.json"),
+    );
+
+    const second = new ContentManager(source(files), [], options);
+    assert.equal(
+      (await second.getRequestManifest()).bySlug.get("folder/index")?.permalink,
+      "/folder/",
+    );
+  } finally {
+    await fs.rm(directory, { recursive: true, force: true });
+  }
 });
 
 test("collapses a root README entry to the site root and redirects the old URL", async () => {

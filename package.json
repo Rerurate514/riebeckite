@@ -60,6 +60,7 @@
     "test:plugin-dx": "pnpm --dir tests/plugin-dx run test",
     "test:plugin-dx:external": "pnpm --dir tests/plugin-dx run build && pnpm --dir tests/plugin-dx run test:external",
     "benchmark:vault": "node --import tsx --expose-gc benchmarks/core.mjs",
+    "benchmark:development-startup": "node --import tsx benchmarks/development_startup.mjs",
     "benchmark:equivalence": "node --import tsx benchmarks/equivalence.mjs",
     "benchmark:chaos": "node --import tsx benchmarks/chaos.mjs",
     "benchmark:presets": "node --import tsx benchmarks/preset-ssg/runner.mjs",

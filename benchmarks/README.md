@@ -12,6 +12,9 @@ Nothing here runs as part of `pnpm test` or CI. Run them explicitly.
 # Core content/build pipeline (no Vite, no SSG).
 pnpm benchmark:vault
 
+# Development-server startup timing.
+pnpm benchmark:development-startup
+
 # Narrow the sweep.
 pnpm benchmark:vault -- --profiles baseline,realistic --sizes 1000,5000
 pnpm benchmark:vault -- --scenarios cold,warm,single-edit --repeats 1

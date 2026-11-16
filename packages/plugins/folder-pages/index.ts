@@ -56,6 +56,8 @@ export function folderPages(options: FolderPagesOptions = {}) {
       ),
     ],
     validateOptions: validateFolderPagesOptions,
+    developmentRouteManifest: true,
+    developmentRouteCache: { version: "folder-pages-route-v1" },
     extendContentLocations: ({ locations }) => {
       collapseFolderEntryLocations(locations);
     },

@@ -3031,6 +3031,11 @@
       "type": false
     },
     {
+      "name": "toJsonValue",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "TraceAttributes",
       "value": false,
       "type": true

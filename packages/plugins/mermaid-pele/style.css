@@ -12,6 +12,7 @@
   --pele-font: var(--rb-font-body, sans-serif);
   --pele-font-mono: var(--rb-font-mono, monospace);
   margin-block: 2rem;
+  margin-inline: 0;
 }
 
 .rr-mermaid-pele__canvas {
@@ -23,7 +24,6 @@
   display: block;
   max-width: 100%;
   height: auto;
-  margin-inline: auto;
 }
 
 .rr-mermaid-pele > .rr-mermaid-pele__fallback {

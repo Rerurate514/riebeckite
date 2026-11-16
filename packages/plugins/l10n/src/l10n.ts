@@ -38,6 +38,7 @@ export function l10n(options: L10nOptions) {
 
   return definePlugin({
     name: "l10n",
+    developmentRouteManifest: true,
     processedContentCache: {
       version: "l10n-content-locations-v2",
       dependencyMode: "tracked",

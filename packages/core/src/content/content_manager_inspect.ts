@@ -111,10 +111,7 @@ export async function resolvePageImpl(
   m: ContentManagerContext,
   pathname: string,
 ): Promise<ResolvedPluginPage | null> {
-  if (
-    m.pipelineOptions.isDevelopment &&
-    m.pluginRuntime.canUseDevelopmentRouteManifest()
-  ) {
+  if (m.pipelineOptions.isDevelopment) {
     const [manifest, contentIndex] = await Promise.all([
       m.getRouteManifest(),
       m.getContentIndex(),

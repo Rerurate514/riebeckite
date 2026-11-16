@@ -45,8 +45,7 @@ export async function getRouteManifestImpl(
 export async function getRequestManifestImpl(
   m: ContentManagerContext,
 ): Promise<ContentManifest> {
-  return m.pipelineOptions.isDevelopment &&
-    m.pluginRuntime.canUseDevelopmentRouteManifest()
+  return m.pipelineOptions.isDevelopment
     ? await m.getRouteManifest()
     : await m.getManifest();
 }
@@ -119,6 +118,11 @@ export async function buildRouteManifestImpl(
         m.publishStrategy(),
         m.publishingBuildTime,
       );
+      manifest.localization =
+        (await m.pluginRuntime.resolveContentLocalization(
+          manifest,
+          contentIndex,
+        )) ?? manifest.localization;
       await m.pluginRuntime.runDevelopmentRouteManifestHook(
         manifest,
         contentIndex,

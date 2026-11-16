@@ -143,6 +143,7 @@ export function riebeckite(
         const { appRoot } = requireApplication(application);
         if (!isContentModuleLoaded(server, appRoot)) return undefined;
         const module = await loadContentModule(server, appRoot);
+        await module.content?.getManifest?.();
         return module.content?.getCompletedBuildSnapshot?.();
       },
     }),
@@ -158,6 +159,7 @@ export function riebeckite(
         const { appRoot } = requireApplication(application);
         if (!isContentModuleLoaded(server, appRoot)) return undefined;
         const module = await loadContentModule(server, appRoot);
+        await module.content?.getManifest?.();
         return module.content?.getCompletedBuildSnapshot?.();
       },
     }),

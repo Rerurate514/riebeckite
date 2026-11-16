@@ -149,7 +149,7 @@ test("development route manifests run opted manifest hooks without article HTML"
   ]);
 });
 
-test("development route manifests fall back for unopted manifest hooks", async () => {
+test("development route manifests defer unopted manifest hooks", async () => {
   const plugin = definePlugin({
     name: "legacy-metadata",
     onManifestCreated: ({ manifest }) => {
@@ -168,10 +168,62 @@ test("development route manifests fall back for unopted manifest hooks", async (
 
   const manifest = await manager.getRequestManifest();
 
-  assert.match(manifest.entries[0]?.html ?? "", /<h1[^>]*>Home<\/h1>/);
-  assert.deepEqual(manifest.entries[0]?.headTags, [
+  assert.equal(manifest.entries[0]?.html, "");
+  assert.deepEqual(manifest.entries[0]?.headTags, undefined);
+  const fullManifest = await manager.getManifest();
+  assert.match(fullManifest.entries[0]?.html ?? "", /<h1[^>]*>Home<\/h1>/);
+  assert.deepEqual(fullManifest.entries[0]?.headTags, [
     { tag: "meta", attrs: { name: "robots", content: "noindex" } },
   ]);
+});
+
+test("development routing defers unrelated manifest hooks for route-aware pages", async () => {
+  let manifestCalls = 0;
+  const plugin = definePlugin({
+    name: "route-page",
+    onManifestCreated: () => {
+      manifestCalls += 1;
+    },
+    pageTypes: [
+      {
+        id: "route-page",
+        resolve: ({ pathname }) =>
+          pathname === "/route"
+            ? { type: "route-page", pathname, body: "full" }
+            : null,
+        resolveRoute: ({ pathname }) =>
+          pathname === "/route"
+            ? { type: "route-page", pathname, body: "route" }
+            : null,
+      },
+    ],
+  });
+  const manager = new ContentManager(source(), [], {
+    config: resolveConfig({ site: { title: "Test" }, plugins: [plugin] }),
+    isDevelopment: true,
+  });
+
+  assert.equal((await manager.resolvePage("/route"))?.body, "route");
+  assert.equal(manifestCalls, 0);
+});
+
+test("development route manifests retain localization", async () => {
+  const plugin = definePlugin({
+    name: "localization",
+    resolveContentLocalization: () => ({
+      defaultLocale: "en",
+      locales: ["en", "ja"],
+    }),
+  });
+  const manager = new ContentManager(source(), [], {
+    config: resolveConfig({ site: { title: "Test" }, plugins: [plugin] }),
+    isDevelopment: true,
+  });
+
+  assert.deepEqual((await manager.getRequestManifest()).localization, {
+    defaultLocale: "en",
+    locales: ["en", "ja"],
+  });
 });
 
 test("same-priority page matches fail rather than silently choosing a plugin", async () => {

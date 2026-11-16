@@ -122,9 +122,8 @@ export function riebeckite(
     contentBareImportResolver(() => requireApplication(application)),
     riebeckiteClientModule(getConfig),
     riebeckiteRuntimeModules(() => requireApplication(application)),
-    riebeckiteContentWarmup(
-      options.warmContent ?? false,
-      () => requireApplication(application),
+    riebeckiteContentWarmup(options.warmContent ?? false, () =>
+      requireApplication(application),
     ),
     riebeckiteContentAssets({
       appRoot: () => requireApplication(application).appRoot,
@@ -179,12 +178,9 @@ export function riebeckiteContentWarmup(
         void loadContentModule(server, appRoot)
           .then(async (module) => await module.content?.getManifest?.())
           .catch((error: unknown) => {
-            server.config.logger.error(
-              "Riebeckite content warmup failed.",
-              {
-                error: error instanceof Error ? error : new Error(String(error)),
-              },
-            );
+            server.config.logger.error("Riebeckite content warmup failed.", {
+              error: error instanceof Error ? error : new Error(String(error)),
+            });
           });
       });
     },

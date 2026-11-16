@@ -197,6 +197,46 @@ plugins: [
 
 `defaultLang` は `languages` に含めてください。デフォルト以外の言語には URL プレフィックス、言語スイッチャー、`hreflang` リンクが付きます。詳しくは [多言語化](../localization.ja.md) を参照してください。
 
+### 既存の Vault をそのまま読む
+
+`content.directory` を Vault に向けます。サイトディレクトリの外にあっても構いません:
+
+```ts
+content: {
+  directory: "../vault",
+  exclude: [".obsidian/**", "Templates/**"],
+},
+```
+
+`exclude` は論理パスに対する glob で、公開判定より前に適用されます。除外したノートはリンク解決にも使われません。詳しくは [Obsidian ノートの公開](../obsidian.ja.md) と [コンテンツの選択](../../reference/configuration/content.ja.md) を参照してください。
+
+### SPA ナビゲーションを有効にする
+
+```ts
+spa: {
+  prefetch: "intent",
+  viewTransitions: true,
+},
+```
+
+最初の読み込み後、対象の内部リンクは次のページを取得して本文だけを置き換えます。ヘッダーとフッターはそのまま残ります。scaffold 済みのサイトは `@riebeckite/spa` に依存しています。詳しくは [SPA ナビゲーション](../spa-navigation.ja.md) を参照してください。
+
+### Open Graph 画像を生成する
+
+プラグインを入れてプリセットを選びます:
+
+```sh
+npm install @riebeckite/plugin-og-image
+```
+
+```ts
+import { ogImage } from "@riebeckite/plugin-og-image";
+
+plugins: [ogImage({ preset: "card" })],
+```
+
+`card`・`minimal`・`editorial` が使えます。画像はビルド時に `/_og/` 以下へ生成され、frontmatter の `ogImage` または `image` があればそちらが優先されます。詳しくは [OG Image プラグイン](../../plugins/og-image.ja.md) を参照してください。
+
 ## ページとレイアウト — `app/`
 
 ### カスタムページを追加する
@@ -271,6 +311,8 @@ Before — starter は `app/components/article.tsx` で記事ページを組み�
   <Breadcrumbs />
   <Properties />
   <ArticleBody />
+  <PoweredByRiebeckite />
+  <RecentPosts />
   <ArticleFooter class="site-article__footer">
     <Backlinks />
     <RelatedPosts />
@@ -281,13 +323,14 @@ Before — starter は `app/components/article.tsx` で記事ページを組み�
 </aside>
 ```
 
-After — プロパティパネルを本文の下に移し、aside に最近の記事を追加します:
+After — プロパティパネルを本文の下に移し、最近の記事を aside に移します:
 
 ```tsx
 <ArticleContent>
   <Breadcrumbs />
   <ArticleBody />
   <Properties />
+  <PoweredByRiebeckite />
   <ArticleFooter class="site-article__footer">
     <Backlinks />
     <RelatedPosts />
@@ -333,6 +376,36 @@ import { ArticleAside } from "./article-aside";
 ```
 
 詳しくは [プラグインとCSS](./plugins-and-css.ja.md) を参照してください。
+
+### 記事にローカルグラフを表示する
+
+プラグインを入れて登録します:
+
+```sh
+npm install @riebeckite/plugin-local-graph
+```
+
+```ts
+import { localGraph } from "@riebeckite/plugin-local-graph";
+
+plugins: [localGraph()],
+```
+
+記事本文の後ろにコンポーネントを 1 回置きます:
+
+```tsx
+// app/components/article.tsx
+import { LocalGraph } from "@riebeckite/plugin-local-graph";
+
+// ...ArticleFooter の中:
+<ArticleFooter class="site-article__footer">
+  <LocalGraph />
+  <Backlinks />
+  <RelatedPosts />
+</ArticleFooter>
+```
+
+ページには最大 3 ホップ・320 ノードまで埋め込まれます。切り詰められた場合はその旨が表示され、Depth スライダーは 3 で止まります。詳しくは [Local Graph プラグイン](../../plugins/local-graph.ja.md) を参照してください。
 
 ### ヘッダーのロゴを差し替える
 
@@ -412,13 +485,18 @@ export default function About() {
 
 ### サイト全体の CSS を追加する
 
-Before — `app/style.css` は生成スタイルとプリセットのスタイルだけを import しています:
+Before — `app/style.css` は生成スタイル、プリセットのスタイル、starter 自身のスタイルを import しています:
 
 ```css
 @import "./.riebeckite/framework-styles.css";
 @import "./.riebeckite/plugin-styles.css";
 @import "./.riebeckite/theme-styles.css";
 @import "./styles/page.css";
+@import "./styles/site-header.css";
+@import "./styles/site-explorer.css";
+@import "./styles/site-footer.css";
+@import "./styles/article.css";
+@import "./styles/not-found.css";
 ```
 
 After — 生成スタイルの import を先頭に残したまま、自分のスタイルシートを後ろに足します:
@@ -428,6 +506,11 @@ After — 生成スタイルの import を先頭に残したまま、自分の�
 @import "./.riebeckite/plugin-styles.css";
 @import "./.riebeckite/theme-styles.css";
 @import "./styles/page.css";
+@import "./styles/site-header.css";
+@import "./styles/site-explorer.css";
+@import "./styles/site-footer.css";
+@import "./styles/article.css";
+@import "./styles/not-found.css";
 @import "./styles/custom.css";
 ```
 
@@ -471,6 +554,20 @@ After — 生成スタイルの import を先頭に残したまま、自分の�
 
 詳しくは [テーマシステムの CSS](../../framework/theme-system/css.ja.md) を参照してください。
 
+### テーマのトークンを上書きする
+
+セマンティックトークンはテーマとプラグインが参照する安定した語彙です。レイヤーなしのサイト CSS で上書きします:
+
+```css
+/* app/styles/custom.css */
+:is(:root, .rb-theme-root) {
+  --rb-color-accent: #c2410c;
+  --rb-font-heading: "Newsreader", serif;
+}
+```
+
+レイヤーなしの宣言はフレームワーク・プラグイン・テーマのレイヤーより優先されるので、`!important` は不要です。詳しくは [デザイントークン](../../framework/theme-system/tokens.ja.md) を参照してください。
+
 ## コンテンツ — Markdown / MDX / frontmatter
 
 ### MDX でサイトコンポーネントを埋め込む
@@ -491,6 +588,25 @@ import { MdxNote } from "../app/components/mdx-note";
 ```
 
 詳しくは [MDX プラグイン](../../plugins/mdx.ja.md) を参照してください。
+
+### Obsidian 記法を使う
+
+starter は `obsidianMarkdown()` を登録しているので、コールアウト・WikiLink・埋め込み・インラインタグ・ブロック参照は設定なしで使えます:
+
+```md
+> [!warning]- 移行前にバックアップする
+> Vault をバージョン管理に入れておきます。
+```
+
+```md
+予定は [[Notes/planning]] を見てください。
+
+![[Notes/writing#チェックリスト]]
+
+![[diagram.png|480]]
+```
+
+ノートの埋め込みは 3 階層まで再帰的に描画されます。解決できないリンクには `rr-obsidian-wikilink--broken` が付きます。詳しくは [Obsidian Markdown プラグイン](../../plugins/obsidian-markdown.ja.md) を参照してください。
 
 ### frontmatter をプロパティとして表示する
 
@@ -522,6 +638,33 @@ properties({
 
 詳しくは [Properties プラグイン](../../plugins/properties.ja.md) を参照してください。
 
+### ノートの URL を固定する
+
+`permalink` はファイルパスではなく frontmatter から URL を作ります。プラグインを入れて登録します:
+
+```sh
+npm install @riebeckite/plugin-permalink
+```
+
+```ts
+import { permalink } from "@riebeckite/plugin-permalink";
+
+plugins: [permalink()],
+```
+
+単発の URL には `permalink`、移行前の URL には `redirect_from` を指定します:
+
+```md
+---
+title: About
+publish: true
+permalink: /about
+redirect_from: /about-us
+---
+```
+
+このプラグインを有効にするとすべての URL が変わります。`id` のないノートにはパス由来のハッシュが付きます。最初のデプロイ前に URL の形を決めてください。詳しくは [Permalink プラグイン](../../plugins/permalink.ja.md) を参照してください。
+
 ### frontmatter から公開を制御する
 
 `publish: true` がないノートはビルドに含まれません。その URL へのリクエストは 404 ページになります。未来の日付が付いたノートも同様です:
@@ -534,3 +677,72 @@ title: 下書きの記事
 ```
 
 詳しくは [コンテンツのセットアップ](../writing-content/setup.ja.md) を参照してください。
+
+### ページを一覧に出さない・公開日時を指定する
+
+`visibility: unlisted` にすると、URL では配信されますが、ナビゲーション・検索・フィード・サイトマップ・タクソノミー・グラフ・バックリンク・関連記事には出ません:
+
+```md
+---
+title: 共有用リンク
+publish: true
+visibility: unlisted
+---
+```
+
+`publishAt` を指定すると、その時刻以降の最初のビルドまでページは隠れます:
+
+```md
+---
+title: 公開記事
+publish: true
+publishAt: 2026-12-01T00:00:00.000Z
+---
+```
+
+公開日時はビルド時にだけ判定されます。ページを出したい時刻にビルドを走らせてください。詳しくは [コンテンツの選択](../../reference/configuration/content.ja.md) を参照してください。
+
+### ノートをシリーズにまとめる
+
+`series` を入れて登録します:
+
+```sh
+npm install @riebeckite/plugin-series
+```
+
+```ts
+import { series } from "@riebeckite/plugin-series";
+
+plugins: [series()],
+```
+
+各ノートにシリーズ名と順番を付けます:
+
+```md
+---
+title: Part 1
+publish: true
+series: Build a thing
+series_order: 1
+---
+```
+
+記事ごとにナビゲーションを 1 回描画します:
+
+```tsx
+// app/components/article.tsx
+import { SeriesNavigation } from "@riebeckite/plugin-series";
+
+// ...ArticleBody の後:
+<ArticleBody />
+<SeriesNavigation />
+```
+
+`/series` と `/series/<name>` のページも生成されます。`series_order` のないノートも、番号付きのノートの後ろに並びます。詳しくは [Series プラグイン](../../plugins/series.ja.md) を参照してください。
+
+## 次に読む
+
+- [発見のレシピ](../discovery-recipes.ja.md) — 注目記事、全記事一覧、タグ、フォルダ、シリーズ、アーカイブ
+- [デプロイ](../deployment/README.ja.md) — 静的ホスト、Cloudflare Workers、GitHub Actions
+- [CLI リファレンス](../../reference/cli.ja.md) — `check`・`doctor`・`build`・`inspect`
+- [プリセット](../../getting-started/presets.ja.md) — 各プリセットが最初から登録するもの

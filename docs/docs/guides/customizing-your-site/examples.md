@@ -197,6 +197,46 @@ plugins: [
 
 `defaultLang` must appear in `languages`. Non-default languages get URL prefixes, a language switcher, and `hreflang` links. See [Localization](../localization.md).
 
+### Read notes from an existing vault
+
+Point `content.directory` at the vault — it may sit outside the site directory:
+
+```ts
+content: {
+  directory: "../vault",
+  exclude: [".obsidian/**", "Templates/**"],
+},
+```
+
+`exclude` uses globs over logical paths and runs before publishing, so excluded notes are not linkable. See [Publishing Obsidian notes](../obsidian.md) and [Content selection](../../reference/configuration/content.md).
+
+### Enable SPA navigation
+
+```ts
+spa: {
+  prefetch: "intent",
+  viewTransitions: true,
+},
+```
+
+After the first load, eligible internal links fetch the next page and replace the main content; the header and footer stay in place. Scaffolded sites already depend on `@riebeckite/spa`. See [SPA navigation](../spa-navigation.md).
+
+### Generate Open Graph images
+
+Install the plugin and pick a preset:
+
+```sh
+npm install @riebeckite/plugin-og-image
+```
+
+```ts
+import { ogImage } from "@riebeckite/plugin-og-image";
+
+plugins: [ogImage({ preset: "card" })],
+```
+
+`card`, `minimal`, and `editorial` are available. Images are generated at build time under `/_og/`; an `ogImage` or `image` value in frontmatter takes precedence. See the [OG Image plugin](../../plugins/og-image.md).
+
 ## Pages and layout — `app/`
 
 ### Add a custom page
@@ -271,6 +311,8 @@ Before — the starter assembles the article in `app/components/article.tsx`:
   <Breadcrumbs />
   <Properties />
   <ArticleBody />
+  <PoweredByRiebeckite />
+  <RecentPosts />
   <ArticleFooter class="site-article__footer">
     <Backlinks />
     <RelatedPosts />
@@ -281,13 +323,14 @@ Before — the starter assembles the article in `app/components/article.tsx`:
 </aside>
 ```
 
-After — move the property panel below the body and add recent posts to the aside:
+After — move the property panel below the body and move recent posts to the aside:
 
 ```tsx
 <ArticleContent>
   <Breadcrumbs />
   <ArticleBody />
   <Properties />
+  <PoweredByRiebeckite />
   <ArticleFooter class="site-article__footer">
     <Backlinks />
     <RelatedPosts />
@@ -333,6 +376,36 @@ import { ArticleAside } from "./article-aside";
 ```
 
 See [Plugins and CSS](./plugins-and-css.md).
+
+### Show a local graph on articles
+
+Install the plugin and register it:
+
+```sh
+npm install @riebeckite/plugin-local-graph
+```
+
+```ts
+import { localGraph } from "@riebeckite/plugin-local-graph";
+
+plugins: [localGraph()],
+```
+
+Then place the component once after the article body:
+
+```tsx
+// app/components/article.tsx
+import { LocalGraph } from "@riebeckite/plugin-local-graph";
+
+// ...inside ArticleFooter:
+<ArticleFooter class="site-article__footer">
+  <LocalGraph />
+  <Backlinks />
+  <RelatedPosts />
+</ArticleFooter>
+```
+
+The page embeds up to three hops and 320 nodes; a truncated neighborhood says so, and the depth slider stops at three. See the [Local Graph plugin](../../plugins/local-graph.md).
 
 ### Replace the header logo
 
@@ -412,13 +485,18 @@ export default function About() {
 
 ### Add site-wide CSS
 
-Before — `app/style.css` imports the generated styles and the preset styles:
+Before — `app/style.css` imports the generated styles, the preset styles, and the starter's own styles:
 
 ```css
 @import "./.riebeckite/framework-styles.css";
 @import "./.riebeckite/plugin-styles.css";
 @import "./.riebeckite/theme-styles.css";
 @import "./styles/page.css";
+@import "./styles/site-header.css";
+@import "./styles/site-explorer.css";
+@import "./styles/site-footer.css";
+@import "./styles/article.css";
+@import "./styles/not-found.css";
 ```
 
 After — keep the generated imports first and append your own stylesheet:
@@ -428,6 +506,11 @@ After — keep the generated imports first and append your own stylesheet:
 @import "./.riebeckite/plugin-styles.css";
 @import "./.riebeckite/theme-styles.css";
 @import "./styles/page.css";
+@import "./styles/site-header.css";
+@import "./styles/site-explorer.css";
+@import "./styles/site-footer.css";
+@import "./styles/article.css";
+@import "./styles/not-found.css";
 @import "./styles/custom.css";
 ```
 
@@ -471,6 +554,20 @@ Only when you must branch on the mode itself, scope the override to the theme ro
 
 See [Stable CSS hooks](../../framework/theme-system/css.md#stable-css-hooks-and-the-cascade).
 
+### Override a theme token
+
+Semantic tokens are the stable vocabulary themes and plugins read. Override them in unlayered site CSS:
+
+```css
+/* app/styles/custom.css */
+:is(:root, .rb-theme-root) {
+  --rb-color-accent: #c2410c;
+  --rb-font-heading: "Newsreader", serif;
+}
+```
+
+Unlayered declarations win over the framework, plugin, and theme layers, so no `!important` is needed. See [Design tokens](../../framework/theme-system/tokens.md).
+
 ## Content — Markdown, MDX, frontmatter
 
 ### Embed a site component in MDX
@@ -491,6 +588,25 @@ import { MdxNote } from "../app/components/mdx-note";
 ```
 
 See the [MDX plugin](../../plugins/mdx.md).
+
+### Use Obsidian syntax
+
+The starter registers `obsidianMarkdown()`, so callouts, wikilinks, embeds, inline tags, and block references work without configuration:
+
+```md
+> [!warning]- Back up before you migrate
+> Keep the vault under version control.
+```
+
+```md
+See [[Notes/planning]] for the schedule.
+
+![[Notes/writing#Checklist]]
+
+![[diagram.png|480]]
+```
+
+Note embeds render recursively up to three levels, and unresolved targets keep a link with `rr-obsidian-wikilink--broken`. See the [Obsidian Markdown plugin](../../plugins/obsidian-markdown.md).
 
 ### Show frontmatter as properties
 
@@ -522,6 +638,33 @@ properties({
 
 See the [Properties plugin](../../plugins/properties.md).
 
+### Give a note a fixed URL
+
+`permalink` builds URLs from frontmatter instead of the file path. Install and register it:
+
+```sh
+npm install @riebeckite/plugin-permalink
+```
+
+```ts
+import { permalink } from "@riebeckite/plugin-permalink";
+
+plugins: [permalink()],
+```
+
+Then set `permalink` for a one-off URL and `redirect_from` for the old one:
+
+```md
+---
+title: About
+publish: true
+permalink: /about
+redirect_from: /about-us
+---
+```
+
+Enabling this plugin changes every URL: notes without an `id` get a path-derived hash. Decide the URL shape before the first deployment. See the [Permalink plugin](../../plugins/permalink.md).
+
 ### Control publishing from frontmatter
 
 A note without `publish: true` is not built — it is simply absent, and requests to its URL get the 404 page. The same applies to future-dated notes:
@@ -534,3 +677,72 @@ title: Draft post
 ```
 
 See [Content setup](../writing-content/setup.md).
+
+### Unlist or schedule a page
+
+`visibility: unlisted` serves the page at its URL but keeps it out of navigation, search, feeds, the sitemap, taxonomy, graphs, backlinks, and related lists:
+
+```md
+---
+title: Share link
+publish: true
+visibility: unlisted
+---
+```
+
+`publishAt` hides a page until the first build after the timestamp:
+
+```md
+---
+title: Launch post
+publish: true
+publishAt: 2026-12-01T00:00:00.000Z
+---
+```
+
+Scheduling is build-time only — run a scheduled build for the page to appear. See [Content selection](../../reference/configuration/content.md).
+
+### Group notes into a series
+
+Install and register `series`:
+
+```sh
+npm install @riebeckite/plugin-series
+```
+
+```ts
+import { series } from "@riebeckite/plugin-series";
+
+plugins: [series()],
+```
+
+Add the series name and position to each note:
+
+```md
+---
+title: Part 1
+publish: true
+series: Build a thing
+series_order: 1
+---
+```
+
+Render the navigation once per article:
+
+```tsx
+// app/components/article.tsx
+import { SeriesNavigation } from "@riebeckite/plugin-series";
+
+// ...after ArticleBody:
+<ArticleBody />
+<SeriesNavigation />
+```
+
+The plugin also publishes `/series` and `/series/<name>` pages. Notes without `series_order` still appear, after the numbered parts. See the [Series plugin](../../plugins/series.md).
+
+## Where to look next
+
+- [Discovery recipes](../discovery-recipes.md) — featured lists, all-posts indexes, tags, folders, series, and archive pages
+- [Deployment](../deployment/README.md) — static hosts, Cloudflare Workers, and GitHub Actions
+- [CLI reference](../../reference/cli.md) — `check`, `doctor`, `build`, and `inspect`
+- [Presets](../../getting-started/presets.md) — what each preset already registers

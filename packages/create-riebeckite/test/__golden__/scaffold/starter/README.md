@@ -18,6 +18,8 @@ npm exec riebeckite dev
 npm exec riebeckite build
 ```
 
+npm is the reference package manager. pnpm 12 or newer works too; `pnpm-workspace.yaml` only affects pnpm.
+
 ## First edits
 
 - `content/index.md`: the first published page.

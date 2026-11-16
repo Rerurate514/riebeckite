@@ -51,6 +51,8 @@ export function readmeJa(
     "npm exec riebeckite build",
     "```",
     "",
+    "基準のパッケージマネージャは npm です。pnpm 12 以降でも動作します（`pnpm-workspace.yaml` は pnpm にのみ作用します）。",
+    "",
   );
   if (preset.name !== "empty") {
     if (variables.externalContent === true) {

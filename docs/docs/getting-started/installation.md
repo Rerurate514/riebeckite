@@ -69,7 +69,7 @@ npm install
 
 The `@riebeckite/*` packages are published to npm, so this is all it takes. The first install can take a minute. If npm reports vulnerabilities, review them with `npm audit`; many come from transitive build dependencies. Avoid `npm audit fix --force` unless you have checked the version changes it would make.
 
-These instructions use npm. If you use pnpm 10 or later, `pnpm install` can report ignored build scripts. Run `pnpm approve-builds`, review the packages, and approve the ones you trust before starting `dev`. Strict package managers do not expose transitive dependencies, so sites scaffolded before `@riebeckite/node`, `@riebeckite/runtime`, and `@riebeckite/spa` were declared in the site manifest need those packages added explicitly.
+These instructions use npm, the reference package manager for generated sites. pnpm works too: the generated `pnpm-workspace.yaml` approves the build scripts pnpm asks about (esbuild, puppeteer, sharp), so the first `pnpm install` does not stop with `ERR_PNPM_IGNORED_BUILDS`. That file only affects pnpm and leaves npm unchanged. Strict package managers do not expose transitive dependencies, so sites scaffolded before `@riebeckite/node`, `@riebeckite/runtime`, and `@riebeckite/spa` were declared in the site manifest need those packages added explicitly.
 
 Recent npm 11 releases can also skip dependency install scripts. If `npm install` reports `Ignored build scripts: esbuild`, approve it with `npm approve-scripts esbuild`, then rerun `npm install`.
 
@@ -83,6 +83,7 @@ Recent npm 11 releases can also skip dependency install scripts. If `npm install
 | `public/` | Static assets copied as-is: `favicon.ico` and `riebeckite-logo.png`. The bundled favicon and header logo are placeholders; replace them when you brand the site. The `starter` preset does not generate a link-preview/OG image; the `blog` preset does. See [Branding your site](../guides/branding.md) |
 | `vite.config.ts` | Build settings. You normally leave this alone |
 | `package.json` | The packages and the `riebeckite` commands |
+| `pnpm-workspace.yaml` | Only for pnpm: approves the build scripts pnpm would otherwise skip (esbuild, puppeteer, sharp). npm ignores it |
 | `README.md` | A short note specific to the generated site |
 | `.gitignore`, `.editorconfig`, `.gitattributes`, `biome.json` | Default project files. Choose the `Customize extra project files?` prompt or `--utilities` to change them |
 
@@ -99,6 +100,7 @@ my-site/
 ├─ app/                   Generated app code (rarely edited)
 ├─ riebeckite.config.ts   Site configuration
 ├─ package.json
+├─ pnpm-workspace.yaml   Used by pnpm only (npm ignores it)
 ├─ vite.config.ts
 ├─ tsconfig.json
 ├─ biome.json             Default project files

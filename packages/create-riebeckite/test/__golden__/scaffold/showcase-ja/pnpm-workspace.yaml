@@ -1,3 +1,5 @@
+# npm is the reference package manager for this site. This file only
+# affects pnpm, which skips install scripts unless they are approved here.
 allowBuilds:
   esbuild: true
   puppeteer: true

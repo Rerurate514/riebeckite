@@ -193,9 +193,9 @@ function replaceTitle(
 
 function pnpmWorkspace(): string {
   const allowBuilds = ["esbuild", "puppeteer", "sharp"];
-  return `allowBuilds:\n${allowBuilds
-    .map((name) => `  ${name}: true`)
-    .join("\n")}\n`;
+  return `# npm is the reference package manager for this site. This file only
+# affects pnpm, which skips install scripts unless they are approved here.
+allowBuilds:\n${allowBuilds.map((name) => `  ${name}: true`).join("\n")}\n`;
 }
 
 function packageJson(

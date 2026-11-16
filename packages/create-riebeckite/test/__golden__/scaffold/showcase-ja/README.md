@@ -91,6 +91,8 @@ npm exec riebeckite dev
 npm exec riebeckite build
 ```
 
+基準のパッケージマネージャは npm です。pnpm 12 以降でも動作します（`pnpm-workspace.yaml` は pnpm にのみ作用します）。
+
 ## 最初に編集する場所
 
 - `content/index.md`: 最初に公開されるページです。

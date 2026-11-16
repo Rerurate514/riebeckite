@@ -51,6 +51,8 @@ export function readmeEn(
     "npm exec riebeckite build",
     "```",
     "",
+    "npm is the reference package manager. pnpm 12 or newer works too; `pnpm-workspace.yaml` only affects pnpm.",
+    "",
   );
   if (preset.name !== "empty") {
     if (variables.externalContent === true) {

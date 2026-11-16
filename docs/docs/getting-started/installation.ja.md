@@ -70,7 +70,7 @@ npm install
 
 `@riebeckite/*` は npm で公開されているため、これだけで足ります。最初のインストールには少し時間がかかることがあります。npm が脆弱性を報告した場合は `npm audit` で内容を確認してください。ビルド用の推移的依存関係に由来するものも多く含まれます。`npm audit fix --force` は、変更されるバージョンを確認してからでないと実行しないでください。
 
-この手順では npm を使います。pnpm 10 以降を使う場合、`pnpm install` がビルドスクリプトの無視を報告することがあります。`pnpm approve-builds` を実行し、内容を確認して信頼できる package を承認してから `dev` を起動してください。厳格なパッケージマネージャーは推移的依存を解決しないため、`@riebeckite/node`、`@riebeckite/runtime`、`@riebeckite/spa` がサイトのマニフェストに追加される前に作成したサイトでは、これらを明示的に追加する必要があります。
+この手順では、生成されるサイトの基準である npm を使います。pnpm でも動きます。生成される `pnpm-workspace.yaml` がビルドスクリプトを承認するため（esbuild、puppeteer、sharp）、最初の `pnpm install` が `ERR_PNPM_IGNORED_BUILDS` で止まることはありません。このファイルは pnpm にだけ作用し、npm の挙動は変えません。厳格なパッケージマネージャーは推移的依存を解決しないため、`@riebeckite/node`、`@riebeckite/runtime`、`@riebeckite/spa` がサイトのマニフェストに追加される前に作成したサイトでは、これらを明示的に追加する必要があります。
 
 最近の npm 11 では依存パッケージのインストールスクリプトが実行されないことがあります。`npm install` が `Ignored build scripts: esbuild` と表示した場合は、`npm approve-scripts esbuild` で承認してから `npm install` を再実行してください。
 
@@ -84,6 +84,7 @@ npm install
 | `public/` | そのままコピーされた静的ファイル：`favicon.ico` と `riebeckite-logo.png`。同梱の favicon とヘッダーロゴはプレースホルダーなので、サイトのブランドに合わせて置き換えてください。`starter` プリセットはリンクプレビュー（OG）画像を生成しませんが、`blog` プリセットは生成します。[サイトのアイコンとロゴ](../guides/branding.ja.md) を参照してください |
 | `vite.config.ts` | ビルド設定。通常は変更しない |
 | `package.json` | 依存パッケージと `riebeckite` コマンド |
+| `pnpm-workspace.yaml` | pnpm 専用。pnpm が既定でスキップするビルドスクリプト（esbuild、puppeteer、sharp）を承認する。npm は読まない |
 | `README.md` | 生成されたサイト向けの短い説明 |
 | `.gitignore`、`.editorconfig`、`.gitattributes`、`biome.json` | 既定のプロジェクトファイル。`Customize extra project files?` のプロンプトまたは `--utilities` で変更できる |
 
@@ -100,6 +101,7 @@ my-site/
 ├─ app/                   生成されたアプリコード（通常は編集しない）
 ├─ riebeckite.config.ts   サイト設定
 ├─ package.json
+├─ pnpm-workspace.yaml    pnpm 専用（npm は読まない）
 ├─ vite.config.ts
 ├─ tsconfig.json
 ├─ biome.json             既定のプロジェクトファイル

@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "43d585f2-1236-4c68-b9d8-dcac6356ea43",
-    "publishedAt": "2026-11-16T11:36:58.727Z",
-    "publicationFingerprint": "ce654a4ccfc918f9027a042901f2ca3e612abf635bbca356ce9a5af4efe2b38d",
+    "runId": "88164765-8bd2-47be-aebf-13ff87366816",
+    "publishedAt": "2026-11-16T23:24:57.026Z",
+    "publicationFingerprint": "5b3de66065d06e00116a418bcd0066aebeeb106b8b0f80a21d853807bf27066f",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -3354,16 +3354,16 @@
         "permalink": "/docs/guides/customizing-your-site/examples",
         "title": "Examples",
         "visibility": "public",
-        "fingerprint": "79958f1102aadcf553bb169b0faef5fdb5ea8b2fe831d99ea6b3df9295f745b8",
-        "contentFingerprint": "116ffe09374d9da19b04bd96941a6e240b977954ccd08e4be23cf1e469ce8ac4"
+        "fingerprint": "833b4439fafdd1d5bbdec5f49d77eae1c989964bbdade812e7b248346411af8c",
+        "contentFingerprint": "0c4eeefd796b41045f2cb853a53585897fc75fe23d41b118f39cdc8b0cd493a6"
       },
       {
         "slug": "docs/guides/customizing-your-site/examples.ja",
         "permalink": "/ja/docs/guides/customizing-your-site/examples",
         "title": "実例",
         "visibility": "public",
-        "fingerprint": "cca2bdc6521f104dd8f2ed337158db6adb6aa3be258fa5a4cafd1b68f04131e0",
-        "contentFingerprint": "821150f16a7dfaf07cfc692a5c621b8d7270660558314a1b0cac0e9a5fc9d8d5"
+        "fingerprint": "aa7c4704ec13ed84ea91ae38e3825258d82041a9964238a1f0f907b999d578aa",
+        "contentFingerprint": "367e9051819925e925a72c97f993af707e50478726a7794d72d9fcc1dce2a0ae"
       },
       {
         "slug": "docs/guides/customizing-your-site/layout",
@@ -4922,16 +4922,16 @@
         "permalink": "/docs/plugins/og-image",
         "title": "OG Image",
         "visibility": "public",
-        "fingerprint": "aa2374df9b004026c6227e592b52bb15950958de7d2b4396342b2564c9b4ad8d",
-        "contentFingerprint": "b2b9f6ec14d20d1f0c0c1096474be83a882002ec05e796684c0edae88980cfaf"
+        "fingerprint": "24d1880d3d3da8797b0d99571ccb3dc7d34105d098909d37926df2e5bf87e4c7",
+        "contentFingerprint": "4b3b4d84710ec6be9d37efa7631a49a5203ea05f77e778d90304527ce8879edf"
       },
       {
         "slug": "docs/plugins/og-image.ja",
         "permalink": "/ja/docs/plugins/og-image",
         "title": "OG Image",
         "visibility": "public",
-        "fingerprint": "d86fbfe1028fcc0d45c980aa5f27621f83a46931373572cd1d315e49b036c566",
-        "contentFingerprint": "832ed2337df89c171983cb5d3e5f90d333cd41aae7a1e5d6e8d16d806da83f4c"
+        "fingerprint": "e74fccc2662f26fe2e0068f03e91d5fbde54f2c2a8cc2b1799eb976e45905ad2",
+        "contentFingerprint": "a5761f20e77a284e537c6d8e8aa498238eab1dd69499536f3525458b4020f213"
       },
       {
         "slug": "docs/plugins/page-type-generator",
@@ -6378,16 +6378,16 @@
         "permalink": "/docs/releases",
         "title": "Release Notes",
         "visibility": "public",
-        "fingerprint": "62d848453603beed06e0344c12e1ee8d3842ec49ed6cdcee7cd49aa95e4f8f43",
-        "contentFingerprint": "0a513558b05ddfbec219a14e01cb1fda6a93653a9c79918add1951145a66a065"
+        "fingerprint": "f81e68ac8de56ef820122eb002c36e75aaa9b5f1fc74747a29f531b53e85962d",
+        "contentFingerprint": "9ca4323dc331a84b870673818ad9b025b3352e59bd5ef5609b337c3df1e4966c"
       },
       {
         "slug": "docs/releases.ja",
         "permalink": "/ja/docs/releases",
         "title": "リリースノート",
         "visibility": "public",
-        "fingerprint": "d42ffd4b23910c240523a084d2b642001e2e4b9ee393c8977286cbdd2cb53da4",
-        "contentFingerprint": "d5a67d8586bfbd8d6fef58bd4488686a691a2c773770bb82f9a31c51b157bd47"
+        "fingerprint": "a5b2b3121794c9f1d50d276578f732570809324b8087e8b33c62c16de706f531",
+        "contentFingerprint": "0ca62cd2d7f0f6cc0dfa3e3dea93357f7d26a7d716f77f7afe4e38f160bf85fc"
       },
       {
         "slug": "docs/security",
@@ -6822,7 +6822,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "f515a16d8d16cf55c7feea075109a748be148b92930a66f5bad228f1915fbdc9",
+    "artifactFingerprint": "92e094ba0e6790b99c0a90cc5c627b8775c938fd2aa36067ea50b4f418bea9ae",
     "provider": "cloudflare-workers"
   }
 }

@@ -198,17 +198,29 @@ export default defineConfig({
 });
 ```
 
+The `inspector` extension takes `apiVersion` (currently only `1`; any other value logs a warning and skips the plugin's tabs) and `tabs`. Each tab accepts:
+
+| Field | Description |
+| --- | --- |
+| `id` | Stable tab id matched against `^[a-z0-9][a-z0-9._-]*$` (the check is case-insensitive), unique across plugins. Invalid or duplicate ids log a warning and are skipped. |
+| `title` | Tab label: a string or `{ en, ja? }`, shown in the active locale. |
+| `description` | Optional explanation shown with the tab, in the same string or `{ en, ja? }` form. |
+| `order` | Sort key, defaults to `0`. Tabs are sorted by `order`, then by `id`; built-in tabs always come first. |
+| `collect` | Optional; called once per completed development build snapshot with the plugin context. Returns one of the data shapes below. |
+| `client` | Optional module specifier for custom rendering (see below). |
+
 `collect` runs once when a completed development build snapshot is created, not
-on every Inspector request. Return one of these data shapes:
+on every Inspector request. It returns one of these data shapes (or a promise of
+one), each rendered as:
 
-- `{ kind: "key-value", items }`
-- `{ kind: "table", columns, rows }`
-- `{ kind: "json", value }`
-- `{ kind: "error", message }`
+| Shape | Fields | Rendered as |
+| --- | --- | --- |
+| `{ kind: "key-value" }` | `items: [{ key, value }]` | A `<dl>` definition list; object values are shown as inline JSON in `<code>` |
+| `{ kind: "table" }` | `columns`, `rows` | A `<table>` with `columns` as headers and one row per entry of `rows` |
+| `{ kind: "json" }` | `value` | Pretty-printed JSON inside a `<pre>` block |
+| `{ kind: "error" }` | `message` | An error paragraph |
 
-Values in these shapes must be JSON-serializable. Tab ids must match `^[a-z0-9][a-z0-9._-]*$` and be unique across plugins. Tabs
-are sorted by `order`, then by id; built-in tabs always come first. A failing
-`collect` is shown as an error tab and does not affect other tabs.
+`key` and `columns` accept the same string or `{ en, ja? }` form as `title` and are localized the same way. Values in these shapes must be JSON-serializable. A tab without `collect` shows "This tab has no data." A failing `collect` is shown as an error tab and does not affect other tabs.
 
 For custom rendering, set `client` to a module specifier resolvable from the
 app root. The module must export `mount(root, { data, locale })` and may return

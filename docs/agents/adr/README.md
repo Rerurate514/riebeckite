@@ -54,4 +54,7 @@ They are historical evidence, not active decisions. New decisions belong here.
 | --- | ------ | -------- |
 | [20261111-110000-discovery-projection-exclude-a7c91e](./20261111-110000-discovery-projection-exclude-a7c91e.md) | Accepted | Exclude configured slug paths and their descendants from selected derived discovery projections. |
 | [20261111-100000-navigation-exclude-73be42](./20261111-100000-navigation-exclude-73be42.md) | Accepted | Exclude configured slug paths and their descendants from derived navigation. |
+| [20261103-tsx-og-layouts](./20261103-tsx-og-layouts.md) | Accepted | Render custom OG layouts with Satori and bundle Noto Sans JP. |
+| [20261103-deferred-og-image-outputs](./20261103-deferred-og-image-outputs.md) | Accepted | Plan generated OG images as deferred outputs and render only affected paths. |
+| [20261102-transactional-site-publication](./20261102-transactional-site-publication.md) | Accepted | Stage client assets and SSG output, validate the inventory, then publish recoverably. |
 | [20261102-143500-release-change-management-b2c3d4](./20261102-143500-release-change-management-b2c3d4.md) | Accepted | Record user-facing changes as entries and decisions as ADRs, then generate the changelog and release notes from one source. |

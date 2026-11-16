@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "442c2a5a-2d47-47d9-9ff6-092231ad441a",
-    "publishedAt": "2026-11-15T20:02:16.899Z",
-    "publicationFingerprint": "658c316ad0c1b7eabd07c4396cc7f7dd82e435d0c323de545f875a0f20bb8b78",
+    "runId": "6f12318d-132a-4372-be9f-16171085ebc4",
+    "publishedAt": "2026-11-16T06:32:32.181Z",
+    "publicationFingerprint": "5f00be2d0369956c0f71767fabe19812e4c3f7a7331dae621734342a0760253d",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -1226,16 +1226,16 @@
         "permalink": "/docs/getting-started/installation",
         "title": "Installation",
         "visibility": "public",
-        "fingerprint": "9c775572e29fa01b3a4fc33163d1f9e788aa85cef850a2a4c404c81582dabd66",
-        "contentFingerprint": "ff0cbe04a4c6bb4adc204c5ba8f7859762b9cf1080b5eaae28d36e6207208096"
+        "fingerprint": "1e42749bbe64d5aba0492b3a928dea71badc26365b933b6a85c8d5d76747d504",
+        "contentFingerprint": "08d793ee1739efb14b5e687b9f932dcd7a12721e23dcddc9baa66dbdfe69fedf"
       },
       {
         "slug": "docs/getting-started/installation.ja",
         "permalink": "/ja/docs/getting-started/installation",
         "title": "インストール",
         "visibility": "public",
-        "fingerprint": "4e6881022f7bf7198f219d02c73fc0f8c80f7522f6a76acc6406bc2a7f87aac6",
-        "contentFingerprint": "062a41eb8cdf8d7ebab3c4633e795858e99098af369b69b1f2adb49660693287"
+        "fingerprint": "da11e3fb5ed0f06ac7e0be3a1f132c395d7b52b1b0fb49848485d1ef49f76fe8",
+        "contentFingerprint": "64feb997b5d2faef9291212f0ee4f333295e0ba9245348d21a8ee0bab7059ec0"
       },
       {
         "slug": "docs/getting-started/integrated-setup",
@@ -6378,16 +6378,16 @@
         "permalink": "/docs/releases",
         "title": "Release Notes",
         "visibility": "public",
-        "fingerprint": "3d100240a2c5eb8a28c250a5a112bb403b399bfa99f1f969729558b7671d5715",
-        "contentFingerprint": "72bb1bcb7328bbe896cfd1e6468d07956ffeb49c8bf168112e40ccdb4e9ba2c3"
+        "fingerprint": "91c729cf8a62ff7deff5cb503ad47345a0db63241895874eee5983ad1a8cbd9d",
+        "contentFingerprint": "11d65ed401fcac54f963fb8b1f324c992eae119e270eaab355a483cafe8bd6ae"
       },
       {
         "slug": "docs/releases.ja",
         "permalink": "/ja/docs/releases",
         "title": "リリースノート",
         "visibility": "public",
-        "fingerprint": "c5374ea116aeca246de48814285c2dad257eb29d32640f8ee8cf0a02e800c186",
-        "contentFingerprint": "88fb6f3e2a0a1ff99ab8e62958313875295c838604d40dee1e21f776c3aa8e55"
+        "fingerprint": "801d75110a751b2db4ca4bfcfc3cd4d986ed649280c12ce4980d453611ad820c",
+        "contentFingerprint": "5165b4819e306a1026e42d21b711bd820d0f5e065548b183ac0a013cf2cbdf38"
       },
       {
         "slug": "docs/security",
@@ -6822,7 +6822,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "05a27bc3e630b1e1b2cea12ca14256a9c2e9a62d86d57f8e49baafa9c200f19e",
+    "artifactFingerprint": "517c8e3ebf77ae292689ffc7663a274c53c7cae81924a11e68751afb3e239f13",
     "provider": "cloudflare-workers"
   }
 }

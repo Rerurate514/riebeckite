@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "6f12318d-132a-4372-be9f-16171085ebc4",
-    "publishedAt": "2026-11-16T06:32:32.181Z",
-    "publicationFingerprint": "5f00be2d0369956c0f71767fabe19812e4c3f7a7331dae621734342a0760253d",
+    "runId": "43d585f2-1236-4c68-b9d8-dcac6356ea43",
+    "publishedAt": "2026-11-16T11:36:58.727Z",
+    "publicationFingerprint": "ce654a4ccfc918f9027a042901f2ca3e612abf635bbca356ce9a5af4efe2b38d",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -6266,16 +6266,16 @@
         "permalink": "/docs/reference/plugin-api/basics",
         "title": "The basic contract",
         "visibility": "public",
-        "fingerprint": "a66d2a0d13ad538a562f5f0a5f36657edb9a66f3e25635dbb67113409a6c08ea",
-        "contentFingerprint": "fede51dcbcb06d32ac5e96f1d8a31324d97b72540b7e0e88a4d8e0bc224b6b21"
+        "fingerprint": "6f75577ce40c5441216c9a999c609b39e80b64cd02e538eb17391be6fbdd6d60",
+        "contentFingerprint": "9a51d04e03b4159aaf40ba67be085b23f229b15ab59e28ffb76eb3d9ddaa66ee"
       },
       {
         "slug": "docs/reference/plugin-api/basics.ja",
         "permalink": "/ja/docs/reference/plugin-api/basics",
         "title": "基本の契約",
         "visibility": "public",
-        "fingerprint": "e5d22ef61037ed9d7882bcdc4e1d9b7a6d521f0e3ce1f669f3131fe51fbdae63",
-        "contentFingerprint": "bc83265a964c40249a418d333dec7e6d9e9a1fc65329e8c80fc1cb48d892f319"
+        "fingerprint": "d83c73184fefc4aea98b009f06e700f0764cc16de93095fc0717ac757b6a93fd",
+        "contentFingerprint": "577dd303805ee451095677a0d9456a0f9d4e547445262230e7f6c6e229a92342"
       },
       {
         "slug": "docs/reference/plugin-api/content-processing",
@@ -6298,16 +6298,16 @@
         "permalink": "/docs/reference/plugin-api/distribution",
         "title": "Distribution and package layout",
         "visibility": "public",
-        "fingerprint": "cf46fb3ec7afef584b3006e698b099e0d0e4c7e11478ee33c0c5b51bd3a82008",
-        "contentFingerprint": "916ec68ba9c31aafed9244e53ec080208de5c299bf7af7cd7914d4e4b1b365c3"
+        "fingerprint": "6a7627d6107f7cb85aea0976e1e7334dca176e65f4b7e729c3fd87fde894ed38",
+        "contentFingerprint": "e790a8c30da7218ce212896ce069e4180feee9d1fd97cc70c2c9eb489baadf55"
       },
       {
         "slug": "docs/reference/plugin-api/distribution.ja",
         "permalink": "/ja/docs/reference/plugin-api/distribution",
         "title": "配布とパッケージ構成",
         "visibility": "public",
-        "fingerprint": "c131093d7a4d39febe58b5611ce85e41a95edb3f8674f7241336368869deaaec",
-        "contentFingerprint": "422b5632aa54a44f4a65382692e4642c2c51b9b9b4667e9617b47b733e945ecf"
+        "fingerprint": "2b2224caa9f587331ca7a9bde4354954c39f3ae85936bb448fd6ed25fa163e3a",
+        "contentFingerprint": "7893e2721c364979eae1ff47d5a5c15e7bb156237a5e86a582ccd8284317d6f9"
       },
       {
         "slug": "docs/reference/plugin-api/ui-and-assets",
@@ -6378,16 +6378,16 @@
         "permalink": "/docs/releases",
         "title": "Release Notes",
         "visibility": "public",
-        "fingerprint": "91c729cf8a62ff7deff5cb503ad47345a0db63241895874eee5983ad1a8cbd9d",
-        "contentFingerprint": "11d65ed401fcac54f963fb8b1f324c992eae119e270eaab355a483cafe8bd6ae"
+        "fingerprint": "62d848453603beed06e0344c12e1ee8d3842ec49ed6cdcee7cd49aa95e4f8f43",
+        "contentFingerprint": "0a513558b05ddfbec219a14e01cb1fda6a93653a9c79918add1951145a66a065"
       },
       {
         "slug": "docs/releases.ja",
         "permalink": "/ja/docs/releases",
         "title": "リリースノート",
         "visibility": "public",
-        "fingerprint": "801d75110a751b2db4ca4bfcfc3cd4d986ed649280c12ce4980d453611ad820c",
-        "contentFingerprint": "5165b4819e306a1026e42d21b711bd820d0f5e065548b183ac0a013cf2cbdf38"
+        "fingerprint": "d42ffd4b23910c240523a084d2b642001e2e4b9ee393c8977286cbdd2cb53da4",
+        "contentFingerprint": "d5a67d8586bfbd8d6fef58bd4488686a691a2c773770bb82f9a31c51b157bd47"
       },
       {
         "slug": "docs/security",
@@ -6822,7 +6822,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "517c8e3ebf77ae292689ffc7663a274c53c7cae81924a11e68751afb3e239f13",
+    "artifactFingerprint": "f515a16d8d16cf55c7feea075109a748be148b92930a66f5bad228f1915fbdc9",
     "provider": "cloudflare-workers"
   }
 }

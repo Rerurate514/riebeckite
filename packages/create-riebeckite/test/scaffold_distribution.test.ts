@@ -61,8 +61,14 @@ async function collectRiebeckiteClosure(
         path.join(REPO_ROOT, directory, "package.json"),
         "utf8",
       ),
-    ) as { dependencies?: Record<string, string> };
-    for (const dependency of Object.keys(manifest.dependencies ?? {})) {
+    ) as {
+      dependencies?: Record<string, string>;
+      peerDependencies?: Record<string, string>;
+    };
+    for (const dependency of [
+      ...Object.keys(manifest.dependencies ?? {}),
+      ...Object.keys(manifest.peerDependencies ?? {}),
+    ]) {
       if (dependency.startsWith("@riebeckite/") && !seen.has(dependency)) {
         queue.push(dependency);
       }

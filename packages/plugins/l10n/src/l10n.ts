@@ -1,4 +1,9 @@
-import { createStyleAsset, definePlugin } from "@riebeckite/core";
+import {
+  createStyleAsset,
+  definePlugin,
+  type JsonValue,
+  toJsonValue,
+} from "@riebeckite/core";
 import { detectContents, throwForStrictDiagnostics } from "./detection.js";
 import { addLocalizationHeadTags } from "./head_tags.js";
 import { l10nInspectorTabs } from "./inspector.js";
@@ -15,6 +20,7 @@ import {
 } from "./routing.js";
 import { computeLocalizationSignatures } from "./signatures.js";
 import type {
+  DetectedContent,
   L10nContent,
   L10nDetectorContext,
   L10nDetectorResult,
@@ -39,6 +45,13 @@ export function l10n(options: L10nOptions) {
   return definePlugin({
     name: "l10n",
     developmentRouteManifest: true,
+    developmentRouteCache: {
+      version: "l10n-route-v1",
+      serialize: () => serializeState(state),
+      restore: (snapshot) => {
+        state = restoreState(snapshot);
+      },
+    },
     processedContentCache: {
       version: "l10n-content-locations-v2",
       dependencyMode: "tracked",
@@ -135,4 +148,93 @@ function emptyState(): L10nState {
     slugsByPermalink: new Map(),
     signatures: new Map(),
   };
+}
+
+function serializeState(state: L10nState): JsonValue {
+  return (
+    toJsonValue({
+      contents: [...state.contents.values()],
+      diagnostics: state.diagnostics,
+      conflictedGroups: [...state.conflictedGroups],
+      locations: state.locations ? [...state.locations] : null,
+      slugsByPermalink: [...state.slugsByPermalink],
+      signatures: [...state.signatures],
+    }) ?? null
+  );
+}
+
+function restoreState(snapshot: JsonValue): L10nState {
+  if (!isRecord(snapshot) || !Array.isArray(snapshot.contents)) {
+    throw new Error("Invalid l10n development route cache.");
+  }
+  const conflictedGroups = new Set(stringValues(snapshot.conflictedGroups));
+  const contents = new Map<string, DetectedContent>();
+  const contentsByTranslationAndLanguage = new Map<string, DetectedContent>();
+  for (const value of snapshot.contents) {
+    if (
+      !isRecord(value) ||
+      typeof value.slug !== "string" ||
+      typeof value.path !== "string" ||
+      typeof value.lang !== "string" ||
+      typeof value.translationId !== "string" ||
+      !isRecord(value.frontmatter) ||
+      !isRecord(value.signals)
+    ) {
+      throw new Error("Invalid l10n development route cache.");
+    }
+    const content = value as DetectedContent;
+    contents.set(content.slug, content);
+    const key = `${content.translationId}\u0000${content.lang}`;
+    if (!conflictedGroups.has(key)) {
+      contentsByTranslationAndLanguage.set(key, content);
+    }
+  }
+  return {
+    contents,
+    contentsByTranslationAndLanguage,
+    diagnostics: Array.isArray(snapshot.diagnostics)
+      ? (snapshot.diagnostics as L10nState["diagnostics"])
+      : [],
+    conflictedGroups,
+    locations:
+      snapshot.locations === null
+        ? null
+        : new Map(
+            pairValues(snapshot.locations) as [
+              string,
+              L10nState["locations"] extends ReadonlyMap<string, infer T>
+                ? T
+                : never,
+            ][],
+          ),
+    slugsByPermalink: new Map(
+      pairValues(snapshot.slugsByPermalink) as [string, string][],
+    ),
+    signatures: new Map(pairValues(snapshot.signatures) as [string, string][]),
+  };
+}
+
+function pairValues(value: JsonValue | undefined): [string, JsonValue][] {
+  if (!Array.isArray(value))
+    throw new Error("Invalid l10n development route cache.");
+  return value.map((item) => {
+    if (!Array.isArray(item) || typeof item[0] !== "string") {
+      throw new Error("Invalid l10n development route cache.");
+    }
+    return [item[0], item[1] ?? null];
+  });
+}
+
+function stringValues(value: JsonValue | undefined): string[] {
+  if (
+    !Array.isArray(value) ||
+    !value.every((item) => typeof item === "string")
+  ) {
+    throw new Error("Invalid l10n development route cache.");
+  }
+  return value;
+}
+
+function isRecord(value: JsonValue): value is Record<string, JsonValue> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
 }

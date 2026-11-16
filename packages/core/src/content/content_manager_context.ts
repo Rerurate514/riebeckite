@@ -56,6 +56,7 @@ export interface ContentManagerContext {
   manifestPromise: Promise<ContentManifest> | null;
   routeManifest: ContentManifest | null;
   routeManifestPromise: Promise<ContentManifest> | null;
+  developmentRouteCachePath: string;
   pipelineFingerprint: string | null;
   pipeline: Pipeline | null;
   pipelinePromise: Promise<Pipeline> | null;

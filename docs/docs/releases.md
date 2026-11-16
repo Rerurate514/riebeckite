@@ -16,6 +16,11 @@ The Unreleased section lists changes that are merged but not yet published to np
 
 > **Breaking changes are included.** Read the migration notes before upgrading.
 
+### Added
+
+- Cache verified development route metadata between process restarts, including supported plugin route state, to reduce startup work for unchanged content.
+  Packages: `@riebeckite/core`, `@riebeckite/plugin-l10n`, `@riebeckite/plugin-breadcrumbs`
+
 ### Changed
 
 - Mermaid diagrams line up with the article text. The plugin's figure kept the browser's default 40px side margins because the framework only sets the block margins on figures, and the diagram was centered inside its canvas, so every diagram sat narrower and indented compared with the surrounding text.

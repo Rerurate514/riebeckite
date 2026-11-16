@@ -21,6 +21,7 @@ import type {
   DeferredGeneratedOutputInput,
   GeneratedOutputContent,
 } from "./generated_output.js";
+import type { JsonValue } from "./json_value.js";
 import type { OutputDependency } from "./output_dependency.js";
 import type { PluginAsset, PluginClientEntry } from "./plugin_asset.js";
 import type {
@@ -77,6 +78,11 @@ export type RiebeckitePlugin<TOptions = unknown> = {
   contentFormats?: readonly ContentFormat[];
   vitePlugins?: (context: { contentDirectory: string }) => readonly unknown[];
   developmentRouteManifest?: true;
+  developmentRouteCache?: {
+    version: string;
+    serialize?: () => JsonValue;
+    restore?: (state: JsonValue) => void | Promise<void>;
+  };
   /**
    * Explicit contract for the persistent processed-content cache.
    *

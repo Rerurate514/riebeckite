@@ -1,4 +1,7 @@
 import assert from "node:assert/strict";
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import { test } from "node:test";
 import { resolveConfig } from "../src/config.js";
 import { ContentManager } from "../src/content/content_manager.js";
@@ -95,6 +98,135 @@ test("development requests resolve route metadata without processing every post"
   assert.equal(processed, 0);
   await manager.getProcessedContent("other");
   assert.equal(processed, 1);
+});
+
+test("development route manifests restore a verified persistent cache", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-route-cache-"),
+  );
+  let locationCalls = 0;
+  let restoreCalls = 0;
+  const plugin = () =>
+    definePlugin({
+      name: "route-cache",
+      developmentRouteCache: {
+        version: "v1",
+        serialize: () => ({ ready: true }),
+        restore: () => {
+          restoreCalls += 1;
+        },
+      },
+      extendContentLocations: () => {
+        locationCalls += 1;
+      },
+    });
+  const options = {
+    config: resolveConfig({
+      content: { directory },
+      site: { title: "Test" },
+      plugins: [plugin()],
+    }),
+    isDevelopment: true,
+  };
+  try {
+    await new ContentManager(source(), [], options).getRequestManifest();
+    const second = new ContentManager(source(), [], {
+      ...options,
+      config: resolveConfig({
+        content: { directory },
+        site: { title: "Test" },
+        plugins: [plugin()],
+      }),
+    });
+
+    assert.equal((await second.getRequestManifest()).entries[0]?.slug, "index");
+    assert.equal(locationCalls, 1);
+    assert.equal(restoreCalls, 1);
+  } finally {
+    await fs.rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("development route cache misses when source content changes", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-route-cache-"),
+  );
+  let markdown = "# Home";
+  let locationCalls = 0;
+  const plugin = () =>
+    definePlugin({
+      name: "route-cache-change",
+      developmentRouteCache: { version: "v1" },
+      extendContentLocations: () => {
+        locationCalls += 1;
+      },
+    });
+  const content: ContentSource = {
+    async scan() {
+      return [{ path: "index.md" }];
+    },
+    async read() {
+      return markdown;
+    },
+  };
+  try {
+    await new ContentManager(content, [], {
+      config: resolveConfig({
+        content: { directory },
+        site: { title: "Test" },
+        plugins: [plugin()],
+      }),
+      isDevelopment: true,
+    }).getRequestManifest();
+    markdown = "# Changed";
+    await new ContentManager(content, [], {
+      config: resolveConfig({
+        content: { directory },
+        site: { title: "Test" },
+        plugins: [plugin()],
+      }),
+      isDevelopment: true,
+    }).getRequestManifest();
+
+    assert.equal(locationCalls, 2);
+  } finally {
+    await fs.rm(directory, { recursive: true, force: true });
+  }
+});
+
+test("corrupted development route cache falls back to route resolution", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-route-cache-"),
+  );
+  let locationCalls = 0;
+  const plugin = () =>
+    definePlugin({
+      name: "route-cache-corruption",
+      developmentRouteCache: { version: "v1" },
+      extendContentLocations: () => {
+        locationCalls += 1;
+      },
+    });
+  const options = () => ({
+    config: resolveConfig({
+      content: { directory },
+      site: { title: "Test" },
+      plugins: [plugin()],
+    }),
+    isDevelopment: true,
+  });
+  try {
+    await new ContentManager(source(), [], options()).getRequestManifest();
+    await fs.writeFile(
+      path.join(directory, ".riebeckite", "development-route-state.json"),
+      "{}",
+    );
+    await new ContentManager(source(), [], options()).getRequestManifest();
+
+    assert.equal(locationCalls, 2);
+  } finally {
+    await fs.rm(directory, { recursive: true, force: true });
+  }
 });
 
 test("development routing falls back to the full manifest for unopted page types", async () => {

@@ -90,6 +90,50 @@ test("detects configured filename conventions and leaves ordinary Markdown at th
   assert.equal(locations.get("README")?.permalink, "/README");
 });
 
+test("restores localization state with the development route cache", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-l10n-route-cache-"),
+  );
+  const files = {
+    "guide.md": "---\ntranslation: guide\n---\n[Read](./guide.en.md)",
+    "guide.en.md": "---\ntranslation: guide\n---\n# Guide",
+  };
+  try {
+    await manager(
+      files,
+      { translationKey: "translation" },
+      [],
+      directory,
+    ).getRequestManifest();
+    const restored = manager(
+      files,
+      { translationKey: "translation" },
+      [],
+      directory,
+    );
+
+    const manifest = await restored.getRequestManifest();
+    assert.equal(
+      getLocalizedContent(manifest, "guide", "en")?.slug,
+      "guide.en",
+    );
+    assert.deepEqual(getLocalization(manifest, "guide"), {
+      slug: "guide",
+      permalink: "/guide",
+      lang: "ja",
+      translationId: "guide",
+      availableLanguages: ["en", "ja"],
+      translations: { ja: "/guide", en: "/en/guide" },
+    });
+    assert.match(
+      (await restored.getProcessedContent("guide")).html,
+      /href="\/en\/guide"/,
+    );
+  } finally {
+    await fs.rm(directory, { recursive: true, force: true });
+  }
+});
+
 test("does not treat a language-like directory name as a language signal", async () => {
   const content = manager({
     "en/README.md": "# English",

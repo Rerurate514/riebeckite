@@ -93,6 +93,8 @@ export function example(
 
 開発時は、記事 HTML を処理する前に frontmatter とリンクのメタデータでルートを解決します。`extendContentGraph` または `onManifestCreated` を使うプラグインでは、`entry.html === ""` でも正しく処理でき、[[glossary/generated-output|生成物]]やアセット変換を必要とせず、開発サーバーでも実行する必要がある場合に限り、`developmentRouteManifest: true` を指定します。それ以外の[[glossary/manifest|マニフェスト]]へ影響するプラグインは、互換性を保つため開発時も Full Manifest を使います。
 
+開発時のルートマニフェストへ影響し、実行時の状態を持つプラグインは、`developmentRouteCache` にバージョンと `serialize`、`restore` を指定します。すべての参加プラグインがこの契約を宣言し、すべてのコンテンツハッシュが一致するときだけ、Core は再起動後にルートマニフェストを再利用します。ルートの結果または復元する状態を変えたらバージョンを更新し、安全に復元できない状態には契約を指定しません。
+
 ## プラグインを有効にする
 
 プラグインは、`riebeckite.config.ts` の `plugins` へ追加します。

@@ -97,6 +97,13 @@ with `entry.html === ""`, need no generated outputs or asset transforms, and
 are required while serving. Other manifest-affecting plugins use the full
 manifest in development to preserve compatibility.
 
+When a plugin affects a development route manifest and keeps runtime state,
+declare `developmentRouteCache` with a version plus `serialize` and `restore`.
+Core reuses a route manifest after a restart only when every participating
+plugin declares this contract and all content hashes still match. Increment the
+version when the route result or restored state changes; omit the contract when
+the state cannot be restored safely.
+
 ## Ordering and capabilities
 
 Disabled/false/null inputs are removed, and `enabled: false` is never

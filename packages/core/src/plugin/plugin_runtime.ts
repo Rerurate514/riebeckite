@@ -10,6 +10,7 @@ import type {
   ContentManifestEntry,
   ContentPublicLocation,
 } from "../types/content_manifest.js";
+import type { JsonValue } from "../types/json_value.js";
 import type { RiebeckitePlugin } from "../types/plugin.js";
 import { resolvePlugins } from "../types/plugin.js";
 import type { PostContent } from "../types/post_content.js";
@@ -36,6 +37,12 @@ export type PluginHookExecution = {
   readonly hook: string;
   readonly status: "executed" | "failed" | "reused";
   readonly durationMs: number;
+};
+
+export type DevelopmentRouteCacheSnapshot = {
+  readonly name: string;
+  readonly version: string;
+  readonly state?: JsonValue;
 };
 
 import { PluginRuntimeMethodsE } from "./plugin_runtime_methods_e.js";
@@ -76,6 +83,57 @@ export class PluginRuntime extends PluginRuntimeMethodsE {
       slug,
       markdown,
     });
+  }
+
+  getDevelopmentRouteCacheSnapshots():
+    | readonly DevelopmentRouteCacheSnapshot[]
+    | undefined {
+    const snapshots: DevelopmentRouteCacheSnapshot[] = [];
+    for (const plugin of this.plugins()) {
+      if (
+        !plugin.resolveContentLocations &&
+        !plugin.extendContentLocations &&
+        !plugin.resolveContentLocalization &&
+        !(
+          plugin.developmentRouteManifest === true &&
+          (plugin.extendContentGraph || plugin.onManifestCreated)
+        )
+      ) {
+        continue;
+      }
+      const cache = plugin.developmentRouteCache;
+      if (!cache) return undefined;
+      snapshots.push({
+        name: plugin.name,
+        version: cache.version,
+        ...(cache.serialize ? { state: cache.serialize() } : {}),
+      });
+    }
+    return snapshots;
+  }
+
+  async restoreDevelopmentRouteCache(
+    snapshots: readonly DevelopmentRouteCacheSnapshot[],
+  ): Promise<boolean> {
+    const current = this.getDevelopmentRouteCacheSnapshots();
+    if (
+      !current ||
+      current.length !== snapshots.length ||
+      current.some(
+        (snapshot, index) =>
+          snapshot.name !== snapshots[index]?.name ||
+          snapshot.version !== snapshots[index]?.version,
+      )
+    ) {
+      return false;
+    }
+    for (const snapshot of snapshots) {
+      if (snapshot.state === undefined) continue;
+      const plugin = this.plugins().find(({ name }) => name === snapshot.name);
+      if (!plugin?.developmentRouteCache?.restore) return false;
+      await plugin.developmentRouteCache.restore(snapshot.state);
+    }
+    return true;
   }
 
   async extendContentLocations(

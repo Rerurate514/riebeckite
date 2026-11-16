@@ -57,6 +57,7 @@ export function breadcrumbs(options: BreadcrumbsOptions = {}) {
   return definePlugin({
     name: BREADCRUMBS_PLUGIN_NAME,
     developmentRouteManifest: true,
+    developmentRouteCache: { version: "breadcrumbs-route-v1" },
     optional: ["content.folder-pages"],
     processedContentCache: {
       version: "breadcrumbs-v1",

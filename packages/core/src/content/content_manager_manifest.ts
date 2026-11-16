@@ -8,6 +8,10 @@ import {
   type ContentBuildOptions,
   readFrontmatter,
 } from "./content_manager_shared.js";
+import {
+  loadDevelopmentRouteCache,
+  saveDevelopmentRouteCache,
+} from "./development_route_cache.js";
 import { resolvePublishingState } from "./publishing.js";
 
 export async function getManifestImpl(
@@ -56,9 +60,25 @@ export async function buildRouteManifestImpl(
   return await m
     .observability()
     .tracer.span("content.route-manifest", {}, async () => {
-      const [sourceEntries, contentIndex, locations, locationInputs] =
-        await Promise.all([
-        m.scan(),
+      const sourceEntries = await m.scan();
+      const routeCache = await loadDevelopmentRouteCache(
+        m.developmentRouteCachePath,
+        sourceEntries,
+        (entry) => m.entryReader.read(entry),
+        m.computePipelineFingerprint(),
+        m.pluginRuntime,
+      );
+      if (routeCache) {
+        m.contentIndex = routeCache.contentIndex;
+        m.contentIndexAmbiguities = routeCache.ambiguities;
+        m.locationResolver.restore(routeCache.locations, routeCache.inputs);
+        m.routableSlugs = new Set(
+          routeCache.manifest.publicEntries.map((entry) => entry.slug),
+        );
+        m.routeManifest = routeCache.manifest;
+        return routeCache.manifest;
+      }
+      const [contentIndex, locations, locationInputs] = await Promise.all([
         m.getContentIndex(),
         m.getContentLocations(),
         m.locationResolver.getInputs(),
@@ -132,6 +152,16 @@ export async function buildRouteManifestImpl(
         contentIndex,
       );
       m.routeManifest = manifest;
+      await saveDevelopmentRouteCache(
+        m.developmentRouteCachePath,
+        sourceEntries,
+        (entry) => m.entryReader.read(entry),
+        m.computePipelineFingerprint(),
+        m.pluginRuntime,
+        manifest,
+        locations,
+        locationInputs,
+      ).catch(() => undefined);
       return manifest;
     });
 }

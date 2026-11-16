@@ -12,6 +12,7 @@ import { ContentLocationResolver } from "./content_location_resolver.js";
 import type { ContentManagerContext } from "./content_manager_context.js";
 import { ContentOutputResolver } from "./content_output_resolver.js";
 import { type ContentSource, cacheContentSource } from "./content_source.js";
+import { resolveDevelopmentRouteCachePath } from "./development_route_cache.js";
 import { ManifestAssembler } from "./manifest_assembler.js";
 import { resolvePublishingBuildTime } from "./publishing.js";
 
@@ -85,6 +86,8 @@ export function initializeContentManager(
     pipelineOptions.config,
     undefined,
   );
+  m.developmentRouteCachePath =
+    resolveDevelopmentRouteCachePath(buildStatePath);
   const observability = m.observability();
   m.entryReader = new ContentEntryReader(m.source, observability, (path) =>
     m.formats.isContentPath(path),

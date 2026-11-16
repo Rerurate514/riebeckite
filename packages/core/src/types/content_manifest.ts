@@ -100,6 +100,7 @@ export type ContentLocationInput = {
   slug: string;
   path: string;
   markdown: string;
+  frontmatter?: PostFrontmatter;
 };
 
 export type ContentManifest = {

@@ -120,6 +120,7 @@ export function throwForStrictDiagnostics(
 }
 
 function parseFrontmatter(entry: ContentLocationInput): PostFrontmatter {
+  if (entry.frontmatter) return entry.frontmatter;
   const match = entry.markdown.match(
     /^(?:\uFEFF)?---\s*\r?\n([\s\S]*?)\r?\n---\s*(?:\r?\n|$)/,
   );
@@ -133,7 +134,9 @@ function parseFrontmatter(entry: ContentLocationInput): PostFrontmatter {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
     throw new Error(`Invalid frontmatter object: ${entry.path}`);
   }
-  return value as PostFrontmatter;
+  const frontmatter = value as PostFrontmatter;
+  entry.frontmatter = frontmatter;
+  return frontmatter;
 }
 
 function detectFilenameLanguage(

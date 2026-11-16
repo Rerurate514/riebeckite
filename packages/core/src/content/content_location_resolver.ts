@@ -2,6 +2,7 @@ import type { Observability } from "../observability.js";
 import type { PluginRuntime } from "../plugin/plugin_runtime.js";
 import type {
   ContentManifest,
+  ContentLocationInput,
   ContentPublicLocation,
 } from "../types/content_manifest.js";
 import { mapConcurrent } from "../utils/concurrency.js";
@@ -19,6 +20,7 @@ type ContentLocationResolverDependencies = {
 
 export class ContentLocationResolver {
   private locations: Map<string, ContentPublicLocation> | null = null;
+  private inputs = new Map<string, ContentLocationInput>();
   private locationsPromise: Promise<
     ReadonlyMap<string, ContentPublicLocation>
   > | null = null;
@@ -45,6 +47,11 @@ export class ContentLocationResolver {
     }
   }
 
+  async getInputs(): Promise<ReadonlyMap<string, ContentLocationInput>> {
+    await this.getLocations();
+    return this.inputs;
+  }
+
   private async resolveLocations(): Promise<
     ReadonlyMap<string, ContentPublicLocation>
   > {
@@ -62,6 +69,7 @@ export class ContentLocationResolver {
       path: item.entry.path,
       markdown: await this.dependencies.readEntry(item.entry),
     }));
+    this.inputs = new Map(inputs.map((input) => [input.slug, input]));
     const locations = new Map(
       inputs.map((input) => [input.slug, resolveDefaultContentLocation(input)]),
     );

@@ -56,10 +56,12 @@ export async function buildRouteManifestImpl(
   return await m
     .observability()
     .tracer.span("content.route-manifest", {}, async () => {
-      const [sourceEntries, contentIndex, locations] = await Promise.all([
+      const [sourceEntries, contentIndex, locations, locationInputs] =
+        await Promise.all([
         m.scan(),
         m.getContentIndex(),
         m.getContentLocations(),
+        m.locationResolver.getInputs(),
       ]);
       const entriesByPath = new Map(
         sourceEntries.map((entry) => [entry.path, entry]),
@@ -81,7 +83,9 @@ export async function buildRouteManifestImpl(
           }
           let frontmatter: PostFrontmatter;
           try {
-            frontmatter = readFrontmatter(markdown);
+            frontmatter =
+              locationInputs.get(post.slug)?.frontmatter ??
+              readFrontmatter(markdown);
           } catch (error) {
             throw attachErrorPath(error, post.path);
           }

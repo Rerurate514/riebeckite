@@ -226,6 +226,23 @@ test("development route manifests retain localization", async () => {
   });
 });
 
+test("development route manifests share parsed frontmatter with location hooks", async () => {
+  const plugin = definePlugin({
+    name: "location-frontmatter",
+    extendContentLocations: ({ entries }) => {
+      if (entries[0]) entries[0].frontmatter = { title: "Shared" };
+    },
+  });
+  const manager = new ContentManager(source(), [], {
+    config: resolveConfig({ site: { title: "Test" }, plugins: [plugin] }),
+    isDevelopment: true,
+  });
+
+  const manifest = await manager.getRequestManifest();
+
+  assert.deepEqual(manifest.entries[0]?.frontmatter, { title: "Shared" });
+});
+
 test("same-priority page matches fail rather than silently choosing a plugin", async () => {
   const page = (name: string) =>
     definePlugin({

@@ -30,20 +30,6 @@
   line-height: 1.6;
 }
 
-.site-footer__author {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem 1rem;
-  margin-top: var(--rb-space-4);
-  color: var(--rb-color-muted);
-  font-size: 0.8rem;
-}
-
-.site-footer__author a {
-  color: var(--rb-color-ink);
-  text-underline-offset: 0.2em;
-}
-
 .site-footer__navigation {
   align-self: end;
 }
@@ -61,8 +47,7 @@
   letter-spacing: 0.04em;
 }
 
-.site-footer__project:focus-visible,
-.site-footer__author a:focus-visible {
+.site-footer__project:focus-visible {
   outline: 2px solid var(--rb-color-accent);
   outline-offset: 3px;
 }

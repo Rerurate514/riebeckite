@@ -32,11 +32,6 @@ const SCENARIOS: readonly GoldenScenario[] = [
     scaffold: { preset: "empty", utilities: [] },
   },
   { name: "starter", scaffold: { preset: "starter" } },
-  { name: "showcase", scaffold: { preset: "showcase" } },
-  {
-    name: "showcase-ja",
-    scaffold: { preset: "showcase", site: { locale: "ja_JP" } },
-  },
   {
     name: "deploy-github-actions",
     scaffold: {

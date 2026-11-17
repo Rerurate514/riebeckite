@@ -87,7 +87,7 @@ Recent npm 11 releases can also skip dependency install scripts. If `npm install
 | `README.md` | A short note specific to the generated site |
 | `.gitignore`, `.editorconfig`, `.gitattributes`, `biome.json` | Default project files. Choose the `Customize extra project files?` prompt or `--utilities` to change them |
 
-The exact files depend on the preset: `empty` generates a bare application shell, `starter` generates a practical site with connected sample notes, and `showcase` adds references, rendered examples, and local fixtures. See [Presets](./presets.md).
+The exact files depend on the preset: `empty` generates a bare application shell and `starter` generates a practical site with connected sample notes. See [Presets](./presets.md).
 
 ## Directory structure
 

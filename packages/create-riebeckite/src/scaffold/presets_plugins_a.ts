@@ -11,19 +11,6 @@ export const np = (
   options,
 });
 
-/**
- * Option-bearing plugins carry tiered option definitions so the generated
- * `riebeckite.config.ts` doubles as a settings reference and each preset tier
- * demonstrates the configuration surface step by step:
- *
- * - `starter` uses the practical options needed by its included plugins
- * - `showcase` shows every available option
- *
- * Factories that take no options (or are left deliberately bare, like the
- * color-mode toggle) stay as `factory()`. Options may reference the scaffold
- * context so plugin defaults follow the user's answers.
- */
-
 /** The foundation plugin, shared by every non-empty preset. */
 export const obsidianMarkdown = np(
   "@riebeckite/plugin-obsidian-markdown",
@@ -93,11 +80,6 @@ export const navigationBlog = np(
   "@riebeckite/plugin-navigation",
   "navigation",
   `{ items: [{ label: "Posts", href: "/posts" }, { label: "Tags", href: "/tags" }, { label: "Series", href: "/series" }] }`,
-);
-export const navigationShowcase = np(
-  "@riebeckite/plugin-navigation",
-  "navigation",
-  `{ items: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }, { label: "Framework", href: "/framework/plugins", children: [{ label: "Plugins", href: "/framework/plugins" }, { label: "Themes", href: "/framework/themes" }] }], secondary: [{ label: "Guide", href: "/guide" }, { label: "Examples", href: "/examples" }] }`,
 );
 export const relatedPosts = np(
   "@riebeckite/plugin-related-posts",

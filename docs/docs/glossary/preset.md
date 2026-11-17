@@ -12,7 +12,7 @@ A prepared set of options for a common setup. Riebeckite uses presets in two pla
 
 `create-riebeckite` and `riebeckite init` use scaffold presets to generate a complete site. A preset chooses the plugins, theme, generated content, and application files.
 
-The available presets are `empty`, `minimal`, `starter`, `digital-garden`, `blog`, `docs`, `portfolio`, and `showcase`; `starter` is the default. Choose one with `--preset <name>` and list them with `--list-presets`.
+The available presets are `empty`, `minimal`, `starter`, `digital-garden`, `blog`, `writer`, `docs`, and `portfolio`; `starter` is the default. Choose one with `--preset <name>` and list them with `--list-presets`.
 
 ```sh
 npx create-riebeckite my-site --preset blog

@@ -23,10 +23,10 @@ test("the public scaffold presets have the documented order and default", () => 
     "starter",
     "digital-garden",
     "blog",
+    "writer",
     "docs",
     "portfolio",
     "minimal",
-    "showcase",
     "empty",
   ]);
   assert.equal(SCAFFOLD_DEFAULT_PRESET, "starter");
@@ -87,6 +87,7 @@ test("purpose presets select their purpose-built theme", async () => {
   const expectedThemes = {
     "digital-garden": ["@riebeckite/theme-garden", "gardenTheme"],
     blog: ["@riebeckite/theme-editorial", "editorialTheme"],
+    writer: ["@riebeckite/theme-minimal", "minimalTheme"],
     docs: ["@riebeckite/theme-default", "defaultTheme"],
     portfolio: ["@riebeckite/theme-folio", "folioTheme"],
   } as const;

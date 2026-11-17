@@ -45,20 +45,12 @@ before(async () => {
   );
   generatedDirectory = await mkdtemp(path.join(tmpdir(), "riebeckite-layout-"));
   const starterDirectory = path.join(generatedDirectory, "starter");
-  const showcaseDirectory = path.join(generatedDirectory, "showcase");
   await scaffoldRiebeckiteSite({
     targetDirectory: starterDirectory,
     preset: "starter",
   });
-  await scaffoldRiebeckiteSite({
-    targetDirectory: showcaseDirectory,
-    preset: "showcase",
-  });
   const starterStyle = readStyleSheet(
     path.join(starterDirectory, "app/style.css"),
-  );
-  const showcaseStyle = readStyleSheet(
-    path.join(showcaseDirectory, "app/style.css"),
   );
   const renderSitePage = (siteStyle: string, includeToc = true) =>
     `<!doctype html><html><head><style>:root { --rb-layout-page-max: 80rem; --rb-layout-article-max: 48rem; --rb-layout-sidebar: 14rem; --rb-layout-gap: 2rem; --rb-space-2: 1rem; --rb-space-3: 1.5rem; --rb-space-4: 2rem; --rb-color-muted: #555; --rb-color-ink: #111; --rb-color-border: #ddd; }</style><style>${honoxStyle}</style><style>${tocStyle}</style><style>${siteStyle}</style></head><body class="riebeckite-page"><header class="site-header">Header</header><main class="riebeckite-main"><article class="site-article"><div class="site-article__layout"><aside class="site-article__sidebar">Explore</aside><div class="rb-article-body"><div style="height: 240rem">Article</div></div><aside class="site-article__aside">${includeToc ? `<aside class="rr-table-of-contents rr-table-of-contents--desktop"><ol class="rr-table-of-contents__list">${sampleToc()}</ol></aside>` : ""}</aside></div></article></main></body></html>`;
@@ -66,10 +58,6 @@ before(async () => {
     response.setHeader("content-type", "text/html; charset=utf-8");
     if (request.url === "/starter") {
       response.end(renderSitePage(starterStyle));
-      return;
-    }
-    if (request.url === "/showcase") {
-      response.end(renderSitePage(showcaseStyle));
       return;
     }
     if (request.url === "/starter-without-toc") {
@@ -106,8 +94,8 @@ async function openPage(
   return page;
 }
 
-test("starter and showcase TOCs use their Site layout contract", async () => {
-  for (const path of ["/starter", "/showcase"]) {
+test("starter TOC uses its Site layout contract", async () => {
+  for (const path of ["/starter"]) {
     const page = await openPage({ width: 1600, height: 900 }, path);
     const initial = await page.$eval(
       ".rr-table-of-contents--desktop",
@@ -143,8 +131,8 @@ test("starter and showcase TOCs use their Site layout contract", async () => {
   }
 });
 
-test("starter and showcase center the article rail independently of the TOC", async () => {
-  for (const path of ["/starter", "/showcase"]) {
+test("starter centers the article rail independently of the TOC", async () => {
+  for (const path of ["/starter"]) {
     for (const width of [1920, 1600, 1440]) {
       const page = await openPage({ width, height: 900 }, path);
       const layout = await page.evaluate(() => {

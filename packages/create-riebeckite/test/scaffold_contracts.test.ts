@@ -844,11 +844,6 @@ test("Contract 14: generated sites omit retired bootstrap boilerplate and keep s
       "app/components/article.tsx",
       "app/components/site-header.tsx",
     ],
-    showcase: [
-      "app/routes/[slug{.+}].tsx",
-      "app/components/article.tsx",
-      "app/components/site-header.tsx",
-    ],
   };
 
   await withTemporaryDirectory(async (tmpDir) => {

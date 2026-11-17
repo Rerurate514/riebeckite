@@ -11,11 +11,11 @@ const OPTION_DEPTH: Readonly<Record<ScaffoldPresetName, number>> = {
   empty: 0,
   "digital-garden": 2,
   blog: 2,
+  writer: 2,
   docs: 2,
   portfolio: 2,
   minimal: 0,
   starter: 2,
-  showcase: 3,
 };
 
 function optionContext(

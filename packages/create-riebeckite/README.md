@@ -30,7 +30,7 @@ The prompts ask, in order:
 | Prompt | Options | Recommendation |
 | --- | --- | --- |
 | Project name | the folder to create (empty input uses the default name) | any name, e.g. `my-site` |
-| What would you like to build? | `Starter site`, `Digital garden`, `Blog`, `Documentation`, `Portfolio`, `Minimal site`, `Plugin showcase`, `Empty application` | `Starter site` (`starter`) for most sites |
+| What would you like to build? | `Starter site`, `Digital garden`, `Blog`, `Writer`, `Documentation`, `Portfolio`, `Minimal site`, `Empty application` | `Starter site` (`starter`) for most sites |
 | Add optional feature packs? | `Yes` or `No`; `Yes` then selects feature packs | `No` |
 | Customize extra project files? | `Yes` or `No`; `Yes` then selects project files | `No` uses the recommended set |
 | Where will you write content? | `This project`, `Separate directory in this repository`, `Separate GitHub repository` | `This project` to start |
@@ -49,7 +49,7 @@ Deployment can be added later, described in
 | --- | --- |
 | `[directory]` | Directory to scaffold into (default: the current directory) |
 | `--help`, `-h` | Print usage and exit |
-| `--preset <name>` | Starter composition, e.g. `showcase` (default: `starter`) |
+| `--preset <name>` | Starter composition, e.g. `blog` (default: `starter`) |
 | `--utilities <names>` | Comma-separated project files to generate: `gitignore`, `editorconfig`, `gitattributes`, `biome`, `npmrc`, `vscode`, or `none` (default: `gitignore,editorconfig,gitattributes,biome`) |
 | `--force` | Overwrite generated top-level entries on conflict; unrelated files are allowed |
 | `--list-presets` | Print the available presets and their descriptions, then exit |
@@ -62,10 +62,10 @@ Deployment can be added later, described in
 | `--site-repository <owner/repository>` | Site repository that the generated content workflow notifies. Required with `--content-repository`. |
 | `--clone-content` | Clone `--content-repository` into `content/` and place the notify workflow in the clone. Requires `--content-repository` and `--site-repository`. |
 
-For example, scaffold the complete feature tour:
+For example, scaffold a publishing-focused site:
 
 ```sh
-npx create-riebeckite my-site --preset showcase
+npx create-riebeckite my-site --preset blog
 ```
 
 ## Project files
@@ -133,10 +133,10 @@ Every preset is a self-contained starter description:
 | `starter` | Recommended default: a practical Markdown garden with search, navigation, and reading essentials. |
 | `digital-garden` | An Obsidian-compatible digital garden with linked notes, backlinks, and a local graph. |
 | `blog` | A publishing-focused blog with tags, series, related posts, sharing, and feeds. |
+| `writer` | A quiet essay site with a narrow reading column, author notes, tags, and more posts. |
 | `docs` | A documentation site with an automatic sidebar, table of contents, and previous/next navigation. |
 | `portfolio` | A calm portfolio for projects and contact details, with image and media support when you add it. |
 | `minimal` | The smallest readable site, for learning how a Riebeckite site is assembled. |
-| `showcase` | A feature-rich example that demonstrates the Riebeckite plugin ecosystem with rendered samples and references. |
 | `empty` | A blank canvas with only the Riebeckite wiring. Add the theme, plugins, and content yourself. |
 
 Each preset has a one-line description, shown by `--list-presets`:
@@ -144,10 +144,10 @@ Each preset has a one-line description, shown by `--list-presets`:
 - `starter` — Recommended default: a practical Markdown garden with search, navigation, and reading essentials.
 - `digital-garden` — An Obsidian-compatible digital garden with linked notes, backlinks, and a local graph.
 - `blog` — A publishing-focused blog with tags, series, related posts, sharing, and feeds.
+- `writer` — A quiet essay site with a narrow reading column, author notes, tags, and more posts.
 - `docs` — A documentation site with an automatic sidebar, table of contents, and previous/next navigation.
 - `portfolio` — A calm portfolio for projects and contact details, with image and media support when you add it.
 - `minimal` — The smallest readable site, for learning how a Riebeckite site is assembled.
-- `showcase` — A feature-rich example that demonstrates the Riebeckite plugin ecosystem with rendered samples and references.
 - `empty` — A blank canvas with only the Riebeckite wiring. Add the theme, plugins, and content yourself.
 
 Presets are defined in `create-riebeckite/scaffold` and can be imported into
@@ -158,7 +158,7 @@ import { scaffoldRiebeckiteSite } from "create-riebeckite/scaffold";
 
 await scaffoldRiebeckiteSite({
   targetDirectory: "./my-site",
-  preset: "showcase",
+  preset: "starter",
 });
 ```
 

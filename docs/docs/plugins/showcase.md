@@ -6,7 +6,7 @@ title: Plugin Showcase
 
 The Plugin catalog lives in [Plugins](./README.md). Choose a category to see the Markdown source and the result rendered by Riebeckite.
 
-> The generated `showcase` preset lets you try examples like these locally.
+> This documentation page previews examples you can adapt in your own site.
 
 ## Categories
 

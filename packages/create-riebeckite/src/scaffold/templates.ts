@@ -292,8 +292,3 @@ function riebeckiteConfig(
   lines.push("});");
   return `${lines.join("\n")}\n`;
 }
-
-/**
- * `starter` includes practical configuration and `showcase` renders the full
- * option surface. Lightweight presets deliberately keep depth 0.
- */

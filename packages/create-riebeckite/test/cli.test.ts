@@ -80,7 +80,7 @@ test("interactive separate-directory content keeps the directory and local deplo
 test("external content forces GitHub Actions and keeps both repositories", () => {
   const options = interactiveAnswersToOptions({
     directory: "my-site",
-    preset: "showcase",
+    preset: "starter",
     utilities: ["editorconfig", "vscode"],
     contentSource: "external",
     contentRepository: "OWNER/notes",
@@ -89,7 +89,7 @@ test("external content forces GitHub Actions and keeps both repositories", () =>
   assert.deepEqual(options, {
     directory: "my-site",
     force: false,
-    preset: "showcase",
+    preset: "starter",
     utilities: ["editorconfig", "vscode"],
     listPresets: false,
     deployment: {
@@ -106,7 +106,7 @@ test("external content forces GitHub Actions and keeps both repositories", () =>
 test("interactive external content can clone the content repository", () => {
   const options = interactiveAnswersToOptions({
     directory: "my-site",
-    preset: "showcase",
+    preset: "starter",
     utilities: ["editorconfig", "vscode"],
     contentSource: "external",
     contentRepository: "OWNER/notes",
@@ -116,7 +116,7 @@ test("interactive external content can clone the content repository", () => {
   assert.deepEqual(options, {
     directory: "my-site",
     force: false,
-    preset: "showcase",
+    preset: "starter",
     utilities: ["editorconfig", "vscode"],
     listPresets: false,
     cloneContent: true,
@@ -190,7 +190,7 @@ test("existing flags keep parsing", () => {
   const options = parseArguments([
     "my-site",
     "--preset",
-    "showcase",
+    "starter",
     "--github-actions",
     "--content-repository",
     "OWNER/notes",
@@ -202,7 +202,7 @@ test("existing flags keep parsing", () => {
   assert.deepEqual(options, {
     directory: "my-site",
     force: true,
-    preset: "showcase",
+    preset: "starter",
     utilities: ["gitignore", "editorconfig", "gitattributes", "biome"],
     listPresets: true,
     deployment: {

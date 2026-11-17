@@ -31,7 +31,7 @@ npm exec riebeckite build
 | 質問 | 選択肢 | 推奨 |
 | --- | --- | --- |
 | Project name | 作るフォルダ名（空なら既定の名前） | 任意。例: `my-site` |
-| What would you like to build? | `Starter site`、`Digital garden`、`Blog`、`Documentation`、`Portfolio`、`Minimal site`、`Plugin showcase`、`Empty application` | 大半のサイトは `Starter site`（`starter`） |
+| What would you like to build? | `Starter site`、`Digital garden`、`Blog`、`Writer`、`Documentation`、`Portfolio`、`Minimal site`、`Empty application` | 大半のサイトは `Starter site`（`starter`） |
 | Add optional feature packs? | `Yes` または `No`。`Yes` なら機能パックを選択 | `No` |
 | Customize extra project files? | `Yes` または `No`。`Yes` ならプロジェクトファイルを選択 | `No` で推奨セットを使用 |
 | Where will you write content? | `This project`、`Separate directory in this repository`、`Separate GitHub repository` | 最初は `This project` |
@@ -59,10 +59,10 @@ npm exec riebeckite build
 | `--site-repository <owner/repository>` | 生成した記事通知 workflow の通知先 site リポジトリ。`--content-repository` と同時に必要。 |
 | `--clone-content` | `--content-repository` を `content/` へ clone し、通知 workflow を clone 内に配置する。`--content-repository` と `--site-repository` が必要。 |
 
-たとえば、機能を一通り確認できる `showcase` preset で生成する場合は次のとおりです。
+たとえば、公開向けの `blog` preset で生成する場合は次のとおりです。
 
 ```sh
-npx create-riebeckite my-site --preset showcase
+npx create-riebeckite my-site --preset blog
 ```
 
 ## Project files
@@ -128,10 +128,10 @@ npx create-riebeckite --list-presets
 | `starter` | 実用的な Markdown ガーデン。検索、ナビゲーション、読書に必要な機能を含みます。 |
 | `digital-garden` | Obsidian 互換のデジタルガーデン。リンクされたノート、バックリンク、ローカルグラフを含みます。 |
 | `blog` | タグ、シリーズ、関連記事、共有、フィードを備えた公開向けブログ。 |
+| `writer` | 細い本文幅、著者情報、タグ、他の記事を備えた、静かなエッセイサイト。 |
 | `docs` | 自動サイドバー、目次、前後ナビゲーションを備えたドキュメントサイト。 |
 | `portfolio` | プロジェクトと連絡先のための落ち着いたポートフォリオ。画像とメディアにも対応します。 |
 | `minimal` | Riebeckite サイトの組み立て方を学ぶための最小構成。 |
-| `showcase` | 描画例とリファレンスで Riebeckite のプラグインエコシステムを示す機能豊富な例。 |
 | `empty` | Riebeckite の配線だけを含む空のキャンバス。テーマ、プラグイン、コンテンツは自分で追加します。 |
 
 各 preset の説明は次のとおりです（`--list-presets` で表示される説明の日本語訳です）。
@@ -139,10 +139,10 @@ npx create-riebeckite --list-presets
 - `starter` — 実用的な Markdown ガーデン。検索、ナビゲーション、読書に必要な機能を含みます。
 - `digital-garden` — Obsidian 互換のデジタルガーデン。リンクされたノート、バックリンク、ローカルグラフを含みます。
 - `blog` — タグ、シリーズ、関連記事、共有、フィードを備えた公開向けブログ。
+- `writer` — 細い本文幅、著者情報、タグ、他の記事を備えた、静かなエッセイサイト。
 - `docs` — 自動サイドバー、目次、前後ナビゲーションを備えたドキュメントサイト。
 - `portfolio` — プロジェクトと連絡先のための落ち着いたポートフォリオ。画像とメディアにも対応します。
 - `minimal` — Riebeckite サイトの組み立て方を学ぶための最小構成。
-- `showcase` — 描画例とリファレンスで Riebeckite のプラグインエコシステムを示す機能豊富な例。
 - `empty` — Riebeckite の配線だけを含む空のキャンバス。テーマ、プラグイン、コンテンツは自分で追加します。
 
 Riebeckite は、Markdown や Obsidian 由来のノートを Web で公開するための

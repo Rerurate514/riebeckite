@@ -21,12 +21,12 @@ npx create-riebeckite --list-presets
 | --- | --- |
 | I want an Obsidian-style network of notes | `digital-garden` |
 | I want a publication with posts, tags, and series | `blog` |
+| I want a quiet personal essay site | `writer` |
 | I want product or project documentation | `docs` |
 | I want to present selected work and contact details | `portfolio` |
 | I will assemble the application myself | `empty` |
 | I want the smallest publishable Markdown site | `minimal` |
 | I want the recommended starting point for a real garden or blog | `starter` (default) |
-| I want to explore a broad plugin catalog, rendered examples, and references | `showcase` |
 
 If you are unsure, choose `starter`. Add plugins later in `riebeckite.config.ts`.
 
@@ -39,13 +39,13 @@ Each preset section below includes a screenshot at a 1440 px desktop viewport.
 | `starter` | `default` | site locale | index, guide, examples, connected notes | Markdown publishing, search, content-derived navigation, breadcrumbs, backlinks, related and recent posts, taxonomy, folder landings, link previews |
 | `digital-garden` | `garden` | English | index and connected notes | Obsidian Markdown, frontmatter, wiki links and embeds, backlinks, local graph, properties, search, breadcrumbs, taxonomy |
 | `blog` | `editorial` | English | index, posts, series | Post index with dates and summaries, tags, series navigation, related posts, sharing controls, RSS/Atom/JSON feeds, SEO, generated Open Graph images, search, author card and table of contents rail |
+| `writer` | `minimal` | English | index, posts | Narrow reading column, author byline and bio, inline table of contents, tags, series, more posts, sharing, feeds, SEO |
 | `docs` | `default` | English | documentation sections | Documentation sidebar, responsive table of contents, previous/next links, searchable code examples, shared site header and footer |
 | `portfolio` | `folio` | English | home, about, projects, contact | Project-focused content, responsive images, lightbox, media embeds, gallery support, SEO, navigation, properties, color mode |
 | `minimal` | `minimal` | English | one index page | Obsidian Markdown only |
-| `showcase` | `default` | 7 | tour, guide, examples, plugin/theme references, local fixtures | Broad plugin catalog, diagrams, charts, daily notes, knowledge tools, diagnostics, deployment |
 | `empty` | none | — | none | Blank application shell |
 
-The seven showcase languages are English, Japanese, Simplified Chinese, Spanish, German, French, and Korean. `starter` is single-language: its home page can follow the configured locale, but the guide and sample notes are English-only. Add l10n when the site needs translated routes. `minimal` is English-only, and `empty` has no theme, plugins, or content.
+`starter` is single-language: its home page can follow the configured locale, but the guide and sample notes are English-only. Add l10n when the site needs translated routes. `minimal` is English-only, and `empty` has no theme, plugins, or content.
 
 ### `starter`
 
@@ -64,6 +64,10 @@ An Obsidian-oriented site for linked notes. Its wide three-column reader keeps t
 A publication-focused starting point. The home page lists posts with dates, summaries, and tags; articles open with a centered title and date, place tag chips and series navigation above the body, and keep an author card and table of contents in a sticky right rail. Its generated configuration explicitly enables RSS, Atom, and JSON feeds and generates an Open Graph image for every public page, while the sample articles demonstrate series navigation and taxonomy.
 
 ![[preset-blog.png|Blog preset desktop view]]
+
+### `writer`
+
+A quiet, reading-first site. Posts open in a narrow centered column: the title, author, and date come first, an inline table of contents follows, and the body stays the only thing competing for attention. Tags read as hashtags after the text, sharing follows, an author card uses the site description, and a previous-post link with a short list of more essays closes the page. The home page keeps the same narrow column for a short introduction and a stacked list of post cards. The minimal theme supplies the white, sans-serif surface.
 
 ### `docs`
 
@@ -86,10 +90,10 @@ Each preset expects Markdown in a different folder and lists it in its own way:
 | `starter` | `content/` | The home page and sample notes live at the top level and under `content/notes/` |
 | `digital-garden` | `content/` | Notes live under `content/notes/`; wiki links connect them |
 | `blog` | `content/posts/` | Each post becomes an article; tags and series are read from frontmatter |
+| `writer` | `content/posts/` | Each post becomes an essay; tags and series are read from frontmatter |
 | `docs` | `content/docs/` | Pages are grouped by folder. Set the sidebar position with nested `sidebar.order`, and use `##` headings for the table of contents |
 | `portfolio` | `content/projects/` | A `/projects/` listing is generated, and each Markdown file becomes a project page |
 | `minimal` | `content/` | A single `content/index.md` page |
-| `showcase` | `content/` | Examples and references live in several folders below `content/` |
 
 The docs preset reads the sidebar order from frontmatter, not from a top-level `order` field:
 
@@ -125,12 +129,6 @@ Obsidian Markdown, the `minimal` theme, and one English page. Choose it for a sm
 
 ![[preset-minimal.png|Minimal preset desktop view]]
 
-### `showcase`
-
-The self-contained reference site. Its desktop reader puts the content catalog, demonstration page, and table of contents in separate rails. It enables most of the published plugin catalog, renders diagram/chart/code examples, supplies plugin and theme references, and includes local SVG, PDF, Excalidraw, and Canvas fixtures. Plugins that need extra infrastructure, dedicated fixtures, or site-wide URL changes are not enabled, so the template stays self-contained. Its `content/Daily/` notes feed a Daily Notes widget on the home page. It is intended for exploration and copying configuration, rather than as the recommended production baseline.
-
-![[preset-showcase.png|Showcase preset desktop view]]
-
 ### `empty`
 
 A blank application shell with no plugins, theme, content, or components. Its first route is an ordinary HonoX `createRoute` page, so add pages, HTML, JSX components, and CSS directly in `app/` before opting into Riebeckite content features.
@@ -143,7 +141,7 @@ Generated application files use normal TypeScript, JSX, and HonoX routes. Edit `
 
 ## Generated configuration
 
-`starter` writes practical plugin options. `showcase` writes the complete option surface as a configuration reference. `empty` and `minimal` deliberately keep configuration small. See [Configuration](../reference/configuration.md) and each package README under `packages/plugins` for details.
+`starter` writes practical plugin options. `empty` and `minimal` deliberately keep configuration small. See [Configuration](../reference/configuration.md) and each package README under `packages/plugins` for details.
 
 ## Project files
 

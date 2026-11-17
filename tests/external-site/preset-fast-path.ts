@@ -23,7 +23,7 @@ const presetFilter = (process.env.RIEBECKITE_PRESET_FAST_PATH_PRESETS ?? "")
   .map((value) => value.trim())
   .filter(Boolean);
 
-const ALL_PRESETS = ["empty", "minimal", "starter", "showcase"] as const;
+const ALL_PRESETS = ["empty", "minimal", "starter"] as const;
 type PresetName = (typeof ALL_PRESETS)[number];
 
 const presets: readonly PresetName[] =
@@ -37,14 +37,12 @@ const FAST_PATH_EXPECTATIONS: Readonly<
   empty: { capable: true },
   minimal: { capable: true },
   starter: { capable: true },
-  showcase: { capable: false, blockReason: "manifest-hook-cache-disabled" },
 };
 
 const RENDERS_ENTRY_TITLE: Readonly<Record<PresetName, boolean>> = {
   empty: false,
   minimal: false,
   starter: true,
-  showcase: true,
 };
 
 const MATRIX_NOTE = "notes/f5-matrix.md";
@@ -736,7 +734,7 @@ async function runPreset(
       check("tampered output is healed", !fs.existsSync(extraPath));
     }
 
-    if (preset === "starter" || preset === "showcase") {
+    if (preset === "starter") {
       const configPath = path.join(siteDir, "riebeckite.config.ts");
       const original = fs.readFileSync(configPath, "utf8");
       fs.writeFileSync(

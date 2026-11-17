@@ -88,7 +88,7 @@ npm install
 | `README.md` | 生成されたサイト向けの短い説明 |
 | `.gitignore`、`.editorconfig`、`.gitattributes`、`biome.json` | 既定のプロジェクトファイル。`Customize extra project files?` のプロンプトまたは `--utilities` で変更できる |
 
-生成されるファイルはプリセットによって変わります。`empty` は空のアプリケーションシェル、`starter` はサンプルノートをつないだ実用的なサイト、`showcase` はリファレンス・描画例・ローカル fixture を加えた構成です。詳しくは [プリセット](./presets.ja.md) を参照してください。
+生成されるファイルはプリセットによって変わります。`empty` は空のアプリケーションシェル、`starter` はサンプルノートをつないだ実用的なサイトです。詳しくは [プリセット](./presets.ja.md) を参照してください。
 
 ## 生成されたディレクトリを確認する
 

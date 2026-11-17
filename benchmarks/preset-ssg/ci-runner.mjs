@@ -12,7 +12,7 @@ import {
 import { compact, writeReport } from "./ci_runner_report.mjs";
 import { runScenario } from "./ci_runner_scenario.mjs";
 import { buildOnce, buildWorkspacePackages } from "./ci_runner_site.mjs";
-import { localizationScenarioNames, scenarioNames } from "./lib.mjs";
+import { scenarioNames } from "./lib.mjs";
 
 if (args.buildOnce) {
   process.stdout.write(
@@ -27,10 +27,7 @@ let workspaceBuilt = false;
 for (const preset of presets) {
   for (const size of sizes) {
     for (const scenario of scenarios) {
-      if (
-        !scenarioNames.includes(scenario) &&
-        !localizationScenarioNames.includes(scenario)
-      )
+      if (!scenarioNames.includes(scenario))
         throw new Error(`Unknown scenario: ${scenario}`);
       if (!workspaceBuilt && args.noBuildPackages !== "true") {
         await buildWorkspacePackages();

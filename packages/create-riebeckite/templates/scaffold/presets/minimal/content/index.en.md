@@ -19,4 +19,4 @@ Content lives in `content/` as plain Markdown. Change this file and the browser 
 
 ## Add a feature
 
-Install a plugin package and register its factory in `riebeckite.config.ts`. The `starter` preset shows a practical plugin set, and `showcase` demonstrates the complete ecosystem.
+Install a plugin package and register its factory in `riebeckite.config.ts`. The `starter` preset shows a practical plugin set; the documentation lists the full plugin catalog.

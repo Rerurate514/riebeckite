@@ -201,7 +201,7 @@ export async function invokeBuild(siteRoot, label) {
     [
       "--import",
       "tsx",
-      fileURLToPath(import.meta.url),
+      path.join(root, "benchmarks", "preset-ssg", "runner.mjs"),
       "--buildOnce",
       JSON.stringify({ siteRoot, label, metricsEnabled }),
     ],

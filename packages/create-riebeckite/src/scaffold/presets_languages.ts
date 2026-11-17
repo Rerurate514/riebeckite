@@ -25,20 +25,20 @@ export type ScaffoldPresetName =
   | "starter"
   | "digital-garden"
   | "blog"
+  | "writer"
   | "docs"
   | "portfolio"
   | "minimal"
-  | "showcase"
   | "empty";
 
 export const SCAFFOLD_PRESET_NAMES: readonly ScaffoldPresetName[] = [
   "starter",
   "digital-garden",
   "blog",
+  "writer",
   "docs",
   "portfolio",
   "minimal",
-  "showcase",
   "empty",
 ];
 

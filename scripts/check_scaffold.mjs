@@ -6,7 +6,6 @@ import { pathToFileURL } from "node:url";
 import {
   checkEmpty,
   checkMinimal,
-  checkShowcase,
   checkStarter,
 } from "./check_scaffold_cases.mjs";
 import { checkScaffoldVersion } from "./check_scaffold_config.mjs";
@@ -60,7 +59,6 @@ async function main() {
     checkScaffoldVersion();
     await checkStarter(scaffoldRiebeckiteSite, tmpRoot);
     await checkMinimal(scaffoldRiebeckiteSite, tmpRoot);
-    await checkShowcase(scaffoldRiebeckiteSite, tmpRoot);
     await checkEmpty(scaffoldRiebeckiteSite, tmpRoot);
     await checkGeneratedConfigTypes(
       scaffoldRiebeckiteSite,

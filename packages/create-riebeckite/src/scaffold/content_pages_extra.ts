@@ -27,11 +27,6 @@ function readSummary(text: SummaryText, language: ScaffoldLanguage): string {
   return language === "ja" ? (text.ja ?? text.en) : text.en;
 }
 
-const SHOWCASE_DECK_LINK: SummaryText = {
-  en: "This preset also ships a whole-document Marp note. Open the [note](/deck/) or its [standalone slide page](/slides/deck/).",
-  ja: "このプリセットには全文が Marp のノートも含まれます。[ノート](/deck/) または [スライド単体ページ](/slides/deck/) を開いてください。",
-};
-
 const EXAMPLES_COPY: {
   readonly heading: SummaryText;
   readonly intro: SummaryText;
@@ -45,13 +40,6 @@ const EXAMPLES_COPY: {
     ja: "このプリセットに含まれる図表・チャート・コード機能の描画例です。フェンス付きコードブロックは対応するプラグインによりビルド時に出力へ変換され、コードブロックにはツールバーが付きます。以下の各セクションは、Markdown 文書にそのままコピーして使えます。",
   },
 };
-
-const SHOWCASE_GUIDE_DEMOS = [
-  "@riebeckite/plugin-plantuml",
-  "@riebeckite/plugin-excalidraw",
-  "@riebeckite/plugin-canvas",
-  "@riebeckite/plugin-flashcards",
-] as const;
 
 const STARTER_EXAMPLES: {
   readonly heading: SummaryText;
@@ -152,22 +140,6 @@ export function examplesContent(
     lines.push(heading(2, readSummary(demo.title, language)), "");
     lines.push(readSummary(demo.intro, language), "");
     lines.push(demo.markdown, "");
-    if (preset.name === "showcase" && key === "@riebeckite/plugin-marp") {
-      lines.push(readSummary(SHOWCASE_DECK_LINK, language), "");
-    }
-  }
-  if (preset.name === "showcase") {
-    for (const packageName of SHOWCASE_GUIDE_DEMOS) {
-      if (!hasPlugin(preset, packageName)) continue;
-      const guide = PLUGIN_MARKDOWN_GUIDES[packageName];
-      if (!guide) continue;
-      lines.push(
-        heading(2, packageName.replace("@riebeckite/plugin-", "")),
-        "",
-      );
-      lines.push(guide.summary, "");
-      lines.push(guide.markdown, "");
-    }
   }
   return lines.join("\n");
 }

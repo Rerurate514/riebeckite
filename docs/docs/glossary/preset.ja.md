@@ -12,7 +12,7 @@ sidebar.hidden: true
 
 `create-riebeckite` と `riebeckite init` は、スキャフォールドプリセットから完全なサイトを生成します。プリセットは、プラグイン、テーマ、生成されるコンテンツ、アプリケーションファイルを選びます。
 
-利用できるプリセットは `empty`、`minimal`、`starter`、`digital-garden`、`blog`、`docs`、`portfolio`、`showcase` で、既定は `starter` です。`--preset <name>` で選び、`--list-presets` で一覧を表示できます。
+利用できるプリセットは `empty`、`minimal`、`starter`、`digital-garden`、`blog`、`writer`、`docs`、`portfolio` で、既定は `starter` です。`--preset <name>` で選び、`--list-presets` で一覧を表示できます。
 
 ```sh
 npx create-riebeckite my-site --preset blog

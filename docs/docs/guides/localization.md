@@ -20,19 +20,7 @@ flowchart LR
 
 The plugin handles per-content language detection, language-specific URLs, translations of the same content, in-site links, the language switcher, and `hreflang` for SEO.
 
-The `showcase` preset registers it with seven languages:
-
-```text
-en
-ja
-zh-CN
-es
-de
-fr
-ko
-```
-
-`starter` is single-language: its home page can follow the configured locale, but the guide and sample notes are English-only. `minimal` is English-only. Add l10n only when the site needs translated routes. You do not need articles in every language; configure only the languages you actually use.
+`starter` is single-language: its home page can follow the configured locale, but the guide and sample notes are English-only. `minimal` is English-only. Add l10n only when the site needs translated routes. You do not need articles in every language; configure only the languages you actually use. See [Setup](./localization/setup.md) for the configuration.
 
 ## In this section
 

@@ -135,7 +135,7 @@ pnpm check:theme-docs
 pnpm check:scaffold
 ```
 
-生成される `starter`、`minimal`、`showcase`、`empty` の各プリセットが正しい構成になっているかを検査します。残り4つのプリセット（`digital-garden`、`blog`、`docs`、`portfolio`）も生成し、8種類すべての生成設定を型検査します。インストールとビルドは実行しません。次のようなものを変更した場合に重要です。
+生成される `starter`、`minimal`、`empty` の各プリセットが正しい構成になっているかを検査します。残り5つのプリセット（`digital-garden`、`blog`、`writer`、`docs`、`portfolio`）も生成し、8種類すべての生成設定を型検査します。インストールとビルドは実行しません。次のようなものを変更した場合に重要です。
 
 - スキャフォールドジェネレーター
 - [[glossary/preset|プリセット]]

@@ -22,13 +22,7 @@ export type ScaffoldPluginSpec = {
   readonly options?: ScaffoldOptions;
 };
 
-/**
- * Context passed to option sources. `variables` are the user-supplied site
- * values (`title`, `baseUrl`, ...), `languages` the preset's configured
- * languages, and configuration detail depth. `showcase` uses depth 3 so its
- * generated config is a complete options reference; the other presets keep
- * their configuration intentionally small.
- */
+/** Context passed to option sources. */
 export type ScaffoldOptionContext = {
   readonly variables: {
     readonly name: string;

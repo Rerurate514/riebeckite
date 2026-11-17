@@ -11,8 +11,8 @@ export {
   empty,
   minimal,
   portfolio,
-  showcase,
   starter,
+  writer,
 } from "./presets_list.js";
 export {
   resolveScaffoldPreset,

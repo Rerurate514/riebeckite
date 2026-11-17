@@ -137,7 +137,7 @@ pnpm check:theme-docs
 pnpm check:scaffold
 ```
 
-This validates that the generated `starter`, `minimal`, `showcase`, and `empty` presets have the correct structure. It also generates the other four presets (`digital-garden`, `blog`, `docs`, `portfolio`) and typechecks all eight generated configurations without an install or a build. It matters when you change things such as:
+This validates that the generated `starter`, `minimal`, and `empty` presets have the correct structure. It also generates the other five presets (`digital-garden`, `blog`, `writer`, `docs`, `portfolio`) and typechecks all eight generated configurations without an install or a build. It matters when you change things such as:
 
 - the scaffold generator
 - a preset

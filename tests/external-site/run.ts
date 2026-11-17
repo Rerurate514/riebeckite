@@ -974,7 +974,7 @@ function generateCreateStarterSite(tempRoot: string): void {
     fail("create-riebeckite must use the practical starter preset by default");
   }
   if (config.includes("@riebeckite/plugin-mermaid")) {
-    fail("create-riebeckite default must not use the showcase preset");
+    fail("create-riebeckite default must not use a feature-rich preset");
   }
 
   logger.step("create-riebeckite lists the scaffold presets");
@@ -982,7 +982,7 @@ function generateCreateStarterSite(tempRoot: string): void {
     cwd: repoRoot,
   });
   const listOutput = listResult.stdout;
-  for (const name of ["starter", "minimal", "showcase", "empty"]) {
+  for (const name of ["starter", "minimal", "empty"]) {
     if (!listOutput.includes(name)) {
       fail(`create-riebeckite --list-presets must list the ${name} preset`);
     }

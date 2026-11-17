@@ -24,21 +24,19 @@ const samplerPath = path.join(
 );
 const samplerUrl = pathToFileURL(samplerPath).href;
 
-const ALL_PRESETS = ["empty", "minimal", "starter", "showcase"] as const;
+const ALL_PRESETS = ["empty", "minimal", "starter"] as const;
 type PresetName = (typeof ALL_PRESETS)[number];
 
 const FAST_PATH_CAPABLE: Readonly<Record<PresetName, boolean>> = {
   empty: true,
   minimal: true,
   starter: true,
-  showcase: false,
 };
 
 const RENDERS_CONTENT: Readonly<Record<PresetName, boolean>> = {
   empty: false,
   minimal: true,
   starter: true,
-  showcase: true,
 };
 
 function parseList(value: string | undefined): string[] {

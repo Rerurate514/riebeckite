@@ -125,7 +125,7 @@ npm exec -- riebeckite publish run --execute --force
 - [プロジェクト構成](./project-structure.ja.md) - 一体型・ディレクトリ分離型・リポジトリ分離型を比較する
 - [コンテンツの場所](./content-location.ja.md) - Markdown の置き場所と `content.directory` を決める
 - [一体型](./integrated-setup.ja.md)・[ディレクトリ分離型](./separate-directories-setup.ja.md)・[リポジトリ分離型](./separate-repositories-setup.ja.md) - 公式サンプル付きの完全な手順
-- [Presets](./presets.ja.md) - `starter`、`digital-garden`、`blog`、`docs`、`portfolio`、`minimal`、`showcase`、`empty` を比較する
+- [Presets](./presets.ja.md) - `starter`、`digital-garden`、`blog`、`writer`、`docs`、`portfolio`、`minimal`、`empty` を比較する
 - [First Content](./first-content.ja.md) - Markdown の書き方と確認方法をもう少し詳しく見る
 - [Installation](./installation.ja.md) - 要件とセットアップの詳しい解説
 - [サイトのアイコンとロゴ →](../guides/branding.ja.md) - アイコン・ヘッダーのロゴ・リンクプレビュー画像を差し替える

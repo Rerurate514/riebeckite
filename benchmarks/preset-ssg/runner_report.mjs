@@ -1,14 +1,22 @@
 import fs from "node:fs/promises";
 import os from "node:os";
+import path from "node:path";
+import { pathToFileURL } from "node:url";
 import {
   jsonPath,
   markdownPath,
   metricsEnabled,
   presets,
+  root,
   runs,
 } from "./runner_config.mjs";
 
 export async function writeReport(rows) {
+  const { scaffoldPresets } = await import(
+    pathToFileURL(
+      path.join(root, "packages/create-riebeckite/src/scaffold/presets.ts"),
+    )
+  );
   const report = {
     generatedAt: new Date().toISOString(),
     measurement: `${runs} independent sample${runs === 1 ? "" : "s"} per preset, size, and scenario`,

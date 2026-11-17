@@ -7,8 +7,8 @@ import {
   empty,
   minimal,
   portfolio,
-  showcase,
   starter,
+  writer,
 } from "./presets_list.js";
 import type { ScaffoldPreset } from "./presets_types.js";
 
@@ -18,10 +18,10 @@ export const scaffoldPresets: Readonly<
   starter,
   "digital-garden": digitalGarden,
   blog,
+  writer,
   docs: documentation,
   portfolio,
   minimal,
-  showcase,
   empty,
 } as const;
 

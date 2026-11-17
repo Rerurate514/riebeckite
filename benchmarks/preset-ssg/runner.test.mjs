@@ -9,7 +9,6 @@ import {
   applyScenario,
   compareSnapshots,
   createBenchmarkContent,
-  localizationScenarioNames,
   removeSafeTemporaryDirectory,
   scenarioNames,
   summarize,
@@ -17,7 +16,7 @@ import {
 
 const execFileAsync = promisify(execFile);
 
-test("official starter and showcase scaffolds preserve their plugin order", async (t) => {
+test("official starter scaffold preserves its plugin order", async (t) => {
   const { scaffoldRiebeckiteSite } = await import(
     "../../packages/create-riebeckite/src/scaffold/index.ts"
   );
@@ -28,7 +27,7 @@ test("official starter and showcase scaffolds preserve their plugin order", asyn
     path.join(os.tmpdir(), "riebeckite-preset-benchmark-"),
   );
   t.after(() => fs.rm(directory, { recursive: true, force: true }));
-  for (const preset of ["starter", "showcase"]) {
+  for (const preset of ["starter"]) {
     const site = path.join(directory, preset);
     await scaffoldRiebeckiteSite({ targetDirectory: site, preset });
     const config = await fs.readFile(
@@ -45,7 +44,7 @@ test("official starter and showcase scaffolds preserve their plugin order", asyn
   }
 });
 
-test("benchmark content follows each preset capability and has the requested count", async (t) => {
+test("benchmark content has the requested count", async (t) => {
   const directory = await fs.mkdtemp(
     path.join(os.tmpdir(), "riebeckite-preset-benchmark-"),
   );
@@ -53,19 +52,11 @@ test("benchmark content follows each preset capability and has the requested cou
   await createBenchmarkContent({
     contentDirectory: directory,
     count: 100,
-    preset: "showcase",
   });
   const files = await findMarkdown(directory);
   assert.equal(files.length, 100);
-  assert.match(await fs.readFile(files[0], "utf8"), /translation: benchmark-0/);
-  const starter = path.join(directory, "starter");
-  await createBenchmarkContent({
-    contentDirectory: starter,
-    count: 1,
-    preset: "starter",
-  });
   assert.doesNotMatch(
-    await fs.readFile((await findMarkdown(starter))[0], "utf8"),
+    await fs.readFile(files[0], "utf8"),
     /^lang:|^translation:/m,
   );
 });
@@ -94,42 +85,6 @@ test("scenarios mutate independent content copies", async (t) => {
     scenario: "add",
   });
   assert.equal((await findMarkdown(directory)).length, 2);
-});
-
-test("localization scenarios mutate showcase translation groups", async (t) => {
-  const directory = await fs.mkdtemp(
-    path.join(os.tmpdir(), "riebeckite-preset-benchmark-"),
-  );
-  t.after(() => fs.rm(directory, { recursive: true, force: true }));
-  await createBenchmarkContent({
-    contentDirectory: directory,
-    count: 2,
-    preset: "showcase",
-  });
-  assert.ok(localizationScenarioNames.includes("translation-add"));
-  assert.ok(localizationScenarioNames.includes("translation-delete"));
-  await applyScenario({
-    contentDirectory: directory,
-    count: 2,
-    scenario: "translation-add",
-    preset: "showcase",
-  });
-  assert.equal((await findMarkdown(directory)).length, 3);
-  await applyScenario({
-    contentDirectory: directory,
-    count: 2,
-    scenario: "translation-delete",
-    preset: "showcase",
-  });
-  assert.equal((await findMarkdown(directory)).length, 2);
-  await assert.rejects(() =>
-    applyScenario({
-      contentDirectory: directory,
-      count: 2,
-      scenario: "translation-add",
-      preset: "starter",
-    }),
-  );
 });
 
 test("publication-change changes a public note", async (t) => {
@@ -240,7 +195,7 @@ test("runner executes the clean output comparison", {
       "tsx",
       "benchmarks/preset-ssg/runner.mjs",
       "--presets",
-      "showcase",
+      "starter",
       "--sizes",
       "10",
       "--scenarios",

@@ -12,6 +12,8 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 ## [Unreleased]
 
+> **Breaking changes are included.** Read the migration notes before upgrading.
+
 ### Changed
 
 - The Table of Contents keeps its top rule again, so the component reads as a closed box in sidebar rails and inline placements. The plugin still separates stacked sections with its bottom rule alone; pass `borders: { blockStart: false }` to drop the top rule per placement.
@@ -28,6 +30,12 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 - The digital-garden preset moves recently added notes beside the note tree, the docs preset keeps its header visible while its reading rails scroll independently, and the showcase preset becomes a three-rail reference catalog. The portfolio preset now derives a project grid from `content/projects/`.
   Packages: `create-riebeckite`
+
+### Removed
+
+- **Breaking:** Remove the `showcase` scaffold preset. Editorial now lets sites align article titles, metadata, and ornaments left, center, or right.
+  Packages: `create-riebeckite`, `@riebeckite/theme-editorial`
+  Migration: Use another scaffold preset and add only the plugins and content your site needs.
 
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.51...HEAD
 

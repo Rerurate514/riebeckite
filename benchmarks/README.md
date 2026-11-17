@@ -32,7 +32,7 @@ pnpm benchmark:equivalence -- --size 500 --scenarios single-edit,frontmatter-edi
 # existing repository harness, reused as-is).
 node --import tsx scripts/benchmark_ssg_large_vault.mjs
 
-# Official create-riebeckite Starter / Showcase SSG benchmark.
+# Official create-riebeckite Starter SSG benchmark.
 # Runs one measurement per scenario after building workspace packages.
 pnpm build:packages
 pnpm benchmark:presets -- --sizes 100
@@ -59,7 +59,7 @@ pnpm benchmark:spa
 
 ## Official preset SSG harness
 
-`benchmark:presets` scaffolds the official `starter` and `showcase` presets with
+`benchmark:presets` scaffolds the official `starter` preset with
 `scaffoldRiebeckiteSite`; it does not define a benchmark-only preset or alter
 the generated configuration. It runs full HonoX/Vite SSG for `cold`,
 `no-change`, `full`, `single-body-edit`, `link-edit`, `add`, `delete`, `rename`,
@@ -77,23 +77,13 @@ single-sample measurements.
 
 The added content is deterministic and contains frontmatter, aliases, wiki and
 normal links, an asset reference, public/draft boundaries, Japanese and English
-body text, and folders. Translation groups are generated only for Showcase,
-which already includes l10n. Two localization-only scenarios,
-`translation-add` and `translation-delete`, extend the Showcase run by adding
-or removing a language variant of an existing translation group; they are kept
-out of the default scenario list. Results record the generated preset plugin
-order, wall time, peak RSS, content/output reuse, SSG/output-cache counters, fast-path
+body text, and folders. Results record the generated preset plugin order, wall
+time, peak RSS, content/output reuse, SSG/output-cache counters, fast-path
 and full-regeneration status, output-write time, and a complete output-tree
 comparison. No output paths are excluded from equivalence checks.
 
-Showcase intentionally retains the official changelog, webmention, and rename
-plugins. They declare `external` output dependencies (Git history, webmention
-provider, route lock), not `unknown` ones. When that external state cannot be
-read - for example, when the generated site is not a Git repository - the
-plugin reports an external dependency failure, so `fullRegenerationRequired`
-becomes true and no-change builds keep the normal build instead of the fast
-path. This is reported rather than bypassed. Its disposable generated sites live
-under `website/.riebeckite/preset-ssg-benchmark` by default so they resolve the
+Its disposable generated sites live under
+`website/.riebeckite/preset-ssg-benchmark` by default so they resolve the
 workspace's built packages without changing a generated site's configuration.
 
 ## Fast path CLI harness
@@ -103,7 +93,7 @@ packs the workspace, installs the tarballs into a temporary site outside the
 repository, and drives the installed CLI as a separate process with
 `RIEBECKITE_BUILD_CONCURRENCY=1`. It runs the full cold, no-change, content,
 publication-boundary, output-integrity, full-build, and no-change-recovery
-matrix for every official preset (`empty`, `minimal`, `starter`, `showcase`),
+matrix for the fast-path preset matrix (`empty`, `minimal`, `starter`),
 asserting the fast path for capable presets, a documented fallback block reason
 for the rest, output-inventory self-healing, and byte-identical incremental and
 full output trees. Results are written to

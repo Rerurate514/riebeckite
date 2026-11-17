@@ -20,16 +20,7 @@ export const scenarioNames = [
   "draft-to-public",
 ];
 
-export const localizationScenarioNames = [
-  "translation-add",
-  "translation-delete",
-];
-
-export async function createBenchmarkContent({
-  contentDirectory,
-  count,
-  preset,
-}) {
+export async function createBenchmarkContent({ contentDirectory, count }) {
   const benchmarkDirectory = path.join(contentDirectory, "benchmark");
   await fs.mkdir(path.join(benchmarkDirectory, "assets"), { recursive: true });
   await fs.writeFile(
@@ -39,16 +30,12 @@ export async function createBenchmarkContent({
   for (let index = 0; index < count; index += 1) {
     const section = String(Math.floor(index / 50)).padStart(3, "0");
     const language = index % 2 === 0 ? "en" : "ja";
-    const translation = Math.floor(index / 2);
     const lines = [
       "---",
       `title: ${language === "ja" ? `記録 ${index}` : `Record ${index}`}`,
       `aliases: ["record-${index}"]`,
       `visibility: ${index % 17 === 0 ? "draft" : "public"}`,
       `tags: ["benchmark", "section-${index % 8}"]`,
-      ...(preset === "showcase"
-        ? [`lang: ${language}`, `translation: benchmark-${translation}`]
-        : []),
       "---",
       "",
       `# ${language === "ja" ? `ベンチマーク記録 ${index}` : `Benchmark record ${index}`}`,
@@ -77,12 +64,7 @@ export async function createBenchmarkContent({
   }
 }
 
-export async function applyScenario({
-  contentDirectory,
-  count,
-  scenario,
-  preset,
-}) {
+export async function applyScenario({ contentDirectory, count, scenario }) {
   const last = notePath(contentDirectory, count - 1);
   if (scenario === "cold" || scenario === "no-change" || scenario === "full")
     return;
@@ -156,33 +138,7 @@ export async function applyScenario({
     }
     throw new Error("Draft-to-public scenario requires a draft note.");
   }
-  if (scenario === "translation-add") {
-    requireShowcase(preset, scenario);
-    await fs.writeFile(
-      path.join(
-        contentDirectory,
-        "benchmark",
-        "section-000",
-        "note-00001.zh-CN.md",
-      ),
-      '---\ntitle: Added translation\ntranslation: benchmark-0\nlang: zh-CN\nvisibility: public\ntags: ["benchmark", "section-0"]\n---\n\n# Added translation\n\n[[benchmark/section-000/note-00000]]\n',
-      "utf8",
-    );
-    return;
-  }
-  if (scenario === "translation-delete") {
-    requireShowcase(preset, scenario);
-    await fs.rm(notePath(contentDirectory, 1));
-    return;
-  }
   throw new Error(`Unknown preset benchmark scenario: ${scenario}`);
-}
-
-function requireShowcase(preset, scenario) {
-  if (preset !== "showcase")
-    throw new Error(
-      `Scenario ${scenario} requires the showcase preset (received ${preset ?? "undefined"})`,
-    );
 }
 
 export async function snapshotTree(directory) {

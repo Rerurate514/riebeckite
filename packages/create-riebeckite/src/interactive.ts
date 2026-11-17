@@ -273,10 +273,10 @@ function presetLabel(name: ScaffoldPresetName): string {
     starter: "Starter site",
     "digital-garden": "Digital garden",
     blog: "Blog",
+    writer: "Writer",
     docs: "Documentation",
     portfolio: "Portfolio",
     minimal: "Minimal site",
-    showcase: "Plugin showcase",
     empty: "Empty application",
   };
   return labels[name];

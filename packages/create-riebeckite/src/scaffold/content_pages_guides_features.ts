@@ -119,7 +119,7 @@ const FEATURE_MARKDOWN_GUIDES: Readonly<
       "---",
       "",
       "```daily-snippet",
-      "Updated the showcase examples.",
+      "Updated the example content.",
       "```",
     ].join("\n"),
   },

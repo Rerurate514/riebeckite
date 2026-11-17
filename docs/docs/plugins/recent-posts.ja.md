@@ -14,7 +14,7 @@ title: Recent Posts
 
 ## できること
 
-`getRecentPosts()` は `manifest.discoverableEntries` を読み、unlisted・draft・予約公開のノートと `index` ノートを除き、`frontmatter.date`、なければ `created`、さらに `published` を基準に新しい順へ並べます。日付を解釈できないノートは一覧から外れます。`RecentPosts` は結果が空なら何も描画しません。公式の `starter` と `showcase` は、ホームページのルートで一覧を本文の後に明示的に配置します。
+`getRecentPosts()` は `manifest.discoverableEntries` を読み、unlisted・draft・予約公開のノートと `index` ノートを除き、`frontmatter.date`、なければ `created`、さらに `published` を基準に新しい順へ並べます。日付を解釈できないノートは一覧から外れます。`RecentPosts` は結果が空なら何も描画しません。公式の `starter` は共有する `app/components/article.tsx` に一覧を配置します。
 
 ## 設定と配置
 
@@ -25,7 +25,7 @@ import { recentPosts } from "@riebeckite/plugin-recent-posts";
 export default defineConfig({ plugins: [recentPosts()] });
 ```
 
-`recentPosts()` は UI を自動描画しません。生成された `starter` と `showcase` は、共有する `app/components/article.tsx` に推奨の配置を実装しています。独自の配置では、アプリ側で表示位置を決めます。
+`recentPosts()` は UI を自動描画しません。生成された `starter` は、共有する `app/components/article.tsx` に推奨の配置を実装しています。独自の配置では、アプリ側で表示位置を決めます。
 
 ```tsx
 import { RecentPosts, getRecentPosts } from "@riebeckite/plugin-recent-posts";

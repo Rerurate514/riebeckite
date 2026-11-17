@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { localizationScenarioNames, scenarioNames } from "./lib.mjs";
+import { scenarioNames } from "./lib.mjs";
 import { buildOnce } from "./runner_build_once.mjs";
 import {
   args,
@@ -42,10 +42,7 @@ for (const preset of presets) {
     throw new Error(`Unknown official preset: ${preset}`);
   for (const size of sizes) {
     for (const scenario of scenarios) {
-      if (
-        !scenarioNames.includes(scenario) &&
-        !localizationScenarioNames.includes(scenario)
-      )
+      if (!scenarioNames.includes(scenario))
         throw new Error(`Unknown scenario: ${scenario}`);
       if (
         rows.some(

@@ -5,14 +5,19 @@ export function SiteHome() {
   const site = useSiteContext();
   if (!site) return null;
 
+  const summaries = new Map(
+    site.manifest.entries.map((entry) => [
+      entry.slug,
+      typeof entry.frontmatter.summary === "string"
+        ? entry.frontmatter.summary
+        : "",
+    ]),
+  );
   const projects = site.view.discoverableEntries
     .filter((entry) => entry.slug.startsWith("projects/"))
     .map((entry) => ({
       ...entry,
-      summary:
-        typeof entry.frontmatter.summary === "string"
-          ? entry.frontmatter.summary
-          : "",
+      summary: summaries.get(entry.slug) ?? "",
     }));
 
   return (

@@ -1,15 +1,6 @@
-.riebeckite-page {
-  --site-explorer-width: 16rem;
-}
-
-.site-shell {
-  display: grid;
-  width: 100%;
-  flex: 1 0 auto;
-}
-
-.site-sidebar {
+.site-article__sidebar {
   display: none;
+  min-width: 0;
 }
 
 .riebeckite-main {
@@ -17,37 +8,19 @@
   min-width: 0;
 }
 
-@media (min-width: 48rem) {
-  .site-shell {
-    width: calc(100% - 2rem);
-    grid-template-columns: minmax(12rem, var(--site-explorer-width)) minmax(0, 1fr);
-    align-items: start;
-  }
-
-  .site-sidebar {
+@media (min-width: 80rem) {
+  .site-article__layout > .site-article__sidebar {
     display: block;
+    grid-column: 1;
+    grid-row: 1;
     position: sticky;
-    top: 0;
-    max-height: 100dvh;
+    top: var(--site-toc-sticky-top);
+    align-self: start;
+    max-height: calc(
+      100dvh - var(--site-toc-sticky-top) - var(--rb-space-4, 2rem)
+    );
     overflow-y: auto;
     scrollbar-gutter: stable;
-    padding-block: var(--rb-space-4, 2rem);
-    padding-inline-end: var(--rb-space-4, 2rem);
-    border-inline-end: 1px solid var(--rb-color-border);
-  }
-}
-
-@media (max-width: 89.999rem) {
-  .site-article .site-article__aside {
-    display: none;
-  }
-}
-
-@media (min-width: 80rem) {
-  .site-shell .riebeckite-main > .site-article {
-    position: relative;
-    left: calc(
-      -1 * min(var(--site-explorer-width) / 2, max(0px, (100% - var(--rb-layout-article-max, 48rem)) / 2))
-    );
+    padding-inline-end: var(--rb-layout-gap, 2rem);
   }
 }

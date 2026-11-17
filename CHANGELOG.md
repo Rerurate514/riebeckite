@@ -17,6 +17,9 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 - The Table of Contents keeps its top rule again, so the component reads as a closed box in sidebar rails and inline placements. The plugin still separates stacked sections with its bottom rule alone; pass `borders: { blockStart: false }` to drop the top rule per placement.
   Packages: `@riebeckite/plugin-toc`
 
+- The starter preset places its file explorer inside the article grid, so the explorer, article and table of contents share one centered page container. The navigation no longer hugs the viewport edge, the table of contents sits beside the article instead of the page edge, and the header and footer align with the same container. The explorer and table of contents appear from 80rem; below that the article stays a single centered column.
+  Packages: `create-riebeckite`
+
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.51...HEAD
 
 ## [0.0.51] - 2026-11-17

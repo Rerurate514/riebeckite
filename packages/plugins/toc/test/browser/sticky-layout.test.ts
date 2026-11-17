@@ -61,7 +61,7 @@ before(async () => {
     path.join(showcaseDirectory, "app/style.css"),
   );
   const renderSitePage = (siteStyle: string, includeToc = true) =>
-    `<!doctype html><html><head><style>:root { --rb-layout-page-max: 80rem; --rb-layout-article-max: 48rem; --rb-layout-sidebar: 14rem; --rb-layout-gap: 2rem; --rb-space-2: 1rem; --rb-space-3: 1.5rem; --rb-space-4: 2rem; --rb-color-muted: #555; --rb-color-ink: #111; --rb-color-border: #ddd; }</style><style>${honoxStyle}</style><style>${tocStyle}</style><style>${siteStyle}</style></head><body class="riebeckite-page"><header class="site-header">Header</header><div class="site-shell"><aside class="site-sidebar">Explore</aside><main class="riebeckite-main"><article class="site-article"><div class="site-article__layout"><div class="rb-article-body"><div style="height: 240rem">Article</div></div><aside class="site-article__aside">${includeToc ? `<aside class="rr-table-of-contents rr-table-of-contents--desktop"><ol class="rr-table-of-contents__list">${sampleToc()}</ol></aside>` : ""}</aside></div></article></main></div></body></html>`;
+    `<!doctype html><html><head><style>:root { --rb-layout-page-max: 80rem; --rb-layout-article-max: 48rem; --rb-layout-sidebar: 14rem; --rb-layout-gap: 2rem; --rb-space-2: 1rem; --rb-space-3: 1.5rem; --rb-space-4: 2rem; --rb-color-muted: #555; --rb-color-ink: #111; --rb-color-border: #ddd; }</style><style>${honoxStyle}</style><style>${tocStyle}</style><style>${siteStyle}</style></head><body class="riebeckite-page"><header class="site-header">Header</header><main class="riebeckite-main"><article class="site-article"><div class="site-article__layout"><aside class="site-article__sidebar">Explore</aside><div class="rb-article-body"><div style="height: 240rem">Article</div></div><aside class="site-article__aside">${includeToc ? `<aside class="rr-table-of-contents rr-table-of-contents--desktop"><ol class="rr-table-of-contents__list">${sampleToc()}</ol></aside>` : ""}</aside></div></article></main></body></html>`;
   server = createServer((request, response) => {
     response.setHeader("content-type", "text/html; charset=utf-8");
     if (request.url === "/starter") {
@@ -150,16 +150,23 @@ test("starter and showcase center the article rail independently of the TOC", as
       const layout = await page.evaluate(() => {
         const article = document.querySelector(".site-article") as HTMLElement;
         const body = document.querySelector(".rb-article-body") as HTMLElement;
+        const sidebar = document.querySelector(
+          ".site-article__sidebar",
+        ) as HTMLElement;
         const toc = document.querySelector(
           ".rr-table-of-contents--desktop",
         ) as HTMLElement;
         const articleBox = article.getBoundingClientRect();
         const bodyBox = body.getBoundingClientRect();
+        const sidebarBox = sidebar.getBoundingClientRect();
         const tocBox = toc.getBoundingClientRect();
         return {
+          articleLeft: articleBox.left,
           articleCenter: articleBox.left + articleBox.width / 2,
           bodyCenter: bodyBox.left + bodyBox.width / 2,
           bodyRight: bodyBox.right,
+          sidebarLeft: sidebarBox.left,
+          sidebarDisplay: getComputedStyle(sidebar).display,
           tocLeft: tocBox.left,
           scrollWidth: document.documentElement.scrollWidth,
           viewportWidth: window.innerWidth,
@@ -169,6 +176,11 @@ test("starter and showcase center the article rail independently of the TOC", as
       assert.ok(layout.tocLeft >= layout.bodyRight);
       assert.ok(layout.scrollWidth <= layout.viewportWidth);
       if (path === "/starter") {
+        assert.equal(layout.sidebarDisplay, "block");
+        assert.ok(
+          Math.abs(layout.sidebarLeft - layout.articleLeft) <= 2,
+          "starter aligns the explorer with the article container",
+        );
         assert.ok(
           Math.abs(layout.bodyCenter - layout.viewportWidth / 2) <= 16,
           "starter centers the article on the page",

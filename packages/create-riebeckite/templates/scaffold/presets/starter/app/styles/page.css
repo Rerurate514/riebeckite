@@ -1,5 +1,6 @@
 .riebeckite-page {
   --site-toc-sticky-top: var(--rb-space-3, 1.5rem);
+  --rb-layout-page-max: 90rem;
   display: flex;
   min-height: 100vh;
   width: 100%;

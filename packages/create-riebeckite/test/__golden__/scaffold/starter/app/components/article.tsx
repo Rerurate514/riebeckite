@@ -6,11 +6,15 @@ import { RecentPosts } from "@riebeckite/plugin-recent-posts";
 import { RelatedPosts } from "@riebeckite/plugin-related-posts";
 import { TableOfContents } from "@riebeckite/plugin-toc";
 import { PoweredByRiebeckite } from "./powered-by-riebeckite";
+import { SiteExplorer } from "./site-explorer";
 
 export function SiteArticle() {
   return (
     <Article class="site-article">
       <div class="site-article__layout">
+        <aside class="site-article__sidebar">
+          <SiteExplorer />
+        </aside>
         <ArticleContent>
           <Breadcrumbs />
           <Properties />

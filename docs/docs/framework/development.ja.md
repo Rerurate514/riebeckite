@@ -31,3 +31,4 @@ flowchart TD
 - [セットアップ](./development/setup.ja.md)
 - [変更の流れ](./development/workflow.ja.md)
 - [境界](./development/boundaries.ja.md)
+- [起動時間の規模別計測](./development/startup-scaling.ja.md)

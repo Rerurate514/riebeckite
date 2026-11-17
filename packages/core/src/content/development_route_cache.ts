@@ -9,6 +9,8 @@ import type {
   ContentPublicLocation,
 } from "../types/content_manifest.js";
 import { type JsonValue, toJsonValue } from "../types/json_value.js";
+import { mapConcurrent } from "../utils/concurrency.js";
+import { CONTENT_PROCESSING_CONCURRENCY } from "./content_manager_shared.js";
 import type { ContentSourceEntry } from "./content_source.js";
 import { ManifestBuilder } from "./manifest_builder.js";
 
@@ -104,11 +106,10 @@ export async function saveDevelopmentRouteCache(
   const serialized = serializeManifest(manifest);
   if (!plugins || !serialized) return;
   const fingerprints = Object.fromEntries(
-    await Promise.all(
-      entries.map(async (entry) => [
-        entry.path,
-        await fingerprint(entry, read),
-      ]),
+    await mapConcurrent(
+      entries,
+      CONTENT_PROCESSING_CONCURRENCY,
+      async (entry) => [entry.path, await fingerprint(entry, read)] as const,
     ),
   );
   const state: State = {
@@ -163,11 +164,11 @@ async function sameEntries(
 ): Promise<boolean> {
   if (entries.length !== Object.keys(fingerprints).length) return false;
   return (
-    await Promise.all(
-      entries.map(
-        async (entry) =>
-          fingerprints[entry.path] === (await fingerprint(entry, read)),
-      ),
+    await mapConcurrent(
+      entries,
+      CONTENT_PROCESSING_CONCURRENCY,
+      async (entry) =>
+        fingerprints[entry.path] === (await fingerprint(entry, read)),
     )
   ).every(Boolean);
 }

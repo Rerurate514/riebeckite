@@ -69,6 +69,7 @@ flowchart LR
 | Logger, Tracer, and Profiler | [Observability](./observability.md) |
 | Test layout and golden files | [Testing](./testing.md) |
 | The monorepo development workflow | [Development](./development.md) |
+| Development-server startup scaling measurements | [Startup Scaling](./development/startup-scaling.md) |
 | Change entries, release steps, and GitHub Releases | [Release Operations](./release.md) |
 
 ## Where to start

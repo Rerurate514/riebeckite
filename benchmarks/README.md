@@ -15,6 +15,9 @@ pnpm benchmark:vault
 # Development-server startup timing.
 pnpm benchmark:development-startup
 
+# Development-server startup scaling across synthetic vault sizes.
+pnpm benchmark:development-startup-scaling
+
 # Narrow the sweep.
 pnpm benchmark:vault -- --profiles baseline,realistic --sizes 1000,5000
 pnpm benchmark:vault -- --scenarios cold,warm,single-edit --repeats 1

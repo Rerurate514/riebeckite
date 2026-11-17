@@ -68,6 +68,7 @@ flowchart LR
 | Log / Trace / Performance を調べる | [Observability](./observability.ja.md) |
 | Riebeckite のテストを書く・実行する | [Testing](./testing.ja.md) |
 | Riebeckite 本体を開発する | [Development](./development.ja.md) |
+| 開発サーバー起動時間の規模別計測 | [起動時間の規模別計測](./development/startup-scaling.ja.md) |
 | 変更エントリ、リリース手順、GitHub Releases | [リリース作業](./release.ja.md) |
 
 ## 最初に内部構造を理解したい場合

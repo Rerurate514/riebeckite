@@ -33,3 +33,4 @@ flowchart TD
 - [Setup](./development/setup.md)
 - [Workflow](./development/workflow.md)
 - [Boundaries](./development/boundaries.md)
+- [Startup Scaling](./development/startup-scaling.md)

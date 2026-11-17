@@ -194,6 +194,52 @@ test("development route cache misses when source content changes", async () => {
   }
 });
 
+test("development route cache bounds fingerprint reads", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-route-cache-"),
+  );
+  const entries = Array.from({ length: 64 }, (_, index) => ({
+    path: `post-${index}.md`,
+  }));
+  let activeReads = 0;
+  let maxActiveReads = 0;
+  const content: ContentSource = {
+    async scan() {
+      return entries;
+    },
+    async read(entry) {
+      activeReads += 1;
+      maxActiveReads = Math.max(maxActiveReads, activeReads);
+      await new Promise((resolve) => setTimeout(resolve, 1));
+      activeReads -= 1;
+      return `# ${entry.path}`;
+    },
+  };
+  const options = () => ({
+    config: resolveConfig({
+      content: { directory },
+      site: { title: "Test" },
+      plugins: [
+        definePlugin({
+          name: "route-cache-concurrency",
+          developmentRouteCache: { version: "v1" },
+        }),
+      ],
+    }),
+    isDevelopment: true,
+  });
+  try {
+    await new ContentManager(content, [], options()).getRequestManifest();
+    activeReads = 0;
+    maxActiveReads = 0;
+    await new ContentManager(content, [], options()).getRequestManifest();
+
+    assert.ok(maxActiveReads <= 16);
+  } finally {
+    await fs.rm(directory, { recursive: true, force: true });
+  }
+});
+
 test("corrupted development route cache falls back to route resolution", async () => {
   const directory = await fs.mkdtemp(
     path.join(os.tmpdir(), "riebeckite-route-cache-"),

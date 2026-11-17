@@ -22,6 +22,7 @@
 
 .rr-mermaid-pele__canvas > svg {
   display: block;
+  margin-inline: auto;
   max-width: 100%;
   height: auto;
 }

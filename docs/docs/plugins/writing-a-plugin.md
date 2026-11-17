@@ -615,7 +615,7 @@ See [Page System](../framework/page-system.md) for ownership, path resolution, a
 
 Once a site-local Plugin works, it can be turned into a package. External Plugins should depend only on `@riebeckite/core`, declare their own subpaths through `exports`, and must not import `@riebeckite/core/src/**` or monorepo-internal paths. For the package shape and a build that ships ESM plus type declarations, see [Distributing a Plugin outside this repository](../reference/plugin-api/distribution.md#distributing-a-plugin-outside-this-repository). Pass those exported subpaths explicitly to `createStyleAsset()` and `createClientEntry()`.
 
-For the directive plugin above, declare `@riebeckite/core` and `unist-util-visit` in `dependencies` and the `mdast` types (`@types/mdast`) in `devDependencies`. The complete `package.json` and a build script using esbuild plus `tsc` are in [Distributing a Plugin outside this repository](../reference/plugin-api/distribution.md#distributing-a-plugin-outside-this-repository).
+For the directive plugin above, declare `@riebeckite/core` in `peerDependencies` and `devDependencies`, `unist-util-visit` in `dependencies`, and the `mdast` types (`@types/mdast`) in `devDependencies`. The complete `package.json` and a build script using esbuild plus `tsc` are in [Distributing a Plugin outside this repository](../reference/plugin-api/distribution.md#distributing-a-plugin-outside-this-repository).
 
 ## 6. Validate it
 

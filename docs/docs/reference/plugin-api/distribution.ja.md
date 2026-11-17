@@ -80,10 +80,13 @@ import {
     "prepack": "npm run build"
   },
   "dependencies": {
-    "@riebeckite/core": "^0.0.38",
     "unist-util-visit": "^5.0.0"
   },
+  "peerDependencies": {
+    "@riebeckite/core": "^0.1.0"
+  },
   "devDependencies": {
+    "@riebeckite/core": "^0.1.0",
     "@types/mdast": "^4.0.0",
     "esbuild": "^0.28.0",
     "typescript": "^5.0.0"

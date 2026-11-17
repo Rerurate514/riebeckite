@@ -716,7 +716,7 @@ packages/plugins/backlinks/
 
 外部に配布するプラグインは `@riebeckite/core` だけに依存し、自パッケージのサブパスを `exports` で宣言します。`@riebeckite/core/src/**` を import したり、monorepo 内部のパスを参照したりしないでください。パッケージの構成と、ESM と型定義を同梱するビルドについては [リポジトリ外でプラグインを配布する](../reference/plugin-api/distribution.ja.md#リポジトリ外へプラグインを配布する) を参照してください。`createStyleAsset()` と `createClientEntry()` には、その `exports` のサブパスを明示して渡します。
 
-このディレクティブプラグインを配布するなら、依存を宣言します。`@riebeckite/core` と `unist-util-visit` は `dependencies`、`mdast` の型（`@types/mdast`）は `devDependencies` です。`package.json` の全体像と、esbuild と `tsc` によるビルドスクリプトの例は [リポジトリ外でプラグインを配布する](../reference/plugin-api/distribution.ja.md#リポジトリ外へプラグインを配布する) にあります。
+このディレクティブプラグインを配布するなら、依存を宣言します。`@riebeckite/core` は `peerDependencies` と `devDependencies`、`unist-util-visit` は `dependencies`、`mdast` の型（`@types/mdast`）は `devDependencies` です。`package.json` の全体像と、esbuild と `tsc` によるビルドスクリプトの例は [リポジトリ外でプラグインを配布する](../reference/plugin-api/distribution.ja.md#リポジトリ外へプラグインを配布する) にあります。
 
 ## 6. 検証する
 

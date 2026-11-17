@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "3fae0aa1-e44d-4e6b-a4de-c3f544638f45",
-    "publishedAt": "2026-11-17T02:00:39.488Z",
-    "publicationFingerprint": "b6079499de6cf2e8861a575ce14b8529f924aa60ab11ec13abfe5afaea0cd172",
+    "runId": "92494206-5956-49c6-a812-b6e22d2104aa",
+    "publishedAt": "2026-11-17T02:34:37.553Z",
+    "publicationFingerprint": "bc0568ecaf4d3a5afd3dd117e3b31bfe0027c2ed043c27d9dd53e53265e31b7c",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -490,16 +490,16 @@
         "permalink": "/docs/framework/development",
         "title": "Framework Development",
         "visibility": "public",
-        "fingerprint": "e78b0c1ae65066f4e882cf1437271d3227c0cb4495dd4624f1b0584b0d2f1c56",
-        "contentFingerprint": "41f4c6bdc9f83921a24aaaa7dae2ba5abb1d0305e525a6619b236679c5cd9e45"
+        "fingerprint": "daeaae88e65040af7313f88924f2f3ae1d446228dcbf0b462bc9ad5d177b9c22",
+        "contentFingerprint": "c8bb5b65f7d8b293b01d6de2e9fb98c73d11cb52fdf3d6829bd2141b4105f801"
       },
       {
         "slug": "docs/framework/development.ja",
         "permalink": "/ja/docs/framework/development",
         "title": "フレームワーク開発",
         "visibility": "public",
-        "fingerprint": "d6929e518174480fde3e602d9fb95aa954fb9d6d2607e1bc35f302e103892d2e",
-        "contentFingerprint": "819341684c7895bc6f3a0068387dbb1789adee784bb9d29645e207f3a277fee3"
+        "fingerprint": "7523467b46b0bc8130615275b5f38bc2d2ade6413647548601e1ac06b30b4c39",
+        "contentFingerprint": "25218f00642d5751001b378c51644ca930e2d5a89bff71b31e071e39da249e8e"
       },
       {
         "slug": "docs/framework/development/boundaries",
@@ -532,6 +532,22 @@
         "visibility": "public",
         "fingerprint": "ba21f26cc0f8f2dee2292278741a7fdff66dc7334f525e07fd2346b377d618a3",
         "contentFingerprint": "8d9f6668874684620bc4c856515cbaf2ec410357fe93fe0b09fb70446a5ad54e"
+      },
+      {
+        "slug": "docs/framework/development/startup-scaling",
+        "permalink": "/docs/framework/development/startup-scaling",
+        "title": "Development Startup Scaling",
+        "visibility": "public",
+        "fingerprint": "fb65b608ff8293ca16c2704c5cfb1f12126955ab05e529a19b57d26880558e2f",
+        "contentFingerprint": "d38242a4687cca585e31d8a966f731bd6e969f4b08b52d04ae12f5ecd7d42784"
+      },
+      {
+        "slug": "docs/framework/development/startup-scaling.ja",
+        "permalink": "/ja/docs/framework/development/startup-scaling",
+        "title": "開発サーバー起動時間の規模別計測",
+        "visibility": "public",
+        "fingerprint": "b45322033e1a05e8f72309ce8e76ae1f7b044420858f5d7836f61fca10693e3d",
+        "contentFingerprint": "ad0af8eac1e310294fb26bb2ee451318a9cc6758b9512eb90c23086369a73bb5"
       },
       {
         "slug": "docs/framework/development/workflow",
@@ -810,16 +826,16 @@
         "permalink": "/docs/framework/",
         "title": "Framework",
         "visibility": "public",
-        "fingerprint": "f776336659ebbfd3728ecf5599d27bf0c6f01d83192ae1c72460524b3b2209af",
-        "contentFingerprint": "17135648cb85a555c90643231f497e31ef8ef81cdc02f17ab83da9a34430e420"
+        "fingerprint": "4c8f6dc1fba36d6fa01e263c71e24ed068010e6cbb60d61def02fdcb4e0352a3",
+        "contentFingerprint": "2ff06c029f248dda114ff23bcce35657a2d1ad3e3982e7520cfbf622e28de200"
       },
       {
         "slug": "docs/framework/README.ja",
         "permalink": "/ja/docs/framework/",
         "title": "Framework",
         "visibility": "public",
-        "fingerprint": "fca04a84a5f699534db4eec0323dcbaa8dd1e913a373de237b37a57afbb810af",
-        "contentFingerprint": "485788691dbf1c55ad3d27dd3233e3ece2eeb96acff397bae6bcf76675942498"
+        "fingerprint": "c9a87285d0196c76bddf07a452b9004c698652ac1205a4c09b284223a17b1cd1",
+        "contentFingerprint": "80f710dddb9056cbaeb81b83f5d6d1169a8d312d15310ca9cfb77affafbbcbf8"
       },
       {
         "slug": "docs/framework/release",
@@ -5610,16 +5626,16 @@
         "permalink": "/docs/plugins/showcase/knowledge-and-data",
         "title": "knowledge-and-data",
         "visibility": "public",
-        "fingerprint": "0c195566e1b954e3ed475a16417e5d519ee617a252e8fb386749430285fbd581",
-        "contentFingerprint": "ea61ea322419f6d87d7a5097c7f4d0b4c41020a4c17b84a4992b40f97b0f043a"
+        "fingerprint": "416c40802d9905a736c270540d33f0e4be3281c9a0d437af286282ddb466277c",
+        "contentFingerprint": "4c601a46e11a27b1da8c7642564b8860c629844eb22425b5c218c84a08a5a68c"
       },
       {
         "slug": "docs/plugins/showcase/knowledge-and-data.ja",
         "permalink": "/ja/docs/plugins/showcase/knowledge-and-data",
         "title": "ナレッジとデータ",
         "visibility": "public",
-        "fingerprint": "81e18ffe3ebd537666c7b1ff4a04965cbc54e1710dd98660f280db6765a5b132",
-        "contentFingerprint": "a6d07378b03cf18312d89069ede3c255c2525421530757eb3ba9b99d89040a65"
+        "fingerprint": "5f251c124126aca2cee159ca097165d4ac830ae61bae0de404ede1aee35b17c7",
+        "contentFingerprint": "d1578d8b9c92ea9bc0cf0564d8c9a70ab412f895917552f75c70b4cb4e3ab725"
       },
       {
         "slug": "docs/plugins/showcase/media",
@@ -5802,16 +5818,16 @@
         "permalink": "/docs/plugins/vault-heatmap",
         "title": "Vault Heatmap",
         "visibility": "public",
-        "fingerprint": "76dd04689add1ee1f5e7d39af6a72b2c94a7b93b8a5c8ad132129960a53a7b56",
-        "contentFingerprint": "6ced3d1aee9c0cfbbb98a56a40d37944771c1da3a6abcf87fc902010e1d79c29"
+        "fingerprint": "4f49d570143712f855d5d6761bb346f47c1f314065c10886b913411266c92c05",
+        "contentFingerprint": "00c5ad23759e331640517df15a821599bba98ed8f12688bce051753e09e4774d"
       },
       {
         "slug": "docs/plugins/vault-heatmap.ja",
         "permalink": "/ja/docs/plugins/vault-heatmap",
         "title": "Vault Heatmap",
         "visibility": "public",
-        "fingerprint": "87136262e980acf4a252754fad8b64ddf1e501a634a79dbf39aabdc039125c92",
-        "contentFingerprint": "dda99e26aa8fdfe4aa6a5143ebad0be832dc310e7ae1fb3cd49a88e660cda68b"
+        "fingerprint": "af37be6df5f2f077df4bcf413f3567623392703563dcfe7e80e34e5af4abce33",
+        "contentFingerprint": "5258b849604f7d9c8f8770e19a0153cb6f475487f54338a551035d14393685e3"
       },
       {
         "slug": "docs/plugins/vega-lite",
@@ -6822,7 +6838,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "006b554c1e3c9a4e4f089ec1d7740ab0d651f51bcdf790f1ec0dfbd6ca89ced4",
+    "artifactFingerprint": "720dbdc86cf5d9c996c2a7f1daf613dc03aba9bc298a2caeed22a24e429939a1",
     "provider": "cloudflare-workers"
   }
 }

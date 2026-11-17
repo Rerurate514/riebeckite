@@ -1,5 +1,5 @@
 .site-article {
-  width: min(100% - 2rem, 76rem);
+  width: min(100% - 2rem, var(--rb-layout-page-max, 80rem));
   padding-block: 2rem 4rem;
 }
 
@@ -49,7 +49,7 @@
   padding-block: 0;
 }
 
-@media (min-width: 76rem) {
+@media (min-width: 80rem) {
   .site-article__layout {
     grid-template-columns:
       minmax(11rem, 1fr)

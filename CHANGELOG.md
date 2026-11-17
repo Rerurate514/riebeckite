@@ -17,6 +17,12 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 - The Table of Contents keeps its top rule again, so the component reads as a closed box in sidebar rails and inline placements. The plugin still separates stacked sections with its bottom rule alone; pass `borders: { blockStart: false }` to drop the top rule per placement.
   Packages: `@riebeckite/plugin-toc`
 
+- The digital-garden preset widens its page container to 90rem, so the note sidebar, article, table of contents rail, header and footer sit in a roomier centered layout. The three-column reader layout appears from 80rem.
+  Packages: `create-riebeckite`
+
+- The blog preset reads like a publication: a sticky top bar, a home page that lists posts with dates, summaries, and tags, and articles with a centered title and date, tag chips, series navigation, and a sticky rail holding the author card, table of contents, and backlinks. The docs preset no longer copies the Riebeckite website homepage; its index entry renders in the documentation reading shell, and the table of contents rail is hidden when a page has no headings.
+  Packages: `create-riebeckite`
+
 - The starter preset places its file explorer inside the article grid, so the explorer, article and table of contents share one centered page container. The navigation no longer hugs the viewport edge, the table of contents sits beside the article instead of the page edge, and the header and footer align with the same container. The explorer and table of contents appear from 80rem; below that the article stays a single centered column.
   Packages: `create-riebeckite`
 

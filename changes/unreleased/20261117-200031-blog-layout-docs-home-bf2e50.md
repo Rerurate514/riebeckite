@@ -1,6 +1,6 @@
 ---
 packages:
-  - "@riebeckite/create-riebeckite"
+  - "create-riebeckite"
 type: changed
 breaking: false
 migration: ""

@@ -1,6 +1,6 @@
 .site-header {
   display: flex;
-  width: min(100% - 2rem, 76rem);
+  width: min(100% - 2rem, var(--rb-layout-page-max, 80rem));
   align-items: center;
   gap: var(--rb-space-3, 1.5rem);
   padding-block: 1.5rem;

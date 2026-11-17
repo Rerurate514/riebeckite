@@ -33,7 +33,7 @@ import { editorialTheme } from "@riebeckite/theme-editorial";
 export default defineConfig({
   theme: editorialTheme({
     colorMode: "system",
-    settings: { typography: "system" },
+    settings: { typography: "system", articleTitleAlignment: "left" },
   }),
 });
 ```
@@ -55,6 +55,7 @@ export default defineConfig({
 | プロパティ | 型 | 既定値と選択値 | 効果 |
 | --- | --- | --- | --- |
 | `typography` | select | 既定値 `"system"` — `system`、`serif`、`sans`、`mono` | 本文の書体を選びます。 |
+| `articleTitleAlignment` | select | 既定値 `"center"` — `left`、`center`、`right` | 記事タイトル、メタデータ、装飾の配置を選びます。 |
 | `accentColor` | color | 既定値 `"#8a2738"` | 操作要素などのアクセント色を設定します。 |
 | `articleWidth` | slider | 既定値 `48` — 36–64、刻み 1 | 本文の最大幅を rem で設定します。 |
 | `fontSize` | slider | 既定値 `1.125` — 0.9375–1.25、刻み 0.0625 | 本文の文字サイズを rem で設定します。 |

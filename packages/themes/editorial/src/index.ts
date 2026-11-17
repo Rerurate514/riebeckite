@@ -14,6 +14,17 @@ export const editorialTheme = defineTheme({
         { value: "mono", label: "Mono" },
       ],
     },
+    articleTitleAlignment: {
+      type: "select",
+      label: "Article title alignment",
+      description: "Align the article title, metadata, and ornament.",
+      default: "center",
+      options: [
+        { value: "left", label: "Left" },
+        { value: "center", label: "Center" },
+        { value: "right", label: "Right" },
+      ],
+    },
     accentColor: {
       type: "color",
       label: "Accent color",

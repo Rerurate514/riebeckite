@@ -33,7 +33,7 @@ import { editorialTheme } from "@riebeckite/theme-editorial";
 export default defineConfig({
   theme: editorialTheme({
     colorMode: "system",
-    settings: { typography: "system" },
+    settings: { typography: "system", articleTitleAlignment: "left" },
   }),
 });
 ```
@@ -55,6 +55,7 @@ Resolution order is schema defaults, then the selected preset, then explicit `se
 | Property | Type | Default and allowed values | Effect |
 | --- | --- | --- | --- |
 | `typography` | select | `"system"` — `system`, `serif`, `sans`, `mono` | Selects the article typeface. |
+| `articleTitleAlignment` | select | `"center"` — `left`, `center`, `right` | Aligns the article title, metadata, and ornament. |
 | `accentColor` | color | `"#8a2738"` | Rules and interactive accents. |
 | `articleWidth` | slider | `48` — 36–64, step 1 | Maximum article width in rem. |
 | `fontSize` | slider | `1.125` — 0.9375–1.25, step 0.0625 | Article text size in rem. |

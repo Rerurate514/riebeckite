@@ -132,6 +132,26 @@ test("portfolio registers every plugin used by its article layout", async () => 
   });
 });
 
+test("portfolio home lists projects from the content manifest", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    await scaffoldRiebeckiteSite({
+      targetDirectory: directory,
+      preset: "portfolio",
+    });
+    const route = await fs.readFile(
+      path.join(directory, "app/routes/index.tsx"),
+      "utf8",
+    );
+    const home = await fs.readFile(
+      path.join(directory, "app/components/home.tsx"),
+      "utf8",
+    );
+    assert.match(route, /render: \(\) => <SiteHome \/>/);
+    assert.match(home, /entry\.slug\.startsWith\("projects\/"\)/);
+    assert.match(home, /class="site-home__project-list"/);
+  });
+});
+
 test("every generated Markdown sample opts into publishing", async () => {
   await withTemporaryDirectory(async (directory) => {
     for (const preset of SCAFFOLD_PRESET_NAMES) {

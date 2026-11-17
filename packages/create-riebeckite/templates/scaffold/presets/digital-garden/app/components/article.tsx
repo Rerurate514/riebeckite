@@ -35,13 +35,13 @@ export function SiteArticle() {
             label="Notes"
             collapsible
           />
+          <RecentPosts title="Recently added" variant="compact" />
         </aside>
         <ArticleContent>
           <Breadcrumbs />
           <Properties />
           <ArticleBody />
           <PoweredByRiebeckite />
-          <RecentPosts />
           <ArticleFooter class="site-article__footer">
             <RelatedPosts />
           </ArticleFooter>

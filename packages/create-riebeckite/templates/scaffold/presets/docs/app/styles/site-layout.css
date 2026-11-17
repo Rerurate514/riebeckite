@@ -3,6 +3,13 @@
     min-height: 100vh;
   }
 
+  .site-shell > .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--rb-color-paper);
+  }
+
   .site-layout {
     display: grid;
     min-width: 0;
@@ -34,8 +41,8 @@
     .site-sidebar {
       display: block;
       position: sticky;
-      top: 0;
-      height: 100dvh;
+      top: var(--rb-site-header-height);
+      height: calc(100dvh - var(--rb-site-header-height));
       overflow-y: auto;
       scrollbar-gutter: stable;
       padding: var(--rb-space-4);
@@ -58,8 +65,8 @@
     .site-aside {
       display: none;
       position: sticky;
-      top: 0;
-      height: 100dvh;
+      top: var(--rb-site-header-height);
+      height: calc(100dvh - var(--rb-site-header-height));
       overflow-y: auto;
       scrollbar-gutter: stable;
       padding: var(--rb-space-4);

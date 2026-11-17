@@ -28,6 +28,9 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 - The starter preset places its file explorer inside the article grid, so the explorer, article and table of contents share one centered page container. The navigation no longer hugs the viewport edge, the table of contents sits beside the article instead of the page edge, and the header and footer align with the same container. The explorer and table of contents appear from 80rem; below that the article stays a single centered column.
   Packages: `create-riebeckite`
 
+- The digital-garden preset moves recently added notes beside the note tree, the docs preset keeps its header visible while its reading rails scroll independently, and the showcase preset becomes a three-rail reference catalog. The portfolio preset now derives a project grid from `content/projects/`.
+  Packages: `create-riebeckite`
+
 ## 0.0.51 - 2026-11-17
 
 > **Breaking changes are included.** Read the migration notes before upgrading.

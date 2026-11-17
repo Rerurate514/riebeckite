@@ -55,7 +55,7 @@ The practical default. It includes Obsidian Markdown, color mode, SEO, table of 
 
 ### `digital-garden`
 
-An Obsidian-oriented site for linked notes. The generated content demonstrates frontmatter, wiki links, embeds, properties, backlinks, and the local graph. Navigation, breadcrumbs, taxonomy, search, and link previews make the note network usable without extra setup.
+An Obsidian-oriented site for linked notes. Its wide three-column reader keeps the note tree and recently added notes on the left, with the table of contents, backlinks, and local graph on the right. The generated content demonstrates frontmatter, wiki links, embeds, properties, backlinks, and the local graph.
 
 ![[preset-digital-garden.png|Digital garden preset desktop view]]
 
@@ -67,13 +67,13 @@ A publication-focused starting point. The home page lists posts with dates, summ
 
 ### `docs`
 
-A documentation site with a generated sidebar, responsive table of contents, and previous/next navigation. It starts with a small documentation tree and code examples, while keeping the reading layout focused on the current page. The homepage renders the documentation entry itself, so it uses the same sidebar and reading shell instead of a marketing page.
+A documentation site with a generated sidebar, responsive table of contents, and previous/next navigation. Its persistent header keeps search and navigation available while the page, documentation tree, and table of contents scroll independently. The homepage renders the documentation entry itself, so it uses the same reading shell instead of a marketing page.
 
 ![[preset-docs.png|Docs preset desktop view]]
 
 ### `portfolio`
 
-A restrained starting point for selected projects, an introduction, and contact details. Project pages stay useful without images, while responsive images, lightbox, embedded media, and Markdown galleries are ready when visual material helps explain the work. Responsive images reuse the variants that already exist; add the `imageOptimizer` plugin when you want WebP or AVIF conversion. It makes no claims about your experience, clients, or results.
+A restrained starting point for selected projects, an introduction, and contact details. The home page derives a large project grid from `content/projects/`, so adding a project adds it to the portfolio. Project pages stay useful without images, while responsive images, lightbox, embedded media, and Markdown galleries are ready when visual material helps explain the work. Responsive images reuse the variants that already exist; add the `imageOptimizer` plugin when you want WebP or AVIF conversion. It makes no claims about your experience, clients, or results.
 
 ![[preset-portfolio.png|Portfolio preset desktop view]]
 
@@ -127,7 +127,7 @@ Obsidian Markdown, the `minimal` theme, and one English page. Choose it for a sm
 
 ### `showcase`
 
-The self-contained reference site. It enables most of the published plugin catalog, renders diagram/chart/code examples, supplies plugin and theme references, and includes local SVG, PDF, Excalidraw, and Canvas fixtures. Plugins that need extra infrastructure, dedicated fixtures, or site-wide URL changes are not enabled, so the template stays self-contained. Its `content/Daily/` notes feed a Daily Notes widget on the home page. It is intended for exploration and copying configuration, rather than as the recommended production baseline.
+The self-contained reference site. Its desktop reader puts the content catalog, demonstration page, and table of contents in separate rails. It enables most of the published plugin catalog, renders diagram/chart/code examples, supplies plugin and theme references, and includes local SVG, PDF, Excalidraw, and Canvas fixtures. Plugins that need extra infrastructure, dedicated fixtures, or site-wide URL changes are not enabled, so the template stays self-contained. Its `content/Daily/` notes feed a Daily Notes widget on the home page. It is intended for exploration and copying configuration, rather than as the recommended production baseline.
 
 ![[preset-showcase.png|Showcase preset desktop view]]
 

@@ -39,7 +39,7 @@
 
 .rb-properties__row {
   display: grid;
-  grid-template-columns: minmax(6rem, 12rem) 1fr;
+  grid-template-columns: minmax(6rem, max-content) minmax(0, 1fr);
   gap: 0.75rem;
   padding: 0.5rem 0;
   border-bottom: 1px solid var(--rb-properties-rule);
@@ -51,6 +51,7 @@
 }
 
 .rb-properties__key {
+  max-width: 8rem;
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--rb-properties-muted);

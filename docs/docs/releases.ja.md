@@ -33,11 +33,19 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 - The digital-garden preset moves recently added notes beside the note tree, the docs preset keeps its header visible while its reading rails scroll independently, and the showcase preset becomes a three-rail reference catalog. The portfolio preset now derives a project grid from `content/projects/`.
   Packages: `create-riebeckite`
 
+- Themes no longer ship a Tailwind-style `@theme` block. Theme CSS now renders the same with or without Tailwind installed.
+  Packages: `@riebeckite/theme-default`, `@riebeckite/theme-editorial`, `@riebeckite/theme-fieldnotes`, `@riebeckite/theme-folio`, `@riebeckite/theme-garden`, `@riebeckite/theme-gruvbox`, `@riebeckite/theme-minimal`, `@riebeckite/theme-module`, `@riebeckite/theme-rerurate`, `@riebeckite/theme-sakura`, `@riebeckite/theme-signal`, `@riebeckite/theme-technical`, `@riebeckite/theme-terminal`, `@riebeckite/theme-tokyonight`
+
 ### Removed
 
 - **Breaking:** Remove the `showcase` scaffold preset. Editorial now lets sites align article titles, metadata, and ornaments left, center, or right.
   Packages: `create-riebeckite`, `@riebeckite/theme-editorial`
   Migration: Use another scaffold preset and add only the plugins and content your site needs.
+
+### Fixed
+
+- The properties panel keeps its value column wide enough for short values, so a tag no longer collapses into a narrow oval in the portfolio preset's reading rail.
+  Packages: `@riebeckite/plugin-properties`
 
 ## 0.0.51 - 2026-11-17
 

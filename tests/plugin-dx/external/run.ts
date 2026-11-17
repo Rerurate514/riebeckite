@@ -63,7 +63,7 @@ function assertSharedCore() {
     const manifest = JSON.parse(
       fs.readFileSync(path.join(packageDir, "package.json"), "utf8"),
     );
-    assert.equal(manifest.peerDependencies?.["@riebeckite/core"], "^0.1.0");
+    assert.equal(manifest.peerDependencies?.["@riebeckite/core"], "^0.0.51");
     assert.equal(
       fs.realpathSync(
         createRequire(path.join(packageDir, "package.json")).resolve(

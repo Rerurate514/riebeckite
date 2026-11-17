@@ -11,7 +11,7 @@ sidebar.order: 10
 Upgrade Lab is a check-only preflight: it does not modify the project, `node_modules`, `dist`, or `.riebeckite`. `--to` is required. The `--check` flag is accepted for compatibility, but `upgrade` always runs the check, so it can be omitted. It copies the project twice into a temporary directory, installs with lifecycle scripts and pnpmfiles disabled, then compares the current dependency set with the requested Riebeckite version.
 
 ```sh
-npm exec -- riebeckite upgrade --to 0.1.0
+npm exec -- riebeckite upgrade --to 0.0.51
 npm exec -- riebeckite upgrade --to latest --json
 ```
 

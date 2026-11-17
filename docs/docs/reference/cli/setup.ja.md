@@ -11,7 +11,7 @@ sidebar.order: 10
 Upgrade Lab はチェック専用の事前検証で、プロジェクト、`node_modules`、`dist`、`.riebeckite` を変更しません。`--to` は必須です。`--check` は互換性のために受け付けられますが、`upgrade` は常にチェックを実行するため省略できます。
 
 ```sh
-npm exec -- riebeckite upgrade --to 0.1.0
+npm exec -- riebeckite upgrade --to 0.0.51
 npm exec -- riebeckite upgrade --to latest --json
 ```
 

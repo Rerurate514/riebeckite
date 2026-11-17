@@ -171,6 +171,7 @@
   padding-block: 0.5rem;
   font-family: var(--rb-font-body);
   font-size: 0.9rem;
+  border-bottom: 0;
   line-height: 1.5;
   text-decoration: none;
 }

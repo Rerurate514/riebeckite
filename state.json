@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "88164765-8bd2-47be-aebf-13ff87366816",
-    "publishedAt": "2026-11-16T23:24:57.026Z",
-    "publicationFingerprint": "5b3de66065d06e00116a418bcd0066aebeeb106b8b0f80a21d853807bf27066f",
+    "runId": "3fae0aa1-e44d-4e6b-a4de-c3f544638f45",
+    "publishedAt": "2026-11-17T02:00:39.488Z",
+    "publicationFingerprint": "b6079499de6cf2e8861a575ce14b8529f924aa60ab11ec13abfe5afaea0cd172",
     "entries": [
       {
         "slug": "architecture/ci",
@@ -634,16 +634,16 @@
         "permalink": "/docs/framework/inspector",
         "title": "Inspector",
         "visibility": "public",
-        "fingerprint": "7b000d79e4ea2b63e60836374d2fff81c328a834c223ac3aab3fb2845843f4c5",
-        "contentFingerprint": "230bc85ce227e06a354bf4b64a0fa84493fa447cf6de2d369ef02f8e9c8087d7"
+        "fingerprint": "3a03d4935005c1c9084a810d1518b7f802b584c07a974cbc057ef016e72a37af",
+        "contentFingerprint": "494a4b517dbeb6e070ec907bad8411d50d8e4221ecb9bbfc3f745280cd928b6f"
       },
       {
         "slug": "docs/framework/inspector.ja",
         "permalink": "/ja/docs/framework/inspector",
         "title": "インスペクター",
         "visibility": "public",
-        "fingerprint": "71fa5c75a443fa2b303cc060dea974ff120e099663cbe2992336ef9dd169d959",
-        "contentFingerprint": "0b64ad5124814bc654244487d56e1ab84444b3201611051a416dc825bdf31cea"
+        "fingerprint": "12e188236c7de3c29c1d586aaa37ea80c2b30fd1d3c6f7b18e51f329d81add56",
+        "contentFingerprint": "70fef507dbf06a6c2a80a02af90fcc6ba1d7c22909809d27bb904164caa53bc5"
       },
       {
         "slug": "docs/framework/interactive-runtime",
@@ -6822,7 +6822,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "92e094ba0e6790b99c0a90cc5c627b8775c938fd2aa36067ea50b4f418bea9ae",
+    "artifactFingerprint": "006b554c1e3c9a4e4f089ec1d7740ab0d651f51bcdf790f1ec0dfbd6ca89ced4",
     "provider": "cloudflare-workers"
   }
 }

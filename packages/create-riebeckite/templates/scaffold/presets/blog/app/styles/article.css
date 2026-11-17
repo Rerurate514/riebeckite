@@ -1,21 +1,76 @@
 .site-article {
-  width: min(100% - 3rem, 62rem);
+  width: min(100% - 2.5rem, 68rem);
   margin-inline: auto;
-  padding-block: 2.5rem 4rem;
+  padding-block: 3rem 5rem;
+}
+
+.site-article__header {
+  max-width: 46rem;
+  margin: 0 auto 2.75rem;
+  text-align: center;
+}
+
+.site-article__title {
+  margin: 0;
+  font-family: var(--rb-font-heading);
+  font-size: clamp(1.9rem, 1.4rem + 1.9vw, 2.9rem);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.site-article__date {
+  margin: 1rem 0 0;
+  color: var(--rb-color-muted);
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
 }
 
 .site-article__layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  justify-content: center;
+  gap: 2.5rem;
 }
 
-.rb-article-body {
-  min-width: 0;
+.site-article__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 1.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.site-article__tag a {
+  display: inline-flex;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--rb-color-border);
+  color: var(--rb-color-muted);
+  font-family: var(--rb-font-mono);
+  font-size: 0.72rem;
+  line-height: 1.6;
+  text-decoration: none;
+}
+
+.site-article__tag a:hover,
+.site-article__tag a:focus-visible {
+  border-color: var(--rb-color-border-strong);
+  color: var(--rb-color-ink);
 }
 
 .site-article__footer {
   min-width: 0;
+}
+
+.site-article__actions {
+  margin-block-start: 2.5rem;
+  padding-block-start: 1.25rem;
+  border-block-start: 1px solid var(--rb-color-border);
+}
+
+.site-article__actions .rr-share {
+  margin-block: 0;
 }
 
 .site-powered-by {
@@ -25,25 +80,113 @@
 }
 
 .site-article__aside {
-  margin-block-start: 2.5rem;
-  padding-block-start: 1.5rem;
+  display: grid;
+  gap: 1.5rem;
+  align-content: start;
+}
+
+.site-article__card {
+  padding: 1.25rem;
+  border: 1px solid var(--rb-color-border);
+  background: var(--rb-color-surface);
+}
+
+.site-article__card:empty {
+  display: none;
+}
+
+.site-article__author-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.site-article__author-avatar {
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--rb-color-border);
+  border-radius: 50%;
+  object-fit: contain;
+  background: var(--rb-color-paper);
+}
+
+.site-article__author-name {
+  margin: 0;
+  font-family: var(--rb-font-heading);
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+.site-article__author-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.9rem 0 0;
+  color: var(--rb-color-muted);
+  font-family: var(--rb-font-mono);
+  font-size: 0.72rem;
+}
+
+.site-article__author-links a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.site-article__author-links a:hover,
+.site-article__author-links a:focus-visible {
+  color: var(--rb-color-ink);
+}
+
+.site-article__toc .rr-table-of-contents {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.site-article__backlinks .rr-backlinks {
+  margin: 0;
+}
+
+.site-article__backlinks .rr-backlinks__eyebrow {
+  margin: 0 0 0.75rem;
+  color: var(--rb-color-muted);
+  font-family: var(--rb-font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.site-article__backlinks .rr-backlinks__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-article__backlinks .rr-backlinks__item + .rr-backlinks__item {
   border-block-start: 1px solid var(--rb-color-border);
+}
+
+.site-article__backlinks .rr-backlinks__link {
+  display: block;
+  padding-block: 0.5rem;
+  font-family: var(--rb-font-body);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  text-decoration: none;
 }
 
 @media (min-width: 64rem) {
   .site-article__layout {
-    grid-template-columns: minmax(0, 46rem) 13rem;
-    gap: 3rem;
+    grid-template-columns: minmax(0, 46rem) 15rem;
+    gap: 3.5rem;
+    justify-content: center;
   }
 
   .site-article__aside {
     position: sticky;
-    top: 2rem;
+    top: 5.5rem;
     align-self: start;
-    max-height: calc(100vh - 4rem);
+    max-height: calc(100vh - 7rem);
     overflow-y: auto;
-    margin-block-start: 0;
-    padding-block-start: 3.5rem;
-    border-block-start: 0;
   }
 }

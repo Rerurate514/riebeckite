@@ -38,7 +38,7 @@ Each preset section below includes a screenshot at a 1440 px desktop viewport.
 | --- | --- | --- | --- | --- |
 | `starter` | `default` | site locale | index, guide, examples, connected notes | Markdown publishing, search, content-derived navigation, breadcrumbs, backlinks, related and recent posts, taxonomy, folder landings, link previews |
 | `digital-garden` | `garden` | English | index and connected notes | Obsidian Markdown, frontmatter, wiki links and embeds, backlinks, local graph, properties, search, breadcrumbs, taxonomy |
-| `blog` | `editorial` | English | index, posts, series | Posts, tags, series navigation, related and recent posts, sharing controls, RSS/Atom/JSON feeds, SEO, generated Open Graph images, search, table of contents |
+| `blog` | `editorial` | English | index, posts, series | Post index with dates and summaries, tags, series navigation, related posts, sharing controls, RSS/Atom/JSON feeds, SEO, generated Open Graph images, search, author card and table of contents rail |
 | `docs` | `default` | English | documentation sections | Documentation sidebar, responsive table of contents, previous/next links, searchable code examples, shared site header and footer |
 | `portfolio` | `folio` | English | home, about, projects, contact | Project-focused content, responsive images, lightbox, media embeds, gallery support, SEO, navigation, properties, color mode |
 | `minimal` | `minimal` | English | one index page | Obsidian Markdown only |
@@ -61,13 +61,13 @@ An Obsidian-oriented site for linked notes. The generated content demonstrates f
 
 ### `blog`
 
-A publication-focused starting point with posts, tags, series, related and recent posts, sharing controls, search, and a table of contents. Its generated configuration explicitly enables RSS, Atom, and JSON feeds and generates an Open Graph image for every public page, while the sample articles demonstrate series navigation and taxonomy.
+A publication-focused starting point. The home page lists posts with dates, summaries, and tags; articles open with a centered title and date, place tag chips and series navigation above the body, and keep an author card and table of contents in a sticky right rail. Its generated configuration explicitly enables RSS, Atom, and JSON feeds and generates an Open Graph image for every public page, while the sample articles demonstrate series navigation and taxonomy.
 
 ![[preset-blog.png|Blog preset desktop view]]
 
 ### `docs`
 
-A documentation site with a generated sidebar, responsive table of contents, and previous/next navigation. It starts with a small documentation tree and code examples, while keeping the reading layout focused on the current page. The homepage, header, three-column reading shell, and footer match the Riebeckite website.
+A documentation site with a generated sidebar, responsive table of contents, and previous/next navigation. It starts with a small documentation tree and code examples, while keeping the reading layout focused on the current page. The homepage renders the documentation entry itself, so it uses the same sidebar and reading shell instead of a marketing page.
 
 ![[preset-docs.png|Docs preset desktop view]]
 

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { graphviz } from "../index.js";
 import { rehypeGraphviz } from "../src/rehype.js";
-import type { ElementNode, HastNode } from "../src/types.js";
+import type { ElementNode, HastNode, TextNode } from "../src/types.js";
 
 function createTree(
   source: string,
@@ -133,15 +133,18 @@ test("extracts captions from the title, line comment, and block comment", async 
   await rehypeGraphviz({ render: "client" })(fromBlock, {});
 
   assert.equal(
-    child(firstChild(fromTitle), "figcaption")?.children?.[0]?.value,
+    (child(firstChild(fromTitle), "figcaption")?.children?.[0] as TextNode)
+      ?.value,
     "Flow",
   );
   assert.equal(
-    child(firstChild(fromLine), "figcaption")?.children?.[0]?.value,
+    (child(firstChild(fromLine), "figcaption")?.children?.[0] as TextNode)
+      ?.value,
     "Line",
   );
   assert.equal(
-    child(firstChild(fromBlock), "figcaption")?.children?.[0]?.value,
+    (child(firstChild(fromBlock), "figcaption")?.children?.[0] as TextNode)
+      ?.value,
     "Block",
   );
   assert.equal(

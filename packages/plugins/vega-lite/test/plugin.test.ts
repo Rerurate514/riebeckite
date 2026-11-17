@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { vegaLite } from "../index.js";
 import { rehypeVegaLite } from "../src/rehype.js";
-import type { ElementNode, HastNode } from "../src/types.js";
+import type { ElementNode, HastNode, TextNode } from "../src/types.js";
 
 function createTree(
   source: string,
@@ -122,7 +122,10 @@ test("renders a pending figure with the parsed spec", () => {
   assert.equal(canvas?.properties?.role, "img");
   assert.equal(canvas?.properties?.ariaLabel, "Vega-Lite chart");
   assert.equal(
-    find(child(figure, "details") as ElementNode, "code")?.children?.[0]?.value,
+    (
+      find(child(figure, "details") as ElementNode, "code")
+        ?.children?.[0] as TextNode
+    )?.value,
     SPEC,
   );
 });
@@ -164,7 +167,7 @@ test("extracts captions from the title or the spec", () => {
     [fromSpecObject, "Object title"],
   ] as const) {
     assert.equal(
-      child(firstChild(tree), "figcaption")?.children?.[0]?.value,
+      (child(firstChild(tree), "figcaption")?.children?.[0] as TextNode)?.value,
       expected,
     );
     assert.equal(

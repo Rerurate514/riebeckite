@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { chartjs } from "../index.js";
 import { rehypeChartJs } from "../src/rehype.js";
-import type { ElementNode, HastNode } from "../src/types.js";
+import type { ElementNode, HastNode, TextNode } from "../src/types.js";
 
 function createTree(
   source: string,
@@ -173,11 +173,13 @@ test("extracts captions from the config or the code block title", () => {
   rehypeChartJs()(fromTitle, {});
 
   assert.equal(
-    child(firstChild(fromConfig), "figcaption")?.children?.[0]?.value,
+    (child(firstChild(fromConfig), "figcaption")?.children?.[0] as TextNode)
+      ?.value,
     "Sales",
   );
   assert.equal(
-    child(firstChild(fromTitle), "figcaption")?.children?.[0]?.value,
+    (child(firstChild(fromTitle), "figcaption")?.children?.[0] as TextNode)
+      ?.value,
     "Revenue",
   );
   assert.equal(

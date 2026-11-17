@@ -6,7 +6,7 @@ import {
   encodePlantumlBase64,
 } from "../src/plantuml-encoder.js";
 import { rehypePlantuml } from "../src/rehype.js";
-import type { ElementNode, HastNode } from "../src/types.js";
+import type { ElementNode, HastNode, TextNode } from "../src/types.js";
 
 const ALPHABET =
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
@@ -136,7 +136,7 @@ test("uses the code block title as caption", async () => {
   await rehypePlantuml()(tree, {});
 
   const caption = find(firstChild(tree), "figcaption");
-  assert.equal(caption?.children?.[0]?.value, "Sequence");
+  assert.equal((caption?.children?.[0] as TextNode)?.value, "Sequence");
 });
 
 test("extracts the caption directive and strips it from the source", async () => {
@@ -145,7 +145,10 @@ test("extracts the caption directive and strips it from the source", async () =>
   await rehypePlantuml()(tree, {});
 
   const figure = firstChild(tree);
-  assert.equal(find(figure, "figcaption")?.children?.[0]?.value, "Flow");
+  assert.equal(
+    (find(figure, "figcaption")?.children?.[0] as TextNode)?.value,
+    "Flow",
+  );
   assert.equal(
     figure.properties?.dataPlantumlSource,
     "@startuml\nA -> B\n@enduml",

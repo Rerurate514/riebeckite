@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { wavedrom } from "../index.js";
 import { rehypeWavedrom } from "../src/rehype.js";
-import type { ElementNode, HastNode } from "../src/types.js";
+import type { ElementNode, HastNode, TextNode } from "../src/types.js";
 
 function createTree(
   source: string,
@@ -120,7 +120,10 @@ test("extracts and strips the caption from the spec", () => {
   rehypeWavedrom()(tree, {});
 
   const figure = firstChild(tree);
-  assert.equal(child(figure, "figcaption")?.children?.[0]?.value, "Clock");
+  assert.equal(
+    (child(figure, "figcaption")?.children?.[0] as TextNode)?.value,
+    "Clock",
+  );
   assert.deepEqual(JSON.parse(String(figure.properties?.dataWavedromSpec)), {
     signal: [],
   });
@@ -151,7 +154,7 @@ test("prefers the fence title and honours caption/fallback/skin options", () => 
   const titled = createTree(JSON.stringify({ signal: [] }), { title: "Title" });
   rehypeWavedrom()(titled, {});
   assert.equal(
-    child(firstChild(titled), "figcaption")?.children?.[0]?.value,
+    (child(firstChild(titled), "figcaption")?.children?.[0] as TextNode)?.value,
     "Title",
   );
 });

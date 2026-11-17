@@ -4,7 +4,7 @@ import { markmap } from "../index.js";
 import { resolveMarkmapOptions } from "../src/options.js";
 import { describeMarkmapTree, parseMarkmapSource } from "../src/parse.js";
 import { rehypeMarkmap } from "../src/rehype.js";
-import type { ElementNode, HastNode } from "../src/types.js";
+import type { ElementNode, HastNode, TextNode } from "../src/types.js";
 
 function createTree(
   source: string,
@@ -209,7 +209,7 @@ test("renders a pending figure carrying the source and options", () => {
 
   const fallback = child(figure, "details");
   assert.equal(
-    find(fallback as ElementNode, "code")?.children?.[0]?.value,
+    (find(fallback as ElementNode, "code")?.children?.[0] as TextNode)?.value,
     "# Root\n## Child",
   );
 });
@@ -221,7 +221,7 @@ test("uses the fence title as caption", () => {
 
   const figure = firstChild(tree);
   const caption = child(figure, "figcaption");
-  assert.equal(caption?.children?.[0]?.value, "Mind map");
+  assert.equal((caption?.children?.[0] as TextNode)?.value, "Mind map");
   assert.equal(
     child(figure, "div")?.properties?.ariaLabelledby,
     "rb-markmap-caption",

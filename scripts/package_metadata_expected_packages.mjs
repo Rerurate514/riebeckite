@@ -187,6 +187,18 @@ export function expectedFixedPackageMetadata(directory) {
     };
   }
 
+  if (directory === "packages/plugins/og-image") {
+    return {
+      ...publishingMetadata(directory, false),
+      files: ["LICENSE", "README.md", "README_ja.md", "inspector.js", "dist"],
+      scripts: {
+        build: "node ../../../scripts/build_package.mjs",
+        test: 'node --import tsx --test "test/*.test.ts"',
+        prepack: "pnpm run build",
+      },
+    };
+  }
+
   if (directory === "packages/dev-inspector") {
     return {
       ...publishingMetadata(directory, false),

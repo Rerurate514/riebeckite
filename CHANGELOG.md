@@ -12,7 +12,10 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 ## [Unreleased]
 
-No user-facing changes recorded.
+### Changed
+
+- The Table of Contents keeps its top rule again, so the component reads as a closed box in sidebar rails and inline placements. The plugin still separates stacked sections with its bottom rule alone; pass `borders: { blockStart: false }` to drop the top rule per placement.
+  Packages: `@riebeckite/plugin-toc`
 
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.0.51...HEAD
 

@@ -14,7 +14,10 @@ The Unreleased section lists changes that are merged but not yet published to np
 
 ## Unreleased
 
-No user-facing changes recorded.
+### Changed
+
+- The Table of Contents keeps its top rule again, so the component reads as a closed box in sidebar rails and inline placements. The plugin still separates stacked sections with its bottom rule alone; pass `borders: { blockStart: false }` to drop the top rule per placement.
+  Packages: `@riebeckite/plugin-toc`
 
 ## 0.0.51 - 2026-11-17
 

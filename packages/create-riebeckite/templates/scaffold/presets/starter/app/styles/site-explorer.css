@@ -19,7 +19,7 @@
 
 @media (min-width: 48rem) {
   .site-shell {
-    width: min(100% - 2rem, calc(var(--rb-layout-page-max, 80rem) + var(--site-explorer-width)));
+    width: calc(100% - 2rem);
     grid-template-columns: minmax(12rem, var(--site-explorer-width)) minmax(0, 1fr);
     align-items: start;
   }
@@ -40,5 +40,14 @@
 @media (max-width: 89.999rem) {
   .site-article .site-article__aside {
     display: none;
+  }
+}
+
+@media (min-width: 80rem) {
+  .site-shell .riebeckite-main > .site-article {
+    position: relative;
+    left: calc(
+      -1 * min(var(--site-explorer-width) / 2, max(0px, (100% - var(--rb-layout-article-max, 48rem)) / 2))
+    );
   }
 }

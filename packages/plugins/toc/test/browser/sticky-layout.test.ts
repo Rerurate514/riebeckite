@@ -61,7 +61,7 @@ before(async () => {
     path.join(showcaseDirectory, "app/style.css"),
   );
   const renderSitePage = (siteStyle: string, includeToc = true) =>
-    `<!doctype html><html><head><style>:root { --rb-layout-page-max: 80rem; --rb-layout-article-max: 48rem; --rb-layout-sidebar: 14rem; --rb-layout-gap: 2rem; --rb-space-2: 1rem; --rb-space-3: 1.5rem; --rb-space-4: 2rem; --rb-color-muted: #555; --rb-color-ink: #111; --rb-color-border: #ddd; }</style><style>${honoxStyle}</style><style>${tocStyle}</style><style>${siteStyle}</style></head><body class="riebeckite-page"><header class="site-header">Header</header><main class="riebeckite-main"><article class="site-article"><div class="site-article__layout"><div class="rb-article-body"><div style="height: 240rem">Article</div></div><aside class="site-article__aside">${includeToc ? `<aside class="rr-table-of-contents rr-table-of-contents--desktop"><ol class="rr-table-of-contents__list">${sampleToc()}</ol></aside>` : ""}</aside></div></article></main></body></html>`;
+    `<!doctype html><html><head><style>:root { --rb-layout-page-max: 80rem; --rb-layout-article-max: 48rem; --rb-layout-sidebar: 14rem; --rb-layout-gap: 2rem; --rb-space-2: 1rem; --rb-space-3: 1.5rem; --rb-space-4: 2rem; --rb-color-muted: #555; --rb-color-ink: #111; --rb-color-border: #ddd; }</style><style>${honoxStyle}</style><style>${tocStyle}</style><style>${siteStyle}</style></head><body class="riebeckite-page"><header class="site-header">Header</header><div class="site-shell"><aside class="site-sidebar">Explore</aside><main class="riebeckite-main"><article class="site-article"><div class="site-article__layout"><div class="rb-article-body"><div style="height: 240rem">Article</div></div><aside class="site-article__aside">${includeToc ? `<aside class="rr-table-of-contents rr-table-of-contents--desktop"><ol class="rr-table-of-contents__list">${sampleToc()}</ol></aside>` : ""}</aside></div></article></main></div></body></html>`;
   server = createServer((request, response) => {
     response.setHeader("content-type", "text/html; charset=utf-8");
     if (request.url === "/starter") {
@@ -119,12 +119,14 @@ test("starter and showcase TOCs use their Site layout contract", async () => {
         ),
         borderLeftWidth: getComputedStyle(toc).borderLeftWidth,
         borderRightWidth: getComputedStyle(toc).borderRightWidth,
+        borderTopWidth: getComputedStyle(toc).borderTopWidth,
       }),
     );
     assert.equal(initial.position, "sticky");
     assert.equal(initial.stickyTop, "24px");
     assert.equal(initial.inlineStickyTop, "");
     assert.equal(initial.borderLeftWidth, initial.borderRightWidth);
+    assert.notEqual(initial.borderTopWidth, "0px");
 
     await page.evaluate(() => window.scrollTo(0, 1200));
     const afterScroll = await page.$eval(
@@ -166,6 +168,12 @@ test("starter and showcase center the article rail independently of the TOC", as
       assert.ok(Math.abs(layout.bodyCenter - layout.articleCenter) <= 2);
       assert.ok(layout.tocLeft >= layout.bodyRight);
       assert.ok(layout.scrollWidth <= layout.viewportWidth);
+      if (path === "/starter") {
+        assert.ok(
+          Math.abs(layout.bodyCenter - layout.viewportWidth / 2) <= 16,
+          "starter centers the article on the page",
+        );
+      }
       await page.close();
     }
   }

@@ -13,21 +13,6 @@
     U+2215, U+FEFF, U+FFFD;
 }
 
-@theme {
-  --font-sans: var(--rb-font-body);
-  --font-serif:
-    "Source Serif 4", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP",
-    Georgia, serif;
-  --font-mono: var(--rb-font-mono);
-  --color-rb-paper: var(--rb-color-paper);
-  --color-rb-ink: var(--rb-color-ink);
-  --color-rb-muted: var(--rb-color-muted);
-  --color-rb-accent: var(--rb-color-accent);
-  --color-rb-surface: var(--rb-color-surface);
-  --color-rb-danger: var(--rb-color-danger);
-  --color-rb-success: var(--rb-color-success);
-}
-
 @layer base {
   :is(:root, .rb-theme-root)[data-rb-theme="sakura"] {
     color-scheme: light;

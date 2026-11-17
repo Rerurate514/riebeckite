@@ -1,16 +1,3 @@
-@theme {
-  --font-sans: var(--rb-font-body);
-  --font-serif: Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono: var(--rb-font-mono);
-  --color-rb-paper: var(--rb-color-paper);
-  --color-rb-ink: var(--rb-color-ink);
-  --color-rb-muted: var(--rb-color-muted);
-  --color-rb-accent: var(--rb-color-accent);
-  --color-rb-surface: var(--rb-color-surface);
-  --color-rb-danger: var(--rb-color-danger);
-  --color-rb-success: var(--rb-color-success);
-}
-
 @layer base {
   :is(:root, .rb-theme-root)[data-rb-theme="rerurate"] {
     --rr-color-paper: #f6efe2;

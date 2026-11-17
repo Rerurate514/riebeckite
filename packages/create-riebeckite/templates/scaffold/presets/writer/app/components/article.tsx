@@ -121,8 +121,8 @@ function AuthorCard() {
             </p>
           ) : null}
         </div>
-        <a class="site-article__follow" href="/feed.xml">
-          Follow
+        <a class="site-article__about-link" href="/about">
+          About
         </a>
       </div>
       <p class="site-article__author-links">

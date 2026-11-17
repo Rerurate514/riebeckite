@@ -214,7 +214,7 @@
   line-height: 1.65;
 }
 
-.site-article__follow {
+.site-article__about-link {
   flex: 0 0 auto;
   margin-inline-start: auto;
   padding: 0.4rem 0.9rem;
@@ -226,8 +226,8 @@
   text-decoration: none;
 }
 
-.site-article__follow:hover,
-.site-article__follow:focus-visible {
+.site-article__about-link:hover,
+.site-article__about-link:focus-visible {
   border-color: var(--rb-color-ink);
 }
 
@@ -355,7 +355,7 @@
     flex-wrap: wrap;
   }
 
-  .site-article__follow {
+  .site-article__about-link {
     margin-inline-start: 0;
   }
 }

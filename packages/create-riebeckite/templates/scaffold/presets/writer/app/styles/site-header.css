@@ -60,7 +60,7 @@
 }
 
 .site-header__search {
-  width: 13rem;
+  width: auto;
 }
 
 .site-header__menu {

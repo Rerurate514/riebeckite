@@ -67,7 +67,7 @@ A publication-focused starting point. The home page lists posts with dates, summ
 
 ### `writer`
 
-A quiet, reading-first site. Posts open in a narrow centered column: the title, author, and date come first, an inline table of contents follows, and the body stays the only thing competing for attention. Tags read as hashtags after the text, sharing follows, an author card uses the site description, and a previous-post link with a short list of more essays closes the page. The home page keeps the same narrow column for a short introduction and a stacked list of post cards. The minimal theme supplies the white, sans-serif surface.
+A quiet, reading-first site. Posts open in a narrow centered column: the title, author, and date come first, an inline table of contents follows, and the body stays the only thing competing for attention. Tags read as hashtags after the text, sharing follows, an author card links to a short About page, and a previous-post link with a short list of more essays closes the page. The home page keeps the same narrow column for a short introduction and a stacked list of post cards. The minimal theme supplies the white, sans-serif surface.
 
 ### `docs`
 

@@ -53,9 +53,25 @@ If the file lives elsewhere or has a different name, pass `configRoot` and
 | `publication` | No | Publication approval mode and durable state |
 | `provenance` | No | Build provenance recording |
 | `spa` | No | Client-side navigation, prefetch, scroll restoration, and view transitions |
+| `ui` | No | UI language and label dictionaries |
 
 Only `site` is required. Every other section falls back to the default in its
 table.
+
+### ui
+
+`ui.locale` pins the language of the strings the framework and its plugins render, independently of the content language. `ui.labels` maps a language code to a label dictionary; codes match case-insensitively and a missing key or language falls back to the built-in English labels. The default keys are `contents`, `filter`, `filterNavigation`, `collapse`, `expand`, `searchNotes`, `searchPlaceholder`, `nearbyNotes`, `seriesNavigation`, and `language`. Plugin components read them through `useUiLabels()`.
+
+```ts
+export default defineConfig({
+  ui: {
+    locale: "ja",
+    labels: {
+      ja: { contents: "目次" },
+    },
+  },
+});
+```
 
 ## Validation
 

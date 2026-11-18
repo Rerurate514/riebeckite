@@ -126,4 +126,24 @@ docs/
 
 ## UI の文言
 
-l10n プラグインがローカライズするのは、コンテンツの URL、本文中のリンク、head タグです。フレームワークとプラグインが描画する UI の文言（ナビゲーションのラベル、目次、検索窓のプレースホルダー、ドロワーのタイトル）は翻訳されず、英語のままです。サイト側が持つシェルのコードであれば、ラベルを自分でローカライズできます。このサイトでは、リクエストの言語をもとに `website/app/lib/ui-labels.ts` と `website/app/components/article/article.tsx` で `<html lang>`、ドロワーのラベル、ナビゲーションの `aria-label`、記事の日付のロケールを切り替えています。
+l10n プラグインがローカライズするのは、コンテンツの URL、本文中のリンク、head タグです。フレームワークとプラグインが描画する UI の文言は翻訳されないため、`ui` で指定します。
+
+```ts
+export default defineConfig({
+  ui: {
+    locale: "ja",
+    labels: {
+      ja: {
+        contents: "目次",
+        searchPlaceholder: "ノートを検索 (tag:, lang:, path: ...)",
+      },
+    },
+  },
+});
+```
+
+`ui.locale` を指定すると、コンテンツの言語とは独立に UI の言語を固定できます。日本語のサイトでも UI は英語のままにできます。`ui.labels` は言語コードごとの辞書で、言語コードは大文字と小文字を区別しません。辞書にないキーや、辞書のない言語は、内蔵の英語の文言にフォールバックします。
+
+フレームワークとプラグインが既定で公開しているキーは `contents`、`filter`、`filterNavigation`、`collapse`、`expand`、`searchNotes`、`searchPlaceholder`、`nearbyNotes`、`seriesNavigation`、`language` です。プラグインのコンポーネントは `useUiLabels()` からこの辞書を読むため、プラグイン側のコードを変更する必要はありません。
+
+辞書には、サイト独自のシェル用のキーも追加できます。このサイトでは `documentation`、`tableOfContents`、`menu`、`navigation`、`primaryNavigation`、`secondaryNavigation`、`footerNavigation` を `website/app/lib/ui-labels.ts` で `config.ui.labels` から読んでいます。これらはフレームワークの取り決めではなくシェル側のラベルなので、シェルが自分で辞書を読む構成です。`<html lang>` と記事の日付のロケールはコンテンツの言語に従い、`website/app/components/article/article.tsx` で設定しています。

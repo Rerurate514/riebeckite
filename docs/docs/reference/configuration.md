@@ -6,7 +6,7 @@ sidebar.label: Configuration
 
 # Configuration
 
-Create configuration with `defineConfig` and let the integration resolve it before content or plugins run. The required top-level field is `site`; optional sections are `content`, `theme`, `plugins`, `cache`, `publication`, `provenance`, and `spa`.
+Create configuration with `defineConfig` and let the integration resolve it before content or plugins run. The required top-level field is `site`; optional sections are `content`, `theme`, `plugins`, `cache`, `publication`, `provenance`, `spa`, and `ui`.
 
 For the complete field list, start with [Configuration reference](./configuration-reference.md). The topic pages in this section cover content, assets, roots, cache, navigation, plugins, theme, and troubleshooting in depth.
 
@@ -33,6 +33,12 @@ and options.
 `publication` configures approval mode and durable publication state.
 `provenance` controls build provenance recording; see
 [Data Provenance](../framework/build-system/provenance.md).
+
+`ui` sets the language and labels of the strings the framework and its plugins
+render. `ui.locale` pins that language independently of the content language, and
+`ui.labels` maps a language code to a label dictionary; missing keys fall back to
+the built-in English labels. See [Localization setup](../guides/localization/setup.md)
+for the keys and an example.
 
 ## How this section is organized
 

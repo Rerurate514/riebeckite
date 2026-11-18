@@ -11,6 +11,19 @@ export type SpaConfig = {
   viewTransitions?: boolean;
 };
 
+export type UiConfig = {
+  /**
+   * Pin the UI language instead of following the resolved content language.
+   */
+  locale?: string;
+  /**
+   * Per-language UI label dictionaries. Keys are language codes matched
+   * case-insensitively against the UI language; missing keys fall back to the
+   * built-in English labels.
+   */
+  labels?: Readonly<Record<string, Readonly<Record<string, string>>>>;
+};
+
 export interface RiebeckiteConfig {
   site: SiteConfig;
   content?: {
@@ -32,4 +45,5 @@ export interface RiebeckiteConfig {
   };
   publication?: PublicationConfig;
   spa?: boolean | SpaConfig;
+  ui?: UiConfig;
 }

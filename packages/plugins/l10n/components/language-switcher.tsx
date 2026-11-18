@@ -1,5 +1,5 @@
 import type { PluginSiteComponent } from "@riebeckite/core";
-import { useArticleContext, useSiteContext } from "@riebeckite/ui";
+import { useArticleContext, useSiteContext, useUiLabels } from "@riebeckite/ui";
 import type { LocalizedContent } from "../src/l10n.js";
 import { getLocalization } from "../src/l10n.js";
 
@@ -10,6 +10,7 @@ export type LanguageSwitcherProps = {
 const LanguageSwitcher = ((props: Readonly<LanguageSwitcherProps>) => {
   const site = useSiteContext();
   const article = useArticleContext();
+  const labels = useUiLabels();
   const localization =
     props.localization ??
     (site && article?.entry
@@ -17,8 +18,8 @@ const LanguageSwitcher = ((props: Readonly<LanguageSwitcherProps>) => {
       : null);
   if (!localization || localization.availableLanguages.length < 2) return null;
   return (
-    <nav class="rr-l10n-switcher" aria-label="Language">
-      <span class="rr-l10n-switcher__label">Language</span>
+    <nav class="rr-l10n-switcher" aria-label={labels.language}>
+      <span class="rr-l10n-switcher__label">{labels.language}</span>
       <ul class="rr-l10n-switcher__list">
         {localization.availableLanguages.map((lang) => {
           const href = localization.translations[lang];

@@ -1,9 +1,11 @@
+import { useUiLabels } from "@riebeckite/ui";
 import { buildGraphDocument } from "@riebeckite/graph";
 import GraphView from "@riebeckite/graph/ui";
 import type { LocalGraphViewProps } from "../src/local-graph.js";
 
 export function LocalGraphView(props: LocalGraphViewProps) {
   const { graph } = props;
+  const labels = useUiLabels();
   const document =
     graph.document ??
     buildGraphDocument(
@@ -23,7 +25,7 @@ export function LocalGraphView(props: LocalGraphViewProps) {
       <div class="rr-local-graph__header">
         <div>
           <p class="rr-local-graph__eyebrow">Local Graph</p>
-          <h2>Nearby Notes</h2>
+          <h2>{labels.nearbyNotes}</h2>
         </div>
         {props.showExplorerLink ? (
           <a

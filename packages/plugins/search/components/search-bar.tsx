@@ -1,9 +1,12 @@
+import { useUiLabels } from "@riebeckite/ui";
+
 type SearchBarProps = {
   readonly class?: string;
   readonly className?: string;
 };
 
 export default function SearchBar(props: SearchBarProps = {}) {
+  const labels = useUiLabels();
   const className = ["rr-search-bar", "rr-search", props.class, props.className]
     .filter(Boolean)
     .join(" ");
@@ -35,7 +38,7 @@ export default function SearchBar(props: SearchBarProps = {}) {
         <section class="rr-search-modal__panel">
           <div class="rr-search-modal__header">
             <h2 id="search-title" class="rr-search-modal__title">
-              Search notes
+              {labels.searchNotes}
             </h2>
             <button
               type="button"
@@ -53,7 +56,7 @@ export default function SearchBar(props: SearchBarProps = {}) {
               class="rr-search-modal__input"
               data-search-input
               type="search"
-              placeholder="Search notes or use tag:, lang:, path:..."
+              placeholder={labels.searchPlaceholder}
               autocomplete="off"
               spellcheck={false}
             />

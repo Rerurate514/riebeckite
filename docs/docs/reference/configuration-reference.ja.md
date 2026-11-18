@@ -55,10 +55,26 @@ CLI から実行した場合は、現在のディレクトリから親ディレ�
 | `publication` | いいえ | 公開承認モードと永続状態 |
 | `provenance` | いいえ | ビルド来歴の記録 |
 | `spa` | いいえ | クライアントサイドのページ遷移、プリフェッチ、スクロール復元、ビュー遷移 |
+| `ui` | いいえ | UI の言語と文言辞書 |
 
 必須なのは `site` だけです。
 
 それ以外の設定を省略した場合は、それぞれ既定値が使われます。
+
+### ui
+
+`ui.locale` を指定すると、コンテンツの言語とは独立に、フレームワークとプラグインが描画する文言の言語を固定できます。`ui.labels` は言語コードごとの文言辞書です。言語コードは大文字と小文字を区別せず、辞書にないキーや辞書のない言語は内蔵の英語の文言にフォールバックします。既定のキーは `contents`、`filter`、`filterNavigation`、`collapse`、`expand`、`searchNotes`、`searchPlaceholder`、`nearbyNotes`、`seriesNavigation`、`language` です。プラグインのコンポーネントは `useUiLabels()` からこの辞書を読みます。
+
+```ts
+export default defineConfig({
+  ui: {
+    locale: "ja",
+    labels: {
+      ja: { contents: "目次" },
+    },
+  },
+});
+```
 
 ## Config の検証
 

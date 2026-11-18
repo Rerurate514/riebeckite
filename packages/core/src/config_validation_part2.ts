@@ -47,6 +47,41 @@ export function validateSpa(
   issues.push({ path: "spa", message: "Expected a boolean or an object." });
 }
 
+export function validateUi(
+  value: unknown,
+  issues: ConfigValidationIssue[],
+): void {
+  if (value === undefined) return;
+  if (!isRecord(value)) {
+    issues.push({ path: "ui", message: "Expected an object." });
+    return;
+  }
+  validateOptionalString(value.locale, "ui.locale", issues);
+  const labels = value.labels;
+  if (labels === undefined) return;
+  if (!isRecord(labels)) {
+    issues.push({ path: "ui.labels", message: "Expected an object." });
+    return;
+  }
+  for (const [locale, dictionary] of Object.entries(labels)) {
+    if (!isRecord(dictionary)) {
+      issues.push({
+        path: `ui.labels.${locale}`,
+        message: "Expected an object.",
+      });
+      continue;
+    }
+    for (const [key, label] of Object.entries(dictionary)) {
+      if (typeof label !== "string") {
+        issues.push({
+          path: `ui.labels.${locale}.${key}`,
+          message: "Expected a string.",
+        });
+      }
+    }
+  }
+}
+
 export function validateTheme(
   value: unknown,
   issues: ConfigValidationIssue[],

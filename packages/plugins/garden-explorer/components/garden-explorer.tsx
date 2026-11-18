@@ -1,3 +1,4 @@
+import { useUiLabels } from "@riebeckite/ui";
 import { buildGraphDocument } from "@riebeckite/graph";
 import GraphView from "@riebeckite/graph/ui";
 import { useEffect, useMemo, useState } from "hono/jsx";
@@ -19,6 +20,7 @@ type Props = {
 };
 
 export default function GardenExplorer(props: Props) {
+  const labels = useUiLabels();
   const noteBySlug = useMemo(
     () => new Map(props.data.notes.map((note) => [note.slug, note])),
     [props.data.notes],
@@ -152,11 +154,11 @@ export default function GardenExplorer(props: Props) {
         <div class="rr-garden-explorer__section">
           <p class="rr-garden-explorer__eyebrow">Explorer</p>
           <label class="rr-garden-explorer__search">
-            <span class="sr-only">Search notes</span>
+            <span class="sr-only">{labels.searchNotes}</span>
             <input
               type="search"
               value={query}
-              placeholder="Search notes..."
+              placeholder={labels.searchNotesPlaceholder}
               onInput={(event) =>
                 setQuery((event.currentTarget as HTMLInputElement).value)
               }

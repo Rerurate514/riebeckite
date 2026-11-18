@@ -1,6 +1,6 @@
 import type { PluginSiteComponent } from "@riebeckite/core";
 import { selectLocalizedEntries } from "@riebeckite/core";
-import { useArticleContext, useSiteContext } from "@riebeckite/ui";
+import { useArticleContext, useSiteContext, useUiLabels } from "@riebeckite/ui";
 import { html } from "hono/html";
 import { collectSeriesIndexes, getSeriesNavigation } from "../src/series.js";
 import type {
@@ -23,6 +23,7 @@ const SeriesNavigation = (async ({
 }: Readonly<SeriesNavigationProps>) => {
   const site = useSiteContext();
   const article = useArticleContext();
+  const labels = useUiLabels();
   const configured = site ? findSeriesOptions(site.config.plugins) : undefined;
   const currentSlug = explicitCurrentSlug ?? article?.entry?.slug;
   const sourceIndex =
@@ -76,7 +77,7 @@ const SeriesNavigation = (async ({
     <nav
       class={className}
       data-series={index.name}
-      aria-label="Series navigation"
+      aria-label={labels.seriesNavigation}
     >
       {heading ? (
         <p class={`${className}__title`}>

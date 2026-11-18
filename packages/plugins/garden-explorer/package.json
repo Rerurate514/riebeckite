@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@riebeckite/graph": "workspace:*",
+    "@riebeckite/ui": "workspace:*",
     "hono": "catalog:"
   },
   "peerDependencies": {

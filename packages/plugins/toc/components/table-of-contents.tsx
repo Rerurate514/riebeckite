@@ -1,4 +1,4 @@
-import { useArticleContext } from "@riebeckite/ui";
+import { useArticleContext, useUiLabels } from "@riebeckite/ui";
 import type { TableOfContentsItem } from "../src/table-of-contents.js";
 import { extractTableOfContents } from "../src/table-of-contents.js";
 
@@ -14,6 +14,7 @@ export type TableOfContentsProps = {
 
 export default function TableOfContents(props: TableOfContentsProps) {
   const article = useArticleContext();
+  const labels = useUiLabels();
   const items =
     props.items ??
     (article ? extractTableOfContents(article.post.html ?? "") : undefined);
@@ -34,8 +35,11 @@ export default function TableOfContents(props: TableOfContentsProps) {
     .join(" ");
 
   return (
-    <aside class={`rr-table-of-contents ${className}`} aria-label="Contents">
-      <p class="rr-table-of-contents__eyebrow">CONTENTS</p>
+    <aside
+      class={`rr-table-of-contents ${className}`}
+      aria-label={labels.contents}
+    >
+      <p class="rr-table-of-contents__eyebrow">{labels.contentsHeading}</p>
       <ol class="rr-table-of-contents__list">
         {items.map((item) => (
           <li

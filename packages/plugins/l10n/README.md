@@ -2,7 +2,7 @@
 
 <!-- Generated from docs/docs/plugins/l10n.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
-Content localization for Riebeckite Markdown. It detects a locale and a separate translation identity for every note, prefixes non-default URLs, contributes a standard language switcher, and adds `hreflang` links. It does not translate Riebeckite UI strings.
+Content localization for Riebeckite Markdown. It detects a locale and a separate translation identity for every note, prefixes non-default URLs, contributes a standard language switcher, and adds `hreflang` links. It localizes content URLs, in-body links, and head tags only; UI strings come from `config.ui.labels` ([Localization setup](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/guides/localization/setup.md)).
 
 [日本語](./README_ja.md)
 

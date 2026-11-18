@@ -35,7 +35,7 @@ export default defineConfig({
 });
 ```
 
-必須は `site` だけです。`content`、`theme`、`plugins`、`cache`、`publication`、`provenance`、`spa` は必要に応じて設定します。
+必須は `site` だけです。`content`、`theme`、`plugins`、`cache`、`publication`、`provenance`、`spa`、`ui` は必要に応じて設定します。
 
 | フィールド | 用途 |
 | --- | --- |
@@ -47,10 +47,13 @@ export default defineConfig({
 | `publication` | 公開承認モードと永続状態 |
 | `provenance` | ビルド来歴の記録 |
 | `spa` | SPA ナビゲーションの設定 |
+| `ui` | UI の言語と文言辞書 |
 
 `spa` はクライアント側のページ遷移を有効にします。`true`、`false`、またはオプションオブジェクトを指定できます。動作とオプションは [SPA ナビゲーション](../guides/spa-navigation.ja.md) を参照してください。
 
 `publication` は公開承認モードと永続状態を設定します。`provenance` はビルド来歴の記録を制御します。詳しくは[データ来歴](../framework/build-system/provenance.ja.md)を参照してください。
+
+`ui` は、フレームワークとプラグインが描画する文言の言語とラベルを設定します。`ui.locale` を指定すると、コンテンツの言語とは独立にその言語を固定できます。`ui.labels` は言語コードごとの文言辞書で、辞書にないキーは内蔵の英語の文言にフォールバックします。キーの一覧と記述例は[ローカライズの設定](../guides/localization/setup.ja.md)を参照してください。
 
 ## 関連ページから詳細を調べる
 

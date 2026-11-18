@@ -1,4 +1,4 @@
-import { useSiteContext } from "@riebeckite/ui";
+import { useSiteContext, useUiLabels } from "@riebeckite/ui";
 import type { NavigationItem } from "../src/types.js";
 
 export type SidebarNavigationProps = {
@@ -17,6 +17,7 @@ export type SidebarNavigationProps = {
 
 export function SidebarNavigation(props: SidebarNavigationProps) {
   const site = useSiteContext();
+  const labels = useUiLabels();
   const path = props.path ?? site?.path ?? "/";
   const language = props.language ?? site?.language;
   const searchable = props.searchable ?? false;
@@ -34,11 +35,13 @@ export function SidebarNavigation(props: SidebarNavigationProps) {
     >
       {searchable ? (
         <label class="rb-sidebar-navigation__search">
-          <span class="rb-sidebar-navigation__sr-only">Filter navigation</span>
+          <span class="rb-sidebar-navigation__sr-only">
+            {labels.filterNavigation}
+          </span>
           <input
             type="search"
             autocomplete="off"
-            placeholder="Filter"
+            placeholder={labels.filter}
             data-sidebar-filter
           />
         </label>
@@ -89,6 +92,7 @@ function SidebarItem(
   props: Omit<SidebarItemsProps, "items"> & { readonly item: NavigationItem },
 ) {
   const children = props.item.children ?? [];
+  const labels = useUiLabels();
   const active = props.item.href
     ? isActive(props.item.href, props.path, props.language)
     : false;
@@ -141,7 +145,7 @@ function SidebarItem(
               <button
                 class="rb-sidebar-navigation__toggle"
                 type="button"
-                aria-label={`${expanded ? "Collapse" : "Expand"} ${props.item.label}`}
+                aria-label={`${expanded ? labels.collapse : labels.expand} ${props.item.label}`}
                 aria-expanded={String(expanded)}
                 data-sidebar-toggle
               >

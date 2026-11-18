@@ -109,4 +109,22 @@ A layout that separates languages by directory (`en/note.md`, `ja/note.md`) is *
 
 ## UI strings
 
-The l10n plugin localizes content URLs, in-body links, and head tags. It does not translate the UI strings that the framework and its plugins render — navigation labels, the table of contents, the search placeholder, drawer titles — those stay English. Site-owned shell code can localize its own labels: this site's `<html lang>`, drawer labels, navigation `aria-label`s, and the article date locale come from the request language in `website/app/lib/ui-labels.ts` and `website/app/components/article/article.tsx`.
+The l10n plugin localizes content URLs, in-body links, and head tags; it does not translate the UI strings that the framework and its plugins render. Supply those with `ui`:
+
+```ts
+export default defineConfig({
+  ui: {
+    locale: "ja",
+    labels: {
+      ja: {
+        contents: "目次",
+        searchPlaceholder: "ノートを検索 (tag:, lang:, path: ...)",
+      },
+    },
+  },
+});
+```
+
+`ui.locale` pins the UI language independently of the content language, so a Japanese site can keep English UI strings. `ui.labels` maps a language code to a dictionary, and codes match case-insensitively. A missing key, or a language without a dictionary, falls back to the built-in English labels. The keys the framework and plugins expose by default are `contents`, `filter`, `filterNavigation`, `collapse`, `expand`, `searchNotes`, `searchPlaceholder`, `nearbyNotes`, `seriesNavigation`, and `language`. Plugin components pick these up through `useUiLabels()`, so no plugin code changes.
+
+A dictionary can also carry keys for your own shell code. This site reads `documentation`, `tableOfContents`, `menu`, `navigation`, `primaryNavigation`, `secondaryNavigation`, and `footerNavigation` from `config.ui.labels` in `website/app/lib/ui-labels.ts`, because those labels belong to the shell rather than the framework contract. `<html lang>` and the article date locale still follow the content language and are set in `website/app/components/article/article.tsx`.

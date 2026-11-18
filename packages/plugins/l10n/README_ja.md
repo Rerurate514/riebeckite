@@ -2,7 +2,7 @@
 
 <!-- Generated from docs/docs/plugins/l10n.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
-Riebeckite の Markdown コンテンツをローカライズするプラグインです。UI 文言の翻訳は担当しませんが、標準の言語切替 UI を提供します。
+Riebeckite の Markdown コンテンツをローカライズするプラグインです。ローカライズするのはコンテンツの URL、本文中のリンク、head タグで、UI の文言は `config.ui.labels` で指定します（[ローカライズの設定](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/guides/localization/setup.ja.md)）。標準の言語切替 UI も提供します。
 
 [English](./README.md)
 

@@ -53,6 +53,7 @@ In [Configuration](./configuration.md) you can check Riebeckite's settings and h
 - `provenance`
 - `publication`
 - `spa`
+- `ui`
 
 `appRoot`, `configRoot`, and `contentRoot` are resolution concepts rather than configuration keys; see [Roots](./configuration/roots.md).
 

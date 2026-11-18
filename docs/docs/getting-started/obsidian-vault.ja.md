@@ -1,6 +1,7 @@
 ---
 date: 2026-10-08
 title: Obsidian Vault を使う
+sidebar.order: 50
 ---
 # Obsidian Vault を使う
 

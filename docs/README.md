@@ -39,7 +39,7 @@ To follow the steps in order:
 2. [Installation](./docs/getting-started/installation.md)
 3. [First Content](./docs/getting-started/first-content.md)
 4. [Presets](./docs/getting-started/presets.md)
-5. [Deployment](./docs/getting-started/deployment.md)
+5. [Deployment](./docs/guides/deployment/README.md)
 
 The full chapter list is in the [documentation index](./docs/README.md).
 
@@ -75,7 +75,7 @@ Start from the page closest to your goal.
 | Check how to install | [Installation](./docs/getting-started/installation.md) |
 | Write your first content | [First Content](./docs/getting-started/first-content.md) |
 | Choose a site setup | [Presets](./docs/getting-started/presets.md) |
-| Deploy | [Deployment](./docs/getting-started/deployment.md) |
+| Deploy | [Deployment](./docs/guides/deployment/README.md) |
 | Follow per-target deployment steps | [Deployment guides](./docs/guides/deployment/README.md) |
 | Learn how to write Markdown and frontmatter | [Writing Content](./docs/guides/writing-content.md) |
 | Keep the shell while navigating between pages | [SPA Navigation](./docs/guides/spa-navigation.md) |

@@ -1,5 +1,7 @@
 ---
+date: 2026-11-18
 title: Media
+date: 2026-11-18
 ---
 # Media
 

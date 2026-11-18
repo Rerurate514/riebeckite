@@ -1,3 +1,8 @@
+---
+date: 2026-11-18
+title: Inline
+---
+
 # Inline
 
 ## Highlight — [`highlight`](../highlight.md)

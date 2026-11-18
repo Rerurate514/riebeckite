@@ -82,7 +82,7 @@ The final public URL of an article is determined by the **[[glossary/public-loca
 
 ## Next steps
 
-- [Fast path to publishing a site](../getting-started/deployment.md)
+- [Fast path to publishing a site](./deployment/README.md)
 - [Publishing Obsidian notes](./obsidian.md)
 - [Localization](./localization.md)
 - [Configuration](../reference/configuration.md)

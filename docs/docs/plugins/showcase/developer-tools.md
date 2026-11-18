@@ -1,3 +1,8 @@
+---
+date: 2026-11-18
+title: Developer Tools
+---
+
 # Developer tools
 
 These Plugins support authoring rather than rendering.

@@ -130,7 +130,7 @@ riebeckite publish run --execute
 
 ## 次に読むもの
 
-- [サイト公開までの最短ガイド](../../getting-started/deployment.ja.md)：初回公開までの最短手順
+- [サイト公開までの最短ガイド](./README.ja.md)：初回公開までの最短手順
 - [GitHub Actions](./github-actions.ja.md)：GitHub へのプッシュから自動デプロイする
 - [コンテンツリポジトリの分離](./separate-content-repository.ja.md)：コンテンツとサイトを別リポジトリで運用する
 - [使い方ガイド](../README.ja.md)

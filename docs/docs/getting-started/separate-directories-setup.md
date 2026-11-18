@@ -2,7 +2,7 @@
 date: 2026-11-05
 title: Separate Directories Setup
 sidebar.label: Separate Directories Setup
-sidebar.order: 23
+sidebar.order: 90
 ---
 # Separate Directories Setup
 

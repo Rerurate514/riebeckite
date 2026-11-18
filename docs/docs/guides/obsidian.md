@@ -1,6 +1,9 @@
 ---
 date: 2026-10-06
 title: Publishing Obsidian notes
+aliases:
+  - /docs/obsidian-plugin
+  - /docs/obsidian-plugin/architecture
 ---
 # Publishing Obsidian notes
 

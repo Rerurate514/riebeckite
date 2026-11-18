@@ -1,3 +1,7 @@
+---
+private: true
+---
+
 # Verification Matrix
 
 | 区分 | コマンドまたは方法 | 判定 | 証跡 |

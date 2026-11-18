@@ -1,3 +1,8 @@
+---
+date: 2026-11-18
+title: Build and Metadata
+---
+
 # Plugins that act at build time or on metadata
 
 These Plugins do not appear in the body. Their results show up as generated files, head tags, or redirects. Some are opt-in and not enabled on this site; the table describes what they generate.

@@ -2,7 +2,7 @@
 date: 2026-10-06
 title: Quick Start
 sidebar.label: Quick Start
-sidebar.order: 10
+sidebar.order: 20
 ---
 # Quick Start
 
@@ -122,7 +122,7 @@ To deploy automatically on every push to `main`, continue with GitHub Actions in
 
 - [Deployment](./deployment.md) — publish to Cloudflare Workers and automate with GitHub Actions
 - [Project Structure](./project-structure.md) — compare integrated, separate-directories, and separate-repositories layouts
-- [Content Location](./content-location.md) — choose where Markdown lives and set `content.directory`
+- [Project Structure](./project-structure.md) — layouts and `content.directory`
 - [Integrated Setup](./integrated-setup.md), [Separate Directories Setup](./separate-directories-setup.md), [Separate Repositories Setup](./separate-repositories-setup.md) — follow a complete layout with an official sample
 - [Presets](./presets.md) — compare `starter`, `digital-garden`, `blog`, `writer`, `docs`, `portfolio`, `minimal`, and `empty`
 - [First Content](./first-content.md) — write and preview content more deliberately

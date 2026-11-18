@@ -1,5 +1,7 @@
 ---
+date: 2026-11-18
 title: Obsidian Markdown
+date: 2026-11-18
 ---
 # Obsidian Markdown
 

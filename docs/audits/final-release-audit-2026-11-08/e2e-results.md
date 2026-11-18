@@ -1,3 +1,7 @@
+---
+private: true
+---
+
 # E2E Results
 
 ## 公開 tarball 外部サイト

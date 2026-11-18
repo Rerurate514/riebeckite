@@ -1,3 +1,7 @@
+---
+private: true
+---
+
 # Findings
 
 | ID | 深刻度 | 状態 | 内容 | 根拠と対応 |

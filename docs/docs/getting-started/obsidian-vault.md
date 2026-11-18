@@ -1,6 +1,7 @@
 ---
 date: 2026-10-06
 title: Use Your Obsidian Vault
+sidebar.order: 50
 ---
 # Use Your Obsidian Vault
 

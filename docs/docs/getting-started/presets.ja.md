@@ -2,7 +2,7 @@
 date: 2026-10-08
 title: プリセット
 sidebar.label: プリセット
-sidebar.order: 40
+sidebar.order: 60
 ---
 # プリセット
 

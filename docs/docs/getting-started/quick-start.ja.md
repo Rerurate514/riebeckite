@@ -2,7 +2,7 @@
 date: 2026-10-08
 title: クイックスタート
 sidebar.label: クイックスタート
-sidebar.order: 10
+sidebar.order: 20
 ---
 # クイックスタート
 
@@ -123,7 +123,7 @@ npm exec -- riebeckite publish run --execute --force
 
 - [Deployment](./deployment.ja.md) - Cloudflare Workers への公開と GitHub Actions による自動化
 - [プロジェクト構成](./project-structure.ja.md) - 一体型・ディレクトリ分離型・リポジトリ分離型を比較する
-- [コンテンツの場所](./content-location.ja.md) - Markdown の置き場所と `content.directory` を決める
+- [コンテンツの場所](./project-structure.ja.md) - 配置パターンと `content.directory` を決める
 - [一体型](./integrated-setup.ja.md)・[ディレクトリ分離型](./separate-directories-setup.ja.md)・[リポジトリ分離型](./separate-repositories-setup.ja.md) - 公式サンプル付きの完全な手順
 - [Presets](./presets.ja.md) - `starter`、`digital-garden`、`blog`、`writer`、`docs`、`portfolio`、`minimal`、`empty` を比較する
 - [First Content](./first-content.ja.md) - Markdown の書き方と確認方法をもう少し詳しく見る

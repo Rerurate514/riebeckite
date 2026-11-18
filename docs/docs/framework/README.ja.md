@@ -2,7 +2,7 @@
 date: 2026-10-08
 title: Framework
 sidebar.label: Framework
-sidebar.order: 60
+sidebar.order: 70
 sidebar.collapsed: true
 ---
 # Framework

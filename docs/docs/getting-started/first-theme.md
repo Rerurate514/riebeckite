@@ -1,6 +1,7 @@
 ---
 date: 2026-10-06
 title: Change Your Theme
+sidebar.order: 120
 ---
 # Change Your Theme
 

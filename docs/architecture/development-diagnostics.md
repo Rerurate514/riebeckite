@@ -1,4 +1,5 @@
 ---
+private: true
 date: 2026-10-20
 title: Development diagnostics architecture
 ---

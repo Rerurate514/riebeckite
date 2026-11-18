@@ -1,7 +1,7 @@
 ---
+date: 2026-11-18
 title: ナレッジとデータ
-showcase_progress: 4
-showcase_priority: low
+date: 2026-11-18
 ---
 # ナレッジとデータ
 

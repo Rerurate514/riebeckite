@@ -19,7 +19,7 @@ Getting a first site running goes: **Quick Start → Installation → First Cont
 | I want to… | Go to |
 | --- | --- |
 | Use Riebeckite for the first time | [Quick Start](./docs/getting-started/quick-start.md) |
-| Create a site and deploy it today | [Quick Start](./docs/getting-started/quick-start.md) → [Deployment](./docs/getting-started/deployment.md) |
+| Create a site and deploy it today | [Quick Start](./docs/getting-started/quick-start.md) → [Deployment](./docs/guides/deployment/README.md) |
 | Choose which `create-riebeckite` preset to use | [Presets](./docs/getting-started/presets.md) |
 | Write and organize articles | [Guides / Writing content](./docs/guides/writing-content.md) |
 | Publish an Obsidian vault | [Guides / Obsidian](./docs/guides/obsidian.md) |

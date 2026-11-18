@@ -1,4 +1,5 @@
 ---
+private: true
 date: 2026-11-04
 title: Plugin architecture
 sidebar.label: Architecture

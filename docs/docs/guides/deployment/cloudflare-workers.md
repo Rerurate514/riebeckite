@@ -93,7 +93,7 @@ When you need automated deployment, move that sequence to run from [GitHub Actio
 
 ## Next steps
 
-- [Fast path to publishing a site](../../getting-started/deployment.md)
+- [Fast path to publishing a site](./README.md)
 - [GitHub Actions](./github-actions.md)
 - [Separate Content Repository](./separate-content-repository.md)
 - [Usage Guide](../README.md)

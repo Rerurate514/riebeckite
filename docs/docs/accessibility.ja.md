@@ -2,7 +2,7 @@
 date: 2026-10-08
 title: アクセシビリティ
 sidebar.label: アクセシビリティ
-sidebar.order: 70
+sidebar.order: 90
 ---
 # アクセシビリティ
 

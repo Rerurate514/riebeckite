@@ -40,7 +40,7 @@ flowchart LR
 2. [インストール](./docs/getting-started/installation.ja.md)
 3. [最初の記事](./docs/getting-started/first-content.ja.md)
 4. [プリセット](./docs/getting-started/presets.ja.md)
-5. [デプロイ](./docs/getting-started/deployment.ja.md)
+5. [デプロイ](./docs/guides/deployment/README.ja.md)
 
 の順で読めます。
 
@@ -77,7 +77,7 @@ deploy
 | インストール方法を確認する | [インストール](./docs/getting-started/installation.ja.md) |
 | 最初の記事を書く | [最初の記事](./docs/getting-started/first-content.ja.md) |
 | サイトの構成を選ぶ | [プリセット](./docs/getting-started/presets.ja.md) |
-| デプロイする | [デプロイ](./docs/getting-started/deployment.ja.md) |
+| デプロイする | [デプロイ](./docs/guides/deployment/README.ja.md) |
 | デプロイ先ごとの手順を確認する | [デプロイガイド](./docs/guides/deployment/README.ja.md) |
 | Markdown と frontmatter の書き方を知る | [コンテンツの書き方](./docs/guides/writing-content.ja.md) |
 | ヘッダーやフッターを残したままページを切り替える | [SPAナビゲーション](./docs/guides/spa-navigation.ja.md) |

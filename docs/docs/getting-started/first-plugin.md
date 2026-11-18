@@ -1,6 +1,7 @@
 ---
 date: 2026-10-06
 title: Add Your First Plugin
+sidebar.order: 110
 ---
 # Add Your First Plugin
 

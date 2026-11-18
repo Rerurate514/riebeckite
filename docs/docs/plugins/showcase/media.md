@@ -1,3 +1,8 @@
+---
+date: 2026-11-18
+title: Media
+---
+
 # Media
 
 ## Audio and video — [`media`](../media.md)

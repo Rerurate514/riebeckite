@@ -1,3 +1,7 @@
+---
+private: true
+---
+
 # Release Decision
 
 ## 結論: HOLD

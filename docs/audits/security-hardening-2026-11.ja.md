@@ -1,3 +1,7 @@
+---
+private: true
+---
+
 # Security & Supply Chain Hardening Audit — 2026-11
 
 ## 結論

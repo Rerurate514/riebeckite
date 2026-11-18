@@ -1,3 +1,8 @@
+---
+date: 2026-11-18
+title: Obsidian Syntax
+---
+
 # Obsidian Markdown
 
 ## Callouts — [`obsidian-markdown`](../obsidian-markdown.md)

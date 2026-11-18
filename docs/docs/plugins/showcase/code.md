@@ -1,3 +1,8 @@
+---
+date: 2026-11-18
+title: Code
+---
+
 # Code
 
 ## Code with a toolbar — [`code-enhance`](../code-enhance.md)

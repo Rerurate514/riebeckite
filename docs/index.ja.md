@@ -19,7 +19,7 @@ Riebeckite は、Markdown や Obsidian 形式のノートを静的サイトと�
 | やりたいこと | 参照先 |
 | --- | --- |
 | 初めて Riebeckite を使う | [クイックスタート](./docs/getting-started/quick-start.ja.md) |
-| 今日中にサイトを作って公開する | [クイックスタート](./docs/getting-started/quick-start.ja.md) → [デプロイ](./docs/getting-started/deployment.ja.md) |
+| 今日中にサイトを作って公開する | [クイックスタート](./docs/getting-started/quick-start.ja.md) → [デプロイ](./docs/guides/deployment/README.ja.md) |
 | `create-riebeckite` のプリセットを選ぶ | [プリセット](./docs/getting-started/presets.ja.md) |
 | 記事を書いて整理する | [ガイド / コンテンツの書き方](./docs/guides/writing-content.ja.md) |
 | Obsidian の Vault を公開する | [ガイド / Obsidian](./docs/guides/obsidian.ja.md) |

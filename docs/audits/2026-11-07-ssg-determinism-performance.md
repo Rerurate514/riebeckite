@@ -1,3 +1,7 @@
+---
+private: true
+---
+
 # Full SSG Determinism and Performance Audit
 
 - Date: 2026-11-07 (some measurements continued into early 2026-11-08)

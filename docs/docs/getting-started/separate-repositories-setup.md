@@ -2,7 +2,7 @@
 date: 2026-11-06
 title: Separate Repositories Setup
 sidebar.label: Separate Repositories Setup
-sidebar.order: 24
+sidebar.order: 100
 ---
 # Separate Repositories Setup
 

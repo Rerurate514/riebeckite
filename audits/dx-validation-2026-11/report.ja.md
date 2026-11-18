@@ -67,7 +67,7 @@ declaration を読む。clean checkout ではこれらが未生成で、`plugin-
 | `pnpm test:plugin-dx` | PASS | fixture install後に21/21 |
 | `pnpm test:plugin-dx:external` | PASS | packed tarball の隔離install、config、型検査 |
 | `pnpm test:e2e:external` | PASS | packed tarball site のproduction build、browser hydration、incremental MDX |
-| `pnpm typecheck` | FAIL | `packages/integrations/honox/test/honox_islands.test.ts` に既存のVite hook型4エラー |
+| `pnpm typecheck` | PASS | 3 projects、型エラーなし |
 | Quartz `npm test` | PASS | 429 pass、2 skip |
 | Quartz `node quartz/bootstrap-cli.mjs build` | PASS | 2 Markdown input、68 files、`public/index.html` と `public/projects/alpha.html` |
 | Quartz `npm run quartz -- build` | FAIL | Windows PowerShell が POSIX形式の `./quartz/bootstrap-cli.mjs` をコマンドとして実行できない |
@@ -75,6 +75,14 @@ declaration を読む。clean checkout ではこれらが未生成で、`plugin-
 `test:plugin-dx` の最初の失敗は fixture 専用 workspace が未installだったためである。
 CIも先に `pnpm --dir tests/plugin-dx install --frozen-lockfile` を実行する。install後は
 未宣言依存ではなく、21件すべて成功した。
+
+## 型検査の修正
+
+`honox_islands.test.ts` がViteのhookを常に関数として呼び、必須のMarkdown component
+フィールドを省略していたため、Vite 8の型に追従できていなかった。test用の
+`hookHandler()`で関数形式と`{ handler }`形式のhookを同じように実行し、fixtureに
+`render`とclientの`moduleSpecifier`を与えた。transform結果は実装が返す文字列の
+`code`を検査するよう絞り込んだ。HonoX integration本体の挙動は変更していない。
 
 ## Task A-D と Plugin A-E の判定
 
@@ -87,8 +95,7 @@ Plugin A-E の全実装、両者の同一条件バンドル比較、Quartz plugi
 ## 改善の優先順位
 
 1. Scaffold の build 前提を維持する。今回の修正で型検査の偽陰性を除去した。
-2. `pnpm typecheck` のVite hook API追従を別途修正する。今回のScaffold修正とは無関係。
-3. Quartz の比較を続けるなら、A-D と Plugin A-E を先に固定した小さな同一仕様として
+2. Quartz の比較を続けるなら、A-D と Plugin A-E を先に固定した小さな同一仕様として
    隔離directoryに実装し、build artifact と browser結果を保存する。単なるAPI読解や
    LOC比較を成功根拠にしない。
 

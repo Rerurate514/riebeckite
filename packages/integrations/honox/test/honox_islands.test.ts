@@ -21,7 +21,9 @@ test("injects the HonoX client signal for plugin client entries", async () => {
 
   const result = await transform(plugin, "export default null;", renderer);
 
-  assert.equal(typeof result, "object");
+  assert.ok(
+    result && typeof result === "object" && typeof result.code === "string",
+  );
   assert.match(result.code, /export const __importing_islands = true;/);
 });
 
@@ -74,7 +76,13 @@ test("injects the HonoX client signal for Markdown client components", async () 
     plugins: [
       {
         name: "fixture",
-        markdownComponents: [{ name: "fixture", client: {} }],
+        markdownComponents: [
+          {
+            name: "fixture",
+            render: () => "",
+            client: { moduleSpecifier: "fixture/client" },
+          },
+        ],
       },
     ],
   }));
@@ -105,7 +113,9 @@ test("does not duplicate an explicit HonoX client signal", async () => {
 async function configure(
   plugin: ReturnType<typeof injectRiebeckiteClientBundle>,
 ) {
-  await Reflect.apply(plugin.configResolved, undefined, [{ root }]);
+  await Reflect.apply(hookHandler(plugin.configResolved), undefined, [
+    { root },
+  ]);
 }
 
 async function transform(
@@ -113,5 +123,15 @@ async function transform(
   source: string,
   id: string,
 ) {
-  return await Reflect.apply(plugin.transform, undefined, [source, id]);
+  return await Reflect.apply(hookHandler(plugin.transform), undefined, [
+    source,
+    id,
+  ]);
+}
+
+function hookHandler<Handler extends (...arguments_: never[]) => unknown>(
+  hook: Handler | { readonly handler: Handler } | undefined,
+): Handler {
+  assert.ok(hook);
+  return typeof hook === "function" ? hook : hook.handler;
 }

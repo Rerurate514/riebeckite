@@ -3,8 +3,6 @@ import { RiebeckiteHead, ThemeRoot } from "@riebeckite/honox/ui";
 import { jsxRenderer } from "hono/jsx-renderer";
 import { Link, Script } from "honox/server";
 
-export const __importing_islands = true;
-
 export default jsxRenderer(({ children }, c) => (
   <ThemeRoot theme={config.theme} lang="en">
     <head>

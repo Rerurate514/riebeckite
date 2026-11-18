@@ -11,10 +11,6 @@ import { SiteFooter, SiteHeader } from "../components/site-header";
 import { content } from "virtual:riebeckite/content";
 import { config } from "virtual:riebeckite/config";
 
-// Riebeckite plugin client entries need the HonoX client bundle even without
-// an island component.
-export const __importing_islands = true;
-
 export default jsxRenderer(async ({ children }, c) => {
   const manifest = await content.getManifest();
   const themeStyle = getThemeStyle(config.theme);

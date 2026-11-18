@@ -28,11 +28,6 @@ import {
 import { getHreflangAlternates, toOgLocale } from "../lib/locale";
 import { buildWebsiteSeo, getHtmlLanguage } from "../lib/seo";
 
-// Plugin client entries are browser capabilities, not HonoX islands. HonoX
-// gates its client `<Script>` on this export, so keep the client runtime in
-// SSG output even when a page has no island component.
-export const __importing_islands = true;
-
 export default jsxRenderer(async ({ children }, c) => {
   const { site } = config;
   const headTags = c.get("headTags") ?? [];

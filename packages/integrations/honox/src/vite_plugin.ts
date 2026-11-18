@@ -16,6 +16,7 @@ import { riebeckiteConfigTemporaryDirectory } from "./config_loader.js";
 import { riebeckiteContentAssets } from "./content_assets.js";
 import { isContentModuleLoaded, loadContentModule } from "./content_module.js";
 import { riebeckiteContentWatch } from "./content_watch.js";
+import { injectRiebeckiteClientBundle } from "./honox_islands.js";
 import { riebeckiteRuntimeModules } from "./runtime_modules.js";
 import { siteRiebeckiteExternals } from "./site_externals.js";
 import { createRiebeckiteSsg } from "./ssg.js";
@@ -120,6 +121,7 @@ export function riebeckite(
     },
     contentVitePluginBridge(() => contentVitePlugins),
     contentBareImportResolver(() => requireApplication(application)),
+    injectRiebeckiteClientBundle(getConfig),
     riebeckiteClientModule(getConfig),
     riebeckiteRuntimeModules(() => requireApplication(application)),
     riebeckiteContentWarmup(options.warmContent ?? false, () =>

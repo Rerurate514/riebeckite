@@ -20,7 +20,7 @@
     "check:core-api": "node scripts/check_core_api.mjs",
     "check:templates": "node scripts/check_deploy_template.mjs",
     "test:checks": "node --test scripts/check_dependencies.test.mjs scripts/check_source_health.test.mjs",
-    "check:scaffold": "node scripts/check_scaffold.mjs",
+    "check:scaffold": "pnpm build:packages && node scripts/check_scaffold.mjs",
     "check:docs": "node scripts/check_docs.mjs && node scripts/check_plugin_docs_parity.mjs && node scripts/sync_theme_docs.mjs --check",
     "check:changes": "node scripts/changelog.mjs check",
     "check:artifacts": "node scripts/release_artifacts.mjs check",

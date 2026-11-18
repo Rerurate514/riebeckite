@@ -122,14 +122,17 @@ export default jsxRenderer(async ({ children }, c) => {
                   </div>
                 </SiteNavigationHeader>
                 <div class="site-layout">
-                  <aside
-                    class="site-sidebar"
-                    aria-label={uiLabels.documentation}
+                  <Drawer
+                    id="docs-navigation"
+                    label={uiLabels.documentation}
                   >
                     <div data-spa-region="docs-navigation">
+                      <div class="site-drawer-navigation">
+                        <SiteDrawerNavigation />
+                      </div>
                       <DocsSidebar />
                     </div>
-                  </aside>
+                  </Drawer>
                   <main id="main-content" tabindex={-1} class="site-main">
                     <div class="site-content">{children}</div>
                   </main>
@@ -146,15 +149,6 @@ export default jsxRenderer(async ({ children }, c) => {
                     </div>
                   </aside>
                 </div>
-                <Drawer
-                  id="docs-navigation"
-                  label={uiLabels.documentation}
-                >
-                  <div data-spa-region="docs-navigation-mobile">
-                    <SiteDrawerNavigation />
-                    <DocsSidebar />
-                  </div>
-                </Drawer>
               </div>
               <div data-spa-region="site-footer">
                 <SiteFooter />

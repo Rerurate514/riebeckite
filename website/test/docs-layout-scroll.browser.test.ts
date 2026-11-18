@@ -33,12 +33,15 @@ test("official docs use standard rails without horizontal overflow", async (t) =
     for (const width of [375, 768, 1440]) {
       await page.setViewport({ width, height: 900 });
       await page.setContent(
-        `<!doctype html><style>:root { --rb-space-2: 1rem; --rb-space-3: 1.5rem; --rb-space-4: 2rem; --rb-layout-page-max: 80rem; --rb-layout-article-max: 48rem; --rb-color-border: #d7e0ea; --rb-color-ink: #182230; --rb-color-surface: #fff; } body { margin: 0; } ${styles}</style><body class="riebeckite-page"><div class="site-shell"><header class="site-header rb-site-header"><a class="rb-site-header__home">Riebeckite</a></header><div class="site-layout"><aside class="site-sidebar">Navigation</aside><main id="main-content" class="site-main"><div class="site-content" style="height: 300rem">Article</div></main><aside class="site-aside">TOC</aside></div></div><footer class="rb-site-footer"><div class="site-footer__main">Footer</div></footer></body>`,
+        `<!doctype html><style>:root { --rb-space-2: 1rem; --rb-space-3: 1.5rem; --rb-space-4: 2rem; --rb-layout-page-max: 80rem; --rb-layout-article-max: 48rem; --rb-color-border: #d7e0ea; --rb-color-ink: #182230; --rb-color-surface: #fff; } body { margin: 0; } ${styles}</style><body class="riebeckite-page"><div class="site-shell"><header class="site-header rb-site-header"><a class="rb-site-header__home">Riebeckite</a></header><div class="site-layout"><div class="rb-drawer"><section class="rb-drawer__panel" id="docs-navigation" aria-label="Documentation" tabindex="-1">Navigation</section></div><main id="main-content" class="site-main"><div class="site-content" style="height: 300rem">Article</div></main><aside class="site-aside">TOC</aside></div></div><footer class="rb-site-footer"><div class="site-footer__main">Footer</div></footer></body>`,
       );
       const layout = await page.evaluate(() => ({
         sidebar: getComputedStyle(
-          document.querySelector(".site-sidebar") ?? document.body,
+          document.querySelector(".rb-drawer__panel") ?? document.body,
         ).display,
+        sidebarPosition: getComputedStyle(
+          document.querySelector(".rb-drawer__panel") ?? document.body,
+        ).position,
         aside: getComputedStyle(
           document.querySelector(".site-aside") ?? document.body,
         ).display,
@@ -56,6 +59,10 @@ test("official docs use standard rails without horizontal overflow", async (t) =
       }));
       assert.equal(layout.mains, 1);
       assert.equal(layout.sidebar === "block", width >= 768);
+      assert.equal(
+        layout.sidebarPosition,
+        width >= 768 ? "sticky" : "fixed",
+      );
       assert.equal(layout.aside === "block", width >= 1024);
       assert.equal(layout.footerMarginTop, "0px");
       assert.ok(Number.parseFloat(layout.footerPaddingTop) > 0);

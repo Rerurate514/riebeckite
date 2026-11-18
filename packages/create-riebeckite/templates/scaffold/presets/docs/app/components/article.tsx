@@ -19,11 +19,14 @@ export function SiteArticle() {
         </div>
       </SiteHeader>
       <div class="site-layout">
-        <aside class="site-sidebar" aria-label="Documentation">
+        <Drawer id="docs-navigation" label="Documentation">
           <div data-spa-region="docs-navigation">
+            <div class="site-drawer-navigation">
+              <SiteDrawerNavigation />
+            </div>
             <DocsSidebar />
           </div>
-        </aside>
+        </Drawer>
         <main id="main-content" tabindex={-1} class="site-main">
           <div class="site-content">
             <Article class="site-article">
@@ -47,12 +50,6 @@ export function SiteArticle() {
           </div>
         </aside>
       </div>
-      <Drawer id="docs-navigation" label="Documentation">
-        <div data-spa-region="docs-navigation-mobile">
-          <SiteDrawerNavigation />
-          <DocsSidebar />
-        </div>
-      </Drawer>
     </div>
   );
 }

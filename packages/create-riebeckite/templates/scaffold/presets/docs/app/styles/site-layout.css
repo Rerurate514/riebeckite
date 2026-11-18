@@ -15,7 +15,6 @@
     min-width: 0;
   }
 
-  .site-sidebar,
   .site-aside {
     display: none;
   }
@@ -38,15 +37,23 @@
       grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr);
     }
 
-    .site-sidebar {
+    .site-layout > .rb-drawer > .rb-drawer__panel.rb-drawer__panel {
       display: block;
       position: sticky;
       top: var(--rb-site-header-height);
+      z-index: auto;
+      inset: auto;
       height: calc(100dvh - var(--rb-site-header-height));
-      overflow-y: auto;
-      scrollbar-gutter: stable;
+      width: auto;
+      max-height: none;
       padding: var(--rb-space-4);
+      border: 0;
       border-inline-end: 1px solid var(--rb-color-border);
+      background: transparent;
+    }
+
+    .site-drawer-navigation {
+      display: none;
     }
   }
 

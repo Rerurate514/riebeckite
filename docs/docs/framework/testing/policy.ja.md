@@ -30,7 +30,7 @@ Golden File のヘルパーなどを使う場合は、`@riebeckite/test` を `de
 
 ### 4. プラグインのメタデータを更新する
 
-プラグインのパッケージでは、`scripts/package_metadata.mjs` の `hasTests` にパッケージのディレクトリ名を追加します。
+プラグインのパッケージでは、`scripts/package_metadata_expected_groups.mjs` の `hasTests` にパッケージのディレクトリ名を追加します。
 
 ### 5. パッケージのメタデータを検証する
 

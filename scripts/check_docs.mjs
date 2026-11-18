@@ -12,6 +12,8 @@
 //   4. Every package directory exposes exactly README.md + README_ja.md
 //      (extra README_en.md variants are rejected).
 //   5. README.md and README_ja.md link to each other where both exist.
+//   6. Every WikiLink in a published document resolves to exactly one note in
+//      the same language.
 import fs from "node:fs";
 import path from "node:path";
 import GithubSlugger from "github-slugger";
@@ -373,6 +375,120 @@ function checkMutualReadmeLinks(markdownFiles, allFiles) {
   return errors;
 }
 
+// Rule 6: every WikiLink resolves to exactly one note in the same language.
+const DOCS_CONTENT_ROOT = "docs/docs/";
+const WIKILINK_PATTERN = /\[\[([^\]\n]+)\]\]/g;
+
+function noteSlug(relative, root) {
+  return relative
+    .slice(root.length)
+    .replace(/\.md$/, "")
+    .replace(/\.ja$/, "");
+}
+
+function matchingNotes(slugs, wanted) {
+  return slugs.filter((slug) => {
+    const value = slug.toLowerCase();
+    return wanted.includes("/")
+      ? value === wanted || value.endsWith(`/${wanted}`)
+      : value.split("/").at(-1) === wanted;
+  });
+}
+
+function markdownLinesOutsideCode(text) {
+  const lines = [];
+  let fence;
+  for (const line of text.split(/\r?\n/)) {
+    const fenceMatch = line.match(/^ {0,3}(`{3,}|~{3,})/);
+    if (fenceMatch) {
+      const marker = fenceMatch[1];
+      if (!fence) {
+        fence = marker;
+        continue;
+      }
+      if (marker[0] === fence[0] && marker.length >= fence.length) {
+        fence = undefined;
+        continue;
+      }
+    }
+    if (fence) continue;
+    lines.push(line.replace(/(`+)[^`]*?\1/g, ""));
+  }
+  return lines;
+}
+
+function checkWikiLinks(markdownFiles) {
+  const errors = [];
+  const documents = markdownFiles
+    .filter(
+      (file) =>
+        isDocsDocument(file.relative) &&
+        file.relative.startsWith(DOCS_CONTENT_ROOT),
+    )
+    .map((file) => ({
+      file,
+      language: file.relative.endsWith(".ja.md") ? "ja" : "en",
+      slug: noteSlug(file.relative, DOCS_CONTENT_ROOT),
+    }));
+  const byLanguage = { en: [], ja: [] };
+  for (const document of documents) byLanguage[document.language].push(document);
+  // The site indexes every note under the content root, so a target may also
+  // resolve outside the published docs root (for example a drawing note).
+  const vaultSlugs = markdownFiles
+    .filter(
+      (file) =>
+        file.relative.startsWith("docs/") &&
+        !file.relative.startsWith(DOCS_CONTENT_ROOT) &&
+        !/(^|\/)\.(obsidian|riebeckite)\//.test(file.relative) &&
+        !file.relative.startsWith("docs/agents/"),
+    )
+    .map((file) => noteSlug(file.relative, "docs/"));
+
+  for (const document of documents) {
+    const peers = byLanguage[document.language].map((peer) => peer.slug);
+    const lines = markdownLinesOutsideCode(
+      fs.readFileSync(document.file.absolute, "utf8"),
+    );
+    for (const line of lines) {
+      WIKILINK_PATTERN.lastIndex = 0;
+      for (
+        let match = WIKILINK_PATTERN.exec(line);
+        match;
+        match = WIKILINK_PATTERN.exec(line)
+      ) {
+        const body = match[1];
+        const pipe = body.indexOf("|");
+        const targetAndFragment = pipe < 0 ? body : body.slice(0, pipe);
+        const fragmentAt = targetAndFragment.search(/[#^]/);
+        const target = (
+          fragmentAt < 0
+            ? targetAndFragment
+            : targetAndFragment.slice(0, fragmentAt)
+        ).trim();
+        if (!target) continue;
+        const extension = path.posix.extname(target).toLowerCase();
+        if (extension && extension !== ".md") continue;
+        const wanted = target
+          .replace(/\\/g, "/")
+          .replace(/\.md$/i, "")
+          .toLowerCase();
+        const matches = matchingNotes(peers, wanted);
+        if (matches.length === 0) {
+          if (matchingNotes(vaultSlugs, wanted).length > 0) continue;
+          errors.push(
+            `${document.file.relative}: unresolvable wikilink [[${target}]]`,
+          );
+        } else if (matches.length > 1) {
+          errors.push(
+            `${document.file.relative}: ambiguous wikilink [[${target}]] (${matches.length} candidates)`,
+          );
+        }
+      }
+    }
+  }
+  return errors;
+}
+
 const { markdownFiles, allFiles } = collectPaths();
 
 const errors = [
@@ -381,6 +497,7 @@ const errors = [
   ...checkReachability(markdownFiles),
   ...checkPackageReadmes(markdownFiles),
   ...checkMutualReadmeLinks(markdownFiles, allFiles),
+  ...checkWikiLinks(markdownFiles),
 ];
 
 if (errors.length > 0) {
@@ -389,6 +506,6 @@ if (errors.length > 0) {
   process.exitCode = 1;
 } else {
   console.log(
-    `Documentation checked for ${markdownFiles.length} markdown files: links, translation parity, index coverage, and README conventions are consistent.`,
+    `Documentation checked for ${markdownFiles.length} markdown files: links, translation parity, WikiLinks, index coverage, and README conventions are consistent.`,
   );
 }

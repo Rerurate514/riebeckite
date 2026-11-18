@@ -5,20 +5,11 @@ title: Build System
 # Build System
 
 Riebeckite's Build System reads content such as Markdown plus the configuration
-and generates the final web site.
+and generates the final web site. It supports [[incremental-build|incremental builds]]
+that reuse the previous build result and process only what changed.
 
-A normal build roughly performs the following work:
-
-1. Resolve the configuration and plugins
-2. Read content such as Markdown
-3. Run plugin transformations
-4. Decide which pages and links are published
-5. Collect the information the whole site needs
-6. Emit assets such as images and browser-side code
-7. Build the web site with [[framework/honox-integration|HonoX]]
-
-Riebeckite also supports an [[incremental-build|incremental build]] that reuses the previous
-build result and processes only what changed.
+[Data provenance](./build-system/provenance.md) describes the build's inputs,
+transforms, and outputs for observability.
 
 ## In this section
 

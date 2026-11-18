@@ -1,39 +1,33 @@
 ---
 date: 2026-10-06
-title: Separating Content and the Site (In Depth)
+title: Separate content repository
+sidebar.label: Separate content repository
+aliases:
+  - /docs/guides/content-repositories
 ---
-# Separating Content and the Site (In Depth)
+# Separate content repository
 
-[Separating Content from the Site](../content-repositories.md) explains separate-repository operation as a walkthrough. This page is its "in depth" companion: it explains **why the configuration works this way** and covers the cases you dig into later — root resolution, copying assets, authenticating CI, and running submodules.
+This guide explains how to keep articles (Markdown/Obsidian vault) separate from the site (code, configuration, themes) in different repositories.
 
-If you are new, read [separating content from the site](../content-repositories.md) first, and use this page when you want to understand the mechanics or when operations go wrong.
+## What you can do
 
-```mermaid
-flowchart LR
-    Vault["Content repository<br/>Obsidian vault"]
-    Site["Site repository<br/>Riebeckite"]
-    Build["Build"]
-    Output["dist/"]
-    Deploy["Deploy"]
+- Keep articles private while publishing the site publicly
+- Share one vault across multiple sites
+- Decouple article updates from site deployments
+- Manage article and site updates independently
 
-    Vault --> Build
-    Site --> Build
-    Build --> Output
-    Output --> Deploy
-```
+## Suitable scenarios
 
-**Content storage and the Riebeckite application can live in separate places.**
+| Situation | Recommendation |
+|---|---|
+| You do not want articles public | Separate repositories. A private repository keeps the source repository private, but notes with `publish: true` are still published to the public site. Keep `publish: true` off for private notes, and exclude private folders with `content.exclude`. |
+| Articles and site are both fine to publish | Integrated or separate directories. One repository to manage. |
+| You want article updates decoupled from site deployments | Separate repositories. Add a repository-dispatch notification if an articles push must start a deploy; an extra checkout alone only supplies files to a deploy that already started. |
+| You want one vault shared by several sites | Separate repositories, or a layout where the vault lives independently. Keep the vault in one place and have each site reference it read-only. |
 
-## In this section
+## Page guide
 
-- [How it works](./separate-content-repository/concepts.md)
-- [Repository split](./separate-content-repository/repository-split.md)
-- [Publication and verification](./separate-content-repository/publishing.md)
-- [Troubleshooting](./separate-content-repository/troubleshooting.md)
-
-## Further reading
-
-- [Separating Content from the Site](../content-repositories.md) — a step-by-step introduction
-- [Configuration](../../reference/configuration.md) — root resolution and external vaults in detail
-- [Usage Guide](../README.md) — external vault examples and assets
-- Cloudflare deploy template — deployment workflow details
+- [Concepts](./separate-content-repository/concepts.md) — Repository separation concepts, terms, and layout judgment
+- [Setup](./separate-content-repository/setup.md) — Step-by-step setup integrating content-repositories and repository-split. Unified procedures for secret setup, permission settings, and token issuance.
+- [Publishing](./separate-content-repository/publishing.md) — Publication rules and verification. Troubleshooting table referenced from the dedicated troubleshooting page.
+- [Troubleshooting](./separate-content-repository/troubleshooting.md) — Unified troubleshooting table covering common issues with repository separation.

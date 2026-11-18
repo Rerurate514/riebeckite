@@ -8,7 +8,7 @@ sidebar.order: 10
 
 このページは[テーマ作成の詳細](../theme-system.ja.md)の一部で、[[glossary/color-mode|カラーモード]]を扱います。
 
-## 3-1. カラーモード（colorMode）
+## 1. カラーモード（colorMode）
 
 ```ts id="9qfwqg"
 type ThemeColorMode =

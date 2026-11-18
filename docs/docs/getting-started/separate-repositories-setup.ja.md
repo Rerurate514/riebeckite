@@ -287,4 +287,4 @@ Riebeckite の生成するワークフローは GitHub App と PAT のフォー�
 
 - [公開ワークフロー](../guides/deployment/publication-workflow.ja.md)
 - [GitHub Actions](../guides/deployment/github-actions.ja.md)
-- [コンテンツリポジトリ](../guides/content-repositories.ja.md)
+- [コンテンツリポジトリ分離](../guides/deployment/separate-content-repository.ja.md)

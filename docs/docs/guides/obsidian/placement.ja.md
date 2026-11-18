@@ -96,7 +96,7 @@ flowchart LR
 
 Vault をサイトのディレクトリへコピーする必要はありません。
 
-リポジトリ自体も分けたい場合は、[コンテンツとサイトを分ける](../content-repositories.ja.md) を参照してください。
+リポジトリ自体も分けたい場合は、[コンテンツとサイトを分ける](../deployment/separate-content-repository.ja.md) を参照してください。
 
 ## どちらを選ぶ？
 

@@ -8,8 +8,9 @@ sidebar.order: 20
 
 ## Content and rendering flow
 
-Content processing separates the responsibilities of `ContentSource` and
-`ContentManager`.
+For an overview of the content system architecture including `ContentSource`,
+`ContentManager`, pipeline hooks, manifest, and content graph generation, see
+[../content-system/sources.md](../content-system/sources.md).
 
 ```mermaid
 flowchart LR
@@ -29,59 +30,12 @@ flowchart LR
     Plugins["Plugins"] -->|"hooks"| Pipeline
 ```
 
-`ContentSource` discovers and reads source material and supplies source metadata. `ContentManager` interprets that material, resolves each entry's public location, runs the pipeline and plugin hooks, creates the manifest and graph, and coordinates content-related work. Public URLs come from the resolved location (`ContentManager.getContentLocations()`: the Core default resolver, then `resolveContentLocations` plugin hooks); consumers read the resolved `permalink` and never derive a URL from a slug or filesystem path. A feature that needs files should use the source contract rather than adding a second filesystem scanner.
-
-```text
-ContentSource -> ContentManager -> resolve public locations
-                                      |-> parse/process pipeline
-                                      |-> plugin hooks
-                                      |-> manifest and content graph
-                                      `-> integration/application rendering
-```
-
-### ContentSource
-
-`ContentSource` is responsible for "where content comes from and how it is
-read". It supplies source information such as:
-
-- scan
-- read
-- content identity
-- `createdAt`
-- `modifiedAt`
-- size
-- etag
-- hash
-
-A filesystem-backed content source reads files, but `ContentManager` itself
-does not walk the filesystem directly. New content sources are added through
-this contract.
-
-### ContentManager
-
-`ContentManager` processes the content that was read. It is responsible for:
-
-- resolving the public location
-- parse
-- pipeline
-- plugin hooks
-- manifest
-- content graph
-
-The division is:
-
-```text
-ContentSource
-    ↓
-obtain the content
-
-ContentManager
-    ↓
-resolve and process the content
-```
-
-Rather than adding an ad-hoc filesystem scan to `ContentManager`, use the
-`ContentSource` contract.
+`ContentSource` discovers and reads source material and supplies source metadata.
+`ContentManager` interprets that material, resolves each entry's public location,
+runs the pipeline and plugin hooks, and creates the manifest and content graph.
+Consumers read the resolved `permalink` and never derive a URL from a slug or
+filesystem path. For the detailed contracts of these two components, see
+[../content-system/sources.md](../content-system/sources.md).
 
 ## Resolving public URLs
 

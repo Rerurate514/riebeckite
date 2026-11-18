@@ -38,7 +38,7 @@ npm exec riebeckite build
 | Set up deployment? | `Cloudflare Workers`、`GitHub Actions`、`Not now` | 手元で試すなら `Not now` |
 | Install dependencies now? | `Yes` または `No` | `Yes` |
 
-`Separate GitHub repository` を選ぶと content と site のリポジトリ名も入力し、GitHub Actions のデプロイ設定が自動で構成されます。この構成は[content repository ガイド](../../docs/docs/guides/content-repositories.ja.md)に、デプロイの追加方法は [Deployment](../../docs/docs/getting-started/deployment.ja.md) にあります。
+`Separate GitHub repository` を選ぶと content と site のリポジトリ名も入力し、GitHub Actions のデプロイ設定が自動で構成されます。この構成は[content repository ガイド](../../docs/docs/guides/deployment/separate-content-repository.ja.md)に、デプロイの追加方法は [Deployment](../../docs/docs/guides/deployment/README.ja.md) にあります。
 
 ## オプション
 

@@ -10,7 +10,7 @@ router or recalculating public URLs from filesystem paths.
 
 ## Live example
 
-This page is a Docs entry. The Documentation sidebar on the right, the previous/next links below the article, and the [Docs index](/docs/) all come from this plugin.
+This page is a Docs entry. The Documentation sidebar on the left, the previous/next links below the article, and the [Docs index](/docs/) all come from this plugin.
 
 ## Installation
 
@@ -58,8 +58,8 @@ its own property instead of a JSON blob):
 - `sidebar.order` — explicit deterministic order. Missing values sort after ordered
   items by title and path.
 - `sidebar.hidden` — removes the page from sidebar and previous/next navigation.
-- `sidebar.collapsed` — exposes collapsed state through `data-docs-collapsed` for theme
-  or client enhancement.
+- `sidebar.collapsed` — initial collapsed state of the section. `<DocsSidebar>`
+  starts sections collapsed unless this is `false`.
 
 All fields are optional. A page without `sidebar.*` keys still appears in
 the navigation: the hierarchy follows the folder structure, the label falls back
@@ -93,7 +93,7 @@ outside-root content does not appear in the sidebar or previous/next sequence.
 
 ## Exports
 
-- `docs(options)` / `docs(options)` — plugin factory
+- `docs(options)` — plugin factory
 - `buildDocsNavigation(entries, options)` — build the framework-independent model
 - `flattenDocsNavigation(items)` — derive the previous/next sequence
 - `renderDocsSidebar(...)` and `renderDocsPrevNext(...)` — server HTML renderers

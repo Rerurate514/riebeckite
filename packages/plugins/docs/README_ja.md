@@ -10,7 +10,7 @@ Riebeckite の Markdown コンテンツから、Docs 用のサイドバーと前
 
 ## 実行例
 
-このページは Docs のエントリです。右側の Documentation サイドバー、記事下の前後リンク、[Docs の一覧](/ja/docs/) はすべてこのプラグインが生成しています。
+このページは Docs のエントリです。左側の Documentation サイドバー、記事下の前後リンク、[Docs の一覧](/ja/docs/) はすべてこのプラグインが生成しています。
 
 ## インストール
 
@@ -56,7 +56,8 @@ Obsidian のプロパティパネルでもそれぞれ個別のプロパティ�
 - `sidebar.label`: ナビゲーションに表示する名前。未指定なら `title`、さらに未指定ならファイル名。
 - `sidebar.order`: 明示的な並び順。指定のない項目は、`order` を持つ項目の後に、タイトル、パスの順で並びます。
 - `sidebar.hidden`: サイドバーと前後ページリンクから除外します。
-- `sidebar.collapsed`: Theme やクライアント側の拡張で使えるよう、`data-docs-collapsed` として出力します。
+- `sidebar.collapsed`: セクションの初期折り畳み状態。`<DocsSidebar>` は、この値が
+  `false` でない限りセクションを折り畳んだ状態で表示します。
 
 これらのフィールドはすべて任意です。`sidebar.*` キーのないページも
 ナビゲーションに表示されます。階層はフォルダ構造に従い、ラベルは `title`、
@@ -86,7 +87,7 @@ Obsidian のプロパティパネルでもそれぞれ個別のプロパティ�
 
 ## エクスポート
 
-- `docs(options)` / `docs(options)`: プラグインファクトリ
+- `docs(options)`: プラグインファクトリ
 - `buildDocsNavigation(entries, options)`: フレームワークに依存しないナビゲーションモデル
 - `flattenDocsNavigation(items)`: 前後ページリンク用の並び
 - `renderDocsSidebar(...)` / `renderDocsPrevNext(...)`: サーバー側の HTML レンダラー

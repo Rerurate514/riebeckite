@@ -9,7 +9,7 @@ This page is part of [Themes in Depth](../theme-system.md) and covers design tok
 
 # Design tokens
 
-## 3-4. tokens
+## 1. tokens
 
 Themes define the following semantic groups as `--rb-*` CSS custom properties. Core does not define a token type; the names are the stable contract.
 

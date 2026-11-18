@@ -287,4 +287,4 @@ Riebeckite's generated workflow supports the GitHub App and PAT fallback. Schedu
 
 - [Publication Workflow](../guides/deployment/publication-workflow.md)
 - [GitHub Actions](../guides/deployment/github-actions.md)
-- [Content Repositories](../guides/content-repositories.md)
+- [Content Repositories](../guides/deployment/separate-content-repository.md)

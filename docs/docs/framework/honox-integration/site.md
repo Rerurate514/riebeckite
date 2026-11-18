@@ -223,7 +223,7 @@ export interface SiteConfig {
 
 ## Field Usage Across the Site
 
-The fields above flow through the `@riebeckite/honox` integration (`packages/core/src/`) to compose the final public UI. The `title` and `description` appear in `<head>`, `author` and `twitterSite` in social metadata, `baseUrl` in URL generation, and `locale` in the `lang` attribute.
+The fields above are defined in `@riebeckite/core` (`packages/core/src/types/site_config.ts`) and flow through the `@riebeckite/honox` integration (`packages/integrations/honox`) to compose the final public UI. The `title` and `description` appear in `<head>`, `author` and `twitterSite` in social metadata, `baseUrl` in URL generation, and `locale` in the `lang` attribute.
 
 ## Related terms
 

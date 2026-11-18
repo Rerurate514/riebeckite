@@ -3,52 +3,28 @@ date: 2026-10-08
 title: セットアップ
 sidebar.label: セットアップ
 sidebar.order: 20
+aliases:
+  - /ja/docs/guides/content-repositories/setup
+  - /ja/docs/guides/deployment/separate-content-repository/repository-split
 ---
 # セットアップ
 
 ## 別々のリポジトリで運用する手順
 
-### デプロイが起動するまでの流れ
+別々のリポジトリでは、CI が記事を読めることと、記事の更新でデプロイが起動することは別です。content-repositories と repository-split の手順を統合したもので、次の順番で進めます。
 
-別々のリポジトリでは、CI が記事を読めることと、記事の更新でデプロイが起動することは別です。`--github-actions --content-repository <owner/repo> --site-repository <owner/repo>` で生成される構成は、次の順番でつながります。
-
-1. 記事リポジトリの `main` に push する
-2. 記事リポジトリの `notify-site.yml` が、サイトリポジトリへ `content-updated` を送る（GitHub App のトークン、または任意の `SITE_DISPATCH_TOKEN`）
-3. サイトリポジトリのデプロイワークフローが `repository_dispatch` で起動する
-4. サイトをチェックアウトし、記事リポジトリを `content/` へチェックアウトする（プライベートの場合は `RIEBECKITE_CONTENT_READ_TOKEN`）
-5. `riebeckite check` → `riebeckite build` → Cloudflare Workers へデプロイ
-
-```mermaid
-flowchart TD
-    Push["記事リポジトリへの push"]
-
-    Notify["notify-site.yml"]
-    Dispatch["repository_dispatch<br/>content-updated"]
-
-    Deploy["サイトのデプロイワークフロー"]
-    CheckoutSite["サイトのチェックアウト"]
-    CheckoutContent["記事のチェックアウト"]
-
-    Build["riebeckite check<br/>riebeckite build"]
-    Publish["デプロイ"]
-
-    Push --> Notify
-    Notify --> Dispatch
-    Dispatch --> Deploy
-
-    Deploy --> CheckoutSite
-    CheckoutSite --> CheckoutContent
-    CheckoutContent --> Build
-    Build --> Publish
-```
-
-外部チェックアウトは、サイトの CI が記事を読めるようにするだけです。GitHub Actions はワークフローがあるリポジトリのイベントしか拾わないため、別リポジトリの push だけではサイトのワークフローは起動しません。その橋渡しをするのが `notify-site.yml` です。
+1. 記事リポジトリ（Vault）を作る
+2. GitHub Actions のデプロイ設定を生成する
+3. `content.directory` をVaultに向ける
+4. CLI で読み込みを確認する
+5. チェックアウト・起動条件・シークレットを設定する
+6. 日々の運用
 
 ### 0. 用語を確認する
 
-- Vault: 記事（`.md`）と添付ファイルを置くディレクトリ。Obsidian が開く単位です。
-- `publish: true`: ノートを公開する印です。既定の `explicit` では、この印があるノートだけがサイトに出ます。
-- `exclude`: サイトに読み込ませないパターンです。記事リポジトリにあっても、ビルドから外せます。
+- **Vault**: 記事（`.md`）と添付ファイルを置くディレクトリ。Obsidian が開く単位です。
+- **`publish: true`**: ノートを公開する印です。既定の `explicit` では、この印があるノートだけがサイトに出ます。
+- **`exclude`**: サイトが読み込ませないパターンです。記事リポジトリにあっても、ビルドから外せます。
 
 ### 1. 記事リポジトリ（Vault）を作る
 
@@ -67,9 +43,9 @@ git init
 title: はじめまして
 publish: true
 ---
+```
 
 最初のノートです。
-```
 
 OS の一時ファイルや Obsidian のワークスペースの状態を Git で管理したくない場合は、`.gitignore` に追加します。`.obsidian/` 自体をコミットしても構いません。サイト側で読み込み対象から外せます。
 
@@ -121,7 +97,7 @@ workspace/
 
 `content.directory` を `../notes` に変える場合は、CI のチェックアウト先も同じ相対位置になるようワークフローを調整してください。設定だけを変えると、ローカルでは読めても CI では Vault が見つからなくなります。
 
-### 3. `content.directory` を Vault に向ける
+### 3. `content.directory` をVaultに向ける
 
 `my-site/riebeckite.config.ts` で、読み込むディレクトリと除外パターンを指定します。
 
@@ -137,18 +113,16 @@ export default defineConfig({
 ```
 
 - `directory: "content"` は、デプロイワークフローが記事をチェックアウトする場所に合わせています。
-- `exclude` には、公開しないもの、コンテンツとして読み込ませたくないものを指定します。Obsidian の設定（`.obsidian/**`）、テンプレート（`Templates/**`）、非公開ノートのディレクトリ（`private/**`）が典型です。
+- `exclude` には、公開しないもの、コンテンツとして読み込ませたくないものを指定します。Obsidian の設定（`.obsidian/**`）、テンプレート（`Templates/**`）、非公開ノートのディレクトリ（`private/**`）が典型的です。
 
 `exclude` は読み込み自体を止め、`publish: true` などの公開条件は読み込んだノートの扱いを決めます。両方を組み合わせると、公開の境界を二重に設定できます。
 
 ```mermaid
 flowchart LR
     Vault["Vault"]
-
     Vault --> Exclude{"exclude に一致？"}
     Exclude -->|"はい"| Ignore["読み込まない"]
     Exclude -->|"いいえ"| Read["読み込む"]
-
     Read --> Publish{"公開条件を満たす？"}
     Publish -->|"はい"| Public["公開"]
     Publish -->|"いいえ"| Hidden["非公開"]
@@ -180,34 +154,11 @@ npm exec -- riebeckite inspect content --list
 
 記事リポジトリを clone した場合、`content/.github/workflows/notify-site.yml` は配置済みです。記事リポジトリでコミットして push してください。clone していない場合は、生成された `github/notify-site.yml` を記事リポジトリの `.github/workflows/notify-site.yml` へコピーします。記事リポジトリの `main` に push すると、サイトリポジトリへ `content-updated` を送ります。
 
-推奨は GitHub App です。自分のアカウント所有の App を作成し、Webhook を無効にし、**Contents: read and write** と **Metadata: read-only** を付与して、サイトリポジトリだけにインストールします。**記事リポジトリ**に Secret `RIEBECKITE_APP_ID` と `RIEBECKITE_APP_PRIVATE_KEY`（PEM の秘密鍵）を登録します。ワークフローは `actions/create-github-app-token` で短期のインストールトークンを発行し、`createDispatchEvent` を呼びます。長期トークンは保存しません。
+推奨は GitHub App です。自分のアカウント所有の App を作成し、Webhook を無効にし、**Contents: read and write** と **Metadata: read-only** を付与して、サイトリポジトリだけにインストールします。記事リポジトリに Secret `RIEBECKITE_APP_ID` と `RIEBECKITE_APP_PRIVATE_KEY`（PEM の秘密鍵）を登録します。ワークフローは `actions/create-github-app-token` で短期のインストールトークンを発行し、`createDispatchEvent` を呼びます。長期トークンは保存しません。
 
 GitHub App を作れない場合は、記事リポジトリに `SITE_DISPATCH_TOKEN` を設定します。サイトリポジトリだけに権限を絞った Fine-grained PAT なら **Contents: read and write**、Classic PAT なら `repo` スコープが必要です。
 
-GitHub の画面操作を1つずつ確認したい場合は、[リポジトリ分離型セットアップ](../../getting-started/separate-repositories-setup.ja.md)に画面名と入力値をまとめています。
-
-```yaml
-repository_dispatch:
-  types: [content-updated]
-```
-
-プライベートまたは内部の記事リポジトリを使う場合は、サイトリポジトリに `RIEBECKITE_CONTENT_READ_TOKEN` を登録します。Fine-grained PAT なら記事リポジトリだけに絞って **Contents: read** を付与します。公開の記事リポジトリなら、このシークレットは不要です。サイトリポジトリの `GITHUB_TOKEN` では、別のプライベート / 内部リポジトリを読めません。
-
-デプロイ先の Cloudflare Workers 用に、サイトリポジトリへ Secret `CLOUDFLARE_API_TOKEN` と Variable `CLOUDFLARE_ACCOUNT_ID` も登録します。
-
-チェックアウトではコミットを固定しないため、dispatch のたびに記事リポジトリの既定ブランチの最新コミットを読みます。
-
-デプロイの起動方法はほかにもあります。
-
-| 方法 | 記事の push でデプロイされるか | 設定 |
-| --- | --- | --- |
-| 同じリポジトリ | される | `content/` を使い、サイトの `push` で起動する |
-| 別リポジトリ + dispatch | される | 外部チェックアウトと、上記の通知ワークフローを設定する |
-| 別リポジトリ + schedule | 遅れて反映 | サイトのワークフローに `schedule` を追加する。dispatch 用トークンは不要 |
-| 手動実行 | されない | Actions 画面から `workflow_dispatch` を実行する |
-| Git サブモジュール | されない | サイト側のサブモジュール参照を更新して push する |
-
-### 2つのトークンは役割が逆
+#### 2つのトークンは役割が逆
 
 名前は似ていますが、使う向きが逆です。
 
@@ -226,15 +177,13 @@ flowchart LR
     Site -->|"RIEBECKITE_CONTENT_READ_TOKEN<br/>記事を読む"| Content
 ```
 
-### サブモジュールで記事リポジトリを参照する
-
-記事リポジトリをサブモジュールにすることもできます。
+#### サブモジュールで記事リポジトリを参照する
 
 ```sh
 git submodule add git@github.com:<you>/notes.git content
 ```
 
-`content` は記事リポジトリを指すリンクになります。CI で取得するには、ワークフローの `actions/checkout@v4` に `submodules: recursive` を追加します。
+`content` は記事リポジトリへのリンクになります。`riebeckite.config.ts` の `directory` は `content` に合わせます。ワークフローの `actions/checkout@v4` に `submodules: recursive` を追加し、CI が依存関係を取得するようにします。
 
 記事を更新しただけでは、サイト側のサブモジュール参照は変わりません。サイト側でも参照を更新してコミットし、push する必要があります。
 
@@ -246,7 +195,7 @@ git commit -m "記事を更新"
 git push
 ```
 
-記事の push だけで自動デプロイしたい場合は、repository dispatch の方が向いています。
+ With either option, run `riebeckite build` from the site directory. That is why the workflow runs the lockfile-aware install → `npm exec riebeckite check` → `npm exec riebeckite build`.
 
 ### 6. 日々の運用
 

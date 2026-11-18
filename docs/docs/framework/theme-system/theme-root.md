@@ -9,7 +9,7 @@ This page is part of [Themes in Depth](../theme-system.md) and covers the theme 
 
 # Theme root and attributes
 
-## 3-6. Theme root selector
+## 1. Theme root selector
 
 Built-in themes do not target the bare `:root`. Every rule is scoped to the
 theme's identity name so the same stylesheet can style the real document and
@@ -64,7 +64,7 @@ carry the same prefix:
 The app provides `data-rb-theme`; a preview container only needs the
 `.rb-theme-root` hook and the matching name.
 
-## 4. Theme settings and attributes
+## 2. Theme settings and attributes
 
 Theme-specific options are declared in the theme's settings schema; they are not passed as arbitrary attributes in `defineTheme`.
 

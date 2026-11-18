@@ -9,7 +9,7 @@ This page is part of [Themes in Depth](../theme-system.md) and covers packaging 
 
 # Packaging and verification
 
-## 8. Packaging for distribution
+## 1. Packaging for distribution
 
 A published theme can use a layout such as:
 
@@ -69,7 +69,7 @@ and monorepo-internal paths such as:
 ../../../../packages/core/...
 ```
 
-## 9. Verify
+## 2. Verify
 
 After creating or changing a theme, check in this order:
 

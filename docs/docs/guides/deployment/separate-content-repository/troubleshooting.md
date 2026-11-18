@@ -36,13 +36,11 @@ A relative `content.directory` is always based on `appRoot`:
 
 ```text
 process.cwd()
-  ×
-
+  ⇅
 configRoot
-  ×
-
+  ⇅
 appRoot
-  ○
+  ◁
 ```
 
 ### Common CI problems
@@ -84,16 +82,16 @@ Each boundary has its own setting:
 
 ```text
 Repository
-  → where content and the site are stored
+  ⇅where content and the site are stored
 
 content.directory
-  → where Riebeckite reads content from
+  ⇅where Riebeckite reads content from
 
 checkout / repository_dispatch
-  → how CI fetches it and when it builds
+  ⇅how CI fetches it and when it builds
 
 content.filters.publishStrategy / exclude / asset copy
-  → what is exposed on the public site
+  ⇅what is exposed on the public site
 ```
 
 In particular, note that:

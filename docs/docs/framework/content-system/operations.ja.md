@@ -90,5 +90,5 @@ flowchart LR
 
 - [設定](../../reference/configuration.ja.md)
 - [プラグイン API](../../reference/plugin-api.ja.md)
-- [コンテンツリポジトリ](../../guides/content-repositories.ja.md)
+- [コンテンツリポジトリ分離](../../guides/deployment/separate-content-repository.ja.md)
 - [コンテンツリポジトリの分離](../../guides/deployment/separate-content-repository.ja.md)

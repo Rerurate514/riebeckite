@@ -29,4 +29,4 @@ hreflang の形式は BCP 47に従い、`en`、`ja`、`en-US`、`zh-CN` など�
 <link rel='alternate' hreflang='ja' href='https://example.com/ja/docs/hello/'>
 ```
 
-これは[[seo|SEO プラグイン]]と組み合わせて、検索エンジン最適化のための言語別の代替 URL を提供します。
+これは[../plugins/seo.ja.md SEプラグイン]と組み合わせて、検索エンジン最適化のための言語別の代替 URL を提供します。

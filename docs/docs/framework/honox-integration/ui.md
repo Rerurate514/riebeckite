@@ -11,9 +11,10 @@ component framework. Its public component surface is:
 
 - `Article`, `ArticleLayout`, `ArticleHeader`, `ArticleContent`,
   `ArticleBody`, `PageBody`, `ArticleMeta`, `ArticleFooter`, `Sidebar`,
-  `HtmlFragment`, `ThemeRoot`, `PluginHeadTags`, `RiebeckiteHead` for page head
-  and metadata;
-- `Sidebar` for complementary content.
+  `HtmlFragment`, `ThemeRoot`, `PluginHeadTags`, `RiebeckiteHead`, `SeoHead`
+  for page structure, head, and metadata;
+- `getThemeStyle`, `getThemeStylesheets`, `themeRootAttributes` for theme
+  attributes.
 
 The corresponding `*Props` types are internal; use `ComponentProps<typeof Article>` and similar helpers when you need a component's prop type.
 

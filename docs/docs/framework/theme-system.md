@@ -12,12 +12,12 @@ If you are new, read [your first theme](../themes/writing-a-theme.md) first, and
 
 ## How this page is organized
 
-- [Color mode](./theme-system/color-mode.md)
-- [Typography and article layout](./theme-system/typography.md)
-- [Design tokens](./theme-system/tokens.md)
-- [Theme root and attributes](./theme-system/theme-root.md)
-- [Stable CSS hooks and the cascade](./theme-system/css.md)
-- [Packaging and verification](./theme-system/distribution.md)
+1. [Color mode](./theme-system/color-mode.md)
+2. [Typography and article layout](./theme-system/typography.md)
+3. [Design tokens](./theme-system/tokens.md)
+4. [Theme root and attributes](./theme-system/theme-root.md)
+5. [Stable CSS hooks and the cascade](./theme-system/css.md)
+6. [Packaging and verification](./theme-system/distribution.md)
 
 ## 1. What a theme can and cannot do
 
@@ -112,7 +112,7 @@ export default defineConfig({
 
 The call accepts `ThemeOptions`: `colorMode`, `layout`, `preset`, `settings`, and `stylesheets`. Resolution order is schema defaults, then a preset, then explicit settings.
 
-### 2-1. In-site themes
+### In-site themes
 
 A theme does not have to be published. Compose an existing theme or define one directly with `defineTheme`, then pass it to `theme`. A theme can live in the site:
 
@@ -137,7 +137,7 @@ export const localTheme = defineTheme({
 
 An in-site theme uses the same `defineTheme` definition and resolution path as a published theme.
 
-## 7. Theme-specific settings
+## 3. Theme-specific settings
 
 Do not grow Core's `ThemeOptions` with theme-specific fields. Declare them in the theme's settings schema instead.
 
@@ -226,6 +226,5 @@ Client Behavior
 ## Further reading
 
 - [Your First Theme](../themes/writing-a-theme.md) — a step-by-step introduction
-- [Theme System](./theme-system.md) — the conceptual contracts
 - [Plugin System](./plugin-system.md) — the boundary with themes (features = plugins)
 - [Framework Reference](../reference/README.md) — public APIs like `defineTheme`

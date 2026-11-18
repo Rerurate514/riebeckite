@@ -42,7 +42,7 @@ title: Obsidian Syntax
 ### Source
 
 ````md
-A WikiLink to [[README]] and to [[plugins/README|Plugin catalog]].
+A WikiLink to ../../plugins/README.md and to [[plugins/README|Plugin catalog]].
 
 A note embed:
 
@@ -55,7 +55,7 @@ An image embed:
 
 ### Rendered
 
-A WikiLink to [[README]] and to [[plugins/README|Plugin catalog]].
+A WikiLink to ../../plugins/README.md and to [[plugins/README|Plugin catalog]].
 
 A note embed:
 

@@ -83,7 +83,7 @@ The default language keeps Core's resolved URL (`/about`); other languages are p
 
 No fallback pages are generated. `getLocalization(manifest, slug)` returns `availableLanguages` and language-to-href `translations` only for notes that exist; `getLocalizedContent(manifest, slug, lang)` returns `null` for a missing translation.
 
-`l10n(...)` publishes the built-in, styled LanguageSwitcher in the standard article layout. A standard Site consumer renders that, so no l10n-specific article integration is needed. It is omitted when a page has fewer than two real translations.
+The plugin ships a built-in, styled `LanguageSwitcher` site component. It does not inject itself into the article layout — render it explicitly where the switcher should appear, as this site's article template does. It renders nothing when a page has fewer than two real translations.
 
 ## CSS hooks
 

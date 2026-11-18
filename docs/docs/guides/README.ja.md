@@ -45,7 +45,7 @@ Markdown と frontmatter を中心に、Riebeckite で記事を書くための�
 
 ### コンテンツとサイトを分ける
 
-[コンテンツとサイトを分ける](./content-repositories.ja.md)
+[コンテンツとサイトを分ける](./deployment/separate-content-repository.ja.md)
 
 サイトのアプリケーションと Markdown のコンテンツを、別のリポジトリで管理する構成を説明します。
 
@@ -137,8 +137,10 @@ Riebeckite のパッケージを新しいバージョンへ更新する手順と
 | やりたいこと | ページ |
 | --- | --- |
 | Markdown で記事を書く | [記事の書き方ガイド](./writing-content.ja.md) |
+| コンテンツの変更と移行 | [コンテンツ変更](../framework/content-mutation.ja.md) / [コンテンツ移行](../framework/content-migration.ja.md) |
 | Obsidian Vault を公開する | [Obsidian のノートをサイトにする](./obsidian.ja.md) |
-| コンテンツとサイトを別リポジトリにする | [コンテンツとサイトを分ける](./content-repositories.ja.md) |
+| SPA ナビゲーションを有効にする | [SPAナビゲーション](./spa-navigation.ja.md) |
+| コンテンツとサイトを別リポジトリにする | [コンテンツとサイトを分ける](./deployment/separate-content-repository.ja.md) |
 | 多言語サイトにする | [多言語サイト](./localization.ja.md) |
 | ローカルのエディタツールを連携する | [エディタ連携](./editor-integration.ja.md) |
 | Analytics を導入する | [アクセス解析](./analytics.ja.md) |
@@ -150,6 +152,7 @@ Riebeckite のパッケージを新しいバージョンへ更新する手順と
 | GitHub Actions で自動デプロイする | [GitHub Actions](./deployment/github-actions.ja.md) |
 | コンテンツとサイトを分けた構成を自動デプロイする | [コンテンツとサイトを分ける（詳細版）](./deployment/separate-content-repository.ja.md) |
 | Riebeckite をアップグレードする | [Riebeckite をアップグレードする](./upgrading.ja.md) |
+| ローカルプラグインを開発する | [ローカルプラグインの開発](./local-plugin-development.ja.md) |
 
 ## 次に参照する章
 

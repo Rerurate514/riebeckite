@@ -11,7 +11,7 @@ sidebar.collapsed: true
 
 この章で説明する境界の背景にある原則は [設計思想](../philosophy.ja.md) にあります。この章は現在の実装を、設計思想はなぜそうするのかを説明します。
 
-この章のうち次の 3 ページは、利用者向けの概要から始まり、Framework の残りを読まなくても役立ちます。[コンテンツ変更](./content-mutation.ja.md) は安全なコンテンツ書き込み、[コンテンツ移行](./content-migration.ja.md) はバージョン付きの一括変更、[Interactive Runtime](./interactive-runtime.ja.md) はブラウザー側の Plugin UI を扱います。概要を読んだあと、必要なら内部実装へ進んでください。
+この章のうち次の 3 ページは、利用者向けの概要から始まり、Framework の残りを読まなくても役立ちます。[コンテンツ変更](./content-mutation.ja.md)は安全なコンテンツ書き込み、[コンテンツ移行](./content-migration.ja.md)はバージョン付きの一括変更、[Interactive Runtime](./interactive-runtime.ja.md)はブラウザー側の Plugin UIを扱います。概要を読んだあと、必要なら内部実装へ進んでください。
 
 対象となるのは、
 
@@ -26,9 +26,7 @@ Riebeckite を使って自分のサイトを作りたいだけなら、この章
 ```mermaid
 flowchart LR
     Start["Riebeckiteを使いたい"]
-
     Start --> Q{"何をしたい？"}
-
     Q -->|"サイトを作る"| GettingStarted["Getting Started"]
     Q -->|"仕組みを理解する"| Framework["Framework"]
     Q -->|"Riebeckite本体を開発する"| Framework
@@ -36,8 +34,7 @@ flowchart LR
     Framework --> Architecture["Architecture"]
     Framework --> Development["Development"]
 ```
-
-## どこから読む？
+で読む？
 
 目的に合わせて、必要なページだけ読めます。
 
@@ -71,7 +68,7 @@ flowchart LR
 | 開発サーバー起動時間の規模別計測 | [起動時間の規模別計測](./development/startup-scaling.ja.md) |
 | 変更エントリ、リリース手順、GitHub Releases | [リリース作業](./release.ja.md) |
 
-## 最初に内部構造を理解したい場合
+最初に内部構造を理解したい場合
 
 まず [Architecture](./architecture.ja.md) を読むのがおすすめです。
 
@@ -84,7 +81,6 @@ flowchart BT
     Plugin["Plugin"]
     Theme["Theme"]
     Core["Core"]
-
     App --> Integration
     Integration --> Core
     Plugin --> Core
@@ -95,7 +91,7 @@ flowchart BT
 
 Architecture を読んだあと、変更したい領域に応じて Content System、Plugin System、Theme System などへ進むと理解しやすくなります。
 
-## Riebeckite 本体を開発する場合
+Riebeckite 本体を開発する場合
 
 Riebeckite repository を clone して Framework 自体を変更する場合は、[Development](./development.ja.md) を参照してください。
 
@@ -137,3 +133,41 @@ Riebeckite を使ってサイトを作る
 といった通常の利用方法は [Getting Started](../getting-started/README.ja.md) や Guides で説明します。
 
 この境界を分けることで、Riebeckite を使うだけの人が フレームワーク内部の知識を覚えなくてもサイトを作れるようにしています。
+
+## Responsibility boundaries
+
+- **Core** owns content-processing contracts and orchestration. It does not depend on HonoX, Vite, a specific plugin, or a theme.
+- **Plugins** extend Markdown, HTML, metadata, assets, client behavior, endpoints, SEO, diagnostics, and graph behavior.
+- **Themes** own appearance: tokens, CSS, stable-hook styling, and theme settings reflected as `data-rb-setting-*` attributes.
+- **Integrations** connect Core to a web framework and bundler. The current supported adapter is HonoX/Vite.
+- **Applications** hold site-specific routes, components, and islands.
+- **CLI** is build-time tooling. Runtime Cloudflare Workers code must not access build state or filesystem caches.
+## For repository development
+
+The Riebeckite monorepo clone workflow is intentionally here, not in Getting Started. Use it only when you are changing Riebeckite itself: [Development](./development.md).
+
+Development covers, among other things:
+
+- cloning the monorepo
+- `pnpm install`
+- the root `pnpm` commands
+- the layout of `packages/*`
+- `website`
+- per-package tests
+- scaffold and external-site verification
+
+```text
+Develop the Riebeckite repository itself
+    → Framework / Development
+
+Build a site with Riebeckite
+    → Getting Started
+```
+
+`website` is Riebeckite's documentation and reference application. General users do not need to copy `website` or clone the Riebeckite monorepo to use Riebeckite.
+
+## The boundary of this chapter
+
+The Framework chapter covers Riebeckite's **internal design and framework development**. Normal usage — creating a site, adding content, configuring plugins and themes, and deploying — is described in [Getting Started](../getting-started/README.ja.md) and Guides.
+
+Keeping this boundary separate lets people who only want to build a site with Riebeckite do so without learning the internals of the framework.

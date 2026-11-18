@@ -23,7 +23,7 @@ Getting a first site running goes: **Quick Start → Installation → First Cont
 | Choose which `create-riebeckite` preset to use | [Presets](./docs/getting-started/presets.md) |
 | Write and organize articles | [Guides / Writing content](./docs/guides/writing-content.md) |
 | Publish an Obsidian vault | [Guides / Obsidian](./docs/guides/obsidian.md) |
-| Keep content and site in separate repositories | [Guides / Content repositories](./docs/guides/content-repositories.md) |
+| Keep content and site in separate repositories | [Guides / Separate content repository](./docs/guides/deployment/separate-content-repository.md) |
 | Build a multilingual site | [Guides / Localization](./docs/guides/localization.md) |
 | Deploy to Cloudflare Workers / GitHub Actions | [Guides / Deployment](./docs/guides/deployment/README.md) |
 | Upgrade Riebeckite or read migration notes | [Guides / Upgrading](./docs/guides/upgrading.md) |

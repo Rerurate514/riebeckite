@@ -3,6 +3,8 @@ date: 2026-10-06
 title: How it works
 sidebar.label: How it works
 sidebar.order: 10
+aliases:
+  - /docs/guides/content-repositories/basics
 ---
 # How it works
 
@@ -73,19 +75,14 @@ In other words, "the same vault from anywhere" holds as long as **the config is 
 
 ### Reading content from the application side
 
-The integration exposes the resolved config and a ready `ContentManager` as
-framework-owned modules, so application code imports them rather than
-re-reading `riebeckite.config.ts`:
+The integration exposes the resolved config and a ready `ContentManager` as framework-owned modules, so application code imports them rather than re-reading `riebeckite.config.ts`:
 
 ```ts
 import { config } from "virtual:riebeckite/config";
 import { content } from "virtual:riebeckite/content";
 ```
 
-`config.content.directory` is already absolute, so resolving it again against
-another base is a common source of errors. A script that runs outside Vite can
-resolve the same values with `resolveHonoxConfig` from
-`@riebeckite/honox/runtime`.
+`config.content.directory` is already absolute, so resolving it again against another base is a common source of errors. A script that runs outside Vite can resolve the same values with `resolveHonoxConfig` from `@riebeckite/honox/runtime`.
 
 ### What not to do
 
@@ -97,13 +94,13 @@ The rule of thumb:
 
 ```text
 Do not use
-  → process.cwd()
+  ⇅ process.cwd()
 
 Base
-  → appRoot
+  ⇅ appRoot
 ```
 
-## The three layouts
+### The three layouts
 
 | Layout | Structure | Choose it when | Deployment consideration |
 | --- | --- | --- | --- |
@@ -111,42 +108,42 @@ Base
 | Separate directories | `site/` and `vault/` side by side in one repository | You share history but want locations and visibility apart | Set `content.directory: "../vault"` on the site side |
 | Separate repositories (recommended) | Site and articles in separate repositories | You want articles private or updates decoupled | CI needs setup to fetch the articles repository |
 
-### Integrated layout
+#### Integrated layout
 
 ```text
 blog/
-├─ riebeckite.config.ts     ← appRoot (directory: "content")
+├─ riebeckite.config.ts     ⇅appRoot (directory: "content")
 ├─ app/
 ├─ public/
-└─ content/                 ← articles live here
+└─ content/                 ⇅articles live here
    └─ index.md
 ```
 
 The simplest option, and exactly what `create-riebeckite` generates. Article visibility matches the repository.
 
-### Separate directories layout
+#### Separate directories layout
 
 ```text
 notes-repo/
-├─ site/                ← appRoot (contains riebeckite.config.ts)
-│  └─ riebeckite.config.ts
-└─ vault/               ← referenced by directory: "../vault"
+├─ site/                ⇅appRoot (contains riebeckite.config.ts)
+├─ riebeckite.config.ts
+└─ vault/               ⇅referenced by directory: "../vault"
 ```
 
 One repository and one history, with the locations split. [[glossary/visibility|Visibility]] is still per repository, as in the integrated layout. The only change from the integrated layout is `content.directory: "../vault"`.
 
-### Sharing one vault across several sites
+#### Sharing one vault across several sites
 
 An extension of the separate-repositories layout: keep the vault in its own place and have several sites reference it.
 
 ```text
 workspace/
-├─ notes/           ← shared vault (its own private repository)
-├─ blog/            ← site 1 (directory: "../notes")
-└─ docs/            ← site 2 (directory: "../notes")
+├─ notes/           ⇅shared vault (its own private repository)
+├─ blog/            ⇅site 1 (directory: "../notes")
+└─ docs/            ⇅site 2 (directory: "../notes")
 ```
 
-Treat the vault as read-only source data and vary `exclude`, `content.filters.publishStrategy`, and plugins per site. No site writes back, so the same notes can be published in different shapes. Deploy each site independently, giving each CI the additional checkout described in [Fetching content is separate from triggering a deployment](./repository-split.md#fetching-content-is-separate-from-triggering-a-deployment).
+Treat the vault as read-only source data and vary `exclude`, `content.filters.publishStrategy`, and plugins per site. No site writes back, so the same notes can be published in different shapes. Deploy each site independently, giving each CI the additional checkout described in [Setup](./setup.md#5-set-up-checkout-trigger-and-secrets) or [Troubleshooting](./troubleshooting.md#common-ci-problems).
 
 ```mermaid
 flowchart TD
@@ -163,7 +160,7 @@ Each site can set `exclude`, `content.filters.publishStrategy`, plugins, theme, 
 
 ### Decision flow
 
-1. You want articles private, or updates decoupled → **separate repositories**.
-2. Articles and site can share visibility → next.
-3. You only want locations and settings apart → **separate directories**. You want one repository → **integrated**.
-4. You want one vault for several sites → **separate repositories + shared vault**.
+1. You want articles private, or updates decoupled ⇅**separate repositories**.
+2. Articles and site can share visibility ⇅next.
+3. You only want locations and settings apart ⇅**separate directories**. You want one repository ⇅**integrated**.
+4. You want one vault for several sites ⇅**separate repositories + shared vault**.

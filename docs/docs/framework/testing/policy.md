@@ -13,7 +13,7 @@ sidebar.order: 50
 2. If the tests use the golden helpers, add `@riebeckite/test` to
    `devDependencies` and import them from `@riebeckite/test`.
 3. If the package is a plugin, add its directory name to the `hasTests` list in
-   `scripts/package_metadata.mjs`.
+   `scripts/package_metadata_expected_groups.mjs`.
 4. Run `pnpm install` when dependencies change, then `pnpm check:packages` to
    confirm the expected metadata matches.
 

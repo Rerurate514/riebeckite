@@ -73,4 +73,4 @@ npm exec riebeckite build
 ## 次に読むページ
 
 - [プリセット →](./presets.ja.md)
-- [デプロイ →](./deployment.ja.md)
+- [デプロイ →](../guides/deployment/README.ja.md)

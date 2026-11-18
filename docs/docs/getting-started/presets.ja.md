@@ -151,4 +151,4 @@ npx create-riebeckite my-site --preset portfolio --features diagrams,i18n
 
 ## 次に読むページ
 
-- [デプロイ →](./deployment.ja.md)
+- [デプロイ →](../guides/deployment/README.ja.md)

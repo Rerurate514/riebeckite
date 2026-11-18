@@ -151,4 +151,4 @@ Presets do not control project files. `create-riebeckite` writes an independent 
 
 ## Next
 
-- [Deployment →](./deployment.md)
+- [Deployment →](../guides/deployment/README.md)

@@ -41,7 +41,7 @@ The search plugin is registered during site setup and provides the search UI int
 
 - [[content-index|Content Index]]
 - [[content-query|Content Query]]
-- [[manifest|Manifest]]
+- ./manifest.md
 
 ## Learn more
 

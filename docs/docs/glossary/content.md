@@ -70,8 +70,8 @@ Example entry structure:
 
 - [[content-source|Content Source]]
 - [[content-entry|Content Entry]]
-- [[permalink|Permalink]]
-- [[manifest|Manifest]]
-- [[content-graph|Content Graph]]
-- [[taxonomy|Taxonomy]]
-- [[series|Series]]
+- ./permalink.md
+- ./manifest.md
+- ./content-graph.md
+- ./taxonomy.md
+- ./series.md

@@ -73,4 +73,4 @@ If a page does not appear, first confirm that the dev server is running, the fil
 ## Next
 
 - [Presets →](./presets.md)
-- [Deployment →](./deployment.md)
+- [Deployment →](../guides/deployment/README.md)

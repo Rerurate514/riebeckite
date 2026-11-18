@@ -21,7 +21,7 @@ sidebar.order: 30
 | GitHub アカウント | GitHub Actions で自動デプロイするときに使う |
 | Cloudflare アカウント | デプロイするときに使う |
 
-`npm` は Node.js に同梱されているため、別途インストールする必要はありません。Git と GitHub アカウントは任意で、リポジトリ履歴と自動デプロイに使います。手元から Cloudflare へ直接公開する場合は、後から用意しても構いません。詳しくは [デプロイ](./deployment.ja.md) を参照してください。
+`npm` は Node.js に同梱されているため、別途インストールする必要はありません。Git と GitHub アカウントは任意で、リポジトリ履歴と自動デプロイに使います。手元から Cloudflare へ直接公開する場合は、後から用意しても構いません。詳しくは [デプロイ](../guides/deployment/README.ja.md) を参照してください。
 
 次のコマンドで、ツールが使えることを確認します。
 
@@ -46,8 +46,8 @@ npx create-riebeckite
 2. **What would you like to build?**（[[glossary/preset|プリセット]]）：サイトの構成。迷ったら `Starter site`（`starter` プリセット）のまま。比較は [プリセット](./presets.ja.md)
 3. **Add optional feature packs?**：追加のプラグインを入れる機能パックを選ぶ場合は `Yes`。既定は `No` です。非対話で追加する場合は `--features <names>` を使用します。[プリセット](./presets.ja.md) で利用可能な packs を参照してください
 4. **Customize extra project files?**：エディタやツール用の生成ファイルを変える場合は `Yes`。既定の `No` でも既定のプロジェクトファイルは生成されます
-5. **Where will you write content?**：`This project` は `content/` をサイト内に置く最も簡単な形です。`Separate directory in this repository` はアプリの隣に Vault を置きます。`Separate GitHub repository` は既存の Vault 向けの高度な構成です。詳細は [Content Repositories](../guides/content-repositories.ja.md)
-6. **Set up deployment?**：`Cloudflare Workers`、`GitHub Actions`、`Not now` から選びます。`Cloudflare Workers` はインストール後に `Deploy now?` と確認されるため、その場で初回公開まで進められます。`GitHub Actions` は `main` への push ごとの自動公開です。`Not now` はデプロイの設定を省略します。詳細は [デプロイ](./deployment.ja.md)
+5. **Where will you write content?**：`This project` は `content/` をサイト内に置く最も簡単な形です。`Separate directory in this repository` はアプリの隣に Vault を置きます。`Separate GitHub repository` は既存の Vault 向けの高度な構成です。詳細は [Content Repositories](../guides/deployment/separate-content-repository.ja.md)
+6. **Set up deployment?**：`Cloudflare Workers`、`GitHub Actions`、`Not now` から選びます。`Cloudflare Workers` はインストール後に `Deploy now?` と確認されるため、その場で初回公開まで進められます。`GitHub Actions` は `main` への push ごとの自動公開です。`Not now` はデプロイの設定を省略します。詳細は [デプロイ](../guides/deployment/README.ja.md)
 7. **Install dependencies now?**：既定は `Yes` です。生成したプロジェクトを確認してからインストールしたいときは `No` を選びます。
 
 プロンプトに答える代わりに、コマンドラインで同じ設定を渡すこともできます。
@@ -81,7 +81,7 @@ npm install
 | `riebeckite.config.ts` | サイト名、URL、言語、[[glossary/theme|テーマ]]、[[glossary/plugin|プラグイン]]の設定。最初に編集するファイル |
 | `content/` | Markdown を置く場所 |
 | `app/` | 生成サイトの見た目とルーティング。主に `routes/` と `components/` を編集する |
-| `public/` | そのままコピーされた静的ファイル：`favicon.ico` と `riebeckite-logo.png`。同梱の favicon とヘッダーロゴはプレースホルダーなので、サイトのブランドに合わせて置き換えてください。`starter` プリセットはリンクプレビュー（OG）画像を生成しませんが、`blog` プリセットは生成します。[サイトのアイコンとロゴ](../guides/branding.ja.md) を参照してください |
+| `public/` | そのままコピーされた静的ファイル：`favicon.ico` と `riebeckite-logo.png`。同梱の favicon とヘッダーロゴはプレースホルダーなので、サイトのブランドに合わせて置き換えてください。`starter` プリセットはリンクプレビュー（OG）画像を生成しませんが、`blog` と `writer` プリセットは生成します。[サイトのアイコンとロゴ](../guides/branding.ja.md) を参照してください |
 | `vite.config.ts` | ビルド設定。通常は変更しない |
 | `package.json` | 依存パッケージと `riebeckite` コマンド |
 | `pnpm-workspace.yaml` | pnpm 専用。pnpm が既定でスキップするビルドスクリプト（esbuild、puppeteer、sharp）を承認する。npm は読まない |
@@ -112,7 +112,7 @@ my-site/
 └─ dist/                  本番ビルドの出力（build 後）
 ```
 
-コンテンツを別リポジトリに分ける構成は、必要になってから [Content Repositories](../guides/content-repositories.ja.md) を読めば十分です。
+コンテンツを別リポジトリに分ける構成は、必要になってから [Content Repositories](../guides/deployment/separate-content-repository.ja.md) を読めば十分です。
 
 ## サイト設定を確認する
 

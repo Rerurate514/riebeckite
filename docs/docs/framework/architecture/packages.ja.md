@@ -154,3 +154,22 @@ riebeckite profile
 ```
 
 CLI は必要に応じて Core やインテグレーションの機能を呼び出します。
+
+## 共有パッケージ
+
+上記の領域に加え、次の共有パッケージがフレームワークとプラグインを支えています。
+
+| パッケージ | 役割 |
+| --- | --- |
+| `@riebeckite/spa` | Riebeckite サイト向けのオプトイン SPA ナビゲーション実行環境。 |
+| `@riebeckite/ui` | 任意で利用するヘッドレス UI プリミティブ、アクセシビリティのビヘイビア、共有コンテキスト。 |
+| `@riebeckite/runtime` | メインスレッド、Worker、WASM Worker、サンドボックス iframe 実行向けの型付きインタラクティブ実行契約。 |
+| `@riebeckite/node` | Riebeckite 向けの Node.js アダプター。 |
+| `@riebeckite/diagnostics` | CLI とインテグレーションで共有する開発用診断。 |
+| `@riebeckite/preview` | 共有の安全な Markdown プレビュー実行環境。 |
+| `@riebeckite/dev-inspector` | Riebeckite サイト向けの開発用インスペクターオーバーレイ。 |
+| `@riebeckite/graph` | 共有の力学グラフエンジン、フィルター、グループ、設定。 |
+| `@riebeckite/diagram` | ダイアグラムプラグイン向けの共有基盤。 |
+| `@riebeckite/test` | 共有テストユーティリティと汎用の外部サイト E2E エンジン。 |
+| `create-riebeckite` | 公式スターターテンプレートから新しい Riebeckite サイトを作成する。 |
+| `packages/integrations/*` | フレームワーク、バンドラー、プラットフォームのアダプター（`@riebeckite/honox`、`@riebeckite/analytics-cloudflare`、`@riebeckite/webmention-cloudflare` など）。 |

@@ -158,7 +158,7 @@ The forms below are rendered by this site.
 > [!quote] Quote
 > A quote callout.
 
-**WikiLinks and fragments.** A link to [[README]], an aliased link to [[plugins/README|the Plugin catalog]], and a heading link to [[plugins/showcase/inline#Inline]].
+**WikiLinks and fragments.** A link to ./README.md, an aliased link to [[plugins/README|the Plugin catalog]], and a heading link to [[plugins/showcase/inline#Inline]].
 
 **Embeds.** A note embed and an image embed:
 

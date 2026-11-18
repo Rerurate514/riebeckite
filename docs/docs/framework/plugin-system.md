@@ -165,7 +165,6 @@ and the Application.
 ## Further reading
 
 - [Your First Plugin](../plugins/writing-a-plugin.md) — a step-by-step introduction
-- [Plugin System](./plugin-system.md) — all extension points in detail
 - [Plugin API](../reference/plugin-api.md) — the API contract
 - [Page System](./page-system.md) — standalone pages
 - [Content System](./content-system.md) — Manifest / Graph / pipeline contracts

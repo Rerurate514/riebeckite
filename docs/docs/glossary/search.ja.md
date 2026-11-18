@@ -41,7 +41,7 @@ const japanese = searchItems(items, "plugin", { language: "ja" });
 
 - [[content-index|Content Index]]
 - [[content-query|Content Query]]
-- [[manifest|Manifest]]
+- ./manifest.ja.md
 
 ## さらに詳しく
 

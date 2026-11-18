@@ -47,6 +47,11 @@ The Unreleased section lists changes that are merged but not yet published to np
 - The properties panel keeps its value column wide enough for short values, so a tag no longer collapses into a narrow oval in the portfolio preset's reading rail.
   Packages: `@riebeckite/plugin-properties`
 
+### Security
+
+- Update the Vite development server dependency to a patched release that removes a critical request-handling vulnerability allowing arbitrary code execution.
+  Packages: `@riebeckite/cli`, `@riebeckite/dev-inspector`, `@riebeckite/honox`
+
 ## 0.0.51 - 2026-11-17
 
 > **Breaking changes are included.** Read the migration notes before upgrading.

@@ -36,15 +36,15 @@ Core, Plugin, Theme, Integration, and Application have distinct responsibilities
 
 When values pull in different directions, Riebeckite decides in this order. Overturning a default requires evidence such as measurements, tests, or migration steps.
 
-- **Obsidian compatibility over custom extensions**: Existing notes should work as written, so extra syntax ships as plugins within what standard Markdown can still read.
-- **Correctness and reproducibility over build speed**: If an incremental build is uncertain, Riebeckite falls back to a full build. Security and the publication boundary are constraints that always hold.
-- **Long-term maintainability over pre-1.0 API stability**: During `0.x`, fixing the design takes priority, and every breaking change records its migration steps (SemVer applies from 1.0 onward).
+- Obsidian compatibility comes before custom extensions. Extra syntax ships as plugins within what standard Markdown can still read, so existing notes work as written.
+- Correctness and reproducibility come before build speed. If an incremental build is uncertain, Riebeckite falls back to a full build. Security and the publication boundary are constraints that always hold.
+- Long-term maintainability comes before pre-1.0 API stability. During `0.x`, design fixes come first, and every breaking change records its migration steps (SemVer applies from 1.0 onward).
 
 ## Non-goals
 
-- **Replacing Obsidian or web standards**: Riebeckite does not rebuild the editor or hide HonoX, Vite, and CSS behind a custom template language.
-- **Running a hosted CMS**: Riebeckite is not a service that keeps articles inside a browser admin panel and a database; it is a framework for publishing file-based notes.
-- **Putting every feature in Core**: Search, graphs, OG images, and similar features live in plugins.
+- Riebeckite does not aim to replace Obsidian or web standards. It does not rebuild the editor or hide HonoX, Vite, and CSS behind a custom template language.
+- Riebeckite does not run a hosted CMS. It does not lock articles inside a browser admin panel and a database; it is a framework for publishing file-based notes.
+- Riebeckite does not put every feature in Core. Search, graphs, OG images, and similar features live in plugins.
 
 ## Related Documentation
 

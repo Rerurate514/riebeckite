@@ -50,6 +50,8 @@ It composes with the `permalink` plugin. `alias` augments already-resolved publi
 plugins: [permalink(), alias()],
 ```
 
+When the site localizes content (the `l10n` plugin), `alias` runs after localization and claims each alias under the note's language prefix: the same `aliases` value in a Japanese note resolves to `/ja/…`, while its English counterpart keeps the bare path, and the two never collide.
+
 ## Options
 
 | Option | Type | Default | Description |
@@ -77,20 +79,21 @@ An alias is treated as an alternate note name and mapped to a path under the sit
 | Code | Severity | Meaning |
 | --- | --- | --- |
 | `alias-invalid` | warning | The alias cannot be converted into a URL path. |
-| `alias-collision` | warning | The alias path collides with another note's canonical permalink or an existing redirect. |
+| `alias-collision` | warning | The alias path collides with another note's canonical permalink or an existing redirect (within the same language). |
 | `alias-too-long` | warning | The alias has a path segment longer than `maxSegmentLength`. |
 
-A colliding alias is not registered; the existing path wins.
+A colliding alias is not registered; the existing path wins. On localized sites the check runs on language-prefixed paths, so translations of the same note can reuse the same alias value. The canonical path of a note marked `private: true` is claimable, because a private note never publishes.
 
 ## Limitations
 
 - Redirects are decided at build time; add or change aliases and rebuild the site.
 - SSG emits a redirect HTML page (a meta refresh) for each public redirect, including aliases. The same redirects are also resolved by the server (`resolveContentRoute` in HonoX) during development and request handling.
 - Aliases are not part of the content graph (backlinks); only links written in the Markdown count.
+- Only `private: true` frees a path for aliases; paths owned by drafts or by notes unpublished under an explicit `publish` strategy stay reserved.
 
 ## Exports
 
-- `alias(options?)` / `alias(options?)` — the plugin factory
+- `alias(options?)` — the plugin factory
 - `resolveAliasPath(alias)` — pure alias-to-path helper (returns `null` when invalid)
 - Types: `AliasOptions`, `AliasRedirectStatus`, `ResolvedAliasOptions`
 

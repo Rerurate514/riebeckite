@@ -1,4 +1,5 @@
 import {
+  type ContentPublicLocation,
   definePlugin,
   extractFrontmatterAliases,
   type PluginContentLocationAugmentContext,
@@ -29,6 +30,9 @@ export function alias(options: AliasOptions = {}) {
   const resolved = resolveAliasOptions(options);
   return definePlugin({
     name: "alias",
+    // Localization finalizes permalinks and redirect paths (language prefixes),
+    // so alias paths must be claimed and checked against the localized paths.
+    optional: ["content.localization"],
     extendContentLocations: (context) => {
       applyAliases(context, resolved);
     },
@@ -46,9 +50,16 @@ function applyAliases(
 ): void {
   // Everything already claimed by a canonical permalink or another redirect is
   // reserved, so aliases never shadow a real route or silently replace an
-  // existing redirect.
+  // existing redirect. Notes marked private never publish, so their paths stay
+  // claimable by aliases for published notes.
+  const privateSlugs = new Set(
+    context.entries
+      .filter((entry) => isPrivateMarkdown(entry.markdown))
+      .map((entry) => entry.slug),
+  );
   const owners = new Map<string, PathOwner>();
   for (const location of context.locations.values()) {
+    if (privateSlugs.has(location.slug)) continue;
     reservePath(owners, location.permalink, location.slug, "permalink");
     for (const redirect of location.redirects ?? []) {
       reservePath(owners, redirect.path, location.slug, "redirect");
@@ -58,10 +69,11 @@ function applyAliases(
   for (const entry of context.entries) {
     const location = context.locations.get(entry.slug);
     if (!location) continue;
+    const prefix = languagePrefix(location);
 
     for (const alias of extractFrontmatterAliases(entry.markdown)) {
-      const path = resolveAliasPath(alias);
-      if (!path) {
+      const localizedPath = resolveAliasPath(alias);
+      if (!localizedPath) {
         context.diagnostics.push({
           code: "alias-invalid",
           severity: "warning",
@@ -75,6 +87,7 @@ function applyAliases(
         });
         continue;
       }
+      const path = prefix + localizedPath;
 
       const maxSegmentLength = options.maxSegmentLength;
       if (
@@ -136,4 +149,24 @@ function reservePath(
   kind: PathOwner["kind"],
 ): void {
   if (!owners.has(path)) owners.set(path, { slug, kind });
+}
+
+function languagePrefix(location: ContentPublicLocation): string {
+  const language = location.language;
+  if (!language) return "";
+  const firstSegment = location.permalink.split("/")[1] ?? "";
+  return firstSegment.toLowerCase() === language.toLowerCase()
+    ? `/${firstSegment}`
+    : "";
+}
+
+/**
+ * shortcut: reads only `private: true`; drafts and explicit unpublished stays
+ * stay reserved, promote to full publishing-state lookup if that blocks users.
+ */
+function isPrivateMarkdown(markdown: string): boolean {
+  const frontmatter = markdown.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  return frontmatter?.[1]
+    ? /^private:\s*true\s*$/im.test(frontmatter[1])
+    : false;
 }

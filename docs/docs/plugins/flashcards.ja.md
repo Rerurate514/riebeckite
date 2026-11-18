@@ -97,7 +97,7 @@ JavaScript がなくても、カードは静的なリストとして読めます
 
 ## 主なエクスポート
 
-- `flashcards(options?)` / `flashcards(options?)`: プラグインを作成する
+- `flashcards(options?)`: プラグインを作成する
 - `initFlashcards(root?)`: クライアント側を初期化する
 - `parseFlashcards(source)`: ブロックをカードに分解する
 - `splitFlashcardGroups(source)`: ブロックをカードのまとまりに分割する

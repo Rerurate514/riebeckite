@@ -39,7 +39,7 @@ Run `npm exec riebeckite build` first. Cloudflare Workers publishes the Static A
 
 ### The published content is stale after updating the site
 
-Run `npm exec riebeckite build` and `npm exec -- riebeckite publish run --execute --force` again after the change. `publish run` builds when content changed; the plan tracks content, redirects, and generated outputs, so a config-only change may not be detected and `--force` deploys it anyway.
+Run `npm exec riebeckite build` and `npm exec -- riebeckite publish run --execute --force` again after the change. Config-only changes are not always detected by the publication plan, so `--force` deploys them (see [Operations](./cloudflare-workers/operations.md)).
 
 ### The URL is wrong after publishing
 
@@ -93,7 +93,7 @@ When you need automated deployment, move that sequence to run from [GitHub Actio
 
 ## Next steps
 
-- [Fast path to publishing a site](../../getting-started/deployment.md)
+- [Fast path to publishing a site](./README.md)
 - [GitHub Actions](./github-actions.md)
 - [Separate Content Repository](./separate-content-repository.md)
 - [Usage Guide](../README.md)

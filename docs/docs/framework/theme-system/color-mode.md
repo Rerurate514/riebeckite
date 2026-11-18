@@ -9,7 +9,7 @@ This page is part of [Themes in Depth](../theme-system.md) and covers color mode
 
 # Color mode
 
-## 3-1. colorMode
+## 1. colorMode
 
 ```ts
 type ThemeColorMode = "light" | "dark" | "system";

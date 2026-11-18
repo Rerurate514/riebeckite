@@ -156,3 +156,22 @@ riebeckite profile
 ```
 
 The CLI calls Core and integration functionality as needed.
+
+## Shared packages
+
+Besides the areas above, these shared packages support the framework and plugins:
+
+| Package | Role |
+| --- | --- |
+| `@riebeckite/spa` | Opt-in SPA navigation runtime for Riebeckite sites. |
+| `@riebeckite/ui` | Optional headless UI primitives, accessibility behaviors, and shared context. |
+| `@riebeckite/runtime` | Typed interactive runtime contracts for main-thread, worker, WASM worker, and sandboxed iframe execution. |
+| `@riebeckite/node` | Node.js adapters for Riebeckite. |
+| `@riebeckite/diagnostics` | Shared development diagnostics for the CLI and integrations. |
+| `@riebeckite/preview` | Shared secure Markdown preview runtime. |
+| `@riebeckite/dev-inspector` | Development inspector overlay for Riebeckite sites. |
+| `@riebeckite/graph` | Shared force-directed graph engine, filters, groups, and settings. |
+| `@riebeckite/diagram` | Shared diagram infrastructure for diagram plugins. |
+| `@riebeckite/test` | Shared test utilities and a generic external-site end-to-end engine. |
+| `create-riebeckite` | Create a new Riebeckite site from the official starter template. |
+| `packages/integrations/*` | Framework, bundler, and platform adapters (for example `@riebeckite/honox`, `@riebeckite/analytics-cloudflare`, and `@riebeckite/webmention-cloudflare`). |

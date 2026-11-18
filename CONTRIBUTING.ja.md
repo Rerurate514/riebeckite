@@ -39,6 +39,8 @@ pnpm check:changes
 pnpm check:docs
 ```
 
+ドキュメントを変更するときは [Framework development setup](https://riebeckite.dev/ja/docs/framework/development/setup#ドキュメントを変更した場合) のルールに従ってください。
+
 ## Pull request
 
 pull request テンプレートを使い、利用者への影響、判断、実行したテストを書いてください。無関係なリファクタリングを含めないでください。

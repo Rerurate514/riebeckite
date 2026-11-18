@@ -19,11 +19,11 @@ Riebeckite は、Markdown や Obsidian 形式のノートを静的サイトと�
 | やりたいこと | 参照先 |
 | --- | --- |
 | 初めて Riebeckite を使う | [クイックスタート](./docs/getting-started/quick-start.ja.md) |
-| 今日中にサイトを作って公開する | [クイックスタート](./docs/getting-started/quick-start.ja.md) → [デプロイ](./docs/getting-started/deployment.ja.md) |
+| 今日中にサイトを作って公開する | [クイックスタート](./docs/getting-started/quick-start.ja.md) → [デプロイ](./docs/guides/deployment/README.ja.md) |
 | `create-riebeckite` のプリセットを選ぶ | [プリセット](./docs/getting-started/presets.ja.md) |
 | 記事を書いて整理する | [ガイド / コンテンツの書き方](./docs/guides/writing-content.ja.md) |
 | Obsidian の Vault を公開する | [ガイド / Obsidian](./docs/guides/obsidian.ja.md) |
-| コンテンツとサイトを別リポジトリで管理する | [ガイド / コンテンツリポジトリ](./docs/guides/content-repositories.ja.md) |
+| コンテンツとサイトを別リポジトリで管理する | [ガイド / コンテンツリポジトリ分離](./docs/guides/deployment/separate-content-repository.ja.md) |
 | 多言語サイトを作る | [ガイド / 多言語化](./docs/guides/localization.ja.md) |
 | Cloudflare Workers や GitHub Actions へデプロイする | [ガイド / デプロイ](./docs/guides/deployment/README.ja.md) |
 | Riebeckite を更新する、移行メモを読む | [ガイド / アップグレード](./docs/guides/upgrading.ja.md) |
@@ -33,6 +33,7 @@ Riebeckite は、Markdown や Obsidian 形式のノートを静的サイトと�
 | より多くの人が使えるサイトにする | [アクセシビリティ](./docs/accessibility.ja.md) |
 | セキュリティ上の前提を理解する | [セキュリティモデル](./docs/security.ja.md) |
 | 設定・CLI・API を調べる | [リファレンス](./docs/reference/README.ja.md) |
+| リリースノートを読む | [リリースノート](./docs/releases.ja.md) |
 | Riebeckite の内部構造を知る | [フレームワーク](./docs/framework/README.ja.md) |
 | Riebeckite 自体の開発に参加する | [フレームワーク / 開発](./docs/framework/development.ja.md) |
 

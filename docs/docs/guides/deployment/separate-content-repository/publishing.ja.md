@@ -1,161 +1,145 @@
 ---
 date: 2026-10-08
-title: 公開ルールと検証
-sidebar.label: 公開ルールと検証
+title: 公開とトラブルシューティング
+sidebar.label: 公開とトラブルシューティング
 sidebar.order: 30
+aliases:
+  - /docs/guides/content-repositories/publishing
 ---
-# 公開ルールと検証
+# 公開とトラブルシューティング
 
-## 公開ルールとアセットをどう扱うか
+## 公開の境界を決める
 
-### 公開するかどうかは何で決まるか
+記事とサイトを分けたら、何を公開し、何を公開しないかを明確にします。
 
-`content.filters.publishStrategy` は2つの値を取ります。
+### 公開はどう決まるか
 
-| 値 | 公開される条件 | 意味 |
+`content.filters.publishStrategy` は、frontmatter で公開状態を指定していないノートの扱いを決めます。既定は `explicit` です。
+
+| 戦略 | 公開される条件 | 向いている用途 |
 | --- | --- | --- |
-| `explicit`（既定） | frontmatter の `publish` が `true` | 公開を明示したノートだけ |
-| `selective` | `private` と `draft` のどちらも `true` でない | 非公開を明示したノート以外すべて |
+| `explicit`（既定・推奨） | `publish: true` があるノートのみ | 公開する記事を明示的に選ぶ |
+| `selective` | `private: true` も `draft: true` もないノート | ほぼすべて公開し、例外だけ隠す |
 
-公開判定は `isPublished` / `isPublishable` に集約されており、ノートのレンダリング、診断、prebuild でのアセット収集はすべて同じルールを使います。サイト側で公開判定を独自に実装しないでください。「プレビューでは見えるのに本番には出ない」という食い違いは、そこから生まれます。
+frontmatter の `visibility` と `publishAt` は、`publishStrategy` より優先されます。
+
+| frontmatter | 結果 |
+| --- | --- |
+| `visibility: public` | URL で表示でき、一覧や[[glossary/search|検索]]にも出る |
+| `visibility: unlisted` | URL を直接開けば表示できるが、一覧や検索には出ない |
+| `visibility: draft` | URL を直接開いても表示されず、一覧や検索にも出ない |
+| `publishAt: 2026-01-01T00:00:00.000Z` | ビルド時刻がその日時より前なら非公開、それ以降のビルドで公開される |
+| `visibility` / `publishAt` なし | `publishStrategy` に従う |
+
+`visibility` や `publishAt` が不正な場合、推測せずにビルドを失敗させます。`publishAt` はビルド時刻だけで判定するため、Riebeckite が実行時にタイマーを起動することはありません。公開時刻を過ぎても記事が出ない場合は、次のビルドかデプロイを実行してください。
+
+非公開の Vault で `explicit` を使うのが最も安全です。公開し忘れることはあっても、意図しないノートが公開される可能性は低くなります。
+
+リポジトリの公開範囲と Riebeckite の公開判定は別です。
 
 ```mermaid
-flowchart LR
-    Vault["プライベート Vault"]
-    Publish{"publish: true?"}
-
-    Vault --> Publish
-    Publish -->|"はい"| Public["公開"]
-    Publish -->|"いいえ"| NotPublic["非公開"]
+flowchart TD
+    Repo["Git リポジトリ"]
+    Repo --> RepoVisibility["リポジトリの公開範囲<br/>public / private"]
+    Repo --> Riebeckite["Riebeckite"]
+    Riebeckite --> Exclude["exclude"]
+    Exclude --> Strategy["publishStrategy / visibility"]
+    Strategy --> Site["公開サイト"]
 ```
 
-プライベート Vault では、既定の `explicit` が最も理解しやすいモデルです。
+### 公開時に守るルール
 
-### `exclude` はどう書くか
+- 非公開のノートに `publish: true` や `visibility: public` を付けない。非公開用のディレクトリは `content.exclude` で丸ごと除外する。
+- `.obsidian/` を `exclude` に入れ、Obsidian の設定やワークスペースの状態をサイトに混ぜない。
+- `Templates/**` などのテンプレート用ディレクトリを除外し、テンプレートが記事として公開されないようにする。
+- アセットは種類ごとに公開方法が違うと把握しておく。コンテンツ画像（png、jpg、svg など）はビルドが生成するため、手動でコピーする必要はない。添付ファイルとメディアは URL が生成されるだけで自動ではコピーされないため、サイト側の `prebuild` で公開するファイルだけをコピーする（参考実装は後述の `website/scripts/build_images.ts`）。静的ファイルは `public/` 以下に置く。Vault 全体をコピーすると、非公開記事や未参照のファイルまで公開される可能性がある。
 
-`exclude` は `contentRoot` からの相対パス（`/` 区切りに正規化）に対して glob パターンを照合します。パターンが**パス全体にアンカーされる**点に注意してください。
+### アセットは種類ごとに公開方法が違う
 
-| パターン | 一致する | 一致しない |
-| --- | --- | --- |
-| `.obsidian/**` | `.obsidian/app.json` | `notes/.obsidian/app.json` |
-| `**/.obsidian/**` | 上記の両方 | — |
-| `Templates/**` | `Templates/daily.md` | `notes/Templates/daily.md` |
-| `**/Templates/**` | 上記の両方 | — |
-| `private/**` | `private/secret.md` | `notes/private/secret.md` |
+Vault 内のアセットは3種類に分かれ、公開を担当する場所も異なります。
 
-`*` は1つのセグメント内にとどまり、`**` はセグメントをまたぎます。同名のフォルダがサブフォルダにも現れる可能性があるなら、`**/` を付けると安全です。スキャフォールドはこれらのパターンを設定しないため、必要なら `**/templates/**` と `**/private/**` を自分で追加してください。
-
-`exclude` は読み込み前に絞り込むため、除外されたノートはリンク解決やグラフに現れません。非公開にしたいノートは、`publish: true` を付けないことに加えて、可能ならフォルダごと除外してください。
-
-### コンテンツ画像と添付ファイルは公開のされ方が違う
-
-Vault 内のファイルは3種類に分かれ、それぞれ公開する主体が異なります。
-
-| 種類 | 対象 | 公開 URL | 公開する主体 |
+| 種類 | 対象 | 公開 URL | 公開する場所 |
 | --- | --- | --- | --- |
-| コンテンツ画像 | 画像（`png`、`jpg`、`svg` など） | `/<Vault からの相対論理パス>` | ビルド（[[glossary/generated-output|生成物]]として出力） |
-| 添付ファイル / メディア | Markdown でも画像でもないファイル | `/assets/attachments/<Vault からの相対論理パス>` | サイト側の prebuild 手順 |
-| 静的アセット | サイトアプリケーションが管理するファイル | `/` 以下の任意の場所 | Vite の `public/` ディレクトリ |
+| コンテンツ画像 | Vault 内の画像（png、jpg、svg など） | `/<Vault からの相対論理パス>` | Riebeckite のビルド |
+| 添付ファイル / メディア | Markdown でも画像でもないファイル | `/assets/attachments/<Vault からの相対論理パス>` | サイト側の `prebuild` |
+| 静的アセット | サイト自身が管理するファイル | `/` 以下任意場所 | Vite の `public/` ディレクトリ |
 
-コンテンツ画像については、サイト側で何もする必要がありません。Core のビルドが公開ページから参照されている画像を、[[glossary/logical-path|論理パス]]を保ったままビルド出力に書き出し、`obsidianMarkdown()` が Obsidian の画像・埋め込み記法をその参照へ解決します。開発サーバーも同じ論理パスでコンテンツから直接配信します。どこからも参照されていない画像や、非公開ページだけから参照されている画像は書き出されません。
+コンテンツ画像は、公開ページから参照されているものだけがビルドの出力に含まれます。`public/` へ手動でコピーする必要はありません。
+
+添付ファイルやメディアは URL が生成されるだけで、実ファイルは自動ではコピーされません。
+
+```md
+![[attachments/report.pdf]]
+```
+
+この参照が URL に変換されても、`report.pdf` が公開出力になければ、ブラウザでは `404` になります。
 
 ```mermaid
 flowchart LR
     Image["コンテンツ画像<br/>assets/logo.png"]
     Attach["![[attachments/report.pdf]]"]
 
-    Image -->|"ビルドが書き出す"| Public["公開アセット"]
-    Attach -->|"URL のみ"| Copy["prebuild でコピー"]
-    Copy --> Public
+    Image -->|"ビルドが書き出す"| Output["公開出力"]
+    Attach -->|"URL だけ生成"| Prebuild["ビルド前にコピー"]
+    Prebuild --> Output
 ```
 
-添付ファイルとメディアは別です。次のような埋め込みは、
+公開する添付ファイルやメディアだけを `public/assets/attachments/` へコピーする `prebuild` 処理を、サイト側に用意してください。Vault 全体を `public/` へコピーすると、非公開記事や未参照のファイルまで公開される可能性があります。
 
-```md
-![[attachments/report.pdf]]
-```
+参考になる実装は Riebeckite リポジトリ自身の `website/scripts/build_images.ts` です。生成されるサイトにはこのファイルは含まれないので、同等の `prebuild` スクリプトを自分で用意してください。アセットの種類と公開方法の詳細は [Attachment・Media と公開](../../../reference/configuration/assets.ja.md) を参照してください。
 
-URL を生成しますが、**ファイル自体は公開ディレクトリにコピーされません**。サイト側に、公開するファイルだけをコピーする prebuild 手順を追加してください。参考になる実装は Riebeckite リポジトリ自身の `website/scripts/build_images.ts` です（`prebuild` から `tsx --conditions=source scripts/build_images.ts` として呼び出し、`public/assets/attachments/` にコピーします）。生成されるサイトにはこのファイルは含まれないため、サイト側に同等の `prebuild` スクリプトを追加してください。
+要するに、「Vault にあるからコピーする」のではなく、「公開ノートが参照しているからコピーする」のがルールです。公開ノートが非公開ノートへリンクして境界を越えていないか確認するには、`@riebeckite/plugin-diagnostics` の `riebeckite-diagnostics` を実行してください。該当する参照は `publish-boundary` 警告として報告されます。`runDiagnostics()` を使えば、同じ結果をプログラムから取得できます。詳しくは [診断](../../../plugins/diagnostics.ja.md) を参照してください。
 
-この実装の流れは次のとおりです。
+### よくある質問
 
-1. `contentRoot` を走査して、画像（`IMAGE_EXTENSIONS`）と添付ファイル（`isAttachmentPath`）を列挙します。
-2. `ContentManager` でコンテンツをビルドし、公開ノートから参照されているアセットだけを集めます。参照元はリンクと、レンダリング後の HTML にある `src` / `href` です。
-3. 参照されたアセットだけを `public/assets/attachments/<Vault からの相対パス>` にコピーします（画像は `public/<相対パス>` にコピーし、初回ビルド前でも開発サーバーが配信できるようにします）。サイズと mtime が変わっていなければコピーを省略します。
-4. 公開ディレクトリにだけ存在し、コンテンツにない孤立した添付ファイルを削除します。
+**サイト内の `content/` のまま、一部だけ非公開にできる？**
+
+できます。`content.directory` を既定の `content` のままにして、非公開ノートから `publish: true` を外し、必要に応じてディレクトリを `exclude` へ追加します。リポジトリを分けるのは Vault を物理的に別の場所へ置くための方法で、公開の制御は `publishStrategy`、`visibility`、`exclude` の役割です。
+
+**Vault を移動したら記事が表示されなくなった**
+
+`content.directory` は相対パスなので、Vault を動かすとサイトのルートからの距離が変わります。`inspect config` で解決済みの `Directory` を確認し、`../` の数を直してください。絶対パスも使えますが、開発端末と CI でずれやすいため、通常は相対パスが扱いやすくなります。
+
+**記事は表示されるのにアセットだけ `404` になる**
+
+まずアセットの種類を確認します。画像が `404` なら、公開ページから実際に参照されているかを見てください。コンテンツ画像は、公開ページからの参照があるものだけがビルドの出力に含まれます。
+
+添付ファイルやメディアが `404` なら、`prebuild` のコピー処理を確認します。ビルドより前に実行され、`public/assets/attachments/` へコピーされる必要があります。
+
+**CI でだけ Vault が見つからない**
+
+CI には、追加のチェックアウトかサブモジュールを設定しない限り Vault がありません。手順5の設定を確認し、相対パスの `directory` が CI 上の配置と一致しているかを見てください。たとえば CI で `content/` にチェックアウトするなら `directory: "content"`、`notes/` に置くなら `directory: "notes"` です。
+
+**Windows でも同じ？**
+
+同じです。`exclude` のパターンは `/` 区切りで書いてください。プラットフォームのパス区切りには依存しません。
+
+**`publishAt` の時刻を過ぎたのに公開されない**
+
+`publishAt` はビルド時の時刻で判定します。時刻を過ぎた後にビルドとデプロイを実行してください。定期実行したい場合は、サイトのワークフローに `schedule` を追加します。
+
+### 原因を切り分ける
+
+記事が公開されないときは、次の順番で確認すると原因を絞れます。
 
 ```mermaid
 flowchart TD
-    Vault["Vault のアセット"]
-    PublicNotes["公開ノート"]
-    Referenced["参照されたアセット"]
-    Copy["コピー"]
-    Public["公開アセット"]
-
-    Vault --> Referenced
-    PublicNotes --> Referenced
-    Referenced --> Copy
-    Copy --> Public
+    Start["記事が公開されない"]
+    Start --> Source{"記事を読めている？"}
+    Source -->|"いいえ"| Directory["content.directory<br/>外部チェックアウト"]
+    Source -->|"はい"| Exclude{"exclude されている？"}
+    Exclude -->|"はい"| Config["exclude を確認"]
+    Exclude -->|"いいえ"| Publish{"公開条件を満たす？"}
+    Publish -->|"いいえ"| Frontmatter["publish: true<br/>visibility / publishAt"]
+    Publish -->|"はい"| Build{"ビルドは成功した？"}
+    Build -->|"いいえ"| Diagnostics["check / doctor"]
+    Build -->|"はい"| Deploy{"デプロイされた？"}
+    Deploy -->|"いいえ"| CI["dispatch / ワークフローを確認"]
+    Deploy -->|"はい"| Asset{"画像だけ問題？"}
+    Asset -->|"はい"| Copy["アセットの参照と出力を確認"]
 ```
 
-要するに、「Vault にあるからコピーする」のではなく、「**公開ノートが参照しているからコピーする**」というルールです。Vault 全体をコピーする近道は取らないでください。非公開ノート、非公開ページだけから参照される画像、未参照の添付ファイル、`.obsidian` のメタデータが漏れる恐れがあります。コンテンツ画像はビルドがすでに絞り込んで出力します。添付ファイルとメディアの公開はサイトアプリケーションの責任なので、**公開**ノートが参照するファイルだけをコピーします。公開ノートが非公開ノートへリンクして境界を越えていないか確認するには、`@riebeckite/plugin-diagnostics` の `riebeckite-diagnostics` を実行してください。該当する参照を `publish-boundary` 警告として報告します。`runDiagnostics()` を使えば、同じ結果をプログラムから取得できます。詳しくは [診断](../../../plugins/diagnostics.ja.md) を参照してください。
-
-### 生成される URL
-
-コンテンツ画像は Vault からの論理パスをそのまま保ちます。
-
-```text
-Vault:
-assets/logo.png
-
-公開 URL:
-/assets/logo.png
-```
-
-添付ファイルとメディアには専用のプレフィックスを付けるため、同名のファイルと画像が衝突しません。
-
-```text
-/assets/attachments/<Vault からの相対論理パス>
-```
-
-たとえば、次のようになります。
-
-```text
-Vault:
-attachments/report.pdf
-
-公開 URL:
-/assets/attachments/attachments/report.pdf
-```
-
-- `attachment()` は解決済みの Vault ルートから埋め込みファイルのサイズを読み、ルート外のパスは拒否します。
-- `media()` は同じ論理パスに対応する音声・動画を描画します。
-
-`public/` 下の実際の配置と公開 URL を一致させておくと、ビルド後の 404 を減らせます。
-
-### リポジトリの公開範囲と公開境界は別物
-
-リポジトリをプライベートにすることと、Riebeckite が何を公開するかは別の話です。
-
-```text
-リポジトリの公開範囲
-  → Git リポジトリを誰が読めるか
-
-Riebeckite の公開
-  → サイトに何が出るか
-```
-
-プライベート Vault でも、非公開情報を公開出力にコピーするビルドをすれば、それは公開されたことになります。次の3つを揃えてください。
-
-```text
-exclude
-      +
-publishStrategy
-      +
-公開ノートだけを対象にしたアセットコピー
-```
-
-特に、Vault 全体を `public/` にコピーしないでください。prebuild のコピーが参照済みアセットだけを選ぶ仕組みは前述のとおりです。
+問題が解決しない場合は、統合された[トラブルシューティング](./troubleshooting.ja.md)を参照してください。
 
 ## ビルド前にルートと公開境界を検証する
 
@@ -171,9 +155,9 @@ npm exec riebeckite inspect graph
 npm exec riebeckite build
 ```
 
-結果は次の順に確認します。
+結果は次の順番で確認します。
 
-1. `check` は設定とプラグインの取り決めを検証します。
+1. `check` は設定とプラグインの契約を検証します。
 2. `doctor` は読み取れない、または不正なファイルシステムの[[glossary/content-source|コンテンツソース]]を報告します。
 3. `inspect config` では、`Directory` が解決済みの絶対パス、`Publishing` が `publishStrategy`、`Exclude` が設定済みの除外パターンの一覧です（カンマ区切り、空なら `-`）。まずここで、Vault がどこを指しているかを確定させます。
 4. [[glossary/wikilink|WikiLink]] や埋め込みを調べる前に、`inspect content --list` で期待する論理パスが読み込まれているか確認します。

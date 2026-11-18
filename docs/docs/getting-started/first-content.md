@@ -2,7 +2,7 @@
 date: 2026-10-06
 title: First Content
 sidebar.label: First Content
-sidebar.order: 30
+sidebar.order: 40
 ---
 # First Content
 
@@ -73,4 +73,4 @@ If a page does not appear, first confirm that the dev server is running, the fil
 ## Next
 
 - [Presets →](./presets.md)
-- [Deployment →](./deployment.md)
+- [Deployment →](../guides/deployment/README.md)

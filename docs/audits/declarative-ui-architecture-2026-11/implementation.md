@@ -1,3 +1,7 @@
+---
+private: true
+---
+
 # Declarative UI Architecture Implementation Audit
 
 - Date: 2026-11-13

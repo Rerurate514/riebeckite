@@ -81,7 +81,7 @@ Obsidian の時刻フラグメントは、そのままメディアのソース U
 
 ## 公開 API
 
-- `media(options?)` / `media`：プラグインファクトリ
+- `media(options?)`：プラグインファクトリ
 - `MediaOptions`、`MediaPreload`：型
 
 ## 関連リンク

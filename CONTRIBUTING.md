@@ -39,6 +39,8 @@ pnpm check:changes
 pnpm check:docs
 ```
 
+When you change the documentation, follow the rules in [Framework development setup](https://riebeckite.dev/docs/framework/development/setup#when-you-change-the-documentation).
+
 ## Pull requests
 
 Use the pull request template. Describe the user impact, the decision, and the tests you ran. Do not include unrelated refactors.

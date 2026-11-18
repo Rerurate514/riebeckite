@@ -2,7 +2,7 @@
 date: 2026-11-06
 title: Separate Repositories Setup
 sidebar.label: Separate Repositories Setup
-sidebar.order: 24
+sidebar.order: 100
 ---
 # Separate Repositories Setup
 
@@ -287,4 +287,4 @@ Riebeckite's generated workflow supports the GitHub App and PAT fallback. Schedu
 
 - [Publication Workflow](../guides/deployment/publication-workflow.md)
 - [GitHub Actions](../guides/deployment/github-actions.md)
-- [Content Repositories](../guides/content-repositories.md)
+- [Content Repositories](../guides/deployment/separate-content-repository.md)

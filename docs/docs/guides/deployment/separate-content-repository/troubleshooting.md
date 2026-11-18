@@ -37,10 +37,8 @@ A relative `content.directory` is always based on `appRoot`:
 ```text
 process.cwd()
   ×
-
 configRoot
   ×
-
 appRoot
   ○
 ```

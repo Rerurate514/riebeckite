@@ -28,45 +28,7 @@ flowchart LR
     Plugins["プラグイン"] -->|"フック"| Pipeline
 ```
 
-### ContentSource
-
-`ContentSource` は「コンテンツをどこから、どのように読み込むか」を担当します。主に次のようなソース情報を提供します。
-
-- scan
-- read
-- content identity
-- `createdAt`
-- `modifiedAt`
-- size
-- etag
-- hash
-
-たとえば、ファイルシステムを扱う[[glossary/content-source|コンテンツソース]]はファイルを読み込みますが、`ContentManager` 自身がファイルシステムを直接走査することはありません。新しいコンテンツソースを追加するときも、この取り決めに従います。
-
-### ContentManager
-
-`ContentManager` は、読み込まれたコンテンツを処理します。主に次の責務を担います。
-
-- 公開ロケーションの解決
-- パース
-- パイプライン
-- プラグインフック
-- マニフェスト
-- コンテンツグラフ
-
-つまり、役割は次のように分かれます。
-
-```text id="g1g93m"
-ContentSource
-    ↓
-コンテンツを取得する
-
-ContentManager
-    ↓
-コンテンツを解決・処理する
-```
-
-`ContentManager` に独自のファイルシステム走査を追加するのではなく、`ContentSource` の取り決めを利用してください。
+`ContentSource` はコンテンツの読み込み元と読み込み方法を担当し、ソースのメタデータを提供します。`ContentManager` は読み込んだコンテンツを解釈し、公開ロケーションを解決し、パイプラインとプラグインフックを実行し、マニフェストとコンテンツグラフを生成します。利用側は解決済みの `permalink` を使い、slug やファイルシステムのパスから URL を推測しません。両者の詳しい取り決めは [../content-system/sources.ja.md](../content-system/sources.ja.md) を参照してください。
 
 ## 公開 URL の解決
 

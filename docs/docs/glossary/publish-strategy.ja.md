@@ -55,7 +55,7 @@ const published = isPublished(config, frontmatter, { buildTime: new Date() });
 
 ## 関連用語
 
-- [[publish|Publish]]
+- [Publish](./publish.ja.md)
 - [[draft|Draft]]
 - [[visibility|Visibility]]
 - [[publication-boundary|Publication Boundary]]

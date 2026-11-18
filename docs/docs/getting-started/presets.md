@@ -2,7 +2,7 @@
 date: 2026-10-06
 title: Presets
 sidebar.label: Presets
-sidebar.order: 40
+sidebar.order: 60
 ---
 # Presets
 
@@ -151,4 +151,4 @@ Presets do not control project files. `create-riebeckite` writes an independent 
 
 ## Next
 
-- [Deployment →](./deployment.md)
+- [Deployment →](../guides/deployment/README.md)

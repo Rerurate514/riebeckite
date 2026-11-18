@@ -56,7 +56,7 @@ HonoX 統合が生成済みエントリを使ってアプリケーションを�
 `.riebeckite/build/content-state.json` に保存されます。これは最適化であり、
 正しさの源ではありません。状態が欠けている、互換性がない、安全に再利用できない
 場合は、初期化またはフルパスを通ります。`--full` はそのパスを明示的に要求します。
-**ビルド状態は SSG フェーズで `buildManifest()` が完了した後、ページ出力の書き込み前に確定されます。SSG `ContentManager` は `commitBuildState:false` を渡さないため、その後の ページのレンダリングや出力で失敗しても新しい状態が残ることがあります。`buildManifest()` 自体の失敗では、以前の状態が残ります。**
+**ビルド状態は SSG フェーズで `buildManifest()` が完了した後、ページ出力の書き込み前に確定されます。詳細については [./incremental.ja.md](./incremental.ja.md) を参照してください。**
 
 ## 来歴の記録
 
@@ -158,9 +158,9 @@ appendProvenanceHistory(
 ## 保存と保持
 
 最新の記録と履歴は `.riebeckite/build/content-state.json` の `provenance` と
-`provenanceHistory` フィールドに保存されます。ビルド状態はマニフェスト生成後、
-SSG の前に書き込まれるため、その後の ページのレンダリングや出力で失敗すると新しい記録が残ることがあります。
-マニフェスト生成自体の失敗では、以前の記録が残ります。
+`provenanceHistory` フィールドに保存されます。ビルド状態は SSG フェーズで
+`buildManifest()` が完了した後、ページ出力の前に確定されます。失敗したビルドが
+以前の記録に与える影響は [./incremental.ja.md](./incremental.ja.md) を参照してください。
 
 来歴は意図的に独立した成果物にしていません。
 

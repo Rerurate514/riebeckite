@@ -10,34 +10,21 @@ sidebar.order: 30
 
 プラグインページを利用する HonoX サイトには、すべてのパスを受け取る共通ルートが必要です。`create-riebeckite` などで生成したサイトには、必要な構成があらかじめ含まれています。
 
-概念的には次のように接続します。
+ルートは `createContentRoute` で作成し、`content`、`config`、`render` を渡します。
 
 ```tsx id="xxj9rm"
-import {
-  contentRouteSsgParams,
-  resolveRiebeckiteContentRequest,
-  riebeckiteSsgParams,
-} from "@riebeckite/honox/server";
-import { PageBody } from "@riebeckite/honox/ui";
-import { createRoute } from "honox/factory";
+import { createContentRoute } from "@riebeckite/honox/server";
 
-export default createRoute(
-  contentRouteSsgParams("/:slug{.+}", () => riebeckiteSsgParams(content)),
-  async (c) => {
-    const resolved = await resolveRiebeckiteContentRequest(c, content);
-
-    if (resolved.kind === "response") return resolved.response;
-
-    if (resolved.kind === "page") {
-      return c.render(<PageBody html={resolved.page.body} />);
-    }
-
-    return c.render(/* Site 固有の article composition */);
-  },
-);
+export default createContentRoute({
+  content,
+  config,
+  render: ({ entry, post }) => (
+    /* Site 固有の article composition */
+  ),
+});
 ```
 
-サイトを利用する人が、プラグインごとにこのルートを追加する必要はありません。共通ルートがプラグインページをまとめて解決します。ルート `/` も、同じ仕組みを共有する `resolveRiebeckiteHomeRequest(c, content)` が解決します。
+ルート `/` は `resolveRiebeckiteHomeRequest` が解決します。サイトを利用する人が、プラグインごとにこのルートを追加する必要はありません。共通ルートがプラグインページをまとめて解決します。
 
 ## ページが返せる情報
 

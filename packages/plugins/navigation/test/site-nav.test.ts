@@ -54,6 +54,41 @@ test("SidebarNavigation emits stable keys for persisted disclosure state", () =>
   assert.match(html, /data-sidebar-key="root\/\/guide\/\/guide\/install"/);
 });
 
+test("SidebarNavigation marks a localized href active on a locale-prefixed path", () => {
+  const html = renderToString(
+    SidebarNavigation({
+      items: [{ label: "Install", href: "/ja/docs/install" }],
+      path: "/ja/docs/install",
+      language: "ja",
+    }),
+  );
+  assert.match(html, /rb-sidebar-navigation__link--active/);
+  assert.match(html, /aria-current="page"/);
+});
+
+test("SidebarNavigation still matches unlocalized hrefs against a locale-prefixed path", () => {
+  const html = renderToString(
+    SidebarNavigation({
+      items: [{ label: "Install", href: "/docs/install" }],
+      path: "/ja/docs/install",
+      language: "ja",
+    }),
+  );
+  assert.match(html, /rb-sidebar-navigation__link--active/);
+});
+
+test("SidebarNavigation does not mark a different localized href active", () => {
+  const html = renderToString(
+    SidebarNavigation({
+      items: [{ label: "Install", href: "/ja/docs/install" }],
+      path: "/ja/docs/other",
+      language: "ja",
+    }),
+  );
+  assert.doesNotMatch(html, /rb-sidebar-navigation__link--active/);
+  assert.doesNotMatch(html, /aria-current/);
+});
+
 test("SiteNav omits the root item when requested", () => {
   const html = render({
     items: [

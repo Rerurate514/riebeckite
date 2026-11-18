@@ -9,7 +9,7 @@ This page is part of [Themes in Depth](../theme-system.md) and covers typography
 
 # Typography and article layout
 
-## 3-2. typography
+## 1. typography
 
 Typography is a theme setting, not a Core type. Declare it in the theme's settings schema:
 
@@ -37,7 +37,7 @@ The resolved value is reflected as `data-rb-setting-typography` on the theme roo
 }
 ```
 
-## 3-3. layout
+## 2. layout
 
 `layout` is a `ThemeOptions` field with the type `"article" | "sidebar" | "full-width"`. It is reflected as `data-rb-layout` on the theme root. A theme defines the presentation of each layout; it does not replace the route or the component tree.
 

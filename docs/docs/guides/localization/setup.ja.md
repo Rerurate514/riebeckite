@@ -123,3 +123,27 @@ docs/
 言語ごとにディレクトリを分ける構成（`en/note.md`、`ja/note.md`）は、言語判定には使われません。
 
 言語判定の暗黙ルールをファイル名の接尾辞だけに絞ることで、同じ名前の記事が複数言語で存在しても [[glossary/wikilink|WikiLink]] が一意に解決されます。言語はファイル名の接尾辞か、frontmatter の `lang` で指定してください。複数の判定材料が食い違う場合は `L10N_LANGUAGE_CONFLICT` が報告されます。`strict: true` を設定している場合、この警告はビルドの失敗になります。
+
+## UI の文言
+
+l10n プラグインがローカライズするのは、コンテンツの URL、本文中のリンク、head タグです。フレームワークとプラグインが描画する UI の文言は翻訳されないため、`ui` で指定します。
+
+```ts
+export default defineConfig({
+  ui: {
+    locale: "ja",
+    labels: {
+      ja: {
+        contents: "目次",
+        searchPlaceholder: "ノートを検索 (tag:, lang:, path: ...)",
+      },
+    },
+  },
+});
+```
+
+`ui.locale` を指定すると、コンテンツの言語とは独立に UI の言語を固定できます。日本語のサイトでも UI は英語のままにできます。`ui.labels` は言語コードごとの辞書で、言語コードは大文字と小文字を区別しません。辞書にないキーや、辞書のない言語は、内蔵の英語の文言にフォールバックします。
+
+組み込みの英語ラベルがあるキーは `contents`、`contentsHeading`、`filter`、`filterNavigation`、`collapse`、`expand`、`searchNotes`、`searchPlaceholder`、`searchNotesPlaceholder`、`nearbyNotes`、`seriesNavigation`、`language` です。プラグインが描画する UI の文言には、さらに `sidebarNavigation`、`localGraph`、`openInExplorer`、`localGraphTruncated`、`localGraphTruncatedExplorer`、`explorer`、`explorerPanels`、`clearFilters`、`tags`、`folders`、`notes`、`showingNotes`、`noteGraph`、`localGraphMode`、`globalGraphMode`、`localMode`、`globalMode`、`selectNoteHint`、`history`、`historyChanges`、`historyToggle`、`commitHistory`、`untitledChange`、`search`、`closeSearch`、`searchQuery`、`searchFilterHint`、`searchResults`、`seriesPosition` を指定できます。ガーデンエクスプローラーの詳細パネルには、さらに `selectedNote`、`outgoingLinks`、`backlinks`、`relatedNotes`、`noNotes` を指定できます。`showingNotes`、`globalGraphMode`、`historyChanges`、`seriesPosition` はテンプレートなので、翻訳でも `{...}` のプレースホルダーを残してください。プラグインのコンポーネントは `useUiLabels()` からこの辞書を読むため、プラグイン側のコードを変更する必要はありません。
+
+辞書には、サイト独自のシェル用のキーも追加できます。このサイトでは `documentation`、`tableOfContents`、`menu`、`navigation`、`primaryNavigation`、`secondaryNavigation`、`footerNavigation` を `website/app/lib/ui-labels.ts` で `config.ui.labels` から読んでいます。これらはフレームワークの取り決めではなくシェル側のラベルなので、シェルが自分で辞書を読む構成です。`<html lang>` と記事の日付のロケールはコンテンツの言語に従い、`website/app/components/article/article.tsx` で設定しています。

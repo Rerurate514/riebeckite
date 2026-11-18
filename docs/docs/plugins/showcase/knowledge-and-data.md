@@ -1,6 +1,7 @@
 ---
-showcase_progress: 4
-showcase_priority: low
+date: 2026-11-18
+title: Knowledge and Data
+
 ---
 # Knowledge and data
 

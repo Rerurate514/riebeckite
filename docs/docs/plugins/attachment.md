@@ -74,7 +74,7 @@ Styles ship in `style.css` (inline attachment links also get a `↓` suffix).
 
 ## Exports
 
-- `attachment(options?)` / `attachment` — plugin factory
+- `attachment(options?)` — plugin factory
 - Type: `AttachmentOptions`
 
 ## See also

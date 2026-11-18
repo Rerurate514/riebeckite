@@ -2,7 +2,7 @@
 date: 2026-11-05
 title: 一体型セットアップ
 sidebar.label: 一体型セットアップ
-sidebar.order: 22
+sidebar.order: 80
 ---
 # 一体型セットアップ
 
@@ -100,6 +100,6 @@ HTML、CSS、画像、404 ページ、`sitemap.xml`、`robots.txt` を確認し�
 
 ## 次に読む
 
-- [コンテンツの場所](./content-location.ja.md)
+- [プロジェクト構成](./project-structure.ja.md)
 - [ディレクトリ分離型セットアップ](./separate-directories-setup.ja.md)
 - [リポジトリ分離型セットアップ](./separate-repositories-setup.ja.md)

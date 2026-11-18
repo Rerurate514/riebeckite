@@ -1,4 +1,5 @@
 ---
+private: true
 date: 2026-11-04
 title: Obsidian 向け Riebeckite
 sidebar.label: Obsidianプラグイン

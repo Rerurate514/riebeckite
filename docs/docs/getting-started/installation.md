@@ -2,7 +2,7 @@
 date: 2026-10-06
 title: Installation
 sidebar.label: Installation
-sidebar.order: 20
+sidebar.order: 30
 ---
 # Installation
 
@@ -20,7 +20,7 @@ This page takes you from an empty machine to a running site. It assumes nothing 
 | A GitHub account | Used for automatic deployment with GitHub Actions | [github.com](https://github.com/) |
 | A Cloudflare account | Only for the deployment step | [cloudflare.com](https://www.cloudflare.com/) |
 
-`npm` ships with Node.js, so you do not install it separately. Git and a GitHub account are optional; they are used for repository history and automatic deployment. If you publish to Cloudflare directly from your machine, you can add them later. See [Deployment](./deployment.md).
+`npm` ships with Node.js, so you do not install it separately. Git and a GitHub account are optional; they are used for repository history and automatic deployment. If you publish to Cloudflare directly from your machine, you can add them later. See [Deployment](../guides/deployment/README.md).
 
 Confirm the tools are available:
 
@@ -45,8 +45,8 @@ npx create-riebeckite
 2. **What would you like to build?** ([[glossary/preset|preset]]) — the site's composition; keep `Starter site` (the `starter` preset) when unsure. See [Presets](./presets.md)
 3. **Add optional feature packs?** — choose `Yes` to select feature packs that add extra plugins. The default is `No`. Use `--features <names>` to add them non-interactively. See [Presets](./presets.md) for available packs
 4. **Customize extra project files?** — choose `Yes` to change generated editor or tool files. The default is `No`, which still generates the default project files
-5. **Where will you write content?** — `This project` keeps `content/` inside the site and is the simplest start. `Separate directory in this repository` keeps a vault beside the app. `Separate GitHub repository` is an advanced setup for an existing vault. See [Content Repositories](../guides/content-repositories.md)
-6. **Set up deployment?** — `Cloudflare Workers`, `GitHub Actions`, or `Not now`. `Cloudflare Workers` asks `Deploy now?` after installation, so you can publish your first version right away. `GitHub Actions` deploys on every push to `main`. `Not now` skips deployment setup; see [Deployment](./deployment.md)
+5. **Where will you write content?** — `This project` keeps `content/` inside the site and is the simplest start. `Separate directory in this repository` keeps a vault beside the app. `Separate GitHub repository` is an advanced setup for an existing vault. See [Content Repositories](../guides/deployment/separate-content-repository.md)
+6. **Set up deployment?** — `Cloudflare Workers`, `GitHub Actions`, or `Not now`. `Cloudflare Workers` asks `Deploy now?` after installation, so you can publish your first version right away. `GitHub Actions` deploys on every push to `main`. `Not now` skips deployment setup; see [Deployment](../guides/deployment/README.md)
 7. **Install dependencies now?** — defaults to `Yes`. Choose `No` when you need to inspect or install the generated project later.
 
 To script the same setup instead of answering prompts, pass arguments, for example:
@@ -80,7 +80,7 @@ Recent npm 11 releases can also skip dependency install scripts. If `npm install
 | `riebeckite.config.ts` | Site name, URL, language, theme, and plugins. The first file to edit |
 | `content/` | Where your Markdown pages live |
 | `app/` | The site's appearance and routing. `routes/` and `components/` do most of the work |
-| `public/` | Static assets copied as-is: `favicon.ico` and `riebeckite-logo.png`. The bundled favicon and header logo are placeholders; replace them when you brand the site. The `starter` preset does not generate a link-preview/OG image; the `blog` preset does. See [Branding your site](../guides/branding.md) |
+| `public/` | Static assets copied as-is: `favicon.ico` and `riebeckite-logo.png`. The bundled favicon and header logo are placeholders; replace them when you brand the site. The `starter` preset does not generate a link-preview/OG image; the `blog` and `writer` presets do. See [Branding your site](../guides/branding.md) |
 | `vite.config.ts` | Build settings. You normally leave this alone |
 | `package.json` | The packages and the `riebeckite` commands |
 | `pnpm-workspace.yaml` | Only for pnpm: approves the build scripts pnpm would otherwise skip (esbuild, puppeteer, sharp). npm ignores it |

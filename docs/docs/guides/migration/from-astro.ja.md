@@ -101,5 +101,5 @@ Riebeckite は既定で `content/index.md` を `/`、それ以外を slug の UR
 - [[configuration|設定]]
 - [[cli|CLI リファレンス]]
 - [[plugins/permalink|Permalink プラグイン]]
-- [[seo|SEO プラグイン]]
+- [SEO プラグイン](../../plugins/seo.ja.md)
 - [[guides/deployment/README|デプロイ]]

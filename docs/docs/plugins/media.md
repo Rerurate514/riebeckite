@@ -86,7 +86,7 @@ Obsidian's time fragments are forwarded to the media source:
 
 ## Exports
 
-- `media(options?)` / `media` — plugin factory
+- `media(options?)` — plugin factory
 - Types: `MediaOptions`, `MediaPreload`
 
 ## See also

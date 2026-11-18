@@ -266,6 +266,70 @@ test("only the first note claims a shared alias", async () => {
   assert.equal(context.diagnostics[0]?.meta?.conflictSlug, "a");
 });
 
+test("localized notes claim aliases under their language prefix", async () => {
+  const context = await apply(
+    [
+      entry("note", "---\naliases:\n  - /docs/legacy\n---\n"),
+      entry("note.ja", "---\naliases:\n  - /docs/legacy\n---\n"),
+    ],
+    [
+      location("note", "/docs/note"),
+      {
+        slug: "note.ja",
+        permalink: "/ja/docs/note",
+        language: "ja",
+      },
+    ],
+  );
+
+  assert.deepEqual(context.locations.get("note")?.redirects, [
+    { path: "/docs/legacy", status: 308 },
+  ]);
+  assert.deepEqual(context.locations.get("note.ja")?.redirects, [
+    { path: "/ja/docs/legacy", status: 308 },
+  ]);
+  assert.deepEqual(context.diagnostics, []);
+});
+
+test("aliases still collide within one language", async () => {
+  const context = await apply(
+    [
+      entry("other.ja", "---\naliases: Taken\n---\n"),
+      entry("owner.ja", "---\naliases: none\n---\n"),
+    ],
+    [
+      { slug: "owner.ja", permalink: "/ja/Taken", language: "ja" },
+      { slug: "other.ja", permalink: "/ja/docs/other", language: "ja" },
+    ],
+  );
+
+  assert.equal(context.locations.get("other.ja")?.redirects, undefined);
+  assert.equal(context.diagnostics.length, 1);
+  assert.equal(context.diagnostics[0]?.code, "alias-collision");
+  assert.equal(context.diagnostics[0]?.target, "/ja/Taken");
+});
+
+test("aliases can claim the canonical path of a private note", async () => {
+  const context = await apply(
+    [
+      entry(
+        "hidden",
+        "---\nprivate: true\naliases:\n  - Never Published\n---\n",
+      ),
+      entry("moved", "---\naliases:\n  - /docs/hidden\n---\n"),
+    ],
+    [location("hidden", "/docs/hidden"), location("moved", "/docs/moved")],
+  );
+
+  assert.deepEqual(context.locations.get("hidden")?.redirects, [
+    { path: "/Never%20Published", status: 308 },
+  ]);
+  assert.deepEqual(context.locations.get("moved")?.redirects, [
+    { path: "/docs/hidden", status: 308 },
+  ]);
+  assert.deepEqual(context.diagnostics, []);
+});
+
 test("golden: aliases, collisions and invalid aliases together", async () => {
   const context = await apply(
     [

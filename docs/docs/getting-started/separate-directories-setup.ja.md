@@ -2,7 +2,7 @@
 date: 2026-11-05
 title: ディレクトリ分離型セットアップ
 sidebar.label: ディレクトリ分離型セットアップ
-sidebar.order: 23
+sidebar.order: 90
 ---
 # ディレクトリ分離型セットアップ
 

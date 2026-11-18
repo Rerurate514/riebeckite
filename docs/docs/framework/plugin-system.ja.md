@@ -222,9 +222,8 @@ flowchart TD
 ## 関連資料
 
 - [[writing-a-plugin|はじめてのプラグイン作成]]：最初のプラグインを作る
-- [[plugin-system|プラグインシステム]]：プラグインシステム全体の考え方
 - [[plugin-api|プラグイン API]]：API の取り決め
 - [[page-system|ページシステム]]：独立したページ
 - [[content-system|コンテンツシステム]]：マニフェスト、グラフ、パイプライン
-- [[architecture|アーキテクチャ]]：Core、プラグイン、インテグレーション、[[glossary/theme|テーマ]]、アプリケーションの責務
+- [アーキテクチャ](./architecture.ja.md)：Core、プラグイン、インテグレーション、[[glossary/theme|テーマ]]、アプリケーションの責務
 - [[reference/README|フレームワークリファレンス]]：公開 API

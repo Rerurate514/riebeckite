@@ -8,7 +8,7 @@ sidebar.order: 20
 
 このページは[テーマ作成の詳細](../theme-system.ja.md)の一部で、[[glossary/typography|タイポグラフィ]]と[[glossary/article-layout|記事レイアウト]]を扱います。
 
-## 3-2. タイポグラフィ（typography）
+## 1. タイポグラフィ（typography）
 
 タイポグラフィは Core の型ではなく、テーマの設定です。テーマの設定スキーマに宣言します。
 
@@ -36,7 +36,7 @@ settings: defineThemeSettings({
 }
 ```
 
-## 3-3. 記事レイアウト（layout）
+## 2. 記事レイアウト（layout）
 
 `layout` は `ThemeOptions` のフィールドで、型は `"article" | "sidebar" | "full-width"` です。テーマルートの `data-rb-layout` 属性として反映されます。[[glossary/theme|テーマ]]が定義するのは各レイアウトの見せ方であり、ルートやコンポーネントツリーを置き換えるものではありません。
 

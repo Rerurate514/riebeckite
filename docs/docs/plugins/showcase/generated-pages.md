@@ -1,3 +1,8 @@
+---
+date: 2026-11-18
+title: Generated Pages
+---
+
 # Generated pages
 
 ## Timeline — [`timeline`](../timeline.md)

@@ -1,6 +1,9 @@
 ---
 date: 2026-10-06
 title: Publishing Obsidian notes
+aliases:
+  - /docs/obsidian-plugin
+  - /docs/obsidian-plugin/architecture
 ---
 # Publishing Obsidian notes
 
@@ -112,6 +115,6 @@ Obsidian vault while publishing only the articles you want with Riebeckite.
 ### Next steps
 
 - [Writing content](./writing-content.md)
-- [Separating content from the site](./content-repositories.md)
-- [Riebeckite for Obsidian](../obsidian-plugin/README.md) (currently settings only)
+- [Separating content from the site](./deployment/separate-content-repository.md)
+- [Riebeckite for Obsidian](https://github.com/Rerurate514/riebeckite-obsidian) (currently settings only)
 - [Content System](../framework/content-system.md)

@@ -2,11 +2,11 @@
 date: 2026-10-08
 title: はじめに
 sidebar.label: はじめに
-sidebar.order: 10
+sidebar.order: 20
 ---
 # はじめに
 
-この章は、初めて Riebeckite でサイトを公開する人向けの一本道です。順番に読み進めてください。高度な診断、プラグイン開発、リポジトリの分離は、必要になったときに参照するページとして分けています。
+この章は、初めて Riebeckite でサイトを公開する人向けの一本道です。順番に読み進めてください。配置パターンの詳細、プラグイン開発、デプロイの自動化は、必要になったときに参照するページとして分けています。
 
 ```text
 クイックスタート
@@ -17,7 +17,7 @@ sidebar.order: 10
     ↓
 プリセット
     ↓
-デプロイ
+（デプロイ → ガイド / デプロイ）
 ```
 
 ## Riebeckite とは
@@ -35,13 +35,18 @@ Riebeckite を使うために、このリポジトリを clone する必要は�
 | [クイックスタート](./quick-start.ja.md) | 作成、起動、Markdown の編集、確認、ビルドを短い手順で試す |
 | [インストール](./installation.ja.md) | 必要な環境と、生成されるファイルを確認する |
 | [最初のコンテンツ](./first-content.ja.md) | 最初の公開ページを書く、またはサンプルを編集する |
-| [プリセット](./presets.ja.md) | `starter`、`blog`、`docs`、`minimal` などのプリセットを比較する |
-| [デプロイ](./deployment.ja.md) | 手元から公開し、必要なら GitHub Actions で自動化する |
 | [Obsidian Vault を使う](./obsidian-vault.ja.md) | 既存の Obsidian Vault を接続し、選んだノートを公開する |
+| [プリセット](./presets.ja.md) | `starter`、`blog`、`docs`、`minimal` などのプリセットを比較する |
+| [プロジェクト構成](./project-structure.ja.md) | 3つの配置パターンを比較し、コンテンツの場所を決める |
+| [一体型セットアップ](./integrated-setup.ja.md) | 既定の構成を手順どおりに進める |
+| [ディレクトリ分離型セットアップ](./separate-directories-setup.ja.md) | 同じリポジトリ内で Vault をサイトの隣に置く |
+| [リポジトリ分離型セットアップ](./separate-repositories-setup.ja.md) | コンテンツとサイトを2つのリポジトリに分ける |
 | [最初のプラグインを追加する](./first-plugin.ja.md) | プラグインを入れて `==ハイライト==` 構文が効くことを確認する |
 | [最初のテーマを変える](./first-theme.ja.md) | テーマを変えてデザインが変わることを確認する |
 
-クイックスタートは動くサイトへの最短ルート、インストールは要件と生成ファイルの詳細です。3つのセットアップガイド（[一体型](./integrated-setup.ja.md)、[ディレクトリ分離型](./separate-directories-setup.ja.md)、[リポジトリ分離型](./separate-repositories-setup.ja.md)）は、構成ごとのデプロイまで含めた手順です。
+クイックスタートは動くサイトへの最短ルート、インストールは要件と生成ファイルの詳細です。プロジェクト構成で3つの配置パターンを比較し、3つのセットアップガイド（[一体型](./integrated-setup.ja.md)、[ディレクトリ分離型](./separate-directories-setup.ja.md)、[リポジトリ分離型](./separate-repositories-setup.ja.md)）がそれぞれの手順を説明します。リポジトリ分離型の運用は [コンテンツリポジトリ分離](../guides/deployment/separate-content-repository.ja.md) にあります。
+
+デプロイとその自動化に進むときは、ガイド章の [デプロイ](../guides/deployment/README.ja.md) を参照してください。
 
 ## 最短でサイトを公開する
 
@@ -65,7 +70,7 @@ npm exec riebeckite dev
 npm exec riebeckite build
 ```
 
-ビルド結果をそのまま公開する場合は、Wrangler をインストールして `npm exec -- riebeckite publish run --execute` を実行します。Wrangler の設定ファイルがないサイトでは `--provider cloudflare-workers` を付けます。ログインと `wrangler.jsonc` の生成は自動です。詳しくは [デプロイ](./deployment.ja.md) を参照してください。
+ビルド結果をそのまま公開する手順（Wrangler、GitHub Actions、その他のホスト）は [デプロイ](../guides/deployment/README.ja.md) にまとめています。
 
 プリセットで迷ったら、既定の `starter` を使ってください。記事、タグ、シリーズを持つメディアを作る場合は、プリセットの質問で `blog` を選ぶか、`npx create-riebeckite my-blog --preset blog` を実行します。
 

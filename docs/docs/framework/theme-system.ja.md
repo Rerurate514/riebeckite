@@ -25,12 +25,12 @@ sidebar.label: テーマ作成の詳細
 
 ## このページの構成
 
-- [カラーモード](./theme-system/color-mode.ja.md)
-- [タイポグラフィと記事レイアウト](./theme-system/typography.ja.md)
-- [デザイントークン](./theme-system/tokens.ja.md)
-- [テーマのルートと属性](./theme-system/theme-root.ja.md)
-- [安定した CSS フックとカスケード](./theme-system/css.ja.md)
-- [テーマの配布と検証](./theme-system/distribution.ja.md)
+1. [カラーモード](./theme-system/color-mode.ja.md)
+2. [タイポグラフィと記事レイアウト](./theme-system/typography.ja.md)
+3. [デザイントークン](./theme-system/tokens.ja.md)
+4. [テーマのルートと属性](./theme-system/theme-root.ja.md)
+5. [安定した CSS フックとカスケード](./theme-system/css.ja.md)
+6. [テーマの配布と検証](./theme-system/distribution.ja.md)
 
 ## 1. テーマで変えてよいもの
 
@@ -283,6 +283,5 @@ Content Graph
 ## 関連資料
 
 - [[writing-a-theme|はじめてのテーマ作成]]：最初のテーマを作る
-- [[theme-system|テーマシステム]]：テーマシステム全体の考え方
 - [[plugin-system|プラグインシステム]]：プラグインとの責務の違い
 - [[reference/README|フレームワークリファレンス]]：`defineTheme` などの公開 API

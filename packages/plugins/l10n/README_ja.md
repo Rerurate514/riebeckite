@@ -2,7 +2,7 @@
 
 <!-- Generated from docs/docs/plugins/l10n.ja.md. Edit the canonical documentation in docs/docs/plugins and run `pnpm docs:sync`. -->
 
-Riebeckite の Markdown コンテンツをローカライズするプラグインです。UI 文言の翻訳は担当しませんが、標準の言語切替 UI を提供します。
+Riebeckite の Markdown コンテンツをローカライズするプラグインです。ローカライズするのはコンテンツの URL、本文中のリンク、head タグで、UI の文言は `config.ui.labels` で指定します（[ローカライズの設定](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/guides/localization/setup.ja.md)）。標準の言語切替 UI も提供します。
 
 [English](./README.md)
 
@@ -79,14 +79,14 @@ l10n({
 
 `getLocalization(manifest, slug)` を使うと、現在の言語、存在する言語、各翻訳の href を取得できます。`getLocalizedContent()` は翻訳がなければ `null` を返します。
 
-`l10n(...)` は、標準の記事レイアウトに組み込みの言語切替 UI を追加します。標準の Site consumer がこれを描画するため、l10n 専用の記事レイアウトを実装する必要はありません。実在する翻訳が 2 つ未満のページには表示されません。
+プラグインは組み込みの言語切替 UI（`LanguageSwitcher`）をコンポーネントとして提供します。記事レイアウトへの自動挿入は行われないため、言語切替 UI を表示したい位置で明示的に描画してください（このサイトの記事テンプレートがそうしています）。実在する翻訳が 2 つ未満のページには表示されません。
 
 ## CSS フック
 
 言語切替 UI には `rr-l10n-switcher`、`rr-l10n-switcher__label`、
 `rr-l10n-switcher__list`、`rr-l10n-switcher__link` を使用します。既定の CSS はこれらのフックを対象にします。
 
-各ページには、Core の `headTags` 拡張を通じて、実在する翻訳だけを対象にした `hreflang` の alternate link が追加されます。サイトシェルはこれらのタグの描画と、リクエストに応じた `<html lang>` の選択を担当します。WikiLink の Content Graph は同じ言語の翻訳を優先し、なければ元のリンク先を使います。本文では、`@riebeckite/plugin-obsidian-markdown` が Obsidian WikiLink を解決した後に、WikiLink と Markdown の内部リンクを同じ規則で書き換えます。現在のページと同じ言語の翻訳があればその URL に切り替え、なければ元のリンク先を維持します。クエリ文字列とフラグメントは維持し、外部 URL、フラグメントのみのリンク、不明な URL、アセットなどコンテンツ以外の URL は変更しません。リンク依存関係の追跡でも描画と同じ解析済み Markdown URL を使用するため、HTML 文字参照も同じように扱います。Content Graph と本文リンクは同じ解決ポリシーを使います。
+各ページには、Core の `headTags` 拡張を通じて、実在する翻訳だけを対象にした `hreflang` の alternate link が追加されます。翻訳グループに複数の言語がある場合は、既定言語のページを指す `hreflang="x-default"` タグも1つ追加されます。サイトシェルはこれらのタグの描画と、リクエストに応じた `<html lang>` の選択を担当します。WikiLink の Content Graph は同じ言語の翻訳を優先し、なければ元のリンク先を使います。本文では、`@riebeckite/plugin-obsidian-markdown` が Obsidian WikiLink を解決した後に、WikiLink と Markdown の内部リンクを同じ規則で書き換えます。現在のページと同じ言語の翻訳があればその URL に切り替え、なければ元のリンク先を維持します。クエリ文字列とフラグメントは維持し、外部 URL、フラグメントのみのリンク、不明な URL、アセットなどコンテンツ以外の URL は変更しません。リンク依存関係の追跡でも描画と同じ解析済み Markdown URL を使用するため、HTML 文字参照も同じように扱います。Content Graph と本文リンクは同じ解決ポリシーを使います。
 
 ## 独自検出
 

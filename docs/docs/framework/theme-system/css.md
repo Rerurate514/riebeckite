@@ -9,7 +9,7 @@ This page is part of [Themes in Depth](../theme-system.md) and covers stable CSS
 
 # Stable CSS hooks and the cascade
 
-## 3-5. stylesheets
+## 1. stylesheets
 
 `stylesheets` loads after the application stylesheet and is intended for small final adjustments without forking a [[glossary/theme|Theme]]. Its unlayered normal declarations beat framework, plugin, and theme normal declarations, regardless of selector specificity. It does not override inline configuration tokens, `!important`, animations, or transitions.
 
@@ -19,7 +19,7 @@ theme: defaultTheme({
 }),
 ```
 
-## 5. Stable CSS hooks
+## 2. Stable CSS hooks
 
 Themes target documented stable hooks, not internal markup. There are two class namespaces.
 
@@ -101,7 +101,7 @@ styles/
 Character rules are still presentation-only: they must not change content,
 structure, or behavior.
 
-## 6. CSS cascade
+## 3. CSS cascade
 
 For same-origin normal declarations, Riebeckite establishes this cascade-layer
 contract:

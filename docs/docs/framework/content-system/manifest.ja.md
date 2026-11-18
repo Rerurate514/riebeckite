@@ -31,7 +31,7 @@ flowchart LR
 
 ## コンテンツグラフ
 
-[[content-graph|コンテンツグラフ]]は、コンテンツ同士の関係を表します。たとえば、次の [[glossary/wikilink|WikiLink]] があれば、記事 A から記事 B への関係が成り立ちます。
+コンテンツグラフは、コンテンツ同士の関係を表します。たとえば、次の [[glossary/wikilink|WikiLink]] があれば、記事 A から記事 B への関係が成り立ちます。
 
 ```markdown id="9o2p6a"
 [[Article B]]

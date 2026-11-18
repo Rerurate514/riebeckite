@@ -2,7 +2,7 @@
 date: 2026-10-06
 title: Guides
 sidebar.label: Guides
-sidebar.order: 20
+sidebar.order: 30
 ---
 # Guides
 
@@ -31,7 +31,7 @@ Guides only. For the full documentation map, see [Documentation](../README.md).
 | Keep the shell while navigating between pages | [SPA Navigation](./spa-navigation.md) |
 | Build a homepage and browse routes | [Discovery recipes](./discovery-recipes.md) |
 | Publish an Obsidian vault | [Obsidian](./obsidian.md) |
-| Keep content and the site in separate repositories | [Content repositories](./content-repositories.md) |
+| Keep content and the site in separate repositories | [Content repositories](./deployment/separate-content-repository.md) |
 | Build a multilingual site | [Localization](./localization.md) |
 | Develop a local Plugin | [Local Plugin Development](./local-plugin-development.md) |
 | Connect a local editor tool | [Editor integration](./editor-integration.md) |
@@ -46,7 +46,7 @@ Bulk content changes have two entry points. Use [Content mutation](../framework/
 
 - [Writing content](./writing-content.md) — the basics of writing articles in Riebeckite, including Markdown and frontmatter.
 - [Obsidian](./obsidian.md) — using an existing Obsidian vault as Riebeckite content.
-- [Content repositories](./content-repositories.md) — managing the site application and Markdown content in separate repositories.
+- [Content repositories](./deployment/separate-content-repository.md) — managing the site application and Markdown content in separate repositories.
 - [Localization](./localization.md) — multiple languages, URLs, and language switching.
 - [Local Plugin Development](./local-plugin-development.md) — previewing a local Plugin with the real HonoX/Vite development server.
 - [Editor integration](./editor-integration.md) — connecting a local editor tool to the read-only development Bridge.

@@ -92,7 +92,7 @@ publish: true
 
 ### 次に読むもの
 
-- [サイト公開までの最短ガイド](../getting-started/deployment.ja.md)
+- [サイト公開までの最短ガイド](./deployment/README.ja.md)
 - [Obsidian のノートをサイトにするガイド](./obsidian.ja.md)
 - [多言語サイト](./localization.ja.md)
 - [Configuration](../reference/configuration.ja.md)

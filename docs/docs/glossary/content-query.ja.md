@@ -54,7 +54,7 @@ export function groupContentEntries(
 - [[content-collection|Content Collection]]
 - [[glossary/taxonomy|Taxonomy]]
 - [[glossary/series|Series]]
-- [[manifest|Manifest]]
+- [Manifest](./manifest.ja.md)
 
 ## さらに詳しく
 

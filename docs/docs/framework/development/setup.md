@@ -105,6 +105,15 @@ pnpm check:docs
 
 This validates Markdown links and the documentation structure. Run it whenever you add, move, or delete documentation.
 
+Follow these rules when changing documentation:
+
+- Keep one canonical page per concept. Related pages summarize and link to it instead of restating the same steps or tables.
+- In `aliases` frontmatter, write unlocalized bare paths (for example `/docs/old-page`); the localization layer adds the language prefix for non-default languages.
+- Mark internal documents with `private: true`. `publish: false` has no effect under the default `selective` publish strategy.
+- Avoid short-name WikiLinks that resolve to multiple candidates; `pnpm check:docs` reports them as ambiguous, and they render as plain text instead of links.
+- After inserting frontmatter with a script, run a build: duplicate YAML keys pass `check:docs` but fail the build's YAML parser.
+- Give every new page a `sidebar.order` and reference it from its chapter README.
+
 ### When you change Plugin or Theme documentation
 
 Plugin / Theme documentation ownership is:

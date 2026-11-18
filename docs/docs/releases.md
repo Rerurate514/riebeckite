@@ -1,8 +1,6 @@
 ---
 title: Release Notes
-sidebar:
-  label: Release Notes
-  order: 7
+sidebar.order: 110
 ---
 # Release Notes
 
@@ -30,17 +28,13 @@ The Unreleased section lists changes that are merged but not yet published to np
 - The starter preset places its file explorer inside the article grid, so the explorer, article and table of contents share one centered page container. The navigation no longer hugs the viewport edge, the table of contents sits beside the article instead of the page edge, and the header and footer align with the same container. The explorer and table of contents appear from 80rem; below that the article stays a single centered column.
   Packages: `create-riebeckite`
 
-- The digital-garden preset moves recently added notes beside the note tree, the docs preset keeps its header visible while its reading rails scroll independently, and the showcase preset becomes a three-rail reference catalog. The portfolio preset now derives a project grid from `content/projects/`.
+- The digital-garden preset moves recently added notes beside the note tree, the docs preset keeps its header visible while its reading rails scroll independently. The portfolio preset now derives a project grid from `content/projects/`.
   Packages: `create-riebeckite`
 
 - Themes no longer ship a Tailwind-style `@theme` block. Theme CSS now renders the same with or without Tailwind installed.
   Packages: `@riebeckite/theme-default`, `@riebeckite/theme-editorial`, `@riebeckite/theme-fieldnotes`, `@riebeckite/theme-folio`, `@riebeckite/theme-garden`, `@riebeckite/theme-gruvbox`, `@riebeckite/theme-minimal`, `@riebeckite/theme-module`, `@riebeckite/theme-rerurate`, `@riebeckite/theme-sakura`, `@riebeckite/theme-signal`, `@riebeckite/theme-technical`, `@riebeckite/theme-terminal`, `@riebeckite/theme-tokyonight`
 
 ### Removed
-
-- **Breaking:** Remove the `showcase` scaffold preset. Editorial now lets sites align article titles, metadata, and ornaments left, center, or right.
-  Packages: `create-riebeckite`, `@riebeckite/theme-editorial`
-  Migration: Use another scaffold preset and add only the plugins and content your site needs.
 
 ### Fixed
 

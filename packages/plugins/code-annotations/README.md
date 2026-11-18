@@ -68,7 +68,7 @@ not import it, so the two packages remain independently configurable.
 
 ## Exports
 
-- `codeAnnotations()` / `codeAnnotations()` — plugin factory
+- `codeAnnotations()` — plugin factory
 - `remarkCodeAnnotations()` — Markdown transform
 - `rehypeCodeAnnotations()` — HTML transform
 - `collectCodeDiff(code)` — separates diff markers from source text

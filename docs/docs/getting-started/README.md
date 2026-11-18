@@ -2,11 +2,11 @@
 date: 2026-10-06
 title: Getting Started
 sidebar.label: Getting Started
-sidebar.order: 10
+sidebar.order: 20
 ---
 # Getting Started
 
-This section is the beginner path for publishing your first Riebeckite site. Follow it in order; advanced diagnostics, plugin development, and separate repositories are linked only when you need them.
+This section is the beginner path for publishing your first Riebeckite site. Follow it in order; layout variations, plugin development, and deployment details are linked only when you need them.
 
 ```text
 Quick Start
@@ -17,7 +17,7 @@ First Content
     ↓
 Presets
     ↓
-Deployment
+(deploy → Guides / Deployment)
 ```
 
 ## What is Riebeckite?
@@ -35,13 +35,18 @@ You do **not** clone this repository to use Riebeckite. The [`create-riebeckite`
 | [Quick Start](./quick-start.md) | Create, run, edit Markdown, preview, and build in one short path |
 | [Installation](./installation.md) | Check requirements and understand the generated files |
 | [First Content](./first-content.md) | Write or edit your first published Markdown page |
-| [Presets](./presets.md) | Compare presets such as `starter`, `blog`, `docs`, and `minimal` |
-| [Deployment](./deployment.md) | Publish locally, then automate with GitHub Actions if needed |
 | [Use Your Obsidian Vault](./obsidian-vault.md) | Connect an existing Obsidian Vault and publish selected notes |
+| [Presets](./presets.md) | Compare presets such as `starter`, `blog`, `docs`, and `minimal` |
+| [Project Structure](./project-structure.md) | Compare the three layout patterns and decide where content lives |
+| [Integrated Setup](./integrated-setup.md) | Walk through the default layout, step by step |
+| [Separate Directories Setup](./separate-directories-setup.md) | Keep an Obsidian Vault next to the site in one repository |
+| [Separate Repositories Setup](./separate-repositories-setup.md) | Split content and site into two repositories |
 | [Add Your First Plugin](./first-plugin.md) | Install a plugin and see `==highlight==` syntax work |
 | [Change Your Theme](./first-theme.md) | Swap the theme and see the design change |
 
-Quick Start is the shortest path to a running site; Installation covers requirements and generated files in detail. The three setup walkthroughs — [Integrated Setup](./integrated-setup.md), [Separate Directories Setup](./separate-directories-setup.md), [Separate Repositories Setup](./separate-repositories-setup.md) — add deployment for each layout.
+Quick Start is the shortest path to a running site; Installation covers requirements and generated files in detail. Project Structure explains the three layout patterns; the three setup walkthroughs then cover each one, and the separate-repository operations live in [Separate content repository](../guides/deployment/separate-content-repository.md).
+
+To publish and automate deploys, continue with [Deployment](../guides/deployment/README.md) in the Guides section.
 
 ## The shortest path
 
@@ -65,7 +70,7 @@ Open the local URL printed in the terminal. Edit Markdown in `content/`, make su
 npm exec riebeckite build
 ```
 
-To publish the build output as-is, install Wrangler and run `npm exec -- riebeckite publish run --execute`. If the site has no Wrangler configuration yet, add `--provider cloudflare-workers`; login and `wrangler.jsonc` generation are then automatic. See [Deployment](./deployment.md) for details.
+To publish the build output as-is, see [Deployment](../guides/deployment/README.md): publishing with Wrangler, GitHub Actions automation, and other hosts.
 
 If you are unsure which preset to choose, use the `starter` preset. For a publication with posts, tags, and series, choose `blog` at the preset prompt, or run `npx create-riebeckite my-blog --preset blog`.
 

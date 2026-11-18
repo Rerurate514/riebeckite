@@ -9,37 +9,24 @@ sidebar.order: 30
 ## HonoX application wiring
 
 Every HonoX site that uses plugin pages needs the generic catch-all route. The
-scaffolded site already includes it. The root `/` is resolved by
-`resolveRiebeckiteHomeRequest(c, content)`, which shares the same mechanics:
+scaffolded site already includes it. Routes are created with `createContentRoute`,
+which takes `content`, `config`, and `render`:
 
 ```tsx
-import {
-  contentRouteSsgParams,
-  resolveRiebeckiteContentRequest,
-  riebeckiteSsgParams,
-} from "@riebeckite/honox/server";
-import { PageBody } from "@riebeckite/honox/ui";
-import { createRoute } from "honox/factory";
+import { createContentRoute } from "@riebeckite/honox/server";
 
-export default createRoute(
-  contentRouteSsgParams("/:slug{.+}", () => riebeckiteSsgParams(content)),
-  async (c) => {
-    const resolved = await resolveRiebeckiteContentRequest(c, content);
-
-    if (resolved.kind === "response") return resolved.response;
-
-    if (resolved.kind === "page") {
-      return c.render(<PageBody html={resolved.page.body} />);
-    }
-
-    return c.render(/* site-specific article composition */);
-  },
-);
+export default createContentRoute({
+  content,
+  config,
+  render: ({ entry, post }) => (
+    /* site-specific article composition */
+  ),
+});
 ```
 
-A normal site user does not need to add this route per plugin. The shared route
-resolves plugin pages together, and the root `/` is resolved by
-`resolveRiebeckiteHomeRequest(c, content)`, which shares the same mechanics.
+The root `/` is resolved by `resolveRiebeckiteHomeRequest`. A normal site user
+does not need to add this route per plugin; the shared route resolves plugin
+pages together.
 
 ## What a page can return
 

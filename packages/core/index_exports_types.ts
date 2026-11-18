@@ -164,6 +164,7 @@ export type { ResolvedRiebeckiteConfig } from "./src/types/resolved_riebeckite_c
 export type {
   RiebeckiteConfig,
   SpaConfig,
+  UiConfig,
 } from "./src/types/riebeckite_config.js";
 export type { SiteConfig } from "./src/types/site_config.js";
 export type {

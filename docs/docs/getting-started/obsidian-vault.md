@@ -1,6 +1,7 @@
 ---
 date: 2026-10-06
 title: Use Your Obsidian Vault
+sidebar.order: 50
 ---
 # Use Your Obsidian Vault
 
@@ -62,9 +63,9 @@ What this means:
 
 - `publish: true` makes the note routable and buildable.
 - `publish: false` keeps the note out of the built site.
-- Missing `publish` falls back to the default `content.filters.publishStrategy: explicit`, so the note is treated as a draft in the default `starter` setup (see [Publication rules](../guides/content-repositories/publishing.md#publication-rules)).
+- Missing `publish` falls back to the default `content.filters.publishStrategy: explicit`, so the note is treated as a draft in the default `starter` setup (see [Publication rules](../guides/deployment/separate-content-repository/publishing.md#publication-rules)).
 
-If a published note links to an unpublished note, the target page is not generated, and links to unpublished notes are not published as working site links — they render like broken links. Run `npm install -D @riebeckite/plugin-diagnostics` and then run `npx riebeckite-diagnostics --content ../my-vault --publish-strategy explicit` to see `publish-boundary` warnings for these references.
+If a published note links to an unpublished note, the target page is not generated, and links to unpublished notes are not published as working site links — they render like broken links.
 
 ## 4. Start Riebeckite
 
@@ -85,73 +86,12 @@ Open the local URL printed in the terminal.
 
 While the development server is running, saving a note in Obsidian is reflected on the next page view. Changing the `publish` setting is reflected the same way.
 
-## 5. Check WikiLinks and images
+---
 
-These examples were verified with a fresh `starter` site and a small test Vault.
-
-WikiLinks:
-
-```md
-[[hello]]
-[[hello|custom hello label]]
-[[hello#Details|hello details]]
-[[Hello note]]
-```
-
-Images in your Vault can be embedded with Obsidian syntax:
-
-```md
-![[sample.png]]
-```
-
-Riebeckite resolves the image from the Vault and copies public referenced images into `dist/` during build. You do not need to move images to a Riebeckite-only folder for this basic case.
-
-Note embeds also work for published notes:
-
-```md
-![[embedded]]
-```
-
-## 6. Build the site
-
-When the local preview looks right, build the static site:
-
-```sh
-npm exec riebeckite build
-```
-
-The output is written to `dist/`.
-
-## What works from Obsidian?
-
-| Obsidian feature | Riebeckite |
-| --- | --- |
-| Markdown | Supported as core Markdown |
-| WikiLinks | Supported by the starter Obsidian Markdown plugin |
-| [[glossary/wikilink|WikiLink]] aliases | Supported, including `[[note|label]]` |
-| Heading links | Supported, for example `[[note#Heading]]` |
-| Images | Supported for public referenced images such as `![[sample.png]]` |
-| Note embeds | Supported for published Markdown notes |
-| Callouts | Supported, for example `> [!NOTE]` |
-| Tags | Supported by the Obsidian Markdown plugin; tag pages are provided by the starter taxonomy plugin |
-| [[glossary/frontmatter|Frontmatter]] | Supported |
-| Obsidian aliases | Supported for WikiLink resolution through `aliases:` |
-| `publish` | Supported; `publish: true` is public, drafts are not built |
-| Canvas | Requires `@riebeckite/plugin-canvas` |
-| Excalidraw | Requires `@riebeckite/plugin-excalidraw` |
-| Bases | Requires `@riebeckite/plugin-bases` |
-| Mermaid | Requires a renderer such as `@riebeckite/plugin-mermaid-pele` for rendered diagrams; otherwise Mermaid fences are code blocks |
-| `.obsidian/` | Not required by Riebeckite; ignored automatically |
-
-## Keep the Vault in another repository
-
-The shortest path is to point `content.directory` at a local Vault folder. If you want to keep your Vault and site in separate GitHub repositories, use the separate content repository workflow instead.
-
-See [Content Repositories](../guides/content-repositories.md) for the GitHub Actions setup.
+For the full feature guide, including WikiLink and image checking, troubleshooting, and advanced setup, see [Publishing Obsidian notes](../guides/obsidian.md).
 
 ## Next steps
 
 - Edit more notes and add `publish: true` only where needed
 - Run `npm exec riebeckite check` after config changes
 - Run `npm exec riebeckite build` before deployment
-- Try [Add Your First Plugin](./first-plugin.md) when you want more features

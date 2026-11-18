@@ -19,7 +19,12 @@ export function getHreflangAlternates(
   const languages = new Set<WebLocale>();
   for (const tag of headTags ?? []) {
     const hreflang = tag.attrs?.hreflang;
-    if (tag.tag === "link" && tag.attrs?.rel === "alternate" && hreflang) {
+    if (
+      tag.tag === "link" &&
+      tag.attrs?.rel === "alternate" &&
+      hreflang &&
+      hreflang !== "x-default"
+    ) {
       languages.add(resolveWebLocale(hreflang));
     }
   }

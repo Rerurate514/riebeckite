@@ -63,7 +63,7 @@ const kept = true;
 
 ## 公開 API
 
-- `codeAnnotations()` / `codeAnnotations()`：プラグインファクトリ
+- `codeAnnotations()`：プラグインファクトリ
 - `remarkCodeAnnotations()`：Markdown 変換
 - `rehypeCodeAnnotations()`：HTML 変換
 - `collectCodeDiff(code)`：差分マーカーとコード本体を分離

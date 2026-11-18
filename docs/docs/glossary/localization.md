@@ -41,6 +41,6 @@ export default defineConfig({
 The full option list and implementation notes are in the [plugin README](../plugins/l10n.md).
 
 ## Head tag generation
-The l10n plugin generates `hreflang` link tags for each translated version of a note. These are added to the note's `headTags` during manifest creation, defined in `packages/plugins/l10n/src/l10n.ts` via the `addLocalizationHeadTags` function. Each translated entry receives one `<link rel="alternate" hreflang="…">` per existing translation. The site shell renders those tags and selects `<html lang>` for a request.
+The l10n plugin generates `hreflang` link tags for each translated version of a note. These are added to the note's `headTags` during manifest creation, defined in `packages/plugins/l10n/src/head_tags.ts` via the `addLocalizationHeadTags` function. Each translated entry receives one `<link rel="alternate" hreflang="…">` per existing translation, and translation groups with more than one language also receive an `x-default` tag pointing at the default-language page. The site shell renders those tags and selects `<html lang>` for a request.
 
 This works in combination with the [SEO plugin](./feed.md) to emit language alternates for SEO.

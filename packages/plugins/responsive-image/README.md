@@ -88,7 +88,7 @@ same build; generated assets are discovered before this plugin creates markup.
 
 ## Exports
 
-- `responsiveImage(options?)` / `responsiveImage` — plugin factory
+- `responsiveImage(options?)` — plugin factory
 - `resolveResponsiveImageOptions(options?)` — resolve defaults
 - `buildResponsiveSrcset(existingPaths, src, options?)` — pure srcset planner
 - `applyResponsiveImages(html, existingPaths, options?)` — HTML transform

@@ -809,5 +809,5 @@ Markdown コンポーネントと HAST 変換は併用できます。Markdown �
 - [[testing|テスト]]：プラグインのテスト戦略と外部パッケージの検証
 - [[preview|プレビュー API]]：プラグインのプレビュー用フィクスチャとランタイム
 - [[theme-api|Theme API]]：テーマ拡張の取り決めとセマンティックトークン
-- [[architecture|Architecture]]：Core / Plugin / Integration / Theme / App の責務
+- [Architecture](../framework/architecture.ja.md)：Core / Plugin / Integration / Theme / App の責務
 - [[reference/README|Framework Reference]]：`definePlugin` などの公開 API

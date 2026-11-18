@@ -104,7 +104,7 @@ export default defineConfig({
 > [!quote] Quote
 > quote の callout です。
 
-**WikiLink とフラグメント。** [README](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/themes/README.ja.md) へのリンク、[プラグインカタログ](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/plugins/README.ja.md) という別名付きリンク、[plugins/showcase/inline#インライン表現](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/plugins/showcase/inline.ja.md#インライン表現) という見出しリンクです。
+**WikiLink とフラグメント。** ./README.ja.md へのリンク、[プラグインカタログ](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/plugins/README.ja.md) という別名付きリンク、[plugins/showcase/inline#インライン表現](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/plugins/showcase/inline.ja.md#インライン表現) という見出しリンクです。
 
 **埋め込み。** ノートと画像を埋め込みます。
 
@@ -131,7 +131,7 @@ export default defineConfig({
 
 ## 公開 API
 
-- `obsidianMarkdown(options?)` / `obsidianMarkdown`：プラグインファクトリ
+- `obsidianMarkdown(options?)`：プラグインファクトリ
 - `ObsidianMarkdownOptions`、`CalloutOptions`、`TagOptions`、`WikilinkOptions`、`WikilinkFragment`：型
 
 ## 関連資料

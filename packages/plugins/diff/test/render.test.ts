@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { assertGolden } from "@riebeckite/test";
+import { DEFAULT_UI_LABELS } from "@riebeckite/ui";
 import type { DiffRevision, MarkdownRevision, PostDiff } from "../index.ts";
 import {
   createLineDiff,
@@ -109,4 +110,25 @@ test("renderDiffHistory renders locale-independent revision dates", () => {
 
   assert.ok(html.includes('<span class="rr-diff-history__date">Jan 2</span>'));
   assert.ok(html.includes("bbbbbbb · Jan 2"));
+});
+
+test("renderDiffHistory uses the provided labels over the English defaults", () => {
+  const to = revision(
+    "c".repeat(40),
+    "c".repeat(7),
+    "2024-01-02T00:00:00Z",
+    "A change",
+    "Alice",
+  );
+  const revisions: MarkdownRevision[] = [{ ...to, markdown: "" }];
+  const selected: PostDiff = { from: null, to, lines: [] };
+
+  const html = renderDiffHistory({
+    revisions,
+    selected,
+    labels: { ...DEFAULT_UI_LABELS, collapse: "折りたたむ", expand: "開く" },
+  });
+
+  assert.ok(html.includes("折りたたむ"));
+  assert.ok(html.includes("開く"));
 });

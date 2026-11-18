@@ -155,10 +155,10 @@ navigation({
 深いドキュメントツリーには、コンパクトなグローバルリンク用の `SiteNav` ではなく `SidebarNavigation` を使います。
 
 ```tsx
-<SidebarNavigation items={items} searchable collapsible autoExpandActive />
+<SidebarNavigation items={items} path={c.req.path} language={c.get("htmlLanguage")} searchable collapsible autoExpandActive />
 ```
 
-同じ `NavigationItem` ツリーを受け取ります。`href` と子項目を持つ親ではリンクと開閉ボタンを分離します。現在のページには `aria-current="page"` を付け、祖先は現在ページとして扱わずに展開します。フィルターは一致項目と祖先を表示し、解除すると開閉状態に戻ります。操作用 JavaScript は `navigation()` を有効にした場合だけ登録され、JavaScript なしでもサーバー出力は読めます。
+同じ `NavigationItem` ツリーを受け取ります。`href` と子項目を持つ親ではリンクと開閉ボタンを分離します。現在のページには `aria-current="page"` を付け、祖先は現在ページとして扱わずに展開します。`language` を渡すと、現在位置判定で `path` と各リンクの `href` の両方から対応する `/language` プレフィックスを剥がしてから比較するため、ローカライズしていない手書きの href でも、`docs` プラグインが導出するローカライズ済み href でも動作します。フィルターは一致項目と祖先を表示し、解除すると開閉状態に戻ります。操作用 JavaScript は `navigation()` を有効にした場合だけ登録され、JavaScript なしでもサーバー出力は読めます。
 
 ## オプション
 

@@ -1,39 +1,33 @@
 ---
 date: 2026-10-08
-title: コンテンツとサイトを分離する（詳細編）
+title: コンテンツリポジトリの分離
+sidebar.label: コンテンツリポジトリ分離
+aliases:
+  - /docs/guides/content-repositories
 ---
-# コンテンツとサイトを分離する（詳細編）
+# コンテンツリポジトリの分離
 
-[コンテンツとサイトを分ける](../content-repositories.ja.md) では、別リポジトリで運用する流れを順を追って説明しました。このページはその詳細編です。なぜこの設定で動くのかを説明し、後で必要になるルート解決、アセットのコピー、CI の認証、サブモジュールの運用まで扱います。
+記事（Markdown や Obsidian Vault）とサイト（コード、設定、テーマ）を別々に管理する方法を説明します。
 
-初めて分離構成を作る場合は、先に [コンテンツとサイトを分ける](../content-repositories.ja.md) を読んでください。仕組みを理解したいときや、運用で問題が起きたときに、このページに戻ってくるとよいでしょう。
+## できること
 
-```mermaid
-flowchart LR
-    Vault["コンテンツリポジトリ<br/>Obsidian Vault"]
-    Site["サイトリポジトリ<br/>Riebeckite"]
-    Build["ビルド"]
-    Output["dist/"]
-    Deploy["デプロイ"]
+- 記事を非公開のままサイトを公開する
+- 複数のサイトで1つの Vault を共有する
+- 記事の更新とサイトのデプロイを分離する
+- 記事とサイトの更新を独立して管理する
 
-    Vault --> Build
-    Site --> Build
-    Build --> Output
-    Output --> Deploy
-```
+## 向いている場面
 
-**コンテンツの保存場所と Riebeckite アプリケーションは、分けて置けます。**
+| 状況 | おすすめ |
+|---|---|
+| 記事を公開したくない | リポジトリ分離型。プライベートリポジトリにすればソースリポジトリは非公開のままですが、`publish: true` があるノートは公開サイトに載るため、非公開にしたいノートは `publish: true` を外し、`content.exclude` で非公開フォルダを除外してください。 |
+| 記事もサイトも公開してよい | 一体型またはディレクトリ分離型。管理するリポジトリは1つで済みます。 |
+| 記事を更新したらサイトもデプロイしたい | リポジトリ分離型。記事の push でデプロイを起動するには、外部チェックアウトに加えて repository dispatch が必要です。単なるチェックアウトのみでは、すでに起動しているデプロイにファイルを供給するだけです。 |
+| 1つの Vault を複数のサイトで使いたい | リポジトリ分離型、または Vault を独立した場所に置き、各サイトから参照します。 |
 
-## このページの構成
+## ページガイド
 
-- [仕組みと構成](./separate-content-repository/concepts.ja.md)
-- [リポジトリ分離](./separate-content-repository/repository-split.ja.md)
-- [公開ルールと検証](./separate-content-repository/publishing.ja.md)
-- [トラブルシューティング](./separate-content-repository/troubleshooting.ja.md)
-
-## 関連資料
-
-- [コンテンツとサイトを分ける](../content-repositories.ja.md)：手順を追った導入
-- [設定](../../reference/configuration.ja.md)：ルート解決と外部 Vault の詳細
-- [利用ガイド](../README.ja.md)：外部 Vault の例とアセット
-- Cloudflare デプロイテンプレート：デプロイワークフローの詳細
+- [概念](./separate-content-repository/concepts.ja.md)：リポジトリ分離の概念、用語、レイアウトの判断
+- [セットアップ](./separate-content-repository/setup.ja.md)：content-repositories と repository-split を統合した手順。シークレット名・権限設定・トークン発行の重複を1本化し、手順どおりに読める構成にしています。
+- [公開とトラブルシューティング](./separate-content-repository/publishing.ja.md)：公開ルールと検証。トラブルシューティング表は専用ページを参照しています。
+- [トラブルシューティング](./separate-content-repository/troubleshooting.ja.md)：統合されたトラブルシューティング表。よくある問題を1か所にまとめています。

@@ -52,6 +52,7 @@ Inspector has a command for each target you want to inspect:
 | `riebeckite inspect graph` | Relationships between content |
 | `riebeckite inspect build` | Incremental build state |
 | `riebeckite inspect assets` | Content asset inventory, usage, duplicates, and optimization candidates |
+| `riebeckite inspect api` | Managed API lifecycle metadata (`--deprecated` lists deprecated APIs only; `--json` prints the report as JSON) |
 
 ## Inspecting the config
 
@@ -251,10 +252,6 @@ Vite/[[framework/honox-integration|HonoX]] build work, or auto-fix configuration
 Content may be processed in memory to resolve paths and permalinks.
 If the requested information does not exist because no build has completed,
 report that condition plainly.
-
-`inspect content --list` reports each entry's resolved canonical permalink.
-When a public-location plugin records identity metadata, it also shows the ID
-and the ID source.
 
 `inspect build` reports the incremental state status. When the state is
 invalid, it also reports the reason: malformed JSON, an unsupported state

@@ -1,6 +1,7 @@
 import { defineConfig } from "@riebeckite/core";
 import { archive } from "@riebeckite/plugin-archive";
 import { articleMetadata } from "@riebeckite/plugin-article-metadata";
+import { alias } from "@riebeckite/plugin-alias";
 import { attachment } from "@riebeckite/plugin-attachment";
 import { autoCardLink } from "@riebeckite/plugin-autocardlink";
 import { backlinks } from "@riebeckite/plugin-backlinks";
@@ -96,7 +97,68 @@ export default defineConfig({
     colorMode: "system",
   }),
   spa: { prefetch: "hover", viewTransitions: true },
+  ui: {
+    labels: {
+      ja: {
+        contents: "目次",
+        contentsHeading: "目次",
+        filter: "絞り込み",
+        filterNavigation: "ナビゲーションを絞り込み",
+        collapse: "折りたたむ",
+        expand: "展開する",
+        searchNotes: "ノートを検索",
+        searchPlaceholder: "ノートを検索 (tag:, lang:, path: ...)",
+        nearbyNotes: "近くのノート",
+        seriesNavigation: "シリーズナビゲーション",
+        language: "言語",
+        sidebarNavigation: "サイドバーナビゲーション",
+        localGraph: "ローカルグラフ",
+        openInExplorer: "Explorer で開く",
+        localGraphTruncated:
+          "この周辺はノードが多いため、320ノードで打ち切っています。",
+        localGraphTruncatedExplorer:
+          "ネットワーク全体は Explorer で確認できます。",
+        explorer: "Explorer",
+        explorerPanels: "Explorer のパネル",
+        clearFilters: "絞り込みを解除",
+        tags: "タグ",
+        folders: "フォルダー",
+        notes: "ノート",
+        showingNotes: "{total} 件中 {shown} 件を表示",
+        noteGraph: "ノートグラフ",
+        localGraphMode: "ローカルグラフ",
+        globalGraphMode: "グラフ全体 · {count} 件のノート",
+        localMode: "ローカル",
+        globalMode: "全体",
+        selectNoteHint: "ノートを選ぶとリンクを確認できます。",
+        history: "変更履歴",
+        historyChanges: "{count} 件の変更",
+        historyToggle: "履歴の表示を切り替え",
+        commitHistory: "コミット履歴",
+        untitledChange: "無題の変更",
+        search: "検索",
+        closeSearch: "検索を閉じる",
+        searchQuery: "検索キーワード",
+        searchFilterHint: "tag:、lang:、path: で絞り込めます。",
+        searchResults: "検索結果",
+        seriesPosition: "第{index}部 (全{total}部)",
+        selectedNote: "選択中のノート",
+        outgoingLinks: "発リンク",
+        backlinks: "バックリンク",
+        relatedNotes: "関連ノート",
+        noNotes: "ノートはありません。",
+        documentation: "ドキュメント",
+        tableOfContents: "目次",
+        menu: "メニュー",
+        navigation: "ナビゲーション",
+        primaryNavigation: "主要ナビゲーション",
+        secondaryNavigation: "補助ナビゲーション",
+        footerNavigation: "フッターナビゲーション",
+      },
+    },
+  },
   plugins: [
+    alias({ status: 301 }),
     obsidianMarkdown(),
     media(),
     attachment(),

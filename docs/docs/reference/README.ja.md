@@ -2,7 +2,7 @@
 date: 2026-10-08
 title: リファレンス
 sidebar.label: リファレンス
-sidebar.order: 40
+sidebar.order: 60
 ---
 # リファレンス
 
@@ -53,6 +53,7 @@ flowchart TD
 - `provenance`
 - `publication`
 - `spa`
+- `ui`
 
 `appRoot`、`configRoot`、`contentRoot` は設定キーではなく解決の概念です。詳しくは [ルート](./configuration/roots.ja.md) を参照してください。
 

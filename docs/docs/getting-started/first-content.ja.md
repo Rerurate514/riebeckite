@@ -2,7 +2,7 @@
 date: 2026-10-08
 title: 最初のコンテンツ
 sidebar.label: 最初のコンテンツ
-sidebar.order: 30
+sidebar.order: 40
 ---
 # 最初のコンテンツ
 
@@ -73,4 +73,4 @@ npm exec riebeckite build
 ## 次に読むページ
 
 - [プリセット →](./presets.ja.md)
-- [デプロイ →](./deployment.ja.md)
+- [デプロイ →](../guides/deployment/README.ja.md)

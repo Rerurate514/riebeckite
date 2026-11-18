@@ -1,3 +1,8 @@
+---
+date: 2026-11-18
+title: Page and Site
+---
+
 # Plugins that act on the page or site
 
 These Plugins cannot be expressed by a single Markdown fragment. Most are visible on this page as the search box, table of contents, color mode toggle, and so on; opt-in entries need configuration before they appear.

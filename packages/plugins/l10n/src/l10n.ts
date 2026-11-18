@@ -116,7 +116,7 @@ export function l10n(options: L10nOptions) {
         : {}),
     }),
     onManifestCreated: ({ manifest }) => {
-      addLocalizationHeadTags(manifest, state);
+      addLocalizationHeadTags(manifest, state, resolved.defaultLang);
       for (const route of manifest.pageRoutes) {
         const slug = state.slugsByPermalink.get(route.pathname);
         if (!slug) continue;

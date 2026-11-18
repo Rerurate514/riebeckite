@@ -73,7 +73,7 @@ See [HonoX Integration](../framework/honox-integration.md), section
 
 ## Exports
 
-- `discordEmbed(options?)` / `discordEmbed(options?)` — plugin factory
+- `discordEmbed(options?)` — plugin factory
 - `buildDiscordHeadTags(entry, options, diagnostics)` — build one entry's head
   tags
 - `resolveDiscordEmbedOptions(options?)` — resolve defaults

@@ -2,7 +2,7 @@
 date: 2026-10-06
 title: Quick Start
 sidebar.label: Quick Start
-sidebar.order: 10
+sidebar.order: 20
 ---
 # Quick Start
 
@@ -27,7 +27,7 @@ Answer the prompts (recommended answers shown):
 - **Add optional feature packs?** — press Enter for `No`
 - **Customize extra project files?** — press Enter for `No`; the default project files are still generated
 - **Where will you write content?** — choose `This project` for `content/` inside the site, `Separate directory in this repository` for a vault next to the site (for example `../vault`), or `Separate GitHub repository` to keep content in another repository
-- **Set up deployment?** — press Enter for `Not now` if you want a local project first. Choose `Cloudflare Workers` only when you want local publishing set up immediately. It installs dependencies and then asks `Deploy now?`: `Yes` publishes immediately, `Later` finishes the scaffold. Choose `GitHub Actions` to deploy on every push to `main`; see [Deployment](./deployment.md)
+- **Set up deployment?** — press Enter for `Not now` if you want a local project first. Choose `Cloudflare Workers` only when you want local publishing set up immediately. It installs dependencies and then asks `Deploy now?`: `Yes` publishes immediately, `Later` finishes the scaffold. Choose `GitHub Actions` to deploy on every push to `main`; see [Deployment](../guides/deployment/README.md)
 - **Install dependencies now?** — press Enter for `Yes` so the generator installs the site's packages
 
 When it succeeds, it prints `Created a starter Riebeckite site in my-riebeckite-site` and a short "Next steps" list. If you kept the default install answer, the packages are already installed; move into the folder:
@@ -92,41 +92,28 @@ npm exec riebeckite build
 
 A successful build writes the publishable static output to `dist/`. Deployment means hosting that folder.
 
-## 7. Publish to Cloudflare Workers
+## 7. Publish your site
 
-A site generated with `Cloudflare Workers` already includes the Wrangler dependency and `wrangler.jsonc`, so no extra setup is needed. Build and publish:
+The deployment choice you made in step 1 determines how to publish:
 
-```sh
-npm exec riebeckite build
-npm exec -- riebeckite publish run --execute
-```
+- **If you chose `Cloudflare Workers`**: Wrangler is already installed. Build and publish:
+  ```sh
+  npm exec riebeckite build
+  npm exec -- riebeckite publish run --execute
+  ```
 
-Choosing `Yes` at `Deploy now?` runs the build and deploy immediately after scaffolding and prints a URL like `https://<name>.<account>.workers.dev`. If you chose `Later`, or you want to publish later updates, run these commands:
+- **If you chose `GitHub Actions`**: the generated workflow publishes the site on every push to `main`. Commit, push, and watch the run; see [Deployment](../guides/deployment/README.md) for the details.
 
-```sh
-npm exec riebeckite build
-npm exec -- riebeckite publish run --execute
-```
-The first run opens a browser to sign in to Wrangler. For a site generated with `Not now`, install Wrangler first with `npm install -D wrangler`, then pass the provider because no `wrangler.jsonc` exists yet: `npm exec -- riebeckite publish run --execute --provider cloudflare-workers`.
-
-After the public URL is known, set `site.baseUrl` in `riebeckite.config.ts` to that URL, then build and deploy once more so generated URLs such as sitemap entries use the final address. The publication plan tracks content, redirects, and generated outputs; add `--force` when a config-only change is not detected.
-
-```sh
-npm exec riebeckite build
-npm exec -- riebeckite publish run --execute --force
-```
-
-To deploy automatically on every push to `main`, continue with GitHub Actions in [Deployment](./deployment.md). To keep content in a separate repository, see [Separate Content Repository →](../guides/content-repositories.md).
+- **If you chose `Not now`**: The build output in `dist/` is ready for any static host. See [Deployment](../guides/deployment/README.md) for provider-specific instructions.
 
 ## Next
 
-- [Deployment](./deployment.md) — publish to Cloudflare Workers and automate with GitHub Actions
-- [Project Structure](./project-structure.md) — compare integrated, separate-directories, and separate-repositories layouts
-- [Content Location](./content-location.md) — choose where Markdown lives and set `content.directory`
+- [Deployment](../guides/deployment/README.md) — publish to Cloudflare Workers and automate with GitHub Actions
+- [Project Structure](./project-structure.md) — compare integrated, separate-directories, and separate-repositories layouts, and decide `content.directory`
 - [Integrated Setup](./integrated-setup.md), [Separate Directories Setup](./separate-directories-setup.md), [Separate Repositories Setup](./separate-repositories-setup.md) — follow a complete layout with an official sample
 - [Presets](./presets.md) — compare `starter`, `digital-garden`, `blog`, `writer`, `docs`, `portfolio`, `minimal`, and `empty`
 - [First Content](./first-content.md) — write and preview content more deliberately
 - [Installation](./installation.md) — requirements and setup deep-dive
 - [Branding your site →](../guides/branding.md) — replace the icon, header logo, and link preview image
 - [Obsidian Vault →](../guides/obsidian.md) — use an Obsidian vault as content source
-- [Separate Content Repository →](../guides/content-repositories.md) — split content into a separate repo
+- [Separate Content Repository →](../guides/deployment/separate-content-repository.md) — split content into a separate repo

@@ -2,7 +2,9 @@
 date: 2026-11-05
 title: Project Structure
 sidebar.label: Project Structure
-sidebar.order: 20
+sidebar.order: 70
+aliases:
+  - /docs/getting-started/content-location
 ---
 # Project Structure
 
@@ -13,6 +15,22 @@ A generated Riebeckite site is a small static-site project. You can keep content
 | Integrated | `content/` in the site repository | Same repository | One person or one repository owns everything |
 | Separate directories | `vault/` next to `site/` | Same repository | You want an Obsidian vault and the site code clearly separated |
 | Separate repositories | Another repository | Its own repository | Writers update content without touching site code |
+
+The content location is controlled by `content.directory` in `riebeckite.config.ts`, so the same choice is also a configuration choice:
+
+```ts
+export default defineConfig({
+  content: { directory: "content" },
+});
+```
+
+The directory is resolved relative to the application root (`appRoot`) — by default the directory containing `riebeckite.config.ts`. The value may also point outside the site directory:
+
+```ts
+content: { directory: "../vault" },
+```
+
+This is the only setting needed for the separate-directories layout. Changing `content.directory` does not move files: move the Markdown and `assets/` first, then update the setting.
 
 ## Integrated files
 
@@ -76,12 +94,34 @@ my-site/                 my-vault/
 └── .github/workflows/
 ```
 
-The site workflow checks the vault out into `content/` before building. The vault workflow sends `repository_dispatch` to the site workflow after a push.
+Here the site keeps `content.directory` at `content`, and the site workflow checks the vault out into that path before building. The vault workflow sends `repository_dispatch` to the site workflow after a push.
+
+## What belongs in the content directory
+
+- Markdown pages with frontmatter, such as `index.md` and `notes/welcome.md`.
+- `assets/` for images and attachments referenced from content.
+- Any folder structure you want to keep. URLs follow the file paths without the `.md` extension.
+
+Do not put `package.json`, `app/`, or build output inside the content directory. It is only for content.
+
+## Verify the location
+
+```sh
+npm exec riebeckite check
+npm exec riebeckite build
+```
+
+`check` validates the configuration. `build` fails when the configured directory does not exist or contains no publishable pages. Run `npm exec riebeckite doctor` for a diagnosis.
+
+## Official samples
+
+- [Integrated](https://github.com/Rerurate514/riebeckite-e2e-integrated) — [site](https://integrated.riebeckite.dev)
+- [Separate directories](https://github.com/Rerurate514/riebeckite-e2e-directories) — [site](https://directories.riebeckite.dev)
+- [Separate repositories](https://github.com/Rerurate514/riebeckite-e2e-site) — [site](https://repositories.riebeckite.dev)
 
 ## Next
 
-- [Content Location](./content-location.md)
 - [Integrated Setup](./integrated-setup.md)
 - [Separate Directories Setup](./separate-directories-setup.md)
 - [Separate Repositories Setup](./separate-repositories-setup.md)
-- [Official samples](https://github.com/Rerurate514/riebeckite-e2e-integrated)
+- [Roots reference](../reference/configuration/roots.md)

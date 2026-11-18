@@ -2,7 +2,7 @@
 date: 2026-10-08
 title: Framework
 sidebar.label: Framework
-sidebar.order: 60
+sidebar.order: 70
 sidebar.collapsed: true
 ---
 # Framework
@@ -11,7 +11,7 @@ sidebar.collapsed: true
 
 この章で説明する境界の背景にある原則は [設計思想](../philosophy.ja.md) にあります。この章は現在の実装を、設計思想はなぜそうするのかを説明します。
 
-この章のうち次の 3 ページは、利用者向けの概要から始まり、Framework の残りを読まなくても役立ちます。[コンテンツ変更](./content-mutation.ja.md) は安全なコンテンツ書き込み、[コンテンツ移行](./content-migration.ja.md) はバージョン付きの一括変更、[Interactive Runtime](./interactive-runtime.ja.md) はブラウザー側の Plugin UI を扱います。概要を読んだあと、必要なら内部実装へ進んでください。
+この章のうち次の 3 ページは利用者向けの概要から始まり、Framework の残りを読まなくても役立ちます。[コンテンツ変更](./content-mutation.ja.md)は安全なコンテンツ書き込み、[コンテンツ移行](./content-migration.ja.md)はバージョン付きの一括変更、[Interactive Runtime](./interactive-runtime.ja.md)はブラウザー側の Plugin UI を扱います。概要を読んだあと、必要なら内部実装へ進んでください。
 
 対象となるのは、
 
@@ -26,9 +26,7 @@ Riebeckite を使って自分のサイトを作りたいだけなら、この章
 ```mermaid
 flowchart LR
     Start["Riebeckiteを使いたい"]
-
     Start --> Q{"何をしたい？"}
-
     Q -->|"サイトを作る"| GettingStarted["Getting Started"]
     Q -->|"仕組みを理解する"| Framework["Framework"]
     Q -->|"Riebeckite本体を開発する"| Framework
@@ -84,7 +82,6 @@ flowchart BT
     Plugin["Plugin"]
     Theme["Theme"]
     Core["Core"]
-
     App --> Integration
     Integration --> Core
     Plugin --> Core
@@ -94,6 +91,15 @@ flowchart BT
 という責務に分かれています。
 
 Architecture を読んだあと、変更したい領域に応じて Content System、Plugin System、Theme System などへ進むと理解しやすくなります。
+
+## 責務の境界
+
+- Core はコンテンツ処理の取り決めとオーケストレーションを担います。HonoX、Vite、特定のプラグイン、テーマには依存しません。
+- プラグインは Markdown、HTML、メタデータ、アセット、クライアント側の動作、エンドポイント、SEO、Diagnostics、グラフの動作を拡張します。
+- テーマは見た目を担います。トークン、CSS、安定したフックのスタイル、`data-rb-setting-*` 属性として反映されるテーマ設定です。
+- インテグレーションは Core を Web フレームワークとバンドラーに接続します。現在サポートしているアダプタは HonoX/Vite です。
+- アプリケーションはサイト固有のルート、コンポーネント、アイランドを持ちます。
+- CLI はビルド時のツールです。実行時の Cloudflare Workers のコードは、ビルド状態やファイルシステムのキャッシュにアクセスしてはいけません。
 
 ## Riebeckite 本体を開発する場合
 

@@ -322,6 +322,21 @@ test("does not invent missing translations and adds hreflang only for existing v
   assert.equal(manifest.byPermalink.has("/en/only"), false);
 });
 
+test("adds an x-default alternate pointing at the default language page", async () => {
+  const content = manager({
+    "guide.ja.md": "---\ntranslation: guide\n---\n# ガイド",
+    "guide.en.md": "---\ntranslation: guide\n---\n# Guide",
+  });
+  const manifest = await content.getManifest();
+  const headTags = manifest.bySlug.get("guide.en")?.headTags ?? [];
+  const xDefault = headTags.find(
+    (tag) => tag.attrs?.hreflang === "x-default",
+  );
+  assert.ok(xDefault, "expected an x-default alternate");
+  assert.equal(xDefault?.attrs?.rel, "alternate");
+  assert.equal(xDefault?.attrs?.href, "/guide");
+});
+
 test("publishes the default LanguageSwitcher", async () => {
   const content = manager({
     "guide.ja.md": "---\ntranslation: guide\n---\n# ガイド",

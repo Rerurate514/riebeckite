@@ -193,7 +193,7 @@ manifest time, mentions whose target is not a published entry are reported as
 
 ## Exports
 
-- `webmention()` / `webmention()`
+- `webmention(options?)`
 - `MemoryWebmentionProvider`, provider/capability types and errors
 - `parseWebmentionSource`, `findTargetLink`, `verifyWebmention`,
   `createWebmentionSourceFetcher`

@@ -8,6 +8,7 @@ import { type L10nState, TRANSLATION_METADATA_KEY } from "./types.js";
 export function addLocalizationHeadTags(
   manifest: ContentManifest,
   state: L10nState,
+  defaultLocale?: string,
 ): void {
   const translationsById = collectDiscoverableTranslations(manifest);
   for (const entry of manifest.discoverableEntries) {
@@ -24,6 +25,23 @@ export function addLocalizationHeadTags(
         },
       }),
     );
+    const defaultTranslation = defaultLocale
+      ? translations.find(
+          (translation) =>
+            translation.publicLocation.language === undefined ||
+            translation.publicLocation.language === defaultLocale,
+        )
+      : undefined;
+    if (translations.length > 1 && defaultTranslation) {
+      headTags.push({
+        tag: "link",
+        attrs: {
+          rel: "alternate",
+          hreflang: "x-default",
+          href: defaultTranslation.permalink,
+        },
+      });
+    }
     entry.headTags = [
       ...(entry.headTags ?? []).filter(
         (tag) => !headTags.some((generated) => sameHeadTag(tag, generated)),

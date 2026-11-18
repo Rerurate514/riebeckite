@@ -80,7 +80,7 @@ export default defineConfig({
 
 ## 公開 API
 
-- `sourceFiles(options)` / `sourceFiles`
+- `sourceFiles(options)`
 - `sourceFilePath(path)`
 - `SourceFilesOptions`
 

@@ -38,7 +38,7 @@ Create Plugins with `definePlugin` from `@riebeckite/core`. A Plugin with only a
 
 Declare Plugin-specific stylesheets through `assets`. Do not copy CSS into the site manually or reference `/node_modules` directly from the browser.
 
-Use a stable root hook such as `rr-<feature>` on rendered output. See [Plugin API](../reference/plugin-api.md) for the CSS contract.
+Use a stable root hook such as `rr-<feature>` on rendered output. See [Plugin API](../reference/plugin-api.md) for the CSS contract. For a focused walkthrough see ./recipes/8 assets-and-client-entries.
 
 ## 3. Transform Markdown or HTML
 
@@ -609,13 +609,13 @@ Use `pageTypes` for standalone pages. A Page Type returns the HTML body, while t
 
 Do not add Plugin-specific HonoX routes. Content embeds such as Canvas, Bases, and Excalidraw remain `renderers`.
 
-See [Page System](../framework/page-system.md) for ownership, path resolution, and SSG behavior.
+See [Page System](../framework/page-system.md) for ownership, path resolution, and SSG behavior. For a focused walkthrough see ./recipes/6 pages.
 
 ## 5. Package it when needed
 
 Once a site-local Plugin works, it can be turned into a package. External Plugins should depend only on `@riebeckite/core`, declare their own subpaths through `exports`, and must not import `@riebeckite/core/src/**` or monorepo-internal paths. For the package shape and a build that ships ESM plus type declarations, see [Distributing a Plugin outside this repository](../reference/plugin-api/distribution.md#distributing-a-plugin-outside-this-repository). Pass those exported subpaths explicitly to `createStyleAsset()` and `createClientEntry()`.
 
-For the directive plugin above, declare `@riebeckite/core` in `peerDependencies` and `devDependencies`, `unist-util-visit` in `dependencies`, and the `mdast` types (`@types/mdast`) in `devDependencies`. The complete `package.json` and a build script using esbuild plus `tsc` are in [Distributing a Plugin outside this repository](../reference/plugin-api/distribution.md#distributing-a-plugin-outside-this-repository).
+For the directive plugin above, declare `@riebeckite/core` in `peerDependencies` and `devDependencies`, `unist-util-visit` in `dependencies`, and the `mdast` types (`@types/mdast`) in `devDependencies`. The complete `package.json` and a build script using esbuild plus `tsc` are in [Distributing a Plugin outside this repository](../reference/plugin-api/distribution.md#distributing-a-plugin-outside-this-repository). For a focused walkthrough see ../../framework/plugin-system/distribution.
 
 ## 6. Validate it
 

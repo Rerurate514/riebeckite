@@ -88,7 +88,7 @@ buildRouteLock ──► 現在の RouteLock
 
 関数のシグネチャは次のとおりです。
 
-- `rename(options?)` / `rename(options?)`
+- `rename(options?)`
 - `diffRoutes(previous, current, options?)`
 - `buildRouteLock(entries, isPublished)`
 - `collapseRedirects(rules)`

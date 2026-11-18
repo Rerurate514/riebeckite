@@ -158,7 +158,7 @@ Inspector.
 
 ## Exports
 
-- `analytics()` / `analytics()`
+- `analytics(options)`
 - `initAnalytics` (`@riebeckite/plugin-analytics/client`)
 - `MemoryAnalyticsProvider`
 - Event, query/result, provider/capability, and public-config types

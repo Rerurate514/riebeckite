@@ -1,6 +1,9 @@
 ---
 date: 2026-10-08
 title: Obsidian のノートをサイトにする
+aliases:
+  - /docs/obsidian-plugin
+  - /docs/obsidian-plugin/architecture
 ---
 # Obsidian のノートをサイトにする
 
@@ -99,6 +102,6 @@ Vault の場所と[[glossary/visibility|公開範囲]]は分けて考えます�
 ### 次に読むもの
 
 - [記事の書き方ガイド](./writing-content.ja.md)
-- [コンテンツとサイトを分ける](./content-repositories.ja.md)
-- [Obsidian 向け Riebeckite](../obsidian-plugin/README.ja.md)（現時点では設定のみ）
+- [コンテンツとサイトを分ける](./deployment/separate-content-repository.ja.md)
+- [Obsidian 向け Riebeckite](https://github.com/Rerurate514/riebeckite-obsidian)（現時点では設定のみ）
 - [Content System](../framework/content-system.ja.md)

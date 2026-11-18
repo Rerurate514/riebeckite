@@ -9,6 +9,7 @@ import {
   validateSpa,
   validateStringArray,
   validateTheme,
+  validateUi,
 } from "./config_validation_part2.js";
 import { isRecord } from "./config_validation_part3.js";
 import type { ConfigValidationIssue } from "./types/config_validation.js";
@@ -44,6 +45,7 @@ export function validateConfigIssues(
   validateProvenance(value.provenance, issues);
   validatePublication(value.publication, issues);
   validateSpa(value.spa, issues);
+  validateUi(value.ui, issues);
   validateTheme(value.theme, issues);
   validatePlugins(value.plugins, issues);
   return issues;

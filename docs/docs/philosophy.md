@@ -2,7 +2,7 @@
 date: 2026-11-02
 title: Design Philosophy
 sidebar.label: Design Philosophy
-sidebar.order: 5
+sidebar.order: 10
 ---
 # Design Philosophy
 

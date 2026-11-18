@@ -2,7 +2,7 @@
 date: 2026-11-02
 title: 設計思想
 sidebar.label: 設計思想
-sidebar.order: 5
+sidebar.order: 10
 ---
 # 設計思想
 

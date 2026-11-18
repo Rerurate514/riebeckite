@@ -2,7 +2,7 @@
 date: 2026-10-08
 title: プラグイン
 sidebar.label: プラグイン
-sidebar.order: 30
+sidebar.order: 40
 sidebar.collapsed: true
 ---
 # プラグイン

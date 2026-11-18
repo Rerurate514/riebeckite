@@ -11,19 +11,11 @@ sidebar.order: 10
 
 公開されているコンポーネントは次のとおりです。
 
-- `Article`
-- `ArticleLayout`
-- `ArticleHeader`
-- `ArticleContent`
-- `ArticleBody`
-- `PageBody`
-- `ArticleMeta`
-- `ArticleFooter`
-- `Sidebar`
-- `HtmlFragment`
-- `ThemeRoot`
-- `PluginHeadTags`
-- `RiebeckiteHead`
+ページ構造・head・メタデータ用:
+`Article`、`ArticleLayout`、`ArticleHeader`、`ArticleContent`、`ArticleBody`、`PageBody`、`ArticleMeta`、`ArticleFooter`、`Sidebar`、`HtmlFragment`、`ThemeRoot`、`PluginHeadTags`、`RiebeckiteHead`、`SeoHead`
+
+テーマ属性用:
+`getThemeStyle`、`getThemeStylesheets`、`themeRootAttributes`
 
 対応する `*Props` 型は内部向けです。コンポーネントの props 型が必要な場合は、`ComponentProps<typeof Article>` などのヘルパーを使ってください。
 

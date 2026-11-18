@@ -4,6 +4,7 @@ import { useSiteContext } from "@riebeckite/ui";
 import type { Child } from "hono/jsx";
 import { resolveWebLocale } from "../lib/locale";
 import { localizeDocsHref } from "../lib/navigation-link";
+import { resolveUiLabels } from "../lib/ui-labels";
 
 export function SiteHeader(props: { readonly children?: Child }) {
   const site = useSiteContext();
@@ -22,7 +23,10 @@ export function SiteHeader(props: { readonly children?: Child }) {
         <img src="/riebeckite-logo.png" alt="" width="28" height="28" />
         <span>{site?.config.site.title}</span>
       </a>
-      <nav class="site-header__navigation" aria-label="Primary navigation">
+      <nav
+        class="site-header__navigation"
+        aria-label={resolveUiLabels(site?.language).primaryNavigation}
+      >
         {hasNavigation ? (
           <SiteNav
             placement="primary"
@@ -49,7 +53,7 @@ export function SiteDrawerNavigation() {
       />
       <SiteNav
         placement="secondary"
-        label="Secondary navigation"
+        label={resolveUiLabels(site?.language).secondaryNavigation}
         localizeHref={(href) => localizeDocsHref(href, path)}
       />
     </>
@@ -102,7 +106,7 @@ export function SiteFooter() {
         </div>
         <SiteNav
           placement="secondary"
-          label="Footer navigation"
+          label={resolveUiLabels(site?.language).footerNavigation}
           class="site-footer__navigation"
           localizeHref={(href) => localizeDocsHref(href, path)}
         />

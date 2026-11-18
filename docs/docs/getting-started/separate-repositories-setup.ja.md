@@ -2,7 +2,7 @@
 date: 2026-11-06
 title: リポジトリ分離型セットアップ
 sidebar.label: リポジトリ分離型セットアップ
-sidebar.order: 24
+sidebar.order: 100
 ---
 # リポジトリ分離型セットアップ
 
@@ -287,4 +287,4 @@ Riebeckite の生成するワークフローは GitHub App と PAT のフォー�
 
 - [公開ワークフロー](../guides/deployment/publication-workflow.ja.md)
 - [GitHub Actions](../guides/deployment/github-actions.ja.md)
-- [コンテンツリポジトリ](../guides/content-repositories.ja.md)
+- [コンテンツリポジトリ分離](../guides/deployment/separate-content-repository.ja.md)

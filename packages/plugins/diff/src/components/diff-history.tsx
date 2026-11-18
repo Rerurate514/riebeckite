@@ -1,6 +1,7 @@
 /** @jsxRuntime automatic */
 /** @jsxImportSource hono/jsx */
 
+import { useUiLabels, type UiLabels } from "@riebeckite/ui";
 import { renderToString } from "hono/jsx/dom/server";
 import type { DiffRevision, MarkdownRevision, PostDiff } from "../types.js";
 import { DiffViewer } from "./diff-viewer.js";
@@ -10,12 +11,14 @@ type DiffHistoryInput = {
   revisions: MarkdownRevision[];
   selected: PostDiff | null;
   payloadPath?: string;
+  labels?: UiLabels;
 };
 
 type DiffHistoryProps = {
   revisions: MarkdownRevision[];
   selected: PostDiff;
   payloadPath?: string;
+  labels?: UiLabels;
 };
 
 export function renderDiffHistory(input: DiffHistoryInput): string {
@@ -26,25 +29,36 @@ export function renderDiffHistory(input: DiffHistoryInput): string {
       revisions={input.revisions}
       selected={selected}
       payloadPath={input.payloadPath}
+      labels={input.labels}
     />,
   );
 }
 
-function DiffHistory({ revisions, selected, payloadPath }: DiffHistoryProps) {
+function DiffHistory({
+  revisions,
+  selected,
+  payloadPath,
+  labels: providedLabels,
+}: DiffHistoryProps) {
+  const contextLabels = useUiLabels();
+  const labels = providedLabels ?? contextLabels;
   return (
     <section class="rr-diff-history" data-rr-diff-history>
       <details class="rr-diff-history__panel">
         <summary class="rr-diff-history__header">
-          <h2 class="rr-diff-history__title">History</h2>
+          <h2 class="rr-diff-history__title">{labels.history}</h2>
           <span class="rr-diff-history__header-meta">
             <span class="rr-diff-history__count">
-              {revisions.length} changes
+              {labels.historyChanges.replace(
+                "{count}",
+                String(revisions.length),
+              )}
             </span>
             <span class="rr-diff-history__toggle-label rr-diff-history__toggle-label--open">
-              Collapse
+              {labels.collapse}
             </span>
             <span class="rr-diff-history__toggle-label rr-diff-history__toggle-label--closed">
-              Expand
+              {labels.expand}
             </span>
             <span class="rr-diff-history__toggle" aria-hidden="true">
               <svg
@@ -54,7 +68,7 @@ function DiffHistory({ revisions, selected, payloadPath }: DiffHistoryProps) {
                 height="16"
                 focusable="false"
               >
-                <title>Toggle history</title>
+                <title>{labels.historyToggle}</title>
                 <path
                   d="M5.2 3.4 10.8 8l-5.6 4.6"
                   fill="none"
@@ -68,12 +82,13 @@ function DiffHistory({ revisions, selected, payloadPath }: DiffHistoryProps) {
           </span>
         </summary>
         <div class="rr-diff-history__layout">
-          <ol class="rr-diff-history__list" aria-label="Commit history">
+          <ol class="rr-diff-history__list" aria-label={labels.commitHistory}>
             {revisions.map((revision, index) => (
               <RevisionButton
                 key={revision.hash}
                 revision={revision}
                 selected={index === 0}
+                untitledChange={labels.untitledChange}
               />
             ))}
           </ol>
@@ -99,9 +114,11 @@ function DiffHistory({ revisions, selected, payloadPath }: DiffHistoryProps) {
 function RevisionButton({
   revision,
   selected,
+  untitledChange,
 }: {
   revision: DiffRevision;
   selected: boolean;
+  untitledChange: string;
 }) {
   return (
     <li class="rr-diff-history__item">
@@ -115,7 +132,7 @@ function RevisionButton({
           {formatDiffDate(revision.date)}
         </span>
         <span class="rr-diff-history__message">
-          {revision.message || "Untitled change"}
+          {revision.message || untitledChange}
         </span>
         <span class="rr-diff-history__meta">
           {revision.shortHash} · {revision.author}

@@ -1,4 +1,5 @@
 ---
+date: 2026-11-18
 title: Obsidian Markdown
 ---
 # Obsidian Markdown
@@ -40,7 +41,7 @@ title: Obsidian Markdown
 ### ソース
 
 ````md
-[[README]] と [[plugins/README|Plugin catalog]] への WikiLink。
+[[../../plugins/README.ja.md]] と [[plugins/README|Plugin catalog]] への WikiLink。
 
 ノートの埋め込み：
 
@@ -53,7 +54,7 @@ title: Obsidian Markdown
 
 ### 実行例
 
-[[README]] と [[plugins/README|Plugin catalog]] への WikiLink。
+../../plugins/README.ja.md と [[plugins/README|Plugin catalog]] への WikiLink。
 
 ノートの埋め込み：
 

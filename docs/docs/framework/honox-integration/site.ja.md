@@ -224,7 +224,7 @@ export interface SiteConfig {
 
 ## フィールドがサイト全体で使われる流れ
 
-上記のフィールドは、`@riebeckite/honox` インテグレーション（`packages/core/src/`）を通じて最終的な公開 UI の組み立てに流れます。`title` と `description` は `<head>` に表示され、`author` と `twitterSite` はソーシャルメタデータに、`baseUrl` は URL 生成に、`locale` は `lang` 属性に影響します。
+上記のフィールドは `@riebeckite/core`（`packages/core/src/types/site_config.ts`）で定義され、`@riebeckite/honox` インテグレーション（`packages/integrations/honox`）を通じて最終的な公開 UI の組み立てに流れます。`title` と `description` は `<head>` に表示され、`author` と `twitterSite` はソーシャルメタデータに、`baseUrl` は URL 生成に、`locale` は `lang` 属性に影響します。
 
 ## 関連用語
 

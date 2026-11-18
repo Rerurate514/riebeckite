@@ -2,7 +2,7 @@
 date: 2026-10-08
 title: クイックスタート
 sidebar.label: クイックスタート
-sidebar.order: 10
+sidebar.order: 20
 ---
 # クイックスタート
 
@@ -27,7 +27,7 @@ npx create-riebeckite
 - **Add optional feature packs?**：追加したい機能パックがなければ、`No` のまま Enter を押します
 - **Customize extra project files?**：変更する必要がなければ `No` のまま Enter を押します。既定のプロジェクトファイルは生成されます
 - **Where will you write content?**：`This project` ならサイト内の `content/`、`Separate directory in this repository` ならサイトの隣の Vault（例：`../vault`）、`Separate GitHub repository` なら別リポジトリにコンテンツを置きます
-- **Set up deployment?**：まず手元で試すなら、既定値の `Not now` のまま Enter を押します。すぐに公開準備まで進めたい場合だけ `Cloudflare Workers` を選びます。依存関係のインストール後に `Deploy now?` と聞かれ、`Yes` でそのまま初回公開、`Later` で後回しにできます。`main` への push ごとの自動公開は `GitHub Actions`。[Deployment](./deployment.ja.md) を参照
+- **Set up deployment?**：まず手元で試すなら、既定値の `Not now` のまま Enter を押します。すぐに公開準備まで進めたい場合だけ `Cloudflare Workers` を選びます。依存関係のインストール後に `Deploy now?` と聞かれ、`Yes` でそのまま初回公開、`Later` で後回しにできます。`main` への push ごとの自動公開は `GitHub Actions`。[Deployment](../guides/deployment/README.ja.md) を参照
 - **Install dependencies now?**：既定値の `Yes` のまま Enter を押すと、生成されたサイトの package もインストールされます
 
 成功すると `Created a starter Riebeckite site in my-riebeckite-site`（入力した名前が入る）と、次に実行するコマンドの一覧が表示されます。インストールの質問に既定値の `Yes` で答えた場合、package はインストール済みです。フォルダへ移動します。
@@ -92,42 +92,28 @@ npm exec riebeckite build
 
 成功すると、公開用の静的ファイルが `dist/` に作られます。デプロイでは、この `dist/` を配信します。
 
-## 7. Cloudflare Workers へ公開する
+## 7. サイトを公開する
 
-生成時に `Cloudflare Workers` を選んだサイトには Wrangler の依存と `wrangler.jsonc` がすでに含まれているため、追加の準備は要りません。ビルドして公開します。
+公開の方法は、ステップ 1 で選んだデプロイの選択肢で決まります。
 
-```bash
-npm exec riebeckite build
-npm exec -- riebeckite publish run --execute
-```
+- **`Cloudflare Workers` を選んだ場合**：Wrangler はすでにインストールされています。ビルドして公開します。
+  ```bash
+  npm exec riebeckite build
+  npm exec -- riebeckite publish run --execute
+  ```
 
-`Deploy now?` で `Yes` を選んだ場合は、生成直後に build と deploy まで自動で実行され、`https://<name>.<account>.workers.dev` のような URL が表示されます。`Later` を選んだ場合や、後から更新を公開する場合は次のコマンドを実行してください。
+- **`GitHub Actions` を選んだ場合**：生成されたワークフローが `main` へのプッシュごとにサイトを公開します。コミットしてプッシュすれば実行されます。詳しくは [Deployment](../guides/deployment/README.ja.md) を参照してください。
 
-```bash
-npm exec riebeckite build
-npm exec -- riebeckite publish run --execute
-```
-
-`Not now` で生成したサイトでは、先に `npm install -D wrangler` を実行し、`wrangler.jsonc` がまだないため `npm exec -- riebeckite publish run --execute --provider cloudflare-workers` のようにプロバイダーを指定してください。
-
-公開 URL が決まったら、`riebeckite.config.ts` の `site.baseUrl` をその URL に更新し、もう一度ビルドとデプロイを実行すると、[[glossary/sitemap|サイトマップ]]などに正しい URL が入ります。公開計画はコンテンツ、リダイレクト、生成出力を追跡します。設定だけの変更が検出されない場合は `--force` を付けます。
-
-```bash
-npm exec riebeckite build
-npm exec -- riebeckite publish run --execute --force
-```
-
-`main` への push のたびに自動デプロイしたい場合は [Deployment](./deployment.ja.md) の GitHub Actions へ進んでください。Content を別リポジトリに分けたい場合は [Separate Content Repository →](../guides/content-repositories.ja.md) を参照してください。
+- **`Not now` を選んだ場合**：`dist/` のビルド出力は任意の静的ホストで使えます。プロバイダー固有の手順は [Deployment](../guides/deployment/README.ja.md) を参照してください。
 
 ## 次に読むページ
 
-- [Deployment](./deployment.ja.md) - Cloudflare Workers への公開と GitHub Actions による自動化
-- [プロジェクト構成](./project-structure.ja.md) - 一体型・ディレクトリ分離型・リポジトリ分離型を比較する
-- [コンテンツの場所](./content-location.ja.md) - Markdown の置き場所と `content.directory` を決める
+- [Deployment](../guides/deployment/README.ja.md) - Cloudflare Workers への公開と GitHub Actions による自動化
+- [プロジェクト構成](./project-structure.ja.md) - 一体型・ディレクトリ分離型・リポジトリ分離型を比較し、`content.directory` を決める
 - [一体型](./integrated-setup.ja.md)・[ディレクトリ分離型](./separate-directories-setup.ja.md)・[リポジトリ分離型](./separate-repositories-setup.ja.md) - 公式サンプル付きの完全な手順
 - [Presets](./presets.ja.md) - `starter`、`digital-garden`、`blog`、`writer`、`docs`、`portfolio`、`minimal`、`empty` を比較する
 - [First Content](./first-content.ja.md) - Markdown の書き方と確認方法をもう少し詳しく見る
 - [Installation](./installation.ja.md) - 要件とセットアップの詳しい解説
 - [サイトのアイコンとロゴ →](../guides/branding.ja.md) - アイコン・ヘッダーのロゴ・リンクプレビュー画像を差し替える
 - [Obsidian Vault →](../guides/obsidian.ja.md) - [[glossary/obsidian-vault|Obsidian Vault]] を[[glossary/content-source|コンテンツソース]]として使う
-- [Separate Content Repository →](../guides/content-repositories.ja.md) - コンテンツを別リポジトリに分割
+- [Separate Content Repository →](../guides/deployment/separate-content-repository.ja.md) - コンテンツを別リポジトリに分割

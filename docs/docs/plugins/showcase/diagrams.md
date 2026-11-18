@@ -1,3 +1,8 @@
+---
+date: 2026-11-18
+title: Diagrams
+---
+
 # Diagrams
 
 ## Mermaid (Pele) — [`mermaid-pele`](../mermaid-pele.md)

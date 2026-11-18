@@ -2,7 +2,7 @@
 date: 2026-10-14
 title: 用語集
 sidebar.label: 用語集
-sidebar.order: 70
+sidebar.order: 80
 ---
 
 # 用語集
@@ -140,3 +140,4 @@ Riebeckite が使う概念をカテゴリ別にまとめた用語集です。各
 - [Backlink](./backlink.ja.md)：現在のノートにリンクしている公開ノートの一覧。
 - [Site](./site.ja.md)：ルート、フレーム、メタデータを所有するサイトアプリケーション。
 - [UI](./ui.ja.md)：`@riebeckite/honox/ui` の UI プリミティブ。小さな構造の契約。
+- [English version](./README.md)：英語版はこちら。

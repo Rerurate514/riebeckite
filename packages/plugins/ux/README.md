@@ -96,7 +96,7 @@ Styles ship as `@riebeckite/plugin-ux/style.css` and use the theme's
 
 ## Exports
 
-- `ux(options?)` / `ux(options?)` — plugin factory
+- `ux(options?)` — plugin factory
 - `initUx` — browser initializer
 - Types: `UxOptions`, `UxResolvedConfig`
 

@@ -97,7 +97,7 @@ Obsidian の埋め込みフラグメントで、ページとビューアの高�
 
 ## 公開 API
 
-- `pdf(options?)` / `pdf`：プラグインファクトリ
+- `pdf(options?)`：プラグインファクトリ
 - `buildPdfViewerUrl(url, options)`：ビューア URL の生成
 - `isPdfRenderTarget(context)`：PDF 判定
 - `renderPdf(context, options)`：レンダラー実装

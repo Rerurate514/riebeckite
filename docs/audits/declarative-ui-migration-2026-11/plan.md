@@ -1,3 +1,7 @@
+---
+private: true
+---
+
 # Declarative UI Migration Ledger
 
 - Started: 2026-11-12

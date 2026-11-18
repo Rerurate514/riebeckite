@@ -73,7 +73,7 @@ content: {
 },
 ```
 
-`../notes` means "the `notes` folder one level above the site". For more advanced separation, see [Separating content from the site](../content-repositories.md).
+`../notes` means "the `notes` folder one level above the site". For more advanced separation, see [Separating content from the site](../deployment/separate-content-repository.md).
 
 ```mermaid
 flowchart LR
@@ -92,7 +92,7 @@ You do not need to copy the vault into the site directory.
 This layout is safe for an existing vault as long as you understand the publish rule: only notes with `publish: true` become public by default. Riebeckite reads the vault during preview and build; it does not reorganize the vault or edit Markdown files for you.
 
 If you also want to separate the repositories themselves, see
-[Separating content from the site](../content-repositories.md).
+[Separating content from the site](../deployment/separate-content-repository.md).
 
 ## Which layout to choose?
 

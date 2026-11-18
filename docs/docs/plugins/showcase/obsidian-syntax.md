@@ -1,3 +1,8 @@
+---
+date: 2026-11-18
+title: Obsidian Syntax
+---
+
 # Obsidian Markdown
 
 ## Callouts — [`obsidian-markdown`](../obsidian-markdown.md)
@@ -37,7 +42,7 @@
 ### Source
 
 ````md
-A WikiLink to [[README]] and to [[plugins/README|Plugin catalog]].
+A WikiLink to ../../plugins/README.md and to [[plugins/README|Plugin catalog]].
 
 A note embed:
 
@@ -50,7 +55,7 @@ An image embed:
 
 ### Rendered
 
-A WikiLink to [[README]] and to [[plugins/README|Plugin catalog]].
+A WikiLink to ../../plugins/README.md and to [[plugins/README|Plugin catalog]].
 
 A note embed:
 

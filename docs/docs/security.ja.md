@@ -1,120 +1,50 @@
 ---
 date: 2026-10-08
 title: セキュリティモデル
-sidebar.label: Security
-sidebar.order: 80
+sidebar.label: セキュリティ
+sidebar.order: 100
 ---
 # セキュリティモデル
 
-Riebeckite は、**自分で管理しているコンテンツを公開する静的サイト**を主な用途としています。
+Riebeckite は、**自分で管理しているコンテンツを公開する静的サイト**を主な用途としています。Obsidian互換のMarkdown機能を、raw HTMLを含めて保持します。
 
-そのため、次のものは基本的に信頼できるものとして扱います。
+このページでは、Plugin作者とサイトオーナーが前提にできるセキュリティ上の取り決めを説明します。
 
-- 自分で用意した Markdown や画像などのコンテンツ
-- 自分で設定した `riebeckite.config.ts`
-- 自分でインストールした Theme や Plugin
+## 信頼境界
 
-一方、外部サイトから取得したデータや、ブラウザから送られてくる入力は信頼できるとは限りません。
+| 境界 | 信頼レベル | 取り決め |
+| --- | --- | --- |
+| サイト設定、Themeコード、およびインストールしたPluginコード | サイトオーナーが信頼するコード | HTML、CSS、JavaScript、エンドポイント、アセット、クライアントエントリ、および生成されたファイルを生成する可能性があります。インストールするPluginをアプリケーションコードとしてレビューしてください。 |
+| ローカルMarkdownコンテンツとfrontmatter | 信頼されたコンテンツ | raw HTMLはCoreの許可リストでパースされ、フィルタリングされます。スクリプト、イベントハンドラ、許可されないタグと属性、および安全でないURLスキームは削除されます。 |
+| Pluginが生成した記事HTMLとスタンドアロンページボディ | 信頼された生成HTML | CoreとHonoXはこれらの文字列をMarkdownサニタイズの後にドキュメントにレンダリングします。Pluginは信頼できないテキストをエスケープし、HTMLを作成する前にコンテキスト固有のURLを検証する必要があります。 |
+| 外部URLと埋め込みプロバイダ | コンテキスト固有の外部入力 | 各Pluginは自らのURLコンテキストポリシーを所有します。リンク、画像、iframes、APIエンドポイント、ウェブフックソース、および図面サーバーは互いに置き換えられません。 |
+| Pluginエンドポイントリクエスト | 信頼されないブラウザ/ネットワーク入力 | HonoXは宣言されたエンドポイントをマウントし、request bodyを最大1MiBまでバッファリングし、より大きいリクエストに対して`413`を返します。エンドポイントハンドラは、method-specific bodies、content type、query値、auth、CORS、およびレートリミットを検証する必要があります。 |
+| ブラウザ側データ | 信頼できる設定から渡された値を除き、信頼しない | クエリ文字列、location、postMessageデータ、フォーム入力、およびremote responsesはクライアントコードで信頼されないとして扱ってください。 |
 
-このページでは、Riebeckite がどこまで安全性を保証し、どこから利用者や Plugin 側で確認する必要があるかを説明します。
+## MarkdownとHTMLのパイプライン
 
-## 基本的な考え方
+Coreのパイプラインはraw HTMLを受け取り、その後にサニタイズします。
 
-Riebeckite では、データを大きく次のように扱います。
+- Markdownは`remark-rehype`で変換し、`allowDangerousHtml: true`を指定します。
+- raw HTMLは`rehype-raw`で解析します。
+- `rehype-sanitize`が`packages/core/src/markdown_sanitize_schema.ts`の許可リストでツリーを絞り込みます。
+- インラインstyleは安全な最小限の書式に限定し、`object`はローカルのPDFだけに制限します。
+- HTMLは`rehype-stringify`でシリアライズし、`allowDangerousHtml: true`を指定します。
 
-| 種類 | 扱い |
-| --- | --- |
-| サイト設定 | 信頼する |
-| インストールした Theme / Plugin | 信頼する |
-| ローカルの Markdown / frontmatter | 信頼する。本文の raw HTML は Core の許可リストで除去される |
-| 外部サイトから取得したデータ | 内容を確認して扱う |
-| ブラウザやネットワークからの入力 | 信頼せず検証する |
+許可リストには、Obsidianのノートでよく使う`details`、`summary`、figure、メディア要素、SVGの一部、KaTeXのマークアップが含まれます。許可リスト外のタグや属性はエスケープされるのではなく削除されます。Markdown内の`<script>`要素、`onclick`属性、`javascript:` URLは生成ページに到達しません。
 
-つまり、Riebeckite は**不特定多数のユーザーが自由に HTML を投稿するサービス向けのフレームワークではありません**。
-
-自分の Obsidian Vault や Markdown リポジトリなど、管理しているコンテンツを公開する用途を想定しています。
-
-## Markdown内のHTML
-
-Riebeckite では、Markdown に HTML を直接書けます。
-
-たとえば次のような記述もそのまま利用できます。
+たとえば、次のノートはそのまま残ります。
 
 ```html
 <details>
-  <summary>詳細を見る</summary>
-  <p>内容</p>
+  <summary>Show details</summary>
+  <p>Content</p>
 </details>
 ```
 
-これは Obsidian との互換性や、Markdown だけでは表現できない内容を記述できるようにするためです。
+Riebeckiteがこれを有効にしているのは、Obsidianとの互換性のためと、Markdownだけでは表現できない内容を記述できるようにするためです。サニタイザーはノート本文に含まれる偶発的または悪意のあるHTMLに対する防御であり、内容そのものを審査するものではありません。信頼できない人が書いたMarkdownは、その内容とリンク先を確認せずに公開しないでください。
 
-### Markdown パイプライン
-
-Core のパイプラインは raw HTML を受け取り、その後にサニタイズします。
-
-- Markdown は `remark-rehype` で変換し、`allowDangerousHtml: true` を指定します。
-- raw HTML は `rehype-raw` で解析します。
-- `rehype-sanitize` が `packages/core/src/markdown_sanitize_schema.ts` の許可リストでツリーを絞り込みます。
-- インライン style は安全な最小限の書式に限定し、`object` はローカルの PDF だけに制限します。
-- HTML は `rehype-stringify` でシリアライズし、`allowDangerousHtml: true` を指定します。
-
-許可リストには、Obsidian のノートでよく使う `details`、`summary`、figure、メディア要素、SVG の一部、KaTeX のマークアップが含まれます。許可リスト外のタグや属性は escape されるのではなく削除されます。Markdown 内の `<script>`、`onclick` 属性、`javascript:` URL は生成ページに残りません。
-
-そのため、**信頼できない人が作成した Markdown でも HTML がそのまま実行されることはありません**。ただし、サニタイザーは内容の正確さやリンク先の妥当性を審査するものではありません。外部から受け取った Markdown を公開する場合は、内容とリンク先を確認してください。
-
-## ThemeとPlugin
-
-インストールした Theme や Plugin は、Riebeckite の中でプログラムとして動作します。
-
-Plugin は、たとえば次のようなことができます。
-
-- HTML を生成する
-- JavaScript をブラウザで実行する
-- 外部サイトへアクセスする
-- 独自ページを追加する
-- endpoint を追加する
-- ファイルを生成する
-
-そのため、Plugin は一般的な npm package と同じように、**信頼できるものだけをインストールしてください**。
-
-Plugin が生成する HTML は Markdown のサニタイザー通過後に追加されるため、Core による自動的な無害化の対象外です。Plugin は自分が受け取った値を自分で escape してください。Riebeckite が Plugin の処理内容を自動的に安全化することはありません。
-
-`inspectGeneratedHtml` は診断用の最終ページ検査フックです。セキュリティスキャナーではなく、サニタイザーとして扱わないでください。
-
-## 外部サイトのデータ
-
-一部の Plugin は外部サービスを利用します。
-
-たとえば、
-
-- Web ページの情報取得
-- iframe による埋め込み
-- 外部画像
-- Diagram 生成サービス
-- Webmention
-
-などです。
-
-外部から取得したデータは、ローカル Markdown とは異なり、信頼できるとは限りません。
-
-そのため Riebeckite の公式 Plugin では、それぞれの用途に応じて URL やレスポンスを検証します。
-
-たとえば Rich Embed では、安全でない URL を拒否し、任意のサイトを iframe として表示する場合には許可するホストを明示する必要があります。
-
-## Pluginを作る場合
-
-Plugin で外部データやユーザー入力を扱う場合は、その値をそのまま HTML へ埋め込まないでください。
-
-特に次の点に注意してください。
-
-- 外部から取得した文字列を HTML へ入れる場合は escape する
-- URL は用途に応じて安全なものか確認する
-- `<script>` にデータを埋め込む場合は `escapeScriptJson` を利用する
-- secret や token を HTML やブラウザ側の設定へ含めない
-- endpoint で受け取ったデータは利用前に検証する
-
-Riebeckite Core には、HTML を生成するときに利用できる次の helper があります。
+`escapeHtml`、`escapeHtmlAttribute`、`escapeScriptJson`は、Pluginが生成する文字列のためのエスケープ用ユーティリティです。任意のHTMLを安全にするものではなく、URLスキームを検証するものでもありません。
 
 ```ts
 escapeHtml(...)
@@ -122,65 +52,42 @@ escapeHtmlAttribute(...)
 escapeScriptJson(...)
 ```
 
-これらは文字列を適切に escape するためのものです。
+## Pluginの責務
 
-任意の HTML を安全な HTML へ変換したり、URL そのものが安全かどうかを判定したりするものではありません。
+HTMLを生成するPluginは、次のことを行う必要があります。
 
-## エンドポイント
+- 外部またはブラウザからの入力に由来するテキストと属性値をエスケープする
+- `<script>`に埋め込むJSONには`escapeScriptJson`を使う
+- URLは、それが使われる正確なコンテキストに合わせて検証する
+- `publicConfig`、クライアントエントリ、生成HTML、ログに秘密情報を置かない
+- エンドポイントのrequest bodyを検証し、検証に失敗した場合は拒否する
+- 導入する外部ネットワークまたはブラウザ読み込みのプロバイダを文書化する
 
-Plugin は独自の endpoint を提供できます。
+`inspectGeneratedHtml`は診断用の最終ページ検査フックです。セキュリティスキャナーではなく、サニタイザーとして扱わないでください。
 
-ブラウザやネットワークから endpoint へ送られてくるデータは、信頼できない入力として扱ってください。
+## Pluginのエンドポイント
 
-必要に応じて、
+Pluginは独自のエンドポイントを提供できます。ブラウザやネットワークからエンドポイントへ送られてくるものはすべて信頼できない入力として扱い、必要に応じてrequest body、queryパラメータ、`Content-Type`、サイズ、認証、CORS、レート制限を検証してください。RiebeckiteはエンドポイントをマウントしてrequestをPluginへ渡しますが、そのデータがPluginの用途に適しているかどうかは判断しません。
 
-- request body
-- query parameter
-- Content-Type
-- データサイズ
-- 認証
-- CORS
-- レート制限
-
-などを確認してください。
-
-Riebeckite は endpoint を登録して request を Plugin へ渡しますが、そのデータが Plugin の用途に適しているかどうかは Plugin 側で判断します。
-
-HonoX は request body を 1 MiB まで読み取り、それを超える場合は endpoint を呼び出さずに `413 Payload Too Large` を返します。これは無制限のバッファリングを防ぐためのもので、Plugin 側のサイズ検証・認証・レート制限を置き換えるものではありません。
-
-## 組み込みPluginの対策
-
-Riebeckite の公式 Plugin でも、外部データを扱うものには用途に応じた制限があります。
-
-たとえば、
-
-- Rich Embed は `https:` のプロバイダー URL だけを受け付け、既知のプロバイダーを sandbox 付きの iframe URL へ変換します。汎用 iframe はホストの明示的な許可リストが必要です。
-- Webmention の取得元は HTTP(S) だけを受け付け、認証情報を拒否し、リダイレクトと本文サイズを制限し、DNS 解決後にプライベートホストを拒否します。DNS 解決に失敗した場合は取得を拒否し、検証済みのアドレスを接続に固定します。DNS モジュールを持たないランタイムでは、ホスト名とリテラル IP の検査のみが適用されます。受信 endpoint にはクライアント単位のベストエフォートなレート制限があり、既定のインメモリプロバイダーは最大 1,000 件のメンションを保持します。
-- Analytics の収集 URL はサイト相対または HTTPS に限られ、平文 HTTP は localhost だけで許可されます。Cloudflare Worker 連携は JSON の形と本文サイズを検証します。
-- Autocard のメタデータリンクと画像はエスケープされ、相対 URL、`http:`、`https:` に制限されます。
-- Diagram とメディアの Plugin は、設定された外部プロバイダーをブラウザに読み込ませることがあります。その URL は信頼できる設定として扱ってください。
-
-といった対策を行っています。
-
-外部サービスを利用する Plugin では、そのサービス自体も信頼できるものを設定してください。
+HonoXはrequest bodyを1 MiBの上限まで読み取り、上限を超えた場合はエンドポイントを呼び出す前に`413 Payload Too Large`を返します。これは無制限のバッファリングからプロセスを守るためのもので、Plugin側のサイズ検証・認証・レート制限を置き換えるものではありません。
 
 ## Riebeckiteが自動的に行わないこと
 
-Riebeckite は、すべての入力を自動的に安全な HTML へ変換する仕組みではありません。
+Markdownのraw HTMLは出力前にサニタイズされます。保護の対象外となる境界は2つあります。
 
-Markdown の raw HTML は出力前にサニタイズされます。保護の対象外となる境界は2つあります。
+- Pluginが生成したHTMLはMarkdownサニタイザーの後に実行され、アプリケーションコードとして信頼されます。Plugin自身が入力をエスケープする必要があります。
+- インストールしたPluginとThemeのJavaScriptは信頼されたコードであり、Coreによってサンドボックス化されません。
 
-- Plugin が生成した HTML は Markdown サニタイザーの後に実行され、アプリケーションコードとして信頼されます。Plugin 自身が入力をエスケープする必要があります。
-- インストールした Plugin と Theme の JavaScript は信頼されたコードであり、Core によってサンドボックス化されません。
+他の人から受け取ったコンテンツは、そのHTMLがフィルタリングされていても、正確さ、リンク、ポリシーの面で引き続き確認が必要です。
 
-これは、自分で管理している Markdown や Obsidian Vault をできるだけそのまま公開できるようにするための設計です。
+## 現在の組み込みポリシー
 
-**自分で管理しているコンテンツを公開する場合は、そのまま利用できます。外部から受け取ったコンテンツを公開する場合は、事前に検証してください**。
+- Rich Embedは`https:`のプロバイダーURLだけを受け付けます。既知のプロバイダーはsandbox付きのiframe URLへ変換され、汎用iframeはホストの明示的な許可リストを必要とします。
+- Webmentionの取得元はHTTP(S)だけを受け付け、認証情報を拒否し、リダイレクトと本文サイズを制限し、DNS解決後にプライベートホストを拒否し、DNS解決に失敗した場合は拒否します。また、検証済みのアドレスを接続に固定します。DNSモジュールを持たないランタイムでは、ホスト名とリテラルIPの検査が引き続き適用されます。受信エンドポイントにはクライアント単位のベストエフォートなレート制限があり、既定のメモリプロバイダーは最大1,000件のメンションを保持します。
+- Analyticsの収集URLはサイト相対またはHTTPSでなければならず、平文HTTPはlocalhostだけで許可されます。Cloudflare Worker連携はJSONの形と本文サイズを検証します。
+- Autocardのメタデータリンクと画像はエスケープされ、相対URL、`http:`、`https:`に制限されます。
+- DiagramとメディアのPluginは、設定された外部プロバイダーをブラウザに読み込ませることがあります。そのプロバイダーのURLは信頼できる設定として扱ってください。
 
-## 脆弱性を見つけた場合
+## 脆弱性の報告
 
-Riebeckite にセキュリティ上の問題を見つけた場合は、公開 Issue ではなく、GitHub の Security 機能を利用して報告してください。
-
-報告には問題を再現するために必要な情報を含めてください。
-
-パスワード、アクセストークン、非公開コンテンツなどの機密情報は含めないでください。
+脆弱性はGitHub Security Advisoriesを通じて、または問題を再現するのに十分な詳細を含む非公開の報告として報告してください。報告に秘密情報、非公開コンテンツ、本番用トークンを含めないでください。

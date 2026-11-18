@@ -156,7 +156,7 @@ The forms below are rendered by this site.
 > [!quote] Quote
 > A quote callout.
 
-**WikiLinks and fragments.** A link to [README](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/themes/README.md), an aliased link to [the Plugin catalog](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/plugins/README.md), and a heading link to [plugins/showcase/inline#Inline](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/plugins/showcase/inline.md#Inline).
+**WikiLinks and fragments.** A link to ./README.md, an aliased link to [the Plugin catalog](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/plugins/README.md), and a heading link to [plugins/showcase/inline#Inline](https://github.com/Rerurate514/riebeckite/blob/main/docs/docs/plugins/showcase/inline.md#Inline).
 
 **Embeds.** A note embed and an image embed:
 
@@ -183,7 +183,7 @@ Another note can target it with `[obsidian-markdown#^live-example-block](./READM
 
 ## Exports
 
-- `obsidianMarkdown(options?)` / `obsidianMarkdown` — plugin factory
+- `obsidianMarkdown(options?)` — plugin factory
 - Types: `ObsidianMarkdownOptions`, `CalloutOptions`, `TagOptions`,
   `WikilinkOptions`, `WikilinkFragment`
 

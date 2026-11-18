@@ -1,3 +1,4 @@
+import { useUiLabels } from "@riebeckite/ui";
 import { buildGraphDocument } from "@riebeckite/graph";
 import GraphView from "@riebeckite/graph/ui";
 import { useEffect, useMemo, useState } from "hono/jsx";
@@ -19,6 +20,7 @@ type Props = {
 };
 
 export default function GardenExplorer(props: Props) {
+  const labels = useUiLabels();
   const noteBySlug = useMemo(
     () => new Map(props.data.notes.map((note) => [note.slug, note])),
     [props.data.notes],
@@ -135,7 +137,7 @@ export default function GardenExplorer(props: Props) {
   return (
     <div class="rr-garden-explorer" data-garden-explorer>
       <fieldset class="rr-garden-explorer__mobile-tabs">
-        <legend class="sr-only">Explorer panels</legend>
+        <legend class="sr-only">{labels.explorerPanels}</legend>
         {(["graph", "explorer", "details"] as const).map((panel) => (
           <button
             type="button"
@@ -150,13 +152,13 @@ export default function GardenExplorer(props: Props) {
 
       <aside class={panelClass("explorer", mobilePanel)}>
         <div class="rr-garden-explorer__section">
-          <p class="rr-garden-explorer__eyebrow">Explorer</p>
+          <p class="rr-garden-explorer__eyebrow">{labels.explorer}</p>
           <label class="rr-garden-explorer__search">
-            <span class="sr-only">Search notes</span>
+            <span class="sr-only">{labels.searchNotes}</span>
             <input
               type="search"
               value={query}
-              placeholder="Search notes..."
+              placeholder={labels.searchNotesPlaceholder}
               onInput={(event) =>
                 setQuery((event.currentTarget as HTMLInputElement).value)
               }
@@ -167,13 +169,13 @@ export default function GardenExplorer(props: Props) {
             class="rr-garden-explorer__text-button"
             onClick={clearFilters}
           >
-            Clear filters
+            {labels.clearFilters}
           </button>
         </div>
 
         {props.data.options.showTags ? (
           <FilterList
-            title="Tags"
+            title={labels.tags}
             items={props.data.tags.map((tag) => ({
               key: tag.name,
               label: `#${tag.name}`,
@@ -185,7 +187,7 @@ export default function GardenExplorer(props: Props) {
         ) : null}
         {props.data.options.showFolders ? (
           <FilterList
-            title="Folders"
+            title={labels.folders}
             items={props.data.folders.map((folder) => ({
               key: folder.path,
               label: folder.path,
@@ -200,10 +202,12 @@ export default function GardenExplorer(props: Props) {
 
         <div class="rr-garden-explorer__section">
           <p class="rr-garden-explorer__eyebrow">
-            Notes
+            {labels.notes}
             {filteredNotes.length > listNotes.length ? (
               <span class="rr-garden-explorer__count-badge">
-                showing {listNotes.length} of {filteredNotes.length}
+                {labels.showingNotes
+                  .replace("{shown}", String(listNotes.length))
+                  .replace("{total}", String(filteredNotes.length))}
               </span>
             ) : null}
           </p>
@@ -215,12 +219,18 @@ export default function GardenExplorer(props: Props) {
         </div>
       </aside>
 
-      <section class={panelClass("graph", mobilePanel)} aria-label="Note graph">
+      <section
+        class={panelClass("graph", mobilePanel)}
+        aria-label={labels.noteGraph}
+      >
         <div class="rr-garden-explorer__graph-toolbar">
           <span>
             {graphMode === "local"
-              ? "Local graph"
-              : `Global graph · ${filteredNotes.length} notes`}
+              ? labels.localGraphMode
+              : labels.globalGraphMode.replace(
+                  "{count}",
+                  String(filteredNotes.length),
+                )}
           </span>
           <div>
             <button
@@ -228,14 +238,14 @@ export default function GardenExplorer(props: Props) {
               aria-pressed={graphMode === "local"}
               onClick={() => setGraphMode("local")}
             >
-              Local
+              {labels.localMode}
             </button>
             <button
               type="button"
               aria-pressed={graphMode === "global"}
               onClick={() => setGraphMode("global")}
             >
-              Global
+              {labels.globalMode}
             </button>
           </div>
         </div>
@@ -276,11 +286,10 @@ export default function GardenExplorer(props: Props) {
             noteBySlug={noteBySlug}
             relatedNotes={relatedNotes}
             onSelect={selectNote}
+            labels={labels}
           />
         ) : (
-          <p class="rr-garden-explorer__empty">
-            Select a note to inspect links.
-          </p>
+          <p class="rr-garden-explorer__empty">{labels.selectNoteHint}</p>
         )}
       </aside>
     </div>

@@ -142,7 +142,7 @@ const mentions = await getWebmentionSectionData({
 
 ## エクスポート
 
-- `webmention()` / `webmention()`
+- `webmention(options?)`
 - `MemoryWebmentionProvider`、プロバイダーとケイパビリティの型およびエラー
 - `parseWebmentionSource`、`findTargetLink`、`verifyWebmention`、
   `createWebmentionSourceFetcher`

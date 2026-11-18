@@ -2,7 +2,7 @@
 date: 2026-10-06
 title: Reference
 sidebar.label: Reference
-sidebar.order: 40
+sidebar.order: 60
 ---
 # Reference
 
@@ -53,6 +53,7 @@ In [Configuration](./configuration.md) you can check Riebeckite's settings and h
 - `provenance`
 - `publication`
 - `spa`
+- `ui`
 
 `appRoot`, `configRoot`, and `contentRoot` are resolution concepts rather than configuration keys; see [Roots](./configuration/roots.md).
 

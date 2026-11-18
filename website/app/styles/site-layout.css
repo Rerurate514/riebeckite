@@ -8,7 +8,6 @@
     min-width: 0;
   }
 
-  .site-sidebar,
   .site-aside {
     display: none;
   }
@@ -31,15 +30,23 @@
       grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr);
     }
 
-    .site-sidebar {
+    .site-layout > .rb-drawer > .rb-drawer__panel.rb-drawer__panel {
       display: block;
       position: sticky;
       top: 0;
+      z-index: auto;
+      inset: auto;
       height: 100dvh;
-      overflow-y: auto;
-      scrollbar-gutter: stable;
+      width: auto;
+      max-height: none;
       padding: var(--rb-space-4);
+      border: 0;
       border-inline-end: 1px solid var(--rb-color-border);
+      background: transparent;
+    }
+
+    .site-drawer-navigation {
+      display: none;
     }
   }
 

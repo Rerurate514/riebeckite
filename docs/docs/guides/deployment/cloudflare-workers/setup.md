@@ -125,7 +125,7 @@ site: {
 },
 ```
 
-Then build and deploy again. The publication plan tracks content, redirects, and generated outputs; add `--force` when a config-only change is not detected.
+Then build and deploy again; add `--force` when the plan reports no change for a config-only update (see [Operations](./operations.md)).
 
 ```sh
 npm exec riebeckite build

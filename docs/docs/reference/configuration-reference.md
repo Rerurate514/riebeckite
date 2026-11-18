@@ -53,9 +53,25 @@ If the file lives elsewhere or has a different name, pass `configRoot` and
 | `publication` | No | Publication approval mode and durable state |
 | `provenance` | No | Build provenance recording |
 | `spa` | No | Client-side navigation, prefetch, scroll restoration, and view transitions |
+| `ui` | No | UI language and label dictionaries |
 
 Only `site` is required. Every other section falls back to the default in its
 table.
+
+### ui
+
+`ui.locale` pins the language of the strings the framework and its plugins render, independently of the content language. `ui.labels` maps a language code to a label dictionary; codes match case-insensitively and a missing key or language falls back to the built-in English labels. The core keys are `contents`, `contentsHeading`, `filter`, `filterNavigation`, `collapse`, `expand`, `searchNotes`, `searchPlaceholder`, `searchNotesPlaceholder`, `nearbyNotes`, `seriesNavigation`, and `language`. Plugin chrome adds `sidebarNavigation`, `localGraph`, `openInExplorer`, `localGraphTruncated`, `localGraphTruncatedExplorer`, `explorer`, `explorerPanels`, `clearFilters`, `tags`, `folders`, `notes`, `showingNotes`, `noteGraph`, `localGraphMode`, `globalGraphMode`, `localMode`, `globalMode`, `selectNoteHint`, `history`, `historyChanges`, `historyToggle`, `commitHistory`, `untitledChange`, `search`, `closeSearch`, `searchQuery`, `searchFilterHint`, `searchResults`, and `seriesPosition`; the garden explorer detail panel adds `selectedNote`, `outgoingLinks`, `backlinks`, `relatedNotes`, and `noNotes`. `showingNotes`, `globalGraphMode`, `historyChanges`, and `seriesPosition` keep their `{...}` placeholders in a translation. Plugin components read them through `useUiLabels()`.
+
+```ts
+export default defineConfig({
+  ui: {
+    locale: "ja",
+    labels: {
+      ja: { contents: "目次" },
+    },
+  },
+});
+```
 
 ## Validation
 

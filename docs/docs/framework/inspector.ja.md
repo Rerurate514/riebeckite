@@ -50,6 +50,7 @@ flowchart LR
 | `riebeckite inspect graph` | コンテンツ同士の関係 |
 | `riebeckite inspect build` | インクリメンタルビルドの状態 |
 | `riebeckite inspect assets` | コンテンツアセットの一覧、使用状況、重複、最適化候補 |
+| `riebeckite inspect api` | 管理対象 API のライフサイクルメタデータ（`--deprecated` で非推奨 API のみ、`--json` で JSON 出力） |
 
 ### 設定を確認する
 

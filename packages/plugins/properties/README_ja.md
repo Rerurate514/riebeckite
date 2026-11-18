@@ -230,7 +230,7 @@ type PropertiesData = {
 
 ## エクスポート
 
-- `properties(options?)` / `properties(options?)`：プラグインファクトリ
+- `properties(options?)`：プラグインファクトリ
 - `getProperties({ view, frontmatter, options? })`：構造化データのヘルパー
 - `<Properties data? options? className? />`：共通レンダラーコンポーネント
 - `renderPropertiesPanel(frontmatter, options?, context?)`：純粋な HTML レンダラー

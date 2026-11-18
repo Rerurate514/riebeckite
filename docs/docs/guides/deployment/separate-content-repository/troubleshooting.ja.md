@@ -6,7 +6,7 @@ sidebar.order: 40
 ---
 # トラブルシューティング
 
-## 症状から原因を切り分ける
+## 症状から原因を探る
 
 | 症状 | 対処 |
 | --- | --- |
@@ -19,7 +19,7 @@ sidebar.order: 40
 | CI でサブモジュールが取得されない | `actions/checkout@v4` に `submodules: recursive` があり、SSH URL ならキーが利用できるか確認する |
 | サブモジュールの記事が更新されない | サイト側で `cd content && git pull` → `git add content` → コミット → push を行う |
 | デプロイ後に画像が 404 になる | 公開ページが画像を参照し、ビルド出力に含まれているか確認する |
-| デプロイ後に添付ファイルやメディアが 404 になる | prebuild のコピーがビルド前に実行され、`public/assets/attachments/` を対象にしているか確認する |
+| デプロイ後に添付ファイル・メディアが 404 になる | prebuild のコピーがビルド前に実行され、`public/assets/attachments/` を対象にしているか確認する |
 | Vault に画像があるのにコピーされない | 参照元のノートが公開されているか（`publish: true`）、参照が `link.kind` として収集されているか確認する |
 | ローカルでは動くが CI ではパスが違う | CI の作業ディレクトリと相対パスの基準（`appRoot`）を確認する。`../notes` と `notes` の違いはよくある原因 |
 | 除外したフォルダが読み込まれる | パターンはパス全体にアンカーされるため、必要なら `**/` を付ける |
@@ -45,7 +45,7 @@ appRoot
   ○
 ```
 
-### CI の問題は2つに分ける
+### CI の問題は2つに分けて考える
 
 まず、「ワークフローが起動しなかった」のか、「起動したがコンテンツがない」のかを切り分けます。
 
@@ -59,21 +59,21 @@ flowchart TD
     Running -->|"はい"| Content{"コンテンツを<br/>チェックアウトできたか？"}
 
     Content -->|"いいえ"| Token["RIEBECKITE_CONTENT_READ_TOKEN /<br/>チェックアウト設定"]
-    Content -->|"はい"| Build["ビルドログを確認"]
+    Content -->|"はい"| Build["ビルドログを確認する"]
 ```
 
 この2つは別の仕組みなので、どちらが失敗しているか切り分けてください。
 
-## 4つの境界に分けて整理する
+## 4つの境界に沿って整理する
 
-コンテンツとサイトの分離は、次の4つの境界を分けて考えると整理しやすくなります。
+コンテンツをサイトから分離すると、次の4つの境界を分けて考えると整理しやすくなります。
 
 ```mermaid
 flowchart TD
     Storage["1. リポジトリ<br/>どこに保存するか"]
     Source["2. コンテンツソース<br/>どこから読むか"]
     Trigger["3. デプロイのトリガー<br/>いつビルドするか"]
-    Publication["4. 公開<br/>何を公開するか"]
+    Publication["4. 公開範囲<br/>何を公開するか"]
 
     Storage --> Source
     Source --> Trigger
@@ -90,7 +90,7 @@ content.directory
   → Riebeckite がどこからコンテンツを読むか
 
 checkout / repository_dispatch
-  → CI がどう取得し、いつビルドするか
+  → CI がどのように取得し、いつビルドするか
 
 content.filters.publishStrategy / exclude / アセットコピー
   → 公開サイトに何を出すか

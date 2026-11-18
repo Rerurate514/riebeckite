@@ -110,6 +110,7 @@ export function resolveConfig(
     },
     publication: resolvePublicationConfig(config.publication),
     ...(spa === undefined ? {} : { spa }),
+    ...(config.ui === undefined ? {} : { ui: config.ui }),
   };
   attachApiLifecycleConfigSource(resolved, config);
   return resolved;

@@ -2,7 +2,7 @@
 date: 2026-11-05
 title: Integrated Setup
 sidebar.label: Integrated Setup
-sidebar.order: 22
+sidebar.order: 80
 ---
 # Integrated Setup
 
@@ -100,6 +100,6 @@ Check the HTML, CSS, images, 404 page, `sitemap.xml`, and `robots.txt`. A missin
 
 ## Next
 
-- [Content Location](./content-location.md)
+- [Project Structure](./project-structure.md)
 - [Separate Directories Setup](./separate-directories-setup.md)
 - [Separate Repositories Setup](./separate-repositories-setup.md)

@@ -39,3 +39,18 @@ test("ignores non-string and empty dictionary values", () => {
   assert.equal(labels.contents, DEFAULT_UI_LABELS.contents);
   assert.equal(labels.filter, DEFAULT_UI_LABELS.filter);
 });
+
+test("plugin chrome labels keep their English defaults", () => {
+  assert.equal(DEFAULT_UI_LABELS.sidebarNavigation, "Sidebar navigation");
+  assert.equal(DEFAULT_UI_LABELS.history, "History");
+  assert.equal(DEFAULT_UI_LABELS.historyChanges, "{count} changes");
+  assert.equal(DEFAULT_UI_LABELS.seriesPosition, "Part {index} of {total}");
+  assert.equal(
+    DEFAULT_UI_LABELS.globalGraphMode,
+    "Global graph · {count} notes",
+  );
+  assert.equal(
+    DEFAULT_UI_LABELS.localGraphTruncated,
+    "This neighbourhood is large, so the graph stops after 320 nodes.",
+  );
+});

@@ -63,7 +63,7 @@ CLI から実行した場合は、現在のディレクトリから親ディレ�
 
 ### ui
 
-`ui.locale` を指定すると、コンテンツの言語とは独立に、フレームワークとプラグインが描画する文言の言語を固定できます。`ui.labels` は言語コードごとの文言辞書です。言語コードは大文字と小文字を区別せず、辞書にないキーや辞書のない言語は内蔵の英語の文言にフォールバックします。既定のキーは `contents`、`filter`、`filterNavigation`、`collapse`、`expand`、`searchNotes`、`searchPlaceholder`、`nearbyNotes`、`seriesNavigation`、`language` です。プラグインのコンポーネントは `useUiLabels()` からこの辞書を読みます。
+`ui.locale` を指定すると、コンテンツの言語とは独立に、フレームワークとプラグインが描画する文言の言語を固定できます。`ui.labels` は言語コードごとの文言辞書です。言語コードは大文字と小文字を区別せず、辞書にないキーや辞書のない言語は内蔵の英語の文言にフォールバックします。組み込みの英語ラベルがあるキーは `contents`、`contentsHeading`、`filter`、`filterNavigation`、`collapse`、`expand`、`searchNotes`、`searchPlaceholder`、`searchNotesPlaceholder`、`nearbyNotes`、`seriesNavigation`、`language` です。プラグインが描画する UI の文言には、さらに `sidebarNavigation`、`localGraph`、`openInExplorer`、`localGraphTruncated`、`localGraphTruncatedExplorer`、`explorer`、`explorerPanels`、`clearFilters`、`tags`、`folders`、`notes`、`showingNotes`、`noteGraph`、`localGraphMode`、`globalGraphMode`、`localMode`、`globalMode`、`selectNoteHint`、`history`、`historyChanges`、`historyToggle`、`commitHistory`、`untitledChange`、`search`、`closeSearch`、`searchQuery`、`searchFilterHint`、`searchResults`、`seriesPosition` を指定できます。ガーデンエクスプローラーの詳細パネルには、さらに `selectedNote`、`outgoingLinks`、`backlinks`、`relatedNotes`、`noNotes` を指定できます。`showingNotes`、`globalGraphMode`、`historyChanges`、`seriesPosition` は `{...}` のプレースホルダーを残して翻訳してください。プラグインのコンポーネントは `useUiLabels()` からこの辞書を読みます。
 
 ```ts
 export default defineConfig({

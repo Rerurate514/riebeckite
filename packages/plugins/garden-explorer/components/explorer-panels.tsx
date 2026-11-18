@@ -1,3 +1,4 @@
+import type { UiLabels } from "@riebeckite/ui";
 import type { GardenExplorerNote } from "../src/garden-explorer.js";
 
 export function FilterList(props: {
@@ -55,10 +56,11 @@ export function NoteDetails(props: {
   noteBySlug: Map<string, GardenExplorerNote>;
   relatedNotes: GardenExplorerNote[];
   onSelect: (slug: string) => void;
+  labels: UiLabels;
 }) {
   return (
     <div class="rr-garden-explorer__details">
-      <p class="rr-garden-explorer__eyebrow">Selected Note</p>
+      <p class="rr-garden-explorer__eyebrow">{props.labels.selectedNote}</p>
       <h2>
         <a href={props.note.permalink}>{props.note.title}</a>
       </h2>
@@ -70,19 +72,21 @@ export function NoteDetails(props: {
         ))}
       </div>
       <LinkedNoteSection
-        title="Outgoing Links"
+        title={props.labels.outgoingLinks}
+        emptyLabel={props.labels.noNotes}
         slugs={props.note.outgoing}
         noteBySlug={props.noteBySlug}
         onSelect={props.onSelect}
       />
       <LinkedNoteSection
-        title="Backlinks"
+        title={props.labels.backlinks}
+        emptyLabel={props.labels.noNotes}
         slugs={props.note.backlinks}
         noteBySlug={props.noteBySlug}
         onSelect={props.onSelect}
       />
       <div class="rr-garden-explorer__section rr-garden-explorer__section--flush">
-        <p class="rr-garden-explorer__eyebrow">Related Notes</p>
+        <p class="rr-garden-explorer__eyebrow">{props.labels.relatedNotes}</p>
         <NoteList
           notes={props.relatedNotes}
           selectedSlug={props.note.slug}
@@ -95,6 +99,7 @@ export function NoteDetails(props: {
 
 function LinkedNoteSection(props: {
   title: string;
+  emptyLabel: string;
   slugs: string[];
   noteBySlug: Map<string, GardenExplorerNote>;
   onSelect: (slug: string) => void;
@@ -109,7 +114,7 @@ function LinkedNoteSection(props: {
       {notes.length > 0 ? (
         <NoteList notes={notes} selectedSlug="" onSelect={props.onSelect} />
       ) : (
-        <p class="rr-garden-explorer__empty">No notes.</p>
+        <p class="rr-garden-explorer__empty">{props.emptyLabel}</p>
       )}
     </div>
   );

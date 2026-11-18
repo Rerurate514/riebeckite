@@ -24,7 +24,7 @@ export function LocalGraphView(props: LocalGraphViewProps) {
     <section class="rr-local-graph" data-riebeckite-local-graph>
       <div class="rr-local-graph__header">
         <div>
-          <p class="rr-local-graph__eyebrow">Local Graph</p>
+          <p class="rr-local-graph__eyebrow">{labels.localGraph}</p>
           <h2>{labels.nearbyNotes}</h2>
         </div>
         {props.showExplorerLink ? (
@@ -32,7 +32,7 @@ export function LocalGraphView(props: LocalGraphViewProps) {
             class="rr-local-graph__explorer-link"
             href={`/explore?note=${encodeURIComponent(graph.currentSlug)}`}
           >
-            Open in Explorer →
+            {labels.openInExplorer} →
           </a>
         ) : null}
       </div>
@@ -49,9 +49,9 @@ export function LocalGraphView(props: LocalGraphViewProps) {
       />
       {graph.truncated ? (
         <p class="rr-local-graph__note">
-          This neighbourhood is large, so the graph stops after 320 nodes.
+          {labels.localGraphTruncated}
           {props.showExplorerLink
-            ? " Use the Explorer for the full network."
+            ? ` ${labels.localGraphTruncatedExplorer}`
             : null}
         </p>
       ) : null}

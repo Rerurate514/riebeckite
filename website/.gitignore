@@ -34,3 +34,13 @@ public/*
 !public/riebeckite-logo.png
 !public/riebeckite-logo-horizontal.png
 !public/riebeckite-logo-stacked.png
+!public/docs/
+public/docs/*
+!public/docs/obsidian-plugin/
+!public/docs/obsidian-plugin/index.html
+!public/ja/
+public/ja/*
+!public/ja/docs/
+public/ja/docs/*
+!public/ja/docs/obsidian-plugin/
+!public/ja/docs/obsidian-plugin/index.html

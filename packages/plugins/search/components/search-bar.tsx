@@ -24,7 +24,7 @@ export default function SearchBar(props: SearchBarProps = {}) {
           <span class="rr-search-bar__icon" aria-hidden="true">
             ⌕
           </span>
-          <span class="rr-search-bar__label">Search</span>
+          <span class="rr-search-bar__label">{labels.search}</span>
           <kbd class="rr-search-bar__key">Ctrl K</kbd>
         </button>
       </div>
@@ -44,14 +44,14 @@ export default function SearchBar(props: SearchBarProps = {}) {
               type="button"
               class="rr-search-modal__close"
               data-search-close
-              aria-label="Close search"
+              aria-label={labels.closeSearch}
             >
               Esc
             </button>
           </div>
 
           <label class="rr-search-modal__input-wrap">
-            <span class="sr-only">Search query</span>
+            <span class="sr-only">{labels.searchQuery}</span>
             <input
               class="rr-search-modal__input"
               data-search-input
@@ -63,7 +63,7 @@ export default function SearchBar(props: SearchBarProps = {}) {
           </label>
 
           <div class="rr-search-modal__status" data-search-status role="status">
-            Filter with tag:, lang:, or path:.
+            {labels.searchFilterHint}
           </div>
           <span
             class="rr-search-modal__loading"
@@ -82,7 +82,7 @@ export default function SearchBar(props: SearchBarProps = {}) {
             data-search-results
             data-loading-content
             role="listbox"
-            aria-label="Search results"
+            aria-label={labels.searchResults}
           />
         </section>
       </dialog>

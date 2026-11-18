@@ -1,5 +1,9 @@
 import { type PluginSiteComponent, resolvePlugins } from "@riebeckite/core";
-import { useArticleContext, useSiteContext } from "@riebeckite/ui";
+import {
+  useArticleContext,
+  useSiteContext,
+  useUiLabels,
+} from "@riebeckite/ui";
 import { createPostDiffApi } from "../src/api.js";
 import type {
   DiffPluginOptions,
@@ -51,6 +55,7 @@ export async function ArticlePostDiffView(
 ) {
   const site = useSiteContext();
   const article = useArticleContext();
+  const labels = useUiLabels();
   if (!site || !article?.entry) return [];
   const options = findDiffOptions(site.config.plugins);
   if (!options || options.ui?.enabled === false) return [];
@@ -61,7 +66,7 @@ export async function ArticlePostDiffView(
     ...options,
     cwd: options.cwd ?? site.config.content.directory,
   }).getCurrentDiff(filePath);
-  return <PostDiff diff={diff} title={props.title} />;
+  return <PostDiff diff={diff} title={props.title ?? labels.history} />;
 }
 
 function findDiffOptions(

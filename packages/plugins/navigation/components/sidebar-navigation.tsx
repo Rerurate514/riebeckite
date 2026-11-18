@@ -28,7 +28,7 @@ export function SidebarNavigation(props: SidebarNavigationProps) {
   return (
     <nav
       class={join("rb-sidebar-navigation", props.class, props.className)}
-      aria-label={props.label ?? "Sidebar navigation"}
+      aria-label={props.label ?? labels.sidebarNavigation}
       data-sidebar-navigation
       data-sidebar-auto-expand={autoExpandActive ? "true" : "false"}
       data-sidebar-state-key={props.stateKey}

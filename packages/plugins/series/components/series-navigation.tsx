@@ -86,7 +86,10 @@ const SeriesNavigation = (async ({
           </a>
           {positionLabel && position >= 0 ? (
             <span class={`${className}__position`}>
-              {` Part ${position + 1} of ${index.members.length}`}
+              {" "}
+              {labels.seriesPosition
+                .replace("{index}", String(position + 1))
+                .replace("{total}", String(index.members.length))}
             </span>
           ) : null}
         </p>

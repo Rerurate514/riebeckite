@@ -22,6 +22,40 @@ export type UiLabels = {
   seriesNavigation: string;
   /** Landmark label for the language switcher. */
   language: string;
+  sidebarNavigation: string;
+  localGraph: string;
+  openInExplorer: string;
+  localGraphTruncated: string;
+  localGraphTruncatedExplorer: string;
+  explorer: string;
+  explorerPanels: string;
+  clearFilters: string;
+  tags: string;
+  folders: string;
+  notes: string;
+  showingNotes: string;
+  noteGraph: string;
+  localGraphMode: string;
+  globalGraphMode: string;
+  localMode: string;
+  globalMode: string;
+  selectNoteHint: string;
+  history: string;
+  historyChanges: string;
+  historyToggle: string;
+  commitHistory: string;
+  untitledChange: string;
+  search: string;
+  closeSearch: string;
+  searchQuery: string;
+  searchFilterHint: string;
+  searchResults: string;
+  seriesPosition: string;
+  selectedNote: string;
+  outgoingLinks: string;
+  backlinks: string;
+  relatedNotes: string;
+  noNotes: string;
 };
 
 export const DEFAULT_UI_LABELS: UiLabels = {
@@ -37,6 +71,41 @@ export const DEFAULT_UI_LABELS: UiLabels = {
   nearbyNotes: "Nearby Notes",
   seriesNavigation: "Series navigation",
   language: "Language",
+  sidebarNavigation: "Sidebar navigation",
+  localGraph: "Local Graph",
+  openInExplorer: "Open in Explorer",
+  localGraphTruncated:
+    "This neighbourhood is large, so the graph stops after 320 nodes.",
+  localGraphTruncatedExplorer: "Use the Explorer for the full network.",
+  explorer: "Explorer",
+  explorerPanels: "Explorer panels",
+  clearFilters: "Clear filters",
+  tags: "Tags",
+  folders: "Folders",
+  notes: "Notes",
+  showingNotes: "showing {shown} of {total}",
+  noteGraph: "Note graph",
+  localGraphMode: "Local graph",
+  globalGraphMode: "Global graph · {count} notes",
+  localMode: "Local",
+  globalMode: "Global",
+  selectNoteHint: "Select a note to inspect links.",
+  history: "History",
+  historyChanges: "{count} changes",
+  historyToggle: "Toggle history",
+  commitHistory: "Commit history",
+  untitledChange: "Untitled change",
+  search: "Search",
+  closeSearch: "Close search",
+  searchQuery: "Search query",
+  searchFilterHint: "Filter with tag:, lang:, or path:.",
+  searchResults: "Search results",
+  seriesPosition: "Part {index} of {total}",
+  selectedNote: "Selected Note",
+  outgoingLinks: "Outgoing Links",
+  backlinks: "Backlinks",
+  relatedNotes: "Related Notes",
+  noNotes: "No notes.",
 };
 
 export function resolveUiLabels(

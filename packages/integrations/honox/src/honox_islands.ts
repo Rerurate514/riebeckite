@@ -200,7 +200,10 @@ function isJavaScriptModule(filePath: string): boolean {
 }
 
 function isRendererModule(filePath: string, rendererPath: string): boolean {
+  const resolvedFilePath = path.resolve(filePath);
+  const resolvedRendererPath = path.resolve(rendererPath);
   return (
-    filePath.startsWith(`${rendererPath}.`) && isJavaScriptModule(filePath)
+    resolvedFilePath.startsWith(`${resolvedRendererPath}.`) &&
+    isJavaScriptModule(resolvedFilePath)
   );
 }

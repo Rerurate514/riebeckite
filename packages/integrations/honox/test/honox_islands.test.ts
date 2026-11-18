@@ -25,6 +25,28 @@ test("injects the HonoX client signal for plugin client entries", async () => {
   assert.match(result.code, /export const __importing_islands = true;/);
 });
 
+test("injects the HonoX client signal for Vite module IDs", async () => {
+  const plugin = injectRiebeckiteClientBundle(() => ({
+    plugins: [
+      {
+        name: "fixture",
+        clientEntries: [
+          { pluginName: "fixture", moduleSpecifier: "fixture/client" },
+        ],
+      },
+    ],
+  }));
+  await configure(plugin);
+
+  const result = await transform(
+    plugin,
+    "export default null;",
+    renderer.replaceAll(path.sep, "/"),
+  );
+
+  assert.equal(typeof result, "object");
+});
+
 test("does not inject the HonoX client signal without client features", async () => {
   const plugin = injectRiebeckiteClientBundle(() => ({ plugins: [] }));
   await configure(plugin);

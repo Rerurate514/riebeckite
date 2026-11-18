@@ -609,6 +609,49 @@ test("renders localized docs navigation outside documentation pages", async () =
   }
 });
 
+test("marks the current localized page active through DocsSidebar", async () => {
+  const config = resolveConfig({
+    site: { title: "Test" },
+    plugins: [localizedLocationPlugin, docs({ root: "docs" })],
+  });
+  const manager = new ContentManager(
+    memorySource({
+      "docs/index.md": "---\ntitle: English Home\npublish: true\n---\n# Home\n",
+      "docs/install.md": "---\ntitle: Install\npublish: true\n---\n# Install\n",
+      "docs/index.ja.md":
+        "---\ntitle: 日本語 Home\npublish: true\n---\n# Home\n",
+      "docs/install.ja.md":
+        "---\ntitle: インストール\npublish: true\n---\n# Install\n",
+    }),
+    [],
+    { config },
+  );
+  const manifest = await manager.getManifest();
+
+  for (const [language, path] of [
+    ["en", "/docs/install"],
+    ["ja", "/ja/docs/install"],
+  ] as const) {
+    const html = await new Response(
+      await renderToReadableStream(
+        createElement(
+          SiteProvider,
+          {
+            config,
+            manifest,
+            view: createPublicContentView(manifest),
+            path,
+            language,
+          },
+          createElement(DocsSidebar, {}),
+        ),
+      ),
+    ).text();
+
+    assert.match(html, /aria-current="page"/, `language ${language}`);
+  }
+});
+
 test("keeps the current branch expanded when a section is collapsed", async () => {
   const manager = createManager({
     "docs/index.md": "---\ntitle: Home\npublish: true\n---\n# Home\n",

@@ -179,7 +179,7 @@ function containsActive(
 
 function isActive(href: string, path: string, language?: string): boolean {
   if (!href.startsWith("/")) return false;
-  const target = normalizePath(href);
+  const target = normalizePath(stripLanguagePrefix(href, language));
   const current = normalizePath(stripLanguagePrefix(path, language));
   return current === target;
 }

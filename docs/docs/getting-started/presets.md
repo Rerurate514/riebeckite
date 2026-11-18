@@ -69,6 +69,8 @@ A publication-focused starting point. The home page lists posts with dates, summ
 
 A quiet, reading-first site. Posts open in a narrow centered column: the title, author, and date come first, an inline table of contents follows, and the body stays the only thing competing for attention. Tags read as hashtags after the text, sharing follows, an author card links to a short About page, and a previous-post link with a short list of more essays closes the page. The home page keeps the same narrow column for a short introduction and a stacked list of post cards. The minimal theme supplies the white, sans-serif surface.
 
+![[preset-writer.png|Writer preset desktop view]]
+
 ### `docs`
 
 A documentation site with a generated sidebar, responsive table of contents, and previous/next navigation. Its persistent header keeps search and navigation available while the page, documentation tree, and table of contents scroll independently. The homepage renders the documentation entry itself, so it uses the same reading shell instead of a marketing page.
@@ -80,6 +82,18 @@ A documentation site with a generated sidebar, responsive table of contents, and
 A restrained starting point for selected projects, an introduction, and contact details. The home page derives a large project grid from `content/projects/`, so adding a project adds it to the portfolio. Project pages stay useful without images, while responsive images, lightbox, embedded media, and Markdown galleries are ready when visual material helps explain the work. Responsive images reuse the variants that already exist; add the `imageOptimizer` plugin when you want WebP or AVIF conversion. It makes no claims about your experience, clients, or results.
 
 ![[preset-portfolio.png|Portfolio preset desktop view]]
+
+### `minimal`
+
+Obsidian Markdown, the `minimal` theme, and one English page. Choose it for a small site or a deliberately lean starting point.
+
+![[preset-minimal.png|Minimal preset desktop view]]
+
+### `empty`
+
+A blank application shell with no plugins, theme, content, or components. Its first route is an ordinary HonoX `createRoute` page, so add pages, HTML, JSX components, and CSS directly in `app/` before opting into Riebeckite content features.
+
+![[preset-empty.png|Empty preset desktop view]]
 
 ## Where content lives
 
@@ -123,19 +137,7 @@ npx create-riebeckite my-site --preset portfolio --features diagrams,i18n
 
 Packs that repeat a preset's plugin are silently ignored, not rejected. Use `none` to make `--features` explicit without adding a pack.
 
-### `minimal`
-
-Obsidian Markdown, the `minimal` theme, and one English page. Choose it for a small site or a deliberately lean starting point.
-
-![[preset-minimal.png|Minimal preset desktop view]]
-
-### `empty`
-
-A blank application shell with no plugins, theme, content, or components. Its first route is an ordinary HonoX `createRoute` page, so add pages, HTML, JSX components, and CSS directly in `app/` before opting into Riebeckite content features.
-
-![[preset-empty.png|Empty preset desktop view]]
-
-### Editing generated UI
+## Editing generated UI
 
 Generated application files use normal TypeScript, JSX, and HonoX routes. Edit `app/routes/` to add pages or API routes, `app/components/article.tsx` to arrange article [[glossary/ui|UI]], `app/components/site-header.tsx` to change the header and footer, and `app/style.css` and `app/styles/` for site CSS. Every preset includes a site footer; the `empty` preset defines it directly in `app/routes/_renderer.tsx`, and the other presets define it in `app/components/site-header.tsx`. `SiteNav` and other plugin UI components resolve their configured data themselves; place them where needed instead of resolving manifests in site components.
 

@@ -79,7 +79,7 @@ plugins: [
 ]
 ```
 
-各受け皿ページの frontmatter に `aliases` (旧URL文字列, /docs/... 形式・ja側は /ja/docs/...):
+各受け皿ページの frontmatter に `aliases` (旧URL文字列, /docs/... 形式。**ja側は裸パスで書く** — l10nプラグインがmanifest段階でjaノートのredirectに /ja を自動付与するため、/ja を書くと二重になる):
 
 | 旧URL | 受け皿 |
 | --- | --- |
@@ -89,8 +89,12 @@ plugins: [
 | /{ja/}docs/guides/content-repositories/setup/ | s-c-r/setup |
 | /{ja/}docs/guides/content-repositories/publishing/ | s-c-r/publishing |
 | /{ja/}docs/guides/deployment/separate-content-repository/repository-split/ | s-c-r/setup |
-| /{ja/}docs/obsidian-plugin/ | guides/obsidian/README |
-| /{ja/}docs/obsidian-plugin/architecture/ | guides/obsidian/README |
+| /{ja/}docs/obsidian-plugin/ | guides/obsidian (ハブ1ページ) |
+| /{ja/}docs/obsidian-plugin/architecture/ | guides/obsidian |
+
+注記:
+- aliasプラグインは末尾スラッシュ付きパスを受け付けないため、スラッシュなし形式 (`/docs/obsidian-plugin`) で登録する。旧URLがfolder URL (末尾スラッシュ付き) の `/docs/obsidian-plugin/` へのリクエストはPlausibleな静的配信の正規化に委ねる (制限として最終報告に記録)。
+- en/jaの同一裸パスalias衝突 (aliasプラグインのcollision keyspaceがロケール盲) はalias本体の修正 (optional: ["content.localization"] でl10n後に実行 + 言語プレフィックス導出 + privateノート予約除外) で解消済み。
 
 D2対象 (audits/architecture) は意図せぬ公開だったため 404 のまま自然消滅させる (報告書に記録)。
 

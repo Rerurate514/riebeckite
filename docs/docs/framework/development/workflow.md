@@ -49,9 +49,20 @@ flowchart TD
     Q -->|"Site generation"| Scaffold["create-riebeckite / scaffold"]
 ```
 
-If you are unsure, use the responsibility boundaries in [Architecture](../architecture.md) as the standard.
+If you are unsure, use the responsibility boundaries in [Architecture](../architecture.md) and [Design Philosophy](../../philosophy.md) as the standard.
 
-Before adding a new public API or a new Core behavior, use the Design Decision Guidelines in [Design Philosophy](../../philosophy.md).
+Before adding a new public API or a new Core behavior, check the following:
+
+- Is this a problem Riebeckite should solve, or a concern of one site?
+- Can this live in a Plugin, Theme, Integration, or Application instead of Core, and can a plugin make it optional or disable it?
+- Is a new API, syntax, or abstraction really needed, and which invariant does it express?
+- Will the user's content remain readable in Obsidian and standard Markdown without Riebeckite?
+- Can existing Markdown syntax (fenced code blocks, frontmatter, `remark-directive`) or HonoX, Vite, and CSS express it without inventing new syntax or configuration?
+- Can it be resolved at build time instead of runtime, and if client behavior is needed, does the page still work as static HTML?
+- Do publication boundaries, sanitization, secrets handling, accessibility, and data ownership hold? Do `publish`, `draft`, `private`, `visibility`, and `publishAt` hold across every derived output (search, RSS, sitemap, graph) as well as HTML pages?
+- Is the new public API usable outside official code rather than reserved for official use, and are there paths for future migration and rollback?
+- Can you observe the behavior through diagnostics, `inspect`, data provenance, and logs?
+- If incremental build state or caching is involved, are dependencies and fingerprints explicit, with a safe fallback to a full build when uncertain?
 
 ## Decide what to record
 

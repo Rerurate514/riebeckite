@@ -130,4 +130,17 @@ The `@riebeckite/test/plugin-contract` export has been removed. Use
 `riebeckite plugin verify <path>` instead; the verifier is a production CLI
 feature and its engine is not a supported programmatic API.
 
+## Unconfirmed scope and future candidates
+
+Apart from the permanent non-goals in Design Philosophy, some areas are
+currently unsupported without being confirmed as permanent non-goals, and some
+are only candidates for future work.
+
+- **Currently unsupported (not confirmed as non-goals)**: Executing DataviewJS,
+  running arbitrary Obsidian community plugins, external template engines such
+  as Liquid, and arbitrary Markdown body rewrites during content migrations.
+- **Future candidates (not commitments)**: Additional runtime adapters beyond
+  HonoX, expanded deployment guides, and deprecation windows before breaking
+  changes.
+
 See [Content system](../content-system.md), [Plugin system](../plugin-system.md), [Theme system](../theme-system.md), and [HonoX integration](../honox-integration.md) before changing a boundary.

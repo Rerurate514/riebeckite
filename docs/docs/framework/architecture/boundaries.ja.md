@@ -104,4 +104,11 @@ Core は `@riebeckite/core`（全契約）、`@riebeckite/core/client`（ブラ�
 
 `@riebeckite/test/plugin-contract` は削除しました。代わりに `riebeckite plugin verify <path>` を使用してください。検証器は製品の CLI 機能であり、そのエンジンはプログラム向けの公開 API ではありません。
 
+## 未対応の範囲と将来の候補
+
+設計思想の非目標とは別に、現時点では未対応であるものの恒久的な非目標とは確定していない領域と、将来の拡張候補を区別して管理しています。
+
+- **現時点で未対応（非目標とは未確定）**：DataviewJS の実行、任意の Obsidian コミュニティプラグインの実行、Liquid などの外部テンプレートエンジン、コンテンツ移行での任意の Markdown 本文書き換え。
+- **将来の候補（現時点の約束ではない）**：HonoX 以外のランタイムアダプター追加、デプロイガイドの拡充、破壊的変更前の非推奨期間（deprecation window）の導入。
+
 関連する設計については、[Content System](../content-system.ja.md)、[Plugin System](../plugin-system.ja.md)、[Theme System](../theme-system.ja.md)、[HonoX Integration](../honox-integration.ja.md) を参照してください。

@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Date:** 2026-11-02
-- **Related Design Principles:** [Explicit over Implicit](../../docs/philosophy.md#explicit-over-implicit), [Existing API preservation vs. architecture improvement](../../docs/philosophy.md#trade-offs)
+- **Related Design Principles:** [Simple by Default, Complexity Only When Needed](../../docs/philosophy.md#2-simple-by-default-complexity-only-when-needed), [Trade-offs](../../docs/philosophy.md#trade-offs)
 - **Related Changes / PR:** `changes/unreleased/20261102-143000-release-change-management-a1b2c3.md`
 
 ## Context

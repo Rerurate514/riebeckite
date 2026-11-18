@@ -49,9 +49,20 @@ flowchart TD
     Q -->|"サイト生成"| Scaffold["create-riebeckite / scaffold"]
 ```
 
-判断に迷う場合は、[Architecture](../architecture.ja.md) の責務分離を基準にしてください。
+判断に迷う場合は、[Architecture](../architecture.ja.md) の責務分離と [設計思想](../../philosophy.ja.md) を基準にしてください。
 
-新しい公開 API や Core の振る舞いを追加する前に、[設計思想](../../philosophy.ja.md) の設計判断のガイドラインを確認してください。
+新しい公開 API や Core の振る舞いを追加する前に、次の点を確認します。
+
+- これは Riebeckite が解くべき問題か。1 つのサイト固有の関心事ではないか。
+- Core ではなく、Plugin・Theme・Integration・Application のいずれかで実現できないか。プラグインとして任意化・無効化できないか。
+- 新しい API・構文・抽象化は本当に必要か。どの不変条件を表すのか。
+- Riebeckite を使わなくなったときも、コンテンツが Obsidian や標準的な Markdown で読める状態を保てるか。
+- 独自の構文や設定を増やさず、既存の Markdown 記法（コードフェンス、Frontmatter、`remark-directive` 等）や HonoX・Vite・CSS で表現できないか。
+- 実行時ではなくビルド時に解決できないか。クライアント処理が必要な場合も、静的 HTML だけで基本の閲覧が成立するか。
+- 公開境界、サニタイズ、秘密情報、アクセシビリティ、データの所有権を保てるか。`publish`・`draft`・`private`・`visibility`・`publishAt` の公開境界が、HTML ページだけでなく検索・RSS・サイトマップ・グラフ等のすべての派生出力で守られるか。
+- 新しい公開 API が公式コード専用の特権的なものになっていないか。将来の移行やロールバックの経路があるか。
+- Diagnostics・`inspect`・データ来歴・ログで振る舞いを確認できるか。
+- 増分ビルドやキャッシュを使う場合、依存関係やフィンガープリントが明示され、不確かなときにフルビルドへ安全にフォールバックできるか。
 
 ## 記録が必要か判断する
 

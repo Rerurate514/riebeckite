@@ -6,8 +6,6 @@ import { jsxRenderer } from "hono/jsx-renderer";
 import { Link, Script } from "honox/server";
 import { SiteHeader } from "../components/site-header";
 
-export const __importing_islands = true;
-
 export default jsxRenderer(({ children }, c) => (
   <ThemeRoot theme={config.theme} lang="en">
     <head>

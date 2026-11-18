@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { parse } from "@babel/parser";
+import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import type { Plugin, PluginOption } from "vite";
 
 const honoxIslandDependencyPluginName = "inject-importing-islands";
@@ -22,6 +23,49 @@ export function replaceHonoxIslandDependencyPlugin(
     ...plugins.map(disableHonoxIslandDependencyPlugin),
     scopedIslandDependencyPlugin(),
   ];
+}
+
+export function injectRiebeckiteClientBundle(
+  getConfig: () => Pick<ResolvedRiebeckiteConfig, "plugins" | "spa">,
+): Plugin {
+  let rendererPath = "";
+
+  return {
+    name: "riebeckite-inject-client-bundle",
+    enforce: "pre",
+    configResolved(config) {
+      rendererPath = path.join(config.root, "app", "routes", "_renderer");
+    },
+    transform(sourceCode, id) {
+      if (
+        !requiresClientBundle(getConfig()) ||
+        !isRendererModule(toFilePath(id), rendererPath) ||
+        sourceCode.includes(`export const ${importingIslandsExport}`)
+      ) {
+        return;
+      }
+
+      return {
+        code: `${sourceCode}\nexport const ${importingIslandsExport} = true;\n`,
+        map: null,
+      };
+    },
+  };
+}
+
+function requiresClientBundle(
+  config: Pick<ResolvedRiebeckiteConfig, "plugins" | "spa">,
+): boolean {
+  return (
+    config.spa !== undefined ||
+    config.plugins.some(
+      (plugin) =>
+        (plugin.clientEntries?.length ?? 0) > 0 ||
+        plugin.markdownComponents?.some(
+          (component) => component.client !== undefined,
+        ) === true,
+    )
+  );
 }
 
 function disableHonoxIslandDependencyPlugin(
@@ -153,4 +197,10 @@ function isInDirectory(filePath: string, directory: string): boolean {
 
 function isJavaScriptModule(filePath: string): boolean {
   return /\.[cm]?[jt]sx?$/.test(filePath);
+}
+
+function isRendererModule(filePath: string, rendererPath: string): boolean {
+  return (
+    filePath.startsWith(`${rendererPath}.`) && isJavaScriptModule(filePath)
+  );
 }

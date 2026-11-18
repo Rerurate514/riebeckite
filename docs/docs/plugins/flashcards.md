@@ -123,7 +123,7 @@ untouched. No options are passed from the build to the client; the deck reads
 
 ## Exports
 
-- `flashcards(options?)` / `flashcards(options?)` — plugin factory
+- `flashcards(options?)` — plugin factory
 - `initFlashcards(root?)` — client initializer
 - `parseFlashcards(source)` — parse a block into cards
 - `splitFlashcardGroups(source)` — split a block into card groups

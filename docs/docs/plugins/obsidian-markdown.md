@@ -185,7 +185,7 @@ Another note can target it with `[[obsidian-markdown#^live-example-block]]`.
 
 ## Exports
 
-- `obsidianMarkdown(options?)` / `obsidianMarkdown` — plugin factory
+- `obsidianMarkdown(options?)` — plugin factory
 - Types: `ObsidianMarkdownOptions`, `CalloutOptions`, `TagOptions`,
   `WikilinkOptions`, `WikilinkFragment`
 

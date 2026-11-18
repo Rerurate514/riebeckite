@@ -146,7 +146,7 @@ An unknown theme falls back to the default theme and emits a diagnostic with `so
 
 ## Exports
 
-- `marp(options?)` / `marp(options?)` — plugin factory
+- `marp(options?)` — plugin factory
 - `isMarpDocument(matter?)` — frontmatter `marp: true` detection helper
 - `initMarpDecks()` — viewer initializer, exported from `@riebeckite/plugin-marp/client`
 - Types: `MarpOptions`, `MarpDeck`, `MarpBuildRenderResult`

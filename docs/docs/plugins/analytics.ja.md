@@ -124,7 +124,7 @@ const result = await provider.query({
 
 ## 主なエクスポート
 
-- `analytics()` / `analytics()`
+- `analytics(options)`
 - `initAnalytics`（`@riebeckite/plugin-analytics/client`）
 - `MemoryAnalyticsProvider`
 - イベント、クエリ／結果、プロバイダ／機能、公開設定の型

@@ -103,5 +103,5 @@ Vault の場所と[[glossary/visibility|公開範囲]]は分けて考えます�
 
 - [記事の書き方ガイド](./writing-content.ja.md)
 - [コンテンツとサイトを分ける](./deployment/separate-content-repository.ja.md)
-- [Obsidian 向け Riebeckite](../obsidian-plugin/README.ja.md)（現時点では設定のみ）
+- [Obsidian 向け Riebeckite](https://github.com/Rerurate514/riebeckite-obsidian)（現時点では設定のみ）
 - [Content System](../framework/content-system.ja.md)

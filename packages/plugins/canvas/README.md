@@ -147,7 +147,7 @@ invalidates the affected outputs.
 
 ## Exports
 
-- `canvas(options?)` / `canvas` — plugin factory
+- `canvas(options?)` — plugin factory
 - `initCanvas()` — client initializer
 - `parseCanvas(json)` — pure JSON Canvas parser
 - `buildCanvasLayout(doc)` — pure coordinate/edge normaliser

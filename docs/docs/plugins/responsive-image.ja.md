@@ -76,7 +76,7 @@ export default defineConfig({
 
 ## 公開 API
 
-- `responsiveImage(options?)` / `responsiveImage`：プラグインファクトリ
+- `responsiveImage(options?)`：プラグインファクトリ
 - `resolveResponsiveImageOptions(options?)`：既定値の解決
 - `buildResponsiveSrcset(existingPaths, src, options?)`：純粋な srcset 計画
 - `applyResponsiveImages(html, existingPaths, options?)`：HTML 変換

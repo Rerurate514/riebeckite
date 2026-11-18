@@ -109,7 +109,7 @@ Styles ship in `style.css`.
 
 ## Exports
 
-- `pdf(options?)` / `pdf` — plugin factory
+- `pdf(options?)` — plugin factory
 - `buildPdfViewerUrl(url, options)` — viewer URL builder
 - `isPdfRenderTarget(context)` — PDF target predicate
 - `renderPdf(context, options)` — renderer implementation

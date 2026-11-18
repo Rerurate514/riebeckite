@@ -83,7 +83,7 @@ export default defineConfig({
 
 ## 主なエクスポート
 
-- `ux(options?)` / `ux(options?)`: プラグインを作成する
+- `ux(options?)`: プラグインを作成する
 - `initUx`: クライアント側の初期化
 - 型: `UxOptions`、`UxResolvedConfig`
 

@@ -10,9 +10,9 @@ Riebeckite は、**自分で管理しているコンテンツを公開する静�
 
 このページでは、Plugin作者とサイトオーナーが前提にできるセキュリティ上の取り決めを説明します。
 
-## Trust boundaries
+## 信頼境界
 
-| Surface | Trust level | Contract |
+| 境界 | 信頼レベル | 取り決め |
 | --- | --- | --- |
 | サイト設定、Themeコード、およびインストールしたPluginコード | サイトオーナーが信頼するコード | HTML、CSS、JavaScript、エンドポイント、アセット、クライアントエントリ、および生成されたファイルを生成する可能性があります。インストールするPluginをアプリケーションコードとしてレビューしてください。 |
 | ローカルMarkdownコンテンツとfrontmatter | 信頼されたコンテンツ | raw HTMLはCoreの許可リストでパースされ、フィルタリングされます。スクリプト、イベントハンドラ、許可されないタグと属性、および安全でないURLスキームは削除されます。 |
@@ -21,19 +21,19 @@ Riebeckite は、**自分で管理しているコンテンツを公開する静�
 | Pluginエンドポイントリクエスト | 信頼されないブラウザ/ネットワーク入力 | HonoXは宣言されたエンドポイントをマウントし、request bodyを最大1MiBまでバッファリングし、より大きいリクエストに対して`413`を返します。エンドポイントハンドラは、method-specific bodies、content type、query値、auth、CORS、およびレートリミットを検証する必要があります。 |
 | ブラウザ側データ | 信頼できる設定から渡された値を除き、信頼しない | クエリ文字列、location、postMessageデータ、フォーム入力、およびremote responsesはクライアントコードで信頼されないとして扱ってください。 |
 
-## Markdown and HTML pipeline
+## MarkdownとHTMLのパイプライン
 
-Core pipeline accepts raw HTML and then sanitizes it:
+Coreのパイプラインはraw HTMLを受け取り、その後にサニタイズします。
 
-- Markdown is converted with `remark-rehype` using `allowDangerousHtml: true`.
-- Raw HTML is parsed by `rehype-raw`.
-- The tree is filtered by `rehype-sanitize` with the allowlist in `packages/core/src/markdown_sanitize_schema.ts`.
-- Inline styles are reduced to a small safe subset, and `object` elements are limited to local PDF files.
-- HTML is serialized with `rehype-stringify` using `allowDangerousHtml: true`.
+- Markdownは`remark-rehype`で変換し、`allowDangerousHtml: true`を指定します。
+- raw HTMLは`rehype-raw`で解析します。
+- `rehype-sanitize`が`packages/core/src/markdown_sanitize_schema.ts`の許可リストでツリーを絞り込みます。
+- インラインstyleは安全な最小限の書式に限定し、`object`はローカルのPDFだけに制限します。
+- HTMLは`rehype-stringify`でシリアライズし、`allowDangerousHtml: true`を指定します。
 
-The allowlist keeps the HTML that Obsidian notes commonly use, including `details`, `summary`, figures, media elements, a subset of SVG, and KaTeX markup. Tags and attributes outside the allowlist are removed rather than escaped. A `<script>` element, an `onclick` attribute, and a `javascript:` URL in Markdown do not reach the generated page.
+許可リストには、Obsidianのノートでよく使う`details`、`summary`、figure、メディア要素、SVGの一部、KaTeXのマークアップが含まれます。許可リスト外のタグや属性はエスケープされるのではなく削除されます。Markdown内の`<script>`要素、`onclick`属性、`javascript:` URLは生成ページに到達しません。
 
-For example, this note stays intact:
+たとえば、次のノートはそのまま残ります。
 
 ```html
 <details>
@@ -42,9 +42,9 @@ For example, this note stays intact:
 </details>
 ```
 
-Riebeckite enables this for Obsidian compatibility and to allow content that Markdown alone cannot express. The sanitizer is a defense against accidental or malicious HTML in note bodies; it is not a review of the content itself. Do not publish Markdown written by people you do not trust without reviewing what it says and where it links.
+Riebeckiteがこれを有効にしているのは、Obsidianとの互換性のためと、Markdownだけでは表現できない内容を記述できるようにするためです。サニタイザーはノート本文に含まれる偶発的または悪意のあるHTMLに対する防御であり、内容そのものを審査するものではありません。信頼できない人が書いたMarkdownは、その内容とリンク先を確認せずに公開しないでください。
 
-`escapeHtml`, `escapeHtmlAttribute`, and `escapeScriptJson` are escaping utilities for Plugin-generated strings. They do not make arbitrary HTML safe, and they do not validate URL schemes.
+`escapeHtml`、`escapeHtmlAttribute`、`escapeScriptJson`は、Pluginが生成する文字列のためのエスケープ用ユーティリティです。任意のHTMLを安全にするものではなく、URLスキームを検証するものでもありません。
 
 ```ts
 escapeHtml(...)
@@ -52,42 +52,42 @@ escapeHtmlAttribute(...)
 escapeScriptJson(...)
 ```
 
-## Plugin responsibilities
+## Pluginの責務
 
-Plugins that generate HTML must:
+HTMLを生成するPluginは、次のことを行う必要があります。
 
-- escape text and attribute values derived from external or browser input;
-- use `escapeScriptJson` for JSON embedded in `<script>`;
-- validate URLs for the exact context where they are used;
-- avoid putting secrets in `publicConfig`, client entries, generated HTML, or logs;
-- validate endpoint request bodies and fail closed;
-- document any external network or browser-loaded provider they introduce.
+- 外部またはブラウザからの入力に由来するテキストと属性値をエスケープする
+- `<script>`に埋め込むJSONには`escapeScriptJson`を使う
+- URLは、それが使われる正確なコンテキストに合わせて検証する
+- `publicConfig`、クライアントエントリ、生成HTML、ログに秘密情報を置かない
+- エンドポイントのrequest bodyを検証し、検証に失敗した場合は拒否する
+- 導入する外部ネットワークまたはブラウザ読み込みのプロバイダを文書化する
 
-`inspectGeneratedHtml` is a final-page inspection hook for diagnostics. It is not a security scanner and should not be treated as a sanitizer.
+`inspectGeneratedHtml`は診断用の最終ページ検査フックです。セキュリティスキャナーではなく、サニタイザーとして扱わないでください。
 
-## Plugin endpoints
+## Pluginのエンドポイント
 
-Plugins can expose their own endpoints. Treat everything a browser or network sends to an endpoint as untrusted input, and validate the request body, query parameters, `Content-Type`, size, authentication, CORS, and rate limits where needed. Riebeckite mounts the endpoint and passes the request to the Plugin; it does not decide whether the data is appropriate for the Plugin's purpose.
+Pluginは独自のエンドポイントを提供できます。ブラウザやネットワークからエンドポイントへ送られてくるものはすべて信頼できない入力として扱い、必要に応じてrequest body、queryパラメータ、`Content-Type`、サイズ、認証、CORS、レート制限を検証してください。RiebeckiteはエンドポイントをマウントしてrequestをPluginへ渡しますが、そのデータがPluginの用途に適しているかどうかは判断しません。
 
-HonoX reads the request body through a 1 MiB cap and returns `413 Payload Too Large` before calling the endpoint when the cap is exceeded. This protects the process from unbounded buffering, but it does not replace the Plugin's own size check, authentication, or rate limiting.
+HonoXはrequest bodyを1 MiBの上限まで読み取り、上限を超えた場合はエンドポイントを呼び出す前に`413 Payload Too Large`を返します。これは無制限のバッファリングからプロセスを守るためのもので、Plugin側のサイズ検証・認証・レート制限を置き換えるものではありません。
 
-## What Riebeckite does not do automatically
+## Riebeckiteが自動的に行わないこと
 
-Markdown raw HTML is sanitized before it is emitted. Two boundaries remain outside that protection:
+Markdownのraw HTMLは出力前にサニタイズされます。保護の対象外となる境界は2つあります。
 
-- Plugin-generated HTML runs after the Markdown sanitizer and is trusted as application code. A Plugin must escape its own inputs.
-- Installed Plugin and Theme JavaScript is trusted code and is never sandboxed by Core.
+- Pluginが生成したHTMLはMarkdownサニタイザーの後に実行され、アプリケーションコードとして信頼されます。Plugin自身が入力をエスケープする必要があります。
+- インストールしたPluginとThemeのJavaScriptは信頼されたコードであり、Coreによってサンドボックス化されません。
 
-Content received from other people still needs review for accuracy, links, and policy, even though its HTML is filtered.
+他の人から受け取ったコンテンツは、そのHTMLがフィルタリングされていても、正確さ、リンク、ポリシーの面で引き続き確認が必要です。
 
-## Current built-in policies
+## 現在の組み込みポリシー
 
-- Rich embeds accept only `https:` provider URLs. Known providers are converted to sandboxed iframe URLs, and generic iframes require an explicit host allow-list.
-- Webmention source fetching accepts only HTTP(S), rejects credentials, limits redirects and body size, rejects private hosts after DNS resolution, fails closed when DNS resolution fails, and pins the validated address for the connection; on runtimes without a DNS module, hostname and literal-IP checks still apply. The receive endpoint applies a best-effort per-client rate limit, and the default memory provider keeps at most 1,000 mentions.
-- Analytics collector URLs must be site-relative or HTTPS; plain HTTP is accepted only for localhost. The Cloudflare worker integration validates JSON shape and body size.
-- Autocard metadata links and images are escaped and restricted to relative, `http:`, or `https:` URLs.
-- Diagram and media Plugins may cause the browser to load configured external providers. Treat those provider URLs as trusted configuration.
+- Rich Embedは`https:`のプロバイダーURLだけを受け付けます。既知のプロバイダーはsandbox付きのiframe URLへ変換され、汎用iframeはホストの明示的な許可リストを必要とします。
+- Webmentionの取得元はHTTP(S)だけを受け付け、認証情報を拒否し、リダイレクトと本文サイズを制限し、DNS解決後にプライベートホストを拒否し、DNS解決に失敗した場合は拒否します。また、検証済みのアドレスを接続に固定します。DNSモジュールを持たないランタイムでは、ホスト名とリテラルIPの検査が引き続き適用されます。受信エンドポイントにはクライアント単位のベストエフォートなレート制限があり、既定のメモリプロバイダーは最大1,000件のメンションを保持します。
+- Analyticsの収集URLはサイト相対またはHTTPSでなければならず、平文HTTPはlocalhostだけで許可されます。Cloudflare Worker連携はJSONの形と本文サイズを検証します。
+- Autocardのメタデータリンクと画像はエスケープされ、相対URL、`http:`、`https:`に制限されます。
+- DiagramとメディアのPluginは、設定された外部プロバイダーをブラウザに読み込ませることがあります。そのプロバイダーのURLは信頼できる設定として扱ってください。
 
-## Vulnerability reporting
+## 脆弱性の報告
 
-Please report vulnerabilities through GitHub Security Advisories or by opening a private report with enough detail to reproduce the issue. Do not include secrets, private content, or production tokens in reports.
+脆弱性はGitHub Security Advisoriesを通じて、または問題を再現するのに十分な詳細を含む非公開の報告として報告してください。報告に秘密情報、非公開コンテンツ、本番用トークンを含めないでください。

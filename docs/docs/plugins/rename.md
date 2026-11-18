@@ -112,7 +112,7 @@ history and cannot detect a rename that happened before the lock existed.
 
 Functions:
 
-- `rename(options?)` / `rename(options?)`
+- `rename(options?)`
 - `diffRoutes(previous, current, options?)`
 - `buildRouteLock(entries, isPublished)`
 - `collapseRedirects(rules)`

@@ -133,7 +133,7 @@ export default defineConfig({
 
 ## 公開 API
 
-- `obsidianMarkdown(options?)` / `obsidianMarkdown`：プラグインファクトリ
+- `obsidianMarkdown(options?)`：プラグインファクトリ
 - `ObsidianMarkdownOptions`、`CalloutOptions`、`TagOptions`、`WikilinkOptions`、`WikilinkFragment`：型
 
 ## 関連資料

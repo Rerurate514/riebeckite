@@ -27,6 +27,7 @@ import {
 } from "../components/site-navigation";
 import { getHreflangAlternates, toOgLocale } from "../lib/locale";
 import { buildWebsiteSeo, getHtmlLanguage } from "../lib/seo";
+import { resolveUiLabels } from "../lib/ui-labels";
 
 // Plugin client entries are browser capabilities, not HonoX islands. HonoX
 // gates its client `<Script>` on this export, so keep the client runtime in
@@ -55,6 +56,7 @@ export default jsxRenderer(async ({ children }, c) => {
   const themeStyle = getThemeStyle(config.theme);
   const shell = c.get("shell");
   const tocItems = c.get("tocItems");
+  const uiLabels = resolveUiLabels(htmlLanguage);
 
   return (
     <SiteProvider
@@ -114,13 +116,16 @@ export default jsxRenderer(async ({ children }, c) => {
                     <SearchBar class="rr-search-bar--header" />
                     <DrawerTrigger
                       controls="docs-navigation"
-                      label="Menu"
+                      label={uiLabels.menu}
                       icon="menu"
                     />
                   </div>
                 </SiteNavigationHeader>
                 <div class="site-layout">
-                  <aside class="site-sidebar" aria-label="Documentation">
+                  <aside
+                    class="site-sidebar"
+                    aria-label={uiLabels.documentation}
+                  >
                     <div data-spa-region="docs-navigation">
                       <DocsSidebar />
                     </div>
@@ -128,7 +133,10 @@ export default jsxRenderer(async ({ children }, c) => {
                   <main id="main-content" tabindex={-1} class="site-main">
                     <div class="site-content">{children}</div>
                   </main>
-                  <aside class="site-aside" aria-label="Table of contents">
+                  <aside
+                    class="site-aside"
+                    aria-label={uiLabels.tableOfContents}
+                  >
                     <div data-spa-region="toc">
                       <TableOfContents
                         borders={{ blockStart: false, blockEnd: false }}
@@ -138,7 +146,10 @@ export default jsxRenderer(async ({ children }, c) => {
                     </div>
                   </aside>
                 </div>
-                <Drawer id="docs-navigation" label="Documentation">
+                <Drawer
+                  id="docs-navigation"
+                  label={uiLabels.documentation}
+                >
                   <div data-spa-region="docs-navigation-mobile">
                     <SiteDrawerNavigation />
                     <DocsSidebar />
@@ -157,12 +168,12 @@ export default jsxRenderer(async ({ children }, c) => {
                   <SearchBar class="rr-search-bar--header" />
                   <DrawerTrigger
                     controls="site-navigation"
-                    label="Menu"
+                    label={uiLabels.menu}
                     icon="menu"
                   />
                 </div>
               </SiteNavigationHeader>
-              <Drawer id="site-navigation" label="Navigation">
+              <Drawer id="site-navigation" label={uiLabels.navigation}>
                 <div data-spa-region="site-navigation">
                   <SiteDrawerNavigation />
                   <DocsSidebar />

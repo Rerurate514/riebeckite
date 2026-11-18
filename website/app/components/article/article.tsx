@@ -11,6 +11,7 @@ import {
   Article as ArticlePrimitive,
 } from "@riebeckite/honox/ui";
 import ArticleMetadata from "@riebeckite/plugin-article-metadata/components";
+import { resolveWebLocale } from "../../lib/locale";
 import { PoweredByRiebeckite } from "./powered-by-riebeckite";
 
 type Props = {
@@ -51,7 +52,13 @@ export default function Article(props: Props) {
           ) : null}
           <ArticleHeader dangerouslySetInnerHTML={{ __html: leadHtml }} />
           {props.metadataContent}
-          <ArticleMetadata locale="ja-JP" />
+          <ArticleMetadata
+            locale={
+              resolveWebLocale(props.entry?.publicLocation.language) === "ja"
+                ? "ja-JP"
+                : "en-US"
+            }
+          />
           {props.beforeContent}
           <ArticleBody html={articleHtml.rest} />
           <PoweredByRiebeckite />

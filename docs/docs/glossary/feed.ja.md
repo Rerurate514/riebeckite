@@ -15,7 +15,14 @@ sidebar.hidden: true
 - frontmatter のタイトル、日付、説明。
 
 ## フィードの生成
-フィードは SEO プラグイン（`packages/plugins/seo/src/feeds.ts`）が、解決済みの設定と絞り込んだエントリを使って生成します。形式は次の3つです。
+
+フィードは SEO プラグイン（`packages/plugins/seo/src/feeds.ts`、`endpoints.ts` で登録）が生成します。`seo/src/content.ts` の `filterFeedEntries` が `noindex: true` のエントリを除外し、公開日で並べ替えます。
+
+```ts
+import { renderRssFeed, renderAtomFeed, renderJsonFeed } from "@riebeckite/plugin-seo";
+```
+
+`feeds.ts` の `getResolvedFeedMetadata` 関数は `config.site.feed` から `title`、`description`、`language` を抽出し、`feed.limit` オプションがエントリ数の上限を決めます。形式は次の3つです。
 
 | 形式 | 主な用途 |
 | --- | --- |
@@ -23,10 +30,6 @@ sidebar.hidden: true
 | Atom | より厳密で仕様が明確 |
 | JSON Feed | プログラムからの利用 |
 
-フィードのエントリは検出可能なエントリから作られ（unlisted のページは除外されます）、各エントリのパーマリンクを使います（slug から URL を組み直すのではありません）。フィードのメタデータ（タイトル、説明、言語）は `config.site.feed` から取得します。エントリ数は `feed.limit` オプションで制限します。
+## 多言語サイト
 
-```ts
-import { renderRssFeed, renderAtomFeed, renderJsonFeed } from "@riebeckite/plugin-seo";
-```
-
-`getResolvedFeedMetadata` 関数は `config.site.feed` から `title`、`description`、`language` を抽出します。フィードの生成は `filterFeedEntries` で `noindex: true` のエントリを除外し、公開日で並べ替えます。
+フィードは言語別に分かれません。多言語コンテンツのサイトでは、形式ごとに1つのフィードを公開し、`<language>` は `config.site.feed.language`（または `site.locale`）から取ります。エントリの一覧には全言語の検出可能なエントリが混ざります（例: 英語と日本語の投稿が交互に並ぶ）。言語で絞り込みたいリーダーは各アイテムのパーマリンクからロケールを判断してください。`feed.limit` は多めに設定して、どの言語の最新投稿も上限に入るようにします。

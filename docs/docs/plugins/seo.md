@@ -82,12 +82,16 @@ BreadcrumbList is omitted under the same `headTags` condition as articles.
 | `renderAtomFeed` | Atom feed |
 | `renderJsonFeed` | JSON Feed 1.1 with `content_html` |
 
-Feed and sitemap entries are filtered with `isPublished`, exclude
-`noindex: true`, and are sorted by the most recent update first. Their URLs use
-each entry's resolved canonical `permalink` (`ContentManifestEntry.permalink`);
-they are never rebuilt from slugs.
+Feed and sitemap entries come from the manifest's discoverable entries,
+exclude `noindex: true`, and are sorted by the most recent update first. Their
+URLs use each entry's resolved canonical `permalink`
+(`ContentManifestEntry.permalink`); they are never rebuilt from slugs.
 Feeds include the latest 30 entries by default. Set `feed.limit` to change the
 shared limit for RSS, Atom, and JSON Feed.
+
+Feeds are not split by language: a localized site publishes one feed per
+format that contains every locale's discoverable entries, declared with the
+`language` from `config.site.feed` (or `site.locale`).
 
 ## Reading time
 

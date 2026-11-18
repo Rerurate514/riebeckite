@@ -106,3 +106,7 @@ docs/
 ## Directories are not used
 
 A layout that separates languages by directory (`en/note.md`, `ja/note.md`) is **not** used for language detection. Restricting the implicit rule to the filename suffix lets a [[glossary/wikilink|WikiLink]] resolve uniquely even when the same-named article exists in several languages. Specify the language through the filename suffix or the frontmatter `lang`.
+
+## UI strings
+
+The l10n plugin localizes content URLs, in-body links, and head tags. It does not translate the UI strings that the framework and its plugins render — navigation labels, the table of contents, the search placeholder, drawer titles — those stay English. Site-owned shell code can localize its own labels: this site's `<html lang>`, drawer labels, navigation `aria-label`s, and the article date locale come from the request language in `website/app/lib/ui-labels.ts` and `website/app/components/article/article.tsx`.

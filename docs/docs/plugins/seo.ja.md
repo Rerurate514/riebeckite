@@ -51,7 +51,9 @@ export default defineConfig({
 
 ## サイトマップとフィードに含まれる記事
 
-サイトマップとフィードは、公開済みで `noindex: true` ではないエントリだけを対象にし、更新日時の新しい順に並べます。フィードは既定で最新 30 件を含み、`feed.limit` で RSS・Atom・JSON Feed 共通の件数上限を変更できます。URL には各エントリの解決済み canonical `permalink`（`ContentManifestEntry.permalink`）を使い、slug から再構築しません。出力関数は `renderSitemap`、`renderRobots`、`renderRssFeed`、`renderAtomFeed`、`renderJsonFeed` です。
+サイトマップとフィードは、検出可能なエントリのうち `noindex: true` ではないものを対象にし、更新日時の新しい順に並べます。フィードは既定で最新 30 件を含み、`feed.limit` で RSS・Atom・JSON Feed 共通の件数上限を変更できます。URL には各エントリの解決済み canonical `permalink`（`ContentManifestEntry.permalink`）を使い、slug から再構築しません。出力関数は `renderSitemap`、`renderRobots`、`renderRssFeed`、`renderAtomFeed`、`renderJsonFeed` です。
+
+フィードは言語別に分かれません。多言語サイトでは、形式ごとに1つのフィードが全言語の検出可能なエントリを含み、`config.site.feed`（または `site.locale`）の `language` で宣言されます。
 
 読了時間は CJK 文字を毎分 500 文字、ラテン文字の単語を毎分 220 語として数え、最低 1 分に切り上げます。
 

@@ -86,7 +86,7 @@ l10n({
 言語切替 UI には `rr-l10n-switcher`、`rr-l10n-switcher__label`、
 `rr-l10n-switcher__list`、`rr-l10n-switcher__link` を使用します。既定の CSS はこれらのフックを対象にします。
 
-各ページには、Core の `headTags` 拡張を通じて、実在する翻訳だけを対象にした `hreflang` の alternate link が追加されます。サイトシェルはこれらのタグの描画と、リクエストに応じた `<html lang>` の選択を担当します。WikiLink の Content Graph は同じ言語の翻訳を優先し、なければ元のリンク先を使います。本文では、`@riebeckite/plugin-obsidian-markdown` が Obsidian WikiLink を解決した後に、WikiLink と Markdown の内部リンクを同じ規則で書き換えます。現在のページと同じ言語の翻訳があればその URL に切り替え、なければ元のリンク先を維持します。クエリ文字列とフラグメントは維持し、外部 URL、フラグメントのみのリンク、不明な URL、アセットなどコンテンツ以外の URL は変更しません。リンク依存関係の追跡でも描画と同じ解析済み Markdown URL を使用するため、HTML 文字参照も同じように扱います。Content Graph と本文リンクは同じ解決ポリシーを使います。
+各ページには、Core の `headTags` 拡張を通じて、実在する翻訳だけを対象にした `hreflang` の alternate link が追加されます。翻訳グループに複数の言語がある場合は、既定言語のページを指す `hreflang="x-default"` タグも1つ追加されます。サイトシェルはこれらのタグの描画と、リクエストに応じた `<html lang>` の選択を担当します。WikiLink の Content Graph は同じ言語の翻訳を優先し、なければ元のリンク先を使います。本文では、`@riebeckite/plugin-obsidian-markdown` が Obsidian WikiLink を解決した後に、WikiLink と Markdown の内部リンクを同じ規則で書き換えます。現在のページと同じ言語の翻訳があればその URL に切り替え、なければ元のリンク先を維持します。クエリ文字列とフラグメントは維持し、外部 URL、フラグメントのみのリンク、不明な URL、アセットなどコンテンツ以外の URL は変更しません。リンク依存関係の追跡でも描画と同じ解析済み Markdown URL を使用するため、HTML 文字参照も同じように扱います。Content Graph と本文リンクは同じ解決ポリシーを使います。
 
 ## 独自検出
 

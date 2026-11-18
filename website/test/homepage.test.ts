@@ -114,6 +114,17 @@ test("og locale helpers derive from hreflang alternates", () => {
   assert.deepEqual(alternates.sort(), ["en", "ja"]);
 });
 
+test("og locale helpers ignore the x-default hreflang alternate", () => {
+  const alternates = getHreflangAlternates([
+    { tag: "link", attrs: { rel: "alternate", hreflang: "ja", href: "/ja/" } },
+    {
+      tag: "link",
+      attrs: { rel: "alternate", hreflang: "x-default", href: "/" },
+    },
+  ]);
+  assert.deepEqual(alternates, ["ja"]);
+});
+
 for (const locale of locales) {
   test(`homepage (${locale}) renders a single h1 inside the shared main landmark`, async () => {
     const html = renderToString(

@@ -33,7 +33,7 @@ Riebeckite は、Markdown や Obsidian 形式のノートを静的サイトと�
 | より多くの人が使えるサイトにする | [アクセシビリティ](./docs/accessibility.ja.md) |
 | セキュリティ上の前提を理解する | [セキュリティモデル](./docs/security.ja.md) |
 | 設定・CLI・API を調べる | [リファレンス](./docs/reference/README.ja.md) |
-| リリースノートを読む | [./docs/releases.ja.md] |
+| リリースノートを読む | [リリースノート](./docs/releases.ja.md) |
 | Riebeckite の内部構造を知る | [フレームワーク](./docs/framework/README.ja.md) |
 | Riebeckite 自体の開発に参加する | [フレームワーク / 開発](./docs/framework/development.ja.md) |
 

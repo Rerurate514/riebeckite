@@ -90,7 +90,7 @@ deploy
 | Site または Plugin の component を生成する | [Component Generator](./docs/plugins/component-generator.ja.md) |
 | テーマを選ぶ | [テーマ](./docs/themes/README.ja.md) |
 | ローカル Theme を生成する | [Theme Generator](./docs/themes/generator.ja.md) |
-| リリースノートを読む | [./docs/releases.ja.md] |
+| リリースノートを読む | [リリースノート](./docs/releases.ja.md) |
 | アクセシビリティの責任範囲を確認する | [アクセシビリティ](./docs/accessibility.ja.md) |
 | セキュリティと信頼モデルを確認する | [セキュリティモデル](./docs/security.ja.md) |
 | セキュリティ強化監査を確認する | [セキュリティ強化監査](./audits/security-hardening-2026-11.ja.md) |
@@ -99,7 +99,7 @@ deploy
 | 宣言的UIアーキテクチャの実装台帳を確認する | [宣言的UIアーキテクチャ台帳](./audits/declarative-ui-architecture-2026-11/implementation-ledger.ja.md) |
 | 宣言的UIアーキテクチャの実装状況を確認する | [宣言的UIアーキテクチャ実装監査](./audits/declarative-ui-architecture-2026-11/implementation.ja.md) |
 | 設定や CLI、Public API を調べる | [リファレンス](./docs/reference/README.ja.md) |
-| リリースノートを読む | [./docs/releases.ja.md] |
+| リリースノートを読む | [リリースノート](./docs/releases.ja.md) |
 | Riebeckite の内部構造を理解する | [フレームワーク](./docs/framework/README.ja.md) |
 | Riebeckite 本体を開発する | [フレームワーク開発](./docs/framework/development.ja.md) |
 | CI の検証ルールを確認する | [CI検証ルール](./architecture/ci.ja.md) |

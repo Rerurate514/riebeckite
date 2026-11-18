@@ -2,7 +2,7 @@
 date: 2026-10-08
 title: デプロイガイド
 aliases:
-  - /ja/docs/getting-started/deployment
+  - /docs/getting-started/deployment
 ---
 # デプロイガイド
 

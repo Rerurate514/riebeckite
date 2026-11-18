@@ -4,7 +4,7 @@ title: プロジェクト構成
 sidebar.label: プロジェクト構成
 sidebar.order: 70
 aliases:
-  - /ja/docs/getting-started/content-location
+  - /docs/getting-started/content-location
 ---
 # プロジェクト構成
 

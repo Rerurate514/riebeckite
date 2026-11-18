@@ -2,8 +2,8 @@
 date: 2026-10-08
 title: Obsidian のノートをサイトにする
 aliases:
-  - /ja/docs/obsidian-plugin
-  - /ja/docs/obsidian-plugin/architecture
+  - /docs/obsidian-plugin
+  - /docs/obsidian-plugin/architecture
 ---
 # Obsidian のノートをサイトにする
 

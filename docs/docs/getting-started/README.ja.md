@@ -46,7 +46,7 @@ Riebeckite を使うために、このリポジトリを clone する必要は�
 
 クイックスタートは動くサイトへの最短ルート、インストールは要件と生成ファイルの詳細です。プロジェクト構成で3つの配置パターンを比較し、3つのセットアップガイド（[一体型](./integrated-setup.ja.md)、[ディレクトリ分離型](./separate-directories-setup.ja.md)、[リポジトリ分離型](./separate-repositories-setup.ja.md)）がそれぞれの手順を説明します。リポジトリ分離型の運用は [コンテンツリポジトリ分離](../guides/deployment/separate-content-repository.ja.md) にあります。
 
-公開とデプロイの自動化に進むときは、ガイド章の [デプロイ](../guides/deployment/README.ja.md) を参照してください。
+デプロイとその自動化に進むときは、ガイド章の [デプロイ](../guides/deployment/README.ja.md) を参照してください。
 
 ## 最短でサイトを公開する
 

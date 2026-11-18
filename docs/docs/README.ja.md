@@ -6,7 +6,7 @@ sidebar.order: 0
 ---
 # ドキュメント
 
-Riebeckite は Obsidian Vault（または任意の Markdown フォルダ）を静的サイトに変換します。[クイックスタート](./getting-started/quick-start.ja.md) から始めてサイトを作成・公開するか、以下のタスク表から目的のページへ移動してください。
+Riebeckite は Obsidian Vault（または任意の Markdown フォルダ）を静的サイトに変換します。[クイックスタート](./getting-started/quick-start.ja.md) から始めてサイトを作成・公開するか、以下の表から目的のページへ移動してください。
 
 ## 何をしたいですか？
 
@@ -40,4 +40,4 @@ Riebeckite は Obsidian Vault（または任意の Markdown フォルダ）を�
 - [セキュリティ](./security.ja.md)
 - [リリースノート](./releases.ja.md)
 
-[ホーム](../index.ja.md) と [ガイド](./guides/README.ja.md) にも、ここに誘導する短いタスク表があります。
+[ホーム](../index.ja.md) と [ガイド](./guides/README.ja.md) にも、ここに誘導する短い表があります。

@@ -102,13 +102,14 @@ The deployment choice you made in step 1 determines how to publish:
   npm exec -- riebeckite publish run --execute
   ```
 
+- **If you chose `GitHub Actions`**: the generated workflow publishes the site on every push to `main`. Commit, push, and watch the run; see [Deployment](../guides/deployment/README.md) for the details.
+
 - **If you chose `Not now`**: The build output in `dist/` is ready for any static host. See [Deployment](../guides/deployment/README.md) for provider-specific instructions.
 
 ## Next
 
 - [Deployment](../guides/deployment/README.md) — publish to Cloudflare Workers and automate with GitHub Actions
-- [Project Structure](./project-structure.md) — compare integrated, separate-directories, and separate-repositories layouts
-- [Project Structure](./project-structure.md) — layouts and `content.directory`
+- [Project Structure](./project-structure.md) — compare integrated, separate-directories, and separate-repositories layouts, and decide `content.directory`
 - [Integrated Setup](./integrated-setup.md), [Separate Directories Setup](./separate-directories-setup.md), [Separate Repositories Setup](./separate-repositories-setup.md) — follow a complete layout with an official sample
 - [Presets](./presets.md) — compare `starter`, `digital-garden`, `blog`, `writer`, `docs`, `portfolio`, `minimal`, and `empty`
 - [First Content](./first-content.md) — write and preview content more deliberately

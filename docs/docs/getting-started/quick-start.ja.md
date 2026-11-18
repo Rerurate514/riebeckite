@@ -92,9 +92,9 @@ npm exec riebeckite build
 
 成功すると、公開用の静的ファイルが `dist/` に作られます。デプロイでは、この `dist/` を配信します。
 
-## 7. Cloudflare Workers へ公開する
+## 7. サイトを公開する
 
-ステップ 1 で選んだデプロイの選択肢によって公開の方法が決まります。
+公開の方法は、ステップ 1 で選んだデプロイの選択肢で決まります。
 
 - **`Cloudflare Workers` を選んだ場合**：Wrangler はすでにインストールされています。ビルドして公開します。
   ```bash
@@ -102,13 +102,14 @@ npm exec riebeckite build
   npm exec -- riebeckite publish run --execute
   ```
 
-- **`Not now` を選んだ場合**：`dist/` のビルド出力は任意の静的ホストで利用可能です。[Deployment](../guides/deployment/README.ja.md) プロバイダー固有の手順を参照してください。
+- **`GitHub Actions` を選んだ場合**：生成されたワークフローが `main` へのプッシュごとにサイトを公開します。コミットしてプッシュすれば実行されます。詳しくは [Deployment](../guides/deployment/README.ja.md) を参照してください。
+
+- **`Not now` を選んだ場合**：`dist/` のビルド出力は任意の静的ホストで使えます。プロバイダー固有の手順は [Deployment](../guides/deployment/README.ja.md) を参照してください。
 
 ## 次に読むページ
 
 - [Deployment](../guides/deployment/README.ja.md) - Cloudflare Workers への公開と GitHub Actions による自動化
-- [プロジェクト構成](./project-structure.ja.md) - 一体型・ディレクトリ分離型・リポジトリ分離型を比較する
-- [コンテンツの場所](./project-structure.ja.md) - 配置パターンと `content.directory` を決める
+- [プロジェクト構成](./project-structure.ja.md) - 一体型・ディレクトリ分離型・リポジトリ分離型を比較し、`content.directory` を決める
 - [一体型](./integrated-setup.ja.md)・[ディレクトリ分離型](./separate-directories-setup.ja.md)・[リポジトリ分離型](./separate-repositories-setup.ja.md) - 公式サンプル付きの完全な手順
 - [Presets](./presets.ja.md) - `starter`、`digital-garden`、`blog`、`writer`、`docs`、`portfolio`、`minimal`、`empty` を比較する
 - [First Content](./first-content.ja.md) - Markdown の書き方と確認方法をもう少し詳しく見る

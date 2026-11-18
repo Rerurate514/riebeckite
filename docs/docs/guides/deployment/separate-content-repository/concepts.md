@@ -94,10 +94,10 @@ The rule of thumb:
 
 ```text
 Do not use
-  ⇅ process.cwd()
+  → process.cwd()
 
 Base
-  ⇅ appRoot
+  → appRoot
 ```
 
 ### The three layouts
@@ -112,10 +112,10 @@ Base
 
 ```text
 blog/
-├─ riebeckite.config.ts     ⇅appRoot (directory: "content")
+├─ riebeckite.config.ts     ← appRoot (directory: "content")
 ├─ app/
 ├─ public/
-└─ content/                 ⇅articles live here
+└─ content/                 ← articles live here
    └─ index.md
 ```
 
@@ -125,9 +125,9 @@ The simplest option, and exactly what `create-riebeckite` generates. Article vis
 
 ```text
 notes-repo/
-├─ site/                ⇅appRoot (contains riebeckite.config.ts)
+├─ site/                ← appRoot (contains riebeckite.config.ts)
 ├─ riebeckite.config.ts
-└─ vault/               ⇅referenced by directory: "../vault"
+└─ vault/               ← referenced by directory: "../vault"
 ```
 
 One repository and one history, with the locations split. [[glossary/visibility|Visibility]] is still per repository, as in the integrated layout. The only change from the integrated layout is `content.directory: "../vault"`.
@@ -138,9 +138,9 @@ An extension of the separate-repositories layout: keep the vault in its own plac
 
 ```text
 workspace/
-├─ notes/           ⇅shared vault (its own private repository)
-├─ blog/            ⇅site 1 (directory: "../notes")
-└─ docs/            ⇅site 2 (directory: "../notes")
+├─ notes/           ← shared vault (its own private repository)
+├─ blog/            ← site 1 (directory: "../notes")
+└─ docs/            ← site 2 (directory: "../notes")
 ```
 
 Treat the vault as read-only source data and vary `exclude`, `content.filters.publishStrategy`, and plugins per site. No site writes back, so the same notes can be published in different shapes. Deploy each site independently, giving each CI the additional checkout described in [Setup](./setup.md#5-set-up-checkout-trigger-and-secrets) or [Troubleshooting](./troubleshooting.md#common-ci-problems).
@@ -160,7 +160,7 @@ Each site can set `exclude`, `content.filters.publishStrategy`, plugins, theme, 
 
 ### Decision flow
 
-1. You want articles private, or updates decoupled ⇅**separate repositories**.
-2. Articles and site can share visibility ⇅next.
-3. You only want locations and settings apart ⇅**separate directories**. You want one repository ⇅**integrated**.
-4. You want one vault for several sites ⇅**separate repositories + shared vault**.
+1. You want articles private, or updates decoupled → **separate repositories**.
+2. Articles and site can share visibility → next.
+3. You only want locations and settings apart → **separate directories**. You want one repository → **integrated**.
+4. You want one vault for several sites → **separate repositories + shared vault**.

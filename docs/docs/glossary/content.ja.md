@@ -70,8 +70,8 @@ Riebeckite のコンテンツパイプラインは、役割を絞った複数の
 
 - [[content-source|Content Source]]
 - [[content-entry|Content Entry]]
-- ./permalink.ja.md
-- ./manifest.ja.md
-- ./content-graph.ja.md
-- ./taxonomy.ja.md
-- ./series.ja.md
+- [Permalink](./permalink.ja.md)
+- [Manifest](./manifest.ja.md)
+- [Content Graph](./content-graph.ja.md)
+- [Taxonomy](./taxonomy.ja.md)
+- [Series](./series.ja.md)

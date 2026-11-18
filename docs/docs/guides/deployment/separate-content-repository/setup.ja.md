@@ -4,8 +4,8 @@ title: セットアップ
 sidebar.label: セットアップ
 sidebar.order: 20
 aliases:
-  - /ja/docs/guides/content-repositories/setup
-  - /ja/docs/guides/deployment/separate-content-repository/repository-split
+  - /docs/guides/content-repositories/setup
+  - /docs/guides/deployment/separate-content-repository/repository-split
 ---
 # セットアップ
 
@@ -195,7 +195,7 @@ git commit -m "記事を更新"
 git push
 ```
 
- With either option, run `riebeckite build` from the site directory. That is why the workflow runs the lockfile-aware install → `npm exec riebeckite check` → `npm exec riebeckite build`.
+どちらの方法でも、ビルドはサイトのディレクトリで `riebeckite build` を実行します。ワークフローが lockfile を考慮したインストール → `npm exec riebeckite check` → `npm exec riebeckite build` の順に実行するのはそのためです。
 
 ### 6. 日々の運用
 

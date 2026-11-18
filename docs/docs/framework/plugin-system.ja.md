@@ -225,5 +225,5 @@ flowchart TD
 - [[plugin-api|プラグイン API]]：API の取り決め
 - [[page-system|ページシステム]]：独立したページ
 - [[content-system|コンテンツシステム]]：マニフェスト、グラフ、パイプライン
-- [アーキテクチャ](./architecture.md)：Core、プラグイン、インテグレーション、[[glossary/theme|テーマ]]、アプリケーションの責務
+- [アーキテクチャ](./architecture.ja.md)：Core、プラグイン、インテグレーション、[[glossary/theme|テーマ]]、アプリケーションの責務
 - [[reference/README|フレームワークリファレンス]]：公開 API

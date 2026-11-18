@@ -45,7 +45,7 @@ Cloudflare Workers に公開する Static Assets は `dist/` に生成されま�
 
 ### サイトを更新したのに公開内容が古い
 
-変更後に、もう一度次のコマンドを実行します。設定だけの変更は公開計画で検出されない場合があるため、`--force` を付けてデプロイします（[運用](./cloudflare-workers/operations.ja.md)参照）。
+変更後に、もう一度次のコマンドを実行します。設定だけの変更は公開計画で検出されない場合があるため、`--force` を付けてデプロイします（[運用](./cloudflare-workers/operations.ja.md)を参照）。
 
 ```sh
 npm exec riebeckite build

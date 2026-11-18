@@ -7,7 +7,7 @@ sidebar.order: 50
 
 すでに [[glossary/obsidian-vault|Obsidian Vault]] がある場合は、Riebeckite からその Vault をサイトのコンテンツとして読むことができます。まずローカルで 1 つのノートを公開し、リンクと画像を確認してから、`dist/` をビルドします。
 
-Vault の公開範囲や日々の運用までは踏み込む場合は、[Obsidian のノートをサイトにする](../guides/obsidian.ja.md) を参照してください。
+Vault の公開範囲や日々の運用まで踏み込む場合は、[Obsidian のノートをサイトにする](../guides/obsidian.ja.md) を参照してください。
 
 ## 始める前に
 
@@ -88,7 +88,7 @@ npm exec riebeckite dev
 
 ---
 
-フル機能ガイド、WikiLink・画像の確認、トラブルシューティングなどは [Obsidian のノートをサイトにする](../guides/obsidian.ja.md) を参照してください。
+詳しい手順、WikiLink・画像の確認、トラブルシューティングは [Obsidian のノートをサイトにする](../guides/obsidian.ja.md) を参照してください。
 
 ## 次のステップ
 

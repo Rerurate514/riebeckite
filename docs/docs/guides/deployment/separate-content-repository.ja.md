@@ -3,16 +3,16 @@ date: 2026-10-08
 title: コンテンツリポジトリの分離
 sidebar.label: コンテンツリポジトリ分離
 aliases:
-  - /ja/docs/guides/content-repositories
+  - /docs/guides/content-repositories
 ---
 # コンテンツリポジトリの分離
 
-記事（Markdown/Obsidian Vault）をサイト（コード、設定、テーマ）から別々に管理する方法を説明します。
+記事（Markdown や Obsidian Vault）とサイト（コード、設定、テーマ）を別々に管理する方法を説明します。
 
 ## できること
 
 - 記事を非公開のままサイトを公開する
-- 複数のサイトで1つのVaultを共有する
+- 複数のサイトで1つの Vault を共有する
 - 記事の更新とサイトのデプロイを分離する
 - 記事とサイトの更新を独立して管理する
 
@@ -27,7 +27,7 @@ aliases:
 
 ## ページガイド
 
-- [概念](./separate-content-repository/concepts.ja.md) — リポジトリ分離の概念、用語、レイアウト判断
-- [セットアップ](./separate-content-repository/setup.ja.md) — content-repositories と repository-split を統合した手順。シークレット名・権限設定・トークン発行の重複手順を1本化し、手順通り読める構成にしています。
-- [公開とトラブルシューティング](./separate-content-repository/publishing.ja.md) — 公開ルールと検証。トラブルシューティング表は専用ページを参照しています。
-- [トラブルシューティング](./separate-content-repository/troubleshooting.ja.md) — 統合されたトラブルシューティング表。よくある問題を1か所で完結できます。
+- [概念](./separate-content-repository/concepts.ja.md)：リポジトリ分離の概念、用語、レイアウトの判断
+- [セットアップ](./separate-content-repository/setup.ja.md)：content-repositories と repository-split を統合した手順。シークレット名・権限設定・トークン発行の重複を1本化し、手順どおりに読める構成にしています。
+- [公開とトラブルシューティング](./separate-content-repository/publishing.ja.md)：公開ルールと検証。トラブルシューティング表は専用ページを参照しています。
+- [トラブルシューティング](./separate-content-repository/troubleshooting.ja.md)：統合されたトラブルシューティング表。よくある問題を1か所にまとめています。

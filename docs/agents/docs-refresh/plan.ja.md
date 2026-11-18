@@ -49,7 +49,7 @@ Phase 0/1 の全ワーカー調査 (A: 導入・デプロイ, B: framework・gui
 
 ## 3. ファイル操作マッピング (旧→新)
 
-構造変更は最小に留める。plugins 85本は `docs/docs/plugins/<slug>.{md,ja.md}` 平坦維持 (sync_docs.mjs・check_plugin_docs_parity.mjs・npm package README生成がパス前提のため)。framework/themes/reference/glossary のフォルダ構造も維持し内容修正のみ。
+構造変更は最小に留める。plugins 85本は `docs/docs/plugins/<slug>.{md,ja.md}` 平坦維持 (sync_docs.mjs・check_plugin_docs_parity.mjs・npm package README の生成がパスを前提にしているため)。framework/themes/reference/glossary のフォルダ構造も維持し内容修正のみ。
 
 | 現行 | 操作 | 新 | 備考 |
 | --- | --- | --- | --- |
@@ -150,7 +150,7 @@ D2対象 (audits/architecture) は意図せぬ公開だったため 404 のま�
 
 ### B5: 検査強化
 
-- check_docs.mjs に WikiLink 解決検査を追加 (§B-H1/D3 の再発防止。ja 側の既存构文も検査対象に)
+- check_docs.mjs に WikiLink 解決検査を追加 (§B-H1/D3 の再発防止。ja 側の既存構文も検査対象に)
 - 予期しない出力増加 (old aliases) がRule 1〜5に与える影響を確認
 
 ### B6: ビルド検証

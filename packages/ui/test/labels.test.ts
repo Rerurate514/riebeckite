@@ -21,10 +21,7 @@ test("matches language case-insensitively and ignores unknown keys", () => {
     ja: { contents: "目次", irrelevant: "value" },
   });
   assert.equal(labels.contents, "目次");
-  assert.equal(
-    (labels as unknown as Record<string, string>).irrelevant,
-    undefined,
-  );
+  assert.ok(!Object.keys(labels).includes("irrelevant"));
 });
 
 test("falls back to English for languages without a dictionary", () => {
@@ -33,9 +30,10 @@ test("falls back to English for languages without a dictionary", () => {
 });
 
 test("ignores non-string and empty dictionary values", () => {
-  const labels = resolveUiLabels("ja", {
-    ja: { contents: "", filter: 1 as unknown as string },
-  });
+  const labels = resolveUiLabels(
+    "ja",
+    JSON.parse('{"ja":{"contents":"","filter":1}}'),
+  );
   assert.equal(labels.contents, DEFAULT_UI_LABELS.contents);
   assert.equal(labels.filter, DEFAULT_UI_LABELS.filter);
 });

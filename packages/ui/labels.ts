@@ -119,11 +119,11 @@ export function resolveUiLabels(
           ([locale]) => locale.toLowerCase() === language.toLowerCase(),
         )?.[1];
   if (dictionary === undefined) return DEFAULT_UI_LABELS;
-  const resolved = { ...DEFAULT_UI_LABELS } as Record<string, string>;
+  const resolved = { ...DEFAULT_UI_LABELS };
   for (const [key, value] of Object.entries(dictionary)) {
     if (typeof value === "string" && value !== "" && key in resolved) {
-      resolved[key] = value;
+      resolved[key as keyof UiLabels] = value;
     }
   }
-  return resolved as unknown as UiLabels;
+  return resolved;
 }

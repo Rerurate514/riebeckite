@@ -3066,6 +3066,11 @@
       "type": true
     },
     {
+      "name": "UiConfig",
+      "value": false,
+      "type": true
+    },
+    {
       "name": "uniqueStrings",
       "value": true,
       "type": false

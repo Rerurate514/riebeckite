@@ -29,10 +29,12 @@ export function resolveUiLabels(language: string | undefined): UiLabels {
           ([key]) => key.toLowerCase() === locale.toLowerCase(),
         )?.[1];
   if (dictionary === undefined) return en;
-  const resolved: Record<string, string> = { ...en };
+  const resolved = { ...en };
   for (const key of Object.keys(en)) {
     const value = dictionary[key];
-    if (typeof value === "string" && value !== "") resolved[key] = value;
+    if (typeof value === "string" && value !== "") {
+      resolved[key as keyof UiLabels] = value;
+    }
   }
-  return resolved as unknown as UiLabels;
+  return resolved;
 }

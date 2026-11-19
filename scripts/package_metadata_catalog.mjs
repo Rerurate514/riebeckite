@@ -11,5 +11,5 @@ export const catalogDependencies = {
   unified: "^11.0.5",
   "unist-util-visit": "^5.1.0",
   "vfile-matter": "^5.0.1",
-  vite: "^8.3.5",
+  vite: "^8.3.7",
 };

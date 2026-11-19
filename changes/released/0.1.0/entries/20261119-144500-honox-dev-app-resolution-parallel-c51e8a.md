@@ -1,5 +1,6 @@
 ---
 packages:
+  - "@riebeckite/cli"
   - "@riebeckite/honox"
 type: changed
 breaking: false

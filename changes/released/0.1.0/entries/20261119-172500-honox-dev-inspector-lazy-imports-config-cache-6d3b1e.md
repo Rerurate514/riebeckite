@@ -1,5 +1,6 @@
 ---
 packages:
+  - "@riebeckite/cli"
   - "@riebeckite/honox"
   - "@riebeckite/dev-inspector"
 type: changed

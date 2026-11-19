@@ -36,10 +36,10 @@
     "test": "node --import tsx --test \"test/*.test.ts\""
   },
   "peerDependencies": {
-    "@riebeckite/core": "^0.0.52"
+    "@riebeckite/core": "^0.1.0"
   },
   "devDependencies": {
-    "@riebeckite/core": "^0.0.52",
+    "@riebeckite/core": "^0.1.0",
     "tsx": "^4.22.4",
     "typescript": "^5"
   }

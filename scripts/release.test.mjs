@@ -981,6 +981,23 @@ test("version bump dry-run is idempotent and never rewrites manifests", () => {
   assert.equal(fs.readFileSync(manifestPath, "utf8"), before);
 });
 
+test("version bump dry-run reports plugin-dx fixture core ranges", () => {
+  const output = execFileSync(
+    process.execPath,
+    ["scripts/bump_version.mjs", "99.0.0", "--dry-run"],
+    { cwd: repositoryRoot, encoding: "utf8" },
+  );
+
+  for (const plugin of ["demo", "markdown-highlight", "related-posts"]) {
+    assert.match(
+      output,
+      new RegExp(
+        `plugin-dx[\\\\/]plugins[\\\\/]${plugin}[\\\\/]package\\.json: @riebeckite/core -> \\^99\\.0\\.0`,
+      ),
+    );
+  }
+});
+
 test("tests never spawn a real npm/pnpm process or mutate the registry", async () => {
   const harness = createHarness();
 

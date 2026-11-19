@@ -57,13 +57,17 @@ function assertSharedCore() {
     "core",
     "package.json",
   );
+  const coreVersion = JSON.parse(fs.readFileSync(coreManifest, "utf8")).version;
   const expected = fs.realpathSync(coreManifest);
   for (const name of ["@riebeckite/node", "@plugin-dx/markdown-highlight"]) {
     const packageDir = path.join(siteDir, "node_modules", ...name.split("/"));
     const manifest = JSON.parse(
       fs.readFileSync(path.join(packageDir, "package.json"), "utf8"),
     );
-    assert.equal(manifest.peerDependencies?.["@riebeckite/core"], "^0.0.51");
+    assert.equal(
+      manifest.peerDependencies?.["@riebeckite/core"],
+      `^${coreVersion}`,
+    );
     assert.equal(
       fs.realpathSync(
         createRequire(path.join(packageDir, "package.json")).resolve(

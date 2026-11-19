@@ -95,6 +95,26 @@ function writeScaffoldVersion(version) {
   }
 }
 
+const pluginDxFixtureDirectories = [
+  "tests/plugin-dx/plugins/demo",
+  "tests/plugin-dx/plugins/markdown-highlight",
+  "tests/plugin-dx/plugins/related-posts",
+];
+
+function updatePluginDxFixtureCoreRange(manifest, version) {
+  const range = `^${version}`;
+  let changed = false;
+  for (const section of ["peerDependencies", "devDependencies"]) {
+    if (manifest[section]?.["@riebeckite/core"] !== undefined) {
+      if (manifest[section]["@riebeckite/core"] !== range) {
+        manifest[section]["@riebeckite/core"] = range;
+        changed = true;
+      }
+    }
+  }
+  return changed;
+}
+
 function main() {
   const rawArguments = process.argv.slice(2);
   const dryRun = rawArguments.includes("--dry-run");
@@ -111,13 +131,22 @@ function main() {
   }
 
   const manifests = PACKAGE_DIRECTORIES.map(readManifest);
+  const fixtureManifests = pluginDxFixtureDirectories.map(readManifest);
   if (dryRun) {
     const changed = manifests.filter(
       ({ manifest }) => manifest.version !== version,
     );
+    const fixturesChanged = fixtureManifests.filter(({ manifest }) => {
+      const copy = structuredClone(manifest);
+      return updatePluginDxFixtureCoreRange(copy, version);
+    });
     const scaffoldVersion = readScaffoldVersion();
     const scaffoldChanged = scaffoldVersion !== version;
-    if (changed.length === 0 && !scaffoldChanged) {
+    if (
+      changed.length === 0 &&
+      fixturesChanged.length === 0 &&
+      !scaffoldChanged
+    ) {
       console.log(
         `All ${manifests.length} public packages already use ${version}.`,
       );
@@ -128,6 +157,9 @@ function main() {
     );
     for (const { manifest, relativePath } of changed) {
       console.log(`  ${relativePath}: ${manifest.version} -> ${version}`);
+    }
+    for (const { relativePath } of fixturesChanged) {
+      console.log(`  ${relativePath}: @riebeckite/core -> ^${version}`);
     }
     if (scaffoldChanged) {
       console.log(
@@ -146,10 +178,21 @@ function main() {
     }
   }
 
+  for (const { manifest, manifestPath, relativePath } of fixtureManifests) {
+    if (!updatePluginDxFixtureCoreRange(manifest, version)) {
+      continue;
+    }
+    try {
+      writeManifest(manifestPath, manifest);
+    } catch (error) {
+      throw new Error(`Could not update ${relativePath}: ${error.message}`);
+    }
+  }
+
   writeScaffoldVersion(version);
 
   console.log(
-    `Updated ${manifests.length} public packages and the scaffold version to ${version}.`,
+    `Updated ${manifests.length} public packages, plugin-dx fixtures, and the scaffold version to ${version}.`,
   );
 }
 

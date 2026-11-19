@@ -329,9 +329,7 @@ test("adds an x-default alternate pointing at the default language page", async 
   });
   const manifest = await content.getManifest();
   const headTags = manifest.bySlug.get("guide.en")?.headTags ?? [];
-  const xDefault = headTags.find(
-    (tag) => tag.attrs?.hreflang === "x-default",
-  );
+  const xDefault = headTags.find((tag) => tag.attrs?.hreflang === "x-default");
   assert.ok(xDefault, "expected an x-default alternate");
   assert.equal(xDefault?.attrs?.rel, "alternate");
   assert.equal(xDefault?.attrs?.href, "/guide");

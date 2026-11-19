@@ -328,10 +328,7 @@ test("generated docs site installs, checks, and builds the shell", async () => {
       /<Drawer\s+id="docs-navigation"[^>]*label="Documentation"/s,
     );
     assert.match(article ?? "", /<DrawerTrigger/);
-    assert.match(
-      article ?? "",
-      /<div data-spa-region="docs-navigation">/,
-    );
+    assert.match(article ?? "", /<div data-spa-region="docs-navigation">/);
     assert.ok(
       !(article ?? "").includes("docs-navigation-mobile"),
       "the docs shell must render the sidebar exactly once",

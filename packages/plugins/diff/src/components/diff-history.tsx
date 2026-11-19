@@ -1,7 +1,7 @@
 /** @jsxRuntime automatic */
 /** @jsxImportSource hono/jsx */
 
-import { useUiLabels, type UiLabels } from "@riebeckite/ui";
+import { type UiLabels, useUiLabels } from "@riebeckite/ui";
 import { renderToString } from "hono/jsx/dom/server";
 import type { DiffRevision, MarkdownRevision, PostDiff } from "../types.js";
 import { DiffViewer } from "./diff-viewer.js";

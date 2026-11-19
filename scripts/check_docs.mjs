@@ -380,10 +380,7 @@ const DOCS_CONTENT_ROOT = "docs/docs/";
 const WIKILINK_PATTERN = /\[\[([^\]\n]+)\]\]/g;
 
 function noteSlug(relative, root) {
-  return relative
-    .slice(root.length)
-    .replace(/\.md$/, "")
-    .replace(/\.ja$/, "");
+  return relative.slice(root.length).replace(/\.md$/, "").replace(/\.ja$/, "");
 }
 
 function matchingNotes(slugs, wanted) {
@@ -431,7 +428,8 @@ function checkWikiLinks(markdownFiles) {
       slug: noteSlug(file.relative, DOCS_CONTENT_ROOT),
     }));
   const byLanguage = { en: [], ja: [] };
-  for (const document of documents) byLanguage[document.language].push(document);
+  for (const document of documents)
+    byLanguage[document.language].push(document);
   // The site indexes every note under the content root, so a target may also
   // resolve outside the published docs root (for example a drawing note).
   const vaultSlugs = markdownFiles

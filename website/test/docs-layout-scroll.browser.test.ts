@@ -59,10 +59,7 @@ test("official docs use standard rails without horizontal overflow", async (t) =
       }));
       assert.equal(layout.mains, 1);
       assert.equal(layout.sidebar === "block", width >= 768);
-      assert.equal(
-        layout.sidebarPosition,
-        width >= 768 ? "sticky" : "fixed",
-      );
+      assert.equal(layout.sidebarPosition, width >= 768 ? "sticky" : "fixed");
       assert.equal(layout.aside === "block", width >= 1024);
       assert.equal(layout.footerMarginTop, "0px");
       assert.ok(Number.parseFloat(layout.footerPaddingTop) > 0);

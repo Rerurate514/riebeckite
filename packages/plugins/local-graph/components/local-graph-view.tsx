@@ -1,6 +1,6 @@
-import { useUiLabels } from "@riebeckite/ui";
 import { buildGraphDocument } from "@riebeckite/graph";
 import GraphView from "@riebeckite/graph/ui";
+import { useUiLabels } from "@riebeckite/ui";
 import type { LocalGraphViewProps } from "../src/local-graph.js";
 
 export function LocalGraphView(props: LocalGraphViewProps) {

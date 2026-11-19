@@ -33,9 +33,9 @@
     .site-layout > .rb-drawer > .rb-drawer__panel.rb-drawer__panel {
       display: block;
       position: sticky;
+      inset: auto;
       top: 0;
       z-index: auto;
-      inset: auto;
       height: 100dvh;
       width: auto;
       max-height: none;

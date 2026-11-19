@@ -1,9 +1,5 @@
 import { type PluginSiteComponent, resolvePlugins } from "@riebeckite/core";
-import {
-  useArticleContext,
-  useSiteContext,
-  useUiLabels,
-} from "@riebeckite/ui";
+import { useArticleContext, useSiteContext, useUiLabels } from "@riebeckite/ui";
 import { createPostDiffApi } from "../src/api.js";
 import type {
   DiffPluginOptions,

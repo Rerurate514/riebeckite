@@ -1,7 +1,7 @@
 import { defineConfig } from "@riebeckite/core";
+import { alias } from "@riebeckite/plugin-alias";
 import { archive } from "@riebeckite/plugin-archive";
 import { articleMetadata } from "@riebeckite/plugin-article-metadata";
-import { alias } from "@riebeckite/plugin-alias";
 import { attachment } from "@riebeckite/plugin-attachment";
 import { autoCardLink } from "@riebeckite/plugin-autocardlink";
 import { backlinks } from "@riebeckite/plugin-backlinks";

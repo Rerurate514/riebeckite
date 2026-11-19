@@ -117,10 +117,7 @@ export default jsxRenderer(async ({ children }, c) => {
                   </div>
                 </SiteNavigationHeader>
                 <div class="site-layout">
-                  <Drawer
-                    id="docs-navigation"
-                    label={uiLabels.documentation}
-                  >
+                  <Drawer id="docs-navigation" label={uiLabels.documentation}>
                     <div data-spa-region="docs-navigation">
                       <div class="site-drawer-navigation">
                         <SiteDrawerNavigation />

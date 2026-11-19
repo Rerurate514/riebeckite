@@ -1,6 +1,6 @@
-import { useUiLabels } from "@riebeckite/ui";
 import { buildGraphDocument } from "@riebeckite/graph";
 import GraphView from "@riebeckite/graph/ui";
+import { useUiLabels } from "@riebeckite/ui";
 import { useEffect, useMemo, useState } from "hono/jsx";
 import type {
   GardenExplorerData,

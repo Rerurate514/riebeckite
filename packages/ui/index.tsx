@@ -8,7 +8,8 @@ import type {
 } from "@riebeckite/core";
 import type { Child } from "hono/jsx";
 import { createContext, useContext } from "hono/jsx";
-import { type UiLabels, resolveUiLabels } from "./labels.js";
+import { resolveUiLabels, type UiLabels } from "./labels.js";
+
 export type { UiLabels } from "./labels.js";
 export { DEFAULT_UI_LABELS, resolveUiLabels } from "./labels.js";
 

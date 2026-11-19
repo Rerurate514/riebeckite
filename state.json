@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "ac78590c-5d2e-4b82-843c-be18a3d327ae",
-    "publishedAt": "2026-11-18T15:51:56.216Z",
-    "publicationFingerprint": "8eb4ce032aab71422c0819c96f1dc4511434710fbb4d1f90f23f1934b26412b1",
+    "runId": "92b0ae46-81cc-4c66-936d-ce024c6f782d",
+    "publishedAt": "2026-11-19T00:49:47.168Z",
+    "publicationFingerprint": "73ca57f18d0b08e12789948bba7c216db6469ad5ddbef3c7c59387c23827e94a",
     "entries": [
       {
         "slug": "docs/accessibility",
@@ -3690,16 +3690,16 @@
         "permalink": "/docs/philosophy",
         "title": "Design Philosophy",
         "visibility": "public",
-        "fingerprint": "61cde12f19bd0c7ab6dbf5f071d44de6530a4a9b2dc290bbabfbc737c7e4fc34",
-        "contentFingerprint": "0173509f86f288b6d6d8f8e07f2a27c7abda3d0729f640242659343e384439e8"
+        "fingerprint": "6df672fff6d875f0d9913a950a9ae79545cd170b4d916f4c300b84d82c6a9a90",
+        "contentFingerprint": "7a14e0aff54bfb9a5747dda17c7099d20897f85a5a662d7d22d5c6ad11d780ac"
       },
       {
         "slug": "docs/philosophy.ja",
         "permalink": "/ja/docs/philosophy",
         "title": "設計思想",
         "visibility": "public",
-        "fingerprint": "4d44ae9f7a931307ee19819f467b4431bd46e405c681f9bdbd04f8b495976075",
-        "contentFingerprint": "22d880b2ef7e4ff40c29e6db16dcedf31ed9e379240017994529963e8c4c5289"
+        "fingerprint": "928a0b6069790d9f35100ae51346747f79a2f44adc433479c138902bc7b72e97",
+        "contentFingerprint": "38c4d32efa580fe32914c968c7fa06573d2583c5c8704178470d116ae409b051"
       },
       {
         "slug": "docs/plugins/alias",
@@ -6074,16 +6074,16 @@
         "permalink": "/docs/releases",
         "title": "Release Notes",
         "visibility": "public",
-        "fingerprint": "bae239600823c35f852a3475e1a439590ef0c161d900b36a3ded45cc8b599be7",
-        "contentFingerprint": "2d86451a3ddf2d25e03a60ffbcbb73a1b7d16369f2f9d1eb32734204d896cd88"
+        "fingerprint": "a00539d160aad0ad6af47a1a41d48641c262fa3e3ab5c25941c03c946455c014",
+        "contentFingerprint": "df7b9978ec6a0981627fa47b8399694dde412accb354dc2e5ff350efdf711f42"
       },
       {
         "slug": "docs/releases.ja",
         "permalink": "/ja/docs/releases",
         "title": "リリースノート",
         "visibility": "public",
-        "fingerprint": "c73a3616ffa05f5a346e049c4e3aef384c42bc480a716e002c89210dc379a917",
-        "contentFingerprint": "39c293cd2bf877fa16efbb179041656c5d1a127fa30e73e5f04cc99de3e936b7"
+        "fingerprint": "2758574d7b6c1657fde52b7947c948d75b96fd94dfc880505b03d8d44a1dcf9c",
+        "contentFingerprint": "7bbaab0d7347c0fb7c89defa2a74916657995a5231671200b1995b53a4a6a62a"
       },
       {
         "slug": "docs/security",
@@ -6598,7 +6598,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "918409148dcabb7b8e31e10ecbccaedeb13fee93fbc57a403bde6f44683c2b58",
+    "artifactFingerprint": "d9f8ef8ef60c1702e1a2e75adae6c75b696e744b0824dbaee8d209c387fd93b3",
     "provider": "cloudflare-workers"
   }
 }

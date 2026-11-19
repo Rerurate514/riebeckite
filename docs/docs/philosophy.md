@@ -14,7 +14,7 @@ Your notes and your site outlive any single framework. To keep themes from break
 
 ### 1. Keep Content and Site Ownership with the User
 
-Your Markdown files and Obsidian vault are always the source of truth. Because Riebeckite never requires rewriting notes into a proprietary dialect, moving to another tool leaves your writing intact. You also own the configuration, the generated application code (`app/`), the build output, and the deployment target, with no lock-in to a particular host.
+Your Markdown files and Obsidian vault are always the source of truth. Because Riebeckite never requires rewriting notes into a proprietary dialect, moving to another tool leaves your writing intact. You also own the configuration, the generated application code (`app/`), the build output, and the deployment target, with no lock-in to a particular host.　However, this framework recommends using Cloudflare Workers.
 
 ### 2. Simple by Default, Complexity Only When Needed
 

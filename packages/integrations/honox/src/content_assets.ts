@@ -6,8 +6,8 @@ import type { Plugin } from "vite";
 import { loadContentModule } from "./content_module.js";
 
 type RiebeckiteContentAssetsOptions = {
-  appRoot: () => string;
-  contentRoot: () => string;
+  appRoot: () => Promise<string>;
+  contentRoot: () => Promise<string>;
 };
 
 type ContentAssetEntry = { assets?: ReadonlyArray<{ path: string }> };
@@ -69,7 +69,6 @@ export function riebeckiteContentAssets(
     apply: "serve",
     enforce: "pre",
     configureServer(server) {
-      const contentRoot = options.contentRoot();
       const base = server.config.base;
       const publicDir = server.config.publicDir;
       let cachedManifest: unknown;
@@ -81,7 +80,7 @@ export function riebeckiteContentAssets(
       const deferredContents = new Map<string, Promise<Uint8Array | string>>();
 
       const resolvePublicAssets = async (): Promise<PublicContentAssets> => {
-        const module = await loadContentModule(server, options.appRoot());
+        const module = await loadContentModule(server, await options.appRoot());
         const manifest = (await module.content?.getManifest?.()) as
           | PublicContentManifest
           | undefined;
@@ -152,6 +151,7 @@ export function riebeckiteContentAssets(
             sendImage(request, response, contentType, content);
             return;
           }
+          const contentRoot = await options.contentRoot();
           const file = path.join(contentRoot, logicalPath);
           if (!isPathInsideDirectory(contentRoot, file)) {
             next();

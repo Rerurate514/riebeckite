@@ -9,8 +9,8 @@ import type { EnvironmentModuleNode, Plugin, ViteDevServer } from "vite";
 import { isRiebeckiteRuntimeModuleId } from "./runtime_modules.js";
 
 type RiebeckiteContentWatchOptions = {
-  appRoot: () => string;
-  contentRoot: () => string;
+  appRoot: () => Promise<string>;
+  contentRoot: () => Promise<string>;
   exclude: () => readonly string[];
   onInvalidate?: (server: ViteDevServer) => void;
 };
@@ -31,45 +31,47 @@ export function riebeckiteContentWatch(
     configureServer(server) {
       if (configuredWatchers.has(server.watcher)) return;
       configuredWatchers.add(server.watcher);
-      const appRoot = options.appRoot();
-      const contentRoot = options.contentRoot();
-      const exclude = options.exclude();
-      const isContentFile = (file: string) =>
-        isPathInsideDirectory(contentRoot, file);
+      void Promise.all([options.appRoot(), options.contentRoot()])
+        .then(([appRoot, contentRoot]) => {
+          const exclude = options.exclude();
+          const isContentFile = (file: string) =>
+            isPathInsideDirectory(contentRoot, file);
 
-      server.watcher.add(contentRoot);
-      suppressRestartOnContentEvents(server, isContentFile);
+          server.watcher.add(contentRoot);
+          suppressRestartOnContentEvents(server, isContentFile);
 
-      let timer: ReturnType<typeof setTimeout> | undefined;
-      const invalidate = () => {
-        if (timer) clearTimeout(timer);
-        timer = setTimeout(() => {
-          timer = undefined;
-          invalidateApplicationRuntime(server, appRoot);
-          options.onInvalidate?.(server);
-          server.hot.send({ type: "full-reload" });
-        }, CONTENT_RELOAD_DEBOUNCE_MS);
-      };
-      server.httpServer?.once("close", () => {
-        if (timer) clearTimeout(timer);
-      });
+          let timer: ReturnType<typeof setTimeout> | undefined;
+          const invalidate = () => {
+            if (timer) clearTimeout(timer);
+            timer = setTimeout(() => {
+              timer = undefined;
+              invalidateApplicationRuntime(server, appRoot);
+              options.onInvalidate?.(server);
+              server.hot.send({ type: "full-reload" });
+            }, CONTENT_RELOAD_DEBOUNCE_MS);
+          };
+          server.httpServer?.once("close", () => {
+            if (timer) clearTimeout(timer);
+          });
 
-      const handle =
-        (event: ContentEvent) =>
-        (file: string): void => {
-          if (!isContentFile(file)) return;
-          const logicalPath = toLogicalPath(contentRoot, file);
-          if (isIgnoredContentPath(logicalPath, exclude)) return;
-          if (event === "change" && isSiteAssetPath(logicalPath)) {
-            server.hot.send({ type: "full-reload" });
-            return;
-          }
-          invalidate();
-        };
+          const handle =
+            (event: ContentEvent) =>
+            (file: string): void => {
+              if (!isContentFile(file)) return;
+              const logicalPath = toLogicalPath(contentRoot, file);
+              if (isIgnoredContentPath(logicalPath, exclude)) return;
+              if (event === "change" && isSiteAssetPath(logicalPath)) {
+                server.hot.send({ type: "full-reload" });
+                return;
+              }
+              invalidate();
+            };
 
-      server.watcher.on("add", handle("add"));
-      server.watcher.on("change", handle("change"));
-      server.watcher.on("unlink", handle("unlink"));
+          server.watcher.on("add", handle("add"));
+          server.watcher.on("change", handle("change"));
+          server.watcher.on("unlink", handle("unlink"));
+        })
+        .catch(() => {});
     },
   };
 }

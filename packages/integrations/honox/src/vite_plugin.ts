@@ -62,43 +62,60 @@ export function riebeckite(
     }
     return resolvedConfig;
   };
+  let applicationPromise: Promise<ResolvedHonoxApplication> | undefined;
+  let applicationAppRoot = "";
+  const ensureApplication = () =>
+    (applicationPromise ??= (async () => {
+      const resolvedApplication = await resolveHonoxApplication({
+        configRoot: options.configRoot ?? applicationAppRoot,
+        configFile: options.configFile,
+        appRoot: applicationAppRoot,
+        workspaceRoot: options.workspaceRoot,
+      });
+      resolvedConfig = resolvedApplication.config;
+      const resolved = resolvedConfig;
+      contentVitePlugins = resolved.plugins.flatMap(
+        (plugin) =>
+          plugin.vitePlugins?.({
+            contentDirectory: resolved.content.directory,
+          }) ?? [],
+      ) as Plugin[];
+      application = resolvedApplication;
+      onApplicationResolved?.(resolvedApplication);
+      writeRiebeckiteAssetEntries(resolvedConfig, {
+        frameworkStyles: path.join(
+          applicationAppRoot,
+          "app/.riebeckite/framework-styles.css",
+        ),
+        pluginStyles: path.join(
+          applicationAppRoot,
+          "app/.riebeckite/plugin-styles.css",
+        ),
+        themeStyles: path.join(
+          applicationAppRoot,
+          "app/.riebeckite/theme-styles.css",
+        ),
+      });
+      return resolvedApplication;
+    })());
 
   return [
     {
       name: "riebeckite-host-integration",
-      async config(userConfig) {
+      async config(userConfig, environment) {
         const root = userConfig.root
           ? path.resolve(userConfig.root)
           : process.cwd();
-        const appRoot = options.appRoot ?? root;
-        const resolvedApplication = await resolveHonoxApplication({
-          configRoot: options.configRoot ?? appRoot,
-          configFile: options.configFile,
-          appRoot,
-          workspaceRoot: options.workspaceRoot,
-        });
-        resolvedConfig = resolvedApplication.config;
-        const resolved = resolvedConfig;
-        contentVitePlugins = resolved.plugins.flatMap(
-          (plugin) =>
-            plugin.vitePlugins?.({
-              contentDirectory: resolved.content.directory,
-            }) ?? [],
-        ) as Plugin[];
-        application = resolvedApplication;
-        onApplicationResolved?.(resolvedApplication);
-        writeRiebeckiteAssetEntries(resolvedConfig, {
-          frameworkStyles: path.join(
-            appRoot,
-            "app/.riebeckite/framework-styles.css",
-          ),
-          pluginStyles: path.join(appRoot, "app/.riebeckite/plugin-styles.css"),
-          themeStyles: path.join(appRoot, "app/.riebeckite/theme-styles.css"),
-        });
+        applicationAppRoot = options.appRoot ?? root;
+        void ensureApplication().catch(() => {});
+        if (environment.command === "build") {
+          await ensureApplication();
+        }
 
         return {
           define: {
-            "process.env.RIEBECKITE_APP_ROOT": JSON.stringify(appRoot),
+            "process.env.RIEBECKITE_APP_ROOT":
+              JSON.stringify(applicationAppRoot),
           },
           oxc: {
             jsx: { runtime: "automatic", importSource: "hono/jsx" },
@@ -118,22 +135,36 @@ export function riebeckite(
           },
         };
       },
+      configureServer(server) {
+        applicationPromise?.catch((error: unknown) => {
+          server.config.logger.error(
+            "Failed to resolve Riebeckite application.",
+            {
+              error: error instanceof Error ? error : new Error(String(error)),
+            },
+          );
+        });
+      },
     },
     contentVitePluginBridge(() => contentVitePlugins),
-    contentBareImportResolver(() => requireApplication(application)),
-    injectRiebeckiteClientBundle(getConfig),
-    riebeckiteClientModule(getConfig),
-    riebeckiteRuntimeModules(() => requireApplication(application)),
-    riebeckiteContentWarmup(options.warmContent ?? false, () =>
-      requireApplication(application),
+    contentBareImportResolver(
+      () => requireApplication(application),
+      ensureApplication,
     ),
+    injectRiebeckiteClientBundle(getConfig, ensureApplication),
+    riebeckiteClientModule(getConfig, ensureApplication),
+    riebeckiteRuntimeModules(
+      () => requireApplication(application),
+      ensureApplication,
+    ),
+    riebeckiteContentWarmup(options.warmContent ?? false, ensureApplication),
     riebeckiteContentAssets({
-      appRoot: () => requireApplication(application).appRoot,
-      contentRoot: () => requireApplication(application).contentRoot,
+      appRoot: async () => (await ensureApplication()).appRoot,
+      contentRoot: async () => (await ensureApplication()).contentRoot,
     }),
     riebeckiteContentWatch({
-      appRoot: () => requireApplication(application).appRoot,
-      contentRoot: () => requireApplication(application).contentRoot,
+      appRoot: async () => (await ensureApplication()).appRoot,
+      contentRoot: async () => (await ensureApplication()).contentRoot,
       exclude: () => getConfig().content.exclude ?? [],
       onInvalidate(server) {
         invalidateDevelopmentInspector(server);
@@ -170,7 +201,7 @@ export function riebeckite(
 
 export function riebeckiteContentWarmup(
   enabled: boolean,
-  getApplication: () => ResolvedHonoxApplication,
+  getApplication: () => Promise<ResolvedHonoxApplication>,
 ): Plugin {
   return {
     name: "riebeckite-content-warmup",
@@ -178,14 +209,16 @@ export function riebeckiteContentWarmup(
     configureServer(server) {
       if (!enabled || !server.httpServer) return;
       server.httpServer.once("listening", () => {
-        const { appRoot } = getApplication();
-        void loadContentModule(server, appRoot)
-          .then(async (module) => await module.content?.getManifest?.())
-          .catch((error: unknown) => {
-            server.config.logger.error("Riebeckite content warmup failed.", {
-              error: error instanceof Error ? error : new Error(String(error)),
-            });
+        void (async () => {
+          const { appRoot } = await getApplication();
+          await loadContentModule(server, appRoot).then(
+            async (module) => await module.content?.getManifest?.(),
+          );
+        })().catch((error: unknown) => {
+          server.config.logger.error("Riebeckite content warmup failed.", {
+            error: error instanceof Error ? error : new Error(String(error)),
           });
+        });
       });
     },
   };
@@ -193,11 +226,13 @@ export function riebeckiteContentWarmup(
 
 function contentBareImportResolver(
   getApplication: () => ResolvedHonoxApplication,
+  ensure: () => Promise<unknown>,
 ): Plugin {
   return {
     name: "riebeckite-content-bare-imports",
     async resolveId(source, importer) {
       if (!importer || !isBareImport(source)) return null;
+      await ensure();
       const { appRoot, contentRoot } = getApplication();
       if (!isInDirectory(importer, contentRoot)) return null;
       return await this.resolve(source, path.join(appRoot, "package.json"), {

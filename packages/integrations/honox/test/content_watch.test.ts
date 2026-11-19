@@ -88,20 +88,21 @@ function createServer(modules: FakeModule[]): FakeServer {
   };
 }
 
-function configure(
+async function configure(
   contentRoot: string,
   appRoot: string,
   fake: FakeServer,
-): void {
+): Promise<void> {
   const plugin: Plugin = riebeckiteContentWatch({
-    appRoot: () => appRoot,
-    contentRoot: () => contentRoot,
+    appRoot: async () => appRoot,
+    contentRoot: async () => contentRoot,
     exclude: () => ["drafts/**"],
   });
   assert.equal(plugin.name, "riebeckite-content-watch");
   assert.equal(plugin.apply, "serve");
   const hook = plugin.configureServer as (server: ViteDevServer) => void;
   hook(fake.server);
+  await new Promise<void>((resolve) => setImmediate(resolve));
 }
 
 describe("isSiteAssetPath", () => {
@@ -188,10 +189,10 @@ describe("invalidateApplicationRuntime", () => {
 });
 
 describe("riebeckiteContentWatch", () => {
-  it("watches the resolved content root", () => {
+  it("watches the resolved content root", async () => {
     const contentRoot = path.resolve("/site/vault");
     const fake = createServer([]);
-    configure(contentRoot, path.resolve("/site"), fake);
+    await configure(contentRoot, path.resolve("/site"), fake);
     assert.deepEqual(fake.watcher.watched, [contentRoot]);
   });
 
@@ -202,7 +203,7 @@ describe("riebeckiteContentWatch", () => {
       { file: path.join(appRoot, "app", "content.ts") },
       { file: path.join(appRoot, "app", "server.ts") },
     ]);
-    configure(contentRoot, appRoot, fake);
+    await configure(contentRoot, appRoot, fake);
 
     fake.watcher.emit("change", path.join(contentRoot, "notes/a.md"));
     await fake.waitForSends(1);
@@ -220,7 +221,7 @@ describe("riebeckiteContentWatch", () => {
     const fake = createServer([
       { file: path.join(appRoot, "app", "content.ts") },
     ]);
-    configure(contentRoot, appRoot, fake);
+    await configure(contentRoot, appRoot, fake);
 
     fake.watcher.emit("change", path.join(contentRoot, "notes/a.md"));
     fake.watcher.emit("change", path.join(contentRoot, "notes/b.md"));
@@ -238,7 +239,7 @@ describe("riebeckiteContentWatch", () => {
     const fake = createServer([
       { file: path.join(appRoot, "app", "content.ts") },
     ]);
-    configure(contentRoot, appRoot, fake);
+    await configure(contentRoot, appRoot, fake);
 
     fake.watcher.emit(
       "change",
@@ -257,7 +258,7 @@ describe("riebeckiteContentWatch", () => {
     const fake = createServer([
       { file: path.join(appRoot, "app", "content.ts") },
     ]);
-    configure(contentRoot, appRoot, fake);
+    await configure(contentRoot, appRoot, fake);
 
     fake.watcher.emit(
       "change",
@@ -274,7 +275,7 @@ describe("riebeckiteContentWatch", () => {
     const fake = createServer([
       { file: path.join(appRoot, "app", "content.ts") },
     ]);
-    configure(contentRoot, appRoot, fake);
+    await configure(contentRoot, appRoot, fake);
 
     fake.watcher.emit(
       "add",
@@ -303,7 +304,7 @@ describe("riebeckiteContentWatch", () => {
     fake.watcher.on("unlink", () => restarts.push("restart:unlink"));
     fake.watcher.on("add", () => otherListenerCalls.push("other:add"));
     fake.watcher.on("unlink", () => otherListenerCalls.push("other:unlink"));
-    configure(contentRoot, appRoot, fake);
+    await configure(contentRoot, appRoot, fake);
 
     fake.watcher.emit("add", path.join(contentRoot, "notes/new.md"));
     fake.watcher.emit("unlink", path.join(contentRoot, "notes/old.md"));
@@ -319,13 +320,13 @@ describe("riebeckiteContentWatch", () => {
     assert.deepEqual(fake.sends, [{ type: "full-reload" }]);
   });
 
-  it("keeps once listeners as once listeners", () => {
+  it("keeps once listeners as once listeners", async () => {
     const contentRoot = path.resolve("/site/vault");
     const appRoot = path.resolve("/site");
     const fake = createServer([]);
     const onceCalls: string[] = [];
     fake.watcher.once("add", () => onceCalls.push("once:add"));
-    configure(contentRoot, appRoot, fake);
+    await configure(contentRoot, appRoot, fake);
 
     fake.watcher.emit("add", path.join(appRoot, "app", "routes/new.tsx"));
     fake.watcher.emit("add", path.join(appRoot, "app", "routes/other.tsx"));
@@ -341,8 +342,8 @@ describe("riebeckiteContentWatch", () => {
     const fake = createServer([
       { file: path.join(appRoot, "app", "content.ts") },
     ]);
-    configure(contentRoot, appRoot, fake);
-    configure(contentRoot, appRoot, fake);
+    await configure(contentRoot, appRoot, fake);
+    await configure(contentRoot, appRoot, fake);
 
     fake.watcher.emit("change", path.join(contentRoot, "notes/a.md"));
     await fake.waitForSends(1);
@@ -364,7 +365,7 @@ describe("riebeckiteContentWatch", () => {
         assert.equal(event, "close");
       },
     });
-    configure(contentRoot, appRoot, fake);
+    await configure(contentRoot, appRoot, fake);
 
     fake.watcher.emit("change", path.join(contentRoot, "notes/a.md"));
     for (const handler of closed) handler();

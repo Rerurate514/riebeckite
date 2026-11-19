@@ -27,6 +27,7 @@ export function replaceHonoxIslandDependencyPlugin(
 
 export function injectRiebeckiteClientBundle(
   getConfig: () => Pick<ResolvedRiebeckiteConfig, "plugins" | "spa">,
+  ensure: () => Promise<unknown> = async () => {},
 ): Plugin {
   let rendererPath = "";
 
@@ -36,7 +37,8 @@ export function injectRiebeckiteClientBundle(
     configResolved(config) {
       rendererPath = path.join(config.root, "app", "routes", "_renderer");
     },
-    transform(sourceCode, id) {
+    async transform(sourceCode, id) {
+      await ensure();
       if (
         !requiresClientBundle(getConfig()) ||
         !isRendererModule(toFilePath(id), rendererPath) ||

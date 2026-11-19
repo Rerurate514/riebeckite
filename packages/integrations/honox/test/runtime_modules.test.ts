@@ -24,55 +24,55 @@ function asHook<A, R>(hook: unknown): (arg: A) => R {
 }
 
 describe("riebeckiteRuntimeModules", () => {
-  it("resolves and loads the config module from the raw config file", () => {
+  it("resolves and loads the config module from the raw config file", async () => {
     const plugin = riebeckiteRuntimeModules(() => application);
     const resolveId = asHook<string, string | null>(plugin.resolveId);
-    const load = asHook<string, string | null>(plugin.load);
+    const load = asHook<string, Promise<string | null>>(plugin.load);
 
     assert.equal(
       resolveId(riebeckiteConfigModuleId),
       `\0${riebeckiteConfigModuleId}`,
     );
 
-    const code = load(`\0${riebeckiteConfigModuleId}`);
+    const code = await load(`\0${riebeckiteConfigModuleId}`);
     assert.ok(code);
     assert.match(code, /resolveConfigModule/);
     assert.match(code, /@riebeckite\/honox\/runtime/);
     assert.match(code, /\/site\/riebeckite\.config\.ts/);
   });
 
-  it("resolves and loads the content module", () => {
+  it("resolves and loads the content module", async () => {
     const plugin = riebeckiteRuntimeModules(() => application);
     const resolveId = asHook<string, string | null>(plugin.resolveId);
-    const load = asHook<string, string | null>(plugin.load);
+    const load = asHook<string, Promise<string | null>>(plugin.load);
 
     assert.equal(
       resolveId(riebeckiteContentModuleId),
       `\0${riebeckiteContentModuleId}`,
     );
 
-    const code = load(`\0${riebeckiteContentModuleId}`);
+    const code = await load(`\0${riebeckiteContentModuleId}`);
     assert.ok(code);
     assert.match(code, /new ContentManager/);
     assert.match(code, /virtual:riebeckite\/config/);
     assert.match(code, /isDevelopment: import\.meta\.env\.DEV/);
   });
 
-  it("marks the content module as development during Vite serve", () => {
+  it("marks the content module as development during Vite serve", async () => {
     const plugin = riebeckiteRuntimeModules(() => application);
     const configResolved = asHook<{ command: string }, void>(
       plugin.configResolved,
     );
-    const load = asHook<string, string | null>(plugin.load);
+    const load = asHook<string, Promise<string | null>>(plugin.load);
 
     configResolved({ command: "serve" });
 
-    const code = load(`\0${riebeckiteContentModuleId}`);
+    const code = await load(`\0${riebeckiteContentModuleId}`);
     assert.ok(code);
     assert.match(code, /isDevelopment: true/);
   });
 
-  it("builds static content renderer imports", () => {
+  it("builds static content renderer imports", async () => {
     const plugin = riebeckiteRuntimeModules(() => ({
       ...application,
       config: {
@@ -90,9 +90,9 @@ describe("riebeckiteRuntimeModules", () => {
         ],
       },
     }));
-    const load = asHook<string, string | null>(plugin.load);
+    const load = asHook<string, Promise<string | null>>(plugin.load);
 
-    const code = load(`\0${riebeckiteContentRenderersModuleId}`);
+    const code = await load(`\0${riebeckiteContentRenderersModuleId}`);
     assert.ok(code);
     assert.match(
       code,
@@ -101,7 +101,7 @@ describe("riebeckiteRuntimeModules", () => {
     assert.match(code, /renderContent/);
   });
 
-  it("registers Markdown components with MDX content renderers", () => {
+  it("registers Markdown components with MDX content renderers", async () => {
     const plugin = riebeckiteRuntimeModules(() => ({
       ...application,
       config: {
@@ -126,9 +126,9 @@ describe("riebeckiteRuntimeModules", () => {
         ],
       },
     }));
-    const load = asHook<string, string | null>(plugin.load);
+    const load = asHook<string, Promise<string | null>>(plugin.load);
 
-    const code = load(`\0${riebeckiteContentRenderersModuleId}`);
+    const code = await load(`\0${riebeckiteContentRenderersModuleId}`);
     assert.ok(code);
     assert.match(code, /prepareMarkdownComponent/);
     assert.match(code, /plugin\.markdownComponents/);
@@ -144,14 +144,14 @@ describe("riebeckiteRuntimeModules", () => {
     assert.equal(resolveId("node:path"), null);
   });
 
-  it("normalizes Windows config paths in the generated import", () => {
+  it("normalizes Windows config paths in the generated import", async () => {
     const plugin = riebeckiteRuntimeModules(() => ({
       ...application,
       configFile: "C:\\site\\riebeckite.config.ts",
     }));
-    const load = asHook<string, string | null>(plugin.load);
+    const load = asHook<string, Promise<string | null>>(plugin.load);
 
-    const code = load(`\0${riebeckiteConfigModuleId}`);
+    const code = await load(`\0${riebeckiteConfigModuleId}`);
     assert.ok(code);
     assert.match(code, /C:\/site\/riebeckite\.config\.ts/);
   });

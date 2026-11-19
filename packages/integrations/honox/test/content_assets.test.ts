@@ -63,10 +63,10 @@ function createServer(options: {
   };
 }
 
-function createClient(
+async function createClient(
   fake: AssetServerFake,
   appRoot: string,
-): {
+): Promise<{
   get(
     url: string,
     method?: string,
@@ -76,10 +76,10 @@ function createClient(
     body: Buffer;
     nexted: boolean;
   }>;
-} {
+}> {
   const plugin: Plugin = riebeckiteContentAssets({
-    appRoot: () => appRoot,
-    contentRoot: () => path.join(appRoot, "vault"),
+    appRoot: async () => appRoot,
+    contentRoot: async () => path.join(appRoot, "vault"),
   });
   assert.equal(plugin.name, "riebeckite-content-assets");
   assert.equal(plugin.apply, "serve");
@@ -228,7 +228,7 @@ describe("riebeckiteContentAssets", () => {
         publicEntries: [{ assets: [{ path: "attachments/sample.png" }] }],
       },
     });
-    const client = createClient(fake, appRoot);
+    const client = await createClient(fake, appRoot);
 
     const response = await client.get("/attachments/sample.png");
 
@@ -249,7 +249,7 @@ describe("riebeckiteContentAssets", () => {
         publicEntries: [{ assets: [{ path: "attachments/sample.png" }] }],
       },
     });
-    const client = createClient(fake, appRoot);
+    const client = await createClient(fake, appRoot);
 
     const before = await client.get("/attachments/sample.png");
     await fsp.writeFile(
@@ -283,7 +283,7 @@ describe("riebeckiteContentAssets", () => {
         ],
       },
     });
-    const client = createClient(fake, appRoot);
+    const client = await createClient(fake, appRoot);
 
     const webp = await client.get("/attachments/sample-640.webp");
     const avif = await client.get("/attachments/sample-640.avif");
@@ -309,7 +309,7 @@ describe("riebeckiteContentAssets", () => {
         ],
       },
     });
-    const client = createClient(fake, appRoot);
+    const client = await createClient(fake, appRoot);
 
     const response = await client.get("/attachments/sample-640.webp", "HEAD");
 
@@ -338,7 +338,7 @@ describe("riebeckiteContentAssets", () => {
         ],
       },
     });
-    const client = createClient(fake, appRoot);
+    const client = await createClient(fake, appRoot);
 
     const first = await client.get("/_og/sample.png");
     const second = await client.get("/_og/sample.png");
@@ -366,7 +366,7 @@ describe("riebeckiteContentAssets", () => {
         ],
       },
     });
-    const client = createClient(fake, appRoot);
+    const client = await createClient(fake, appRoot);
 
     assert.equal(
       (await client.get("/_og/sample.png")).body.toString("utf8"),
@@ -398,7 +398,7 @@ describe("riebeckiteContentAssets", () => {
         publicEntries: [{ assets: [{ path: "attachments/shared.png" }] }],
       },
     });
-    const client = createClient(fake, appRoot);
+    const client = await createClient(fake, appRoot);
 
     const response = await client.get("/attachments/private.png");
 
@@ -413,7 +413,7 @@ describe("riebeckiteContentAssets", () => {
       publicDir: path.join(appRoot, "public"),
       manifest: { publicEntries: [] },
     });
-    const client = createClient(fake, appRoot);
+    const client = await createClient(fake, appRoot);
 
     assert.equal((await client.get("/attachments/secret.png")).nexted, true);
     fake.setManifest({
@@ -440,7 +440,7 @@ describe("riebeckiteContentAssets", () => {
         ],
       },
     });
-    const client = createClient(fake, appRoot);
+    const client = await createClient(fake, appRoot);
 
     assert.equal((await client.get("/.obsidian/workspace.json")).nexted, true);
     assert.equal((await client.get("/attachments/report.pdf")).nexted, true);
@@ -460,7 +460,7 @@ describe("riebeckiteContentAssets", () => {
         ],
       },
     });
-    const client = createClient(fake, appRoot);
+    const client = await createClient(fake, appRoot);
 
     assert.equal((await client.get("/attachments/sample.png")).nexted, true);
   });
@@ -476,8 +476,8 @@ describe("riebeckiteContentAssets", () => {
       },
     });
     const plugin: Plugin = riebeckiteContentAssets({
-      appRoot: () => appRoot,
-      contentRoot: () => path.join(appRoot, "vault"),
+      appRoot: async () => appRoot,
+      contentRoot: async () => path.join(appRoot, "vault"),
     });
     let handler:
       | ((request: unknown, response: unknown, next: () => void) => void)

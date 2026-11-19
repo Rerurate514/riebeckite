@@ -1,12 +1,8 @@
-.rb-home__conversion {
-  padding-top: var(--rb-space-4);
-}
-
 .rb-home__conversion-flow {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  gap: var(--rb-space-3);
-  align-items: center;
+  grid-template-columns: minmax(0, 1.05fr) auto minmax(0, 0.95fr);
+  gap: clamp(1rem, 3vw, 2.5rem);
+  align-items: stretch;
   margin-top: var(--rb-space-5);
 }
 .rb-home__conversion-source,
@@ -17,8 +13,7 @@
 .rb-home__rendered {
   min-height: 18rem;
   margin: 0;
-  padding: clamp(1.25rem, 3vw, 2rem);
-  border: 1px solid var(--rb-color-border-strong);
+  padding: clamp(1.5rem, 3vw, 2.5rem);
 }
 .rb-home__conversion-source > pre {
   overflow-x: auto;
@@ -33,6 +28,7 @@
   white-space: pre;
 }
 .rb-home__rendered {
+  border: 1px solid var(--rb-color-border-strong);
   background: var(--rb-color-surface);
 }
 .rb-home__rendered :is(h1, h2) {

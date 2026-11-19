@@ -172,6 +172,13 @@ for (const theme of ["light", "dark"] as const) {
         const pluginCode = document.querySelector<HTMLElement>(
           ".rr-code__code span",
         );
+        const brand = document.querySelector<HTMLElement>(".rb-home__brand");
+        const brandMark = document.querySelector<HTMLElement>(
+          ".rb-home__brand-mark",
+        );
+        const heroAside = document.querySelector<HTMLElement>(
+          ".rb-home__hero-aside",
+        );
         if (
           !code ||
           !window ||
@@ -180,11 +187,13 @@ for (const theme of ["light", "dark"] as const) {
           !heading ||
           !article ||
           !plugin ||
-          !pluginCode
+          !pluginCode ||
+          !brand ||
+          !brandMark ||
+          !heroAside
         ) {
           throw new Error("homepage color test fixture is incomplete");
         }
-        const logo = document.querySelector<HTMLElement>(".rb-home__wordmark");
         return {
           selectedColor: getComputedStyle(document.documentElement)
             .getPropertyValue("--rb-color-selected")
@@ -199,12 +208,14 @@ for (const theme of ["light", "dark"] as const) {
           articleColor: getComputedStyle(article).color,
           pluginBackground: getComputedStyle(plugin).backgroundColor,
           pluginColor: getComputedStyle(pluginCode).color,
-          logo: logo
-            ? {
-                color: getComputedStyle(logo).color,
-                width: logo.getBoundingClientRect().width,
-              }
-            : null,
+          brandBackground: getComputedStyle(heroAside).backgroundColor,
+          brandColor: getComputedStyle(brand).color,
+          brandCenterOffset: Math.abs(
+            brandMark.getBoundingClientRect().left +
+              brandMark.getBoundingClientRect().width / 2 -
+              (heroAside.getBoundingClientRect().left +
+                heroAside.getBoundingClientRect().width / 2),
+          ),
         };
       });
       const expected =
@@ -213,14 +224,14 @@ for (const theme of ["light", "dark"] as const) {
               codeBackground: "rgb(23, 48, 77)",
               codeColor: "rgb(232, 241, 255)",
               selectedColor: "#bfdbfe",
-              configurationBackground: "rgb(237, 243, 250)",
+              configurationBackground: "rgba(0, 0, 0, 0)",
               headingColor: "rgb(24, 34, 48)",
             }
           : {
               codeBackground: "rgb(17, 24, 32)",
               codeColor: "rgb(230, 238, 248)",
               selectedColor: "#24558e",
-              configurationBackground: "rgb(41, 53, 67)",
+              configurationBackground: "rgba(0, 0, 0, 0)",
               headingColor: "rgb(237, 242, 248)",
             };
 
@@ -237,12 +248,18 @@ for (const theme of ["light", "dark"] as const) {
       assert.equal(styles.articleColor, expected.codeColor);
       assert.equal(styles.pluginBackground, expected.codeBackground);
       assert.equal(styles.pluginColor, expected.codeColor);
-      assert.ok((styles.logo?.width ?? 0) > 0);
+      assert.equal(styles.brandBackground, expected.codeBackground);
+      assert.equal(styles.brandColor, expected.codeColor);
+      assert.ok(styles.brandCenterOffset <= 1);
       assert.ok(
         contrastRatio(rgb(styles.codeColor), rgb(styles.codeBackground)) >= 4.5,
       );
       assert.ok(
         contrastRatio(rgb(styles.pluginColor), rgb(styles.pluginBackground)) >=
+          4.5,
+      );
+      assert.ok(
+        contrastRatio(rgb(styles.brandColor), rgb(styles.brandBackground)) >=
           4.5,
       );
     } finally {
@@ -252,7 +269,7 @@ for (const theme of ["light", "dark"] as const) {
 }
 
 for (const theme of ["light", "dark"] as const) {
-  for (const width of [375, 768, 1280, 1440]) {
+  for (const width of [375, 768, 1024, 1280, 1440, 1920]) {
     test(`homepage ${theme} avoids horizontal overflow at ${width}px`, async (t) => {
       if (!browser) return t.skip("puppeteer browser is unavailable");
       const page = await browser.newPage();

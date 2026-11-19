@@ -19,34 +19,36 @@ export function HomeProjectSection({
   return (
     <section class="rb-home__project" aria-labelledby="home-project">
       <div class="rb-home__section-intro">
-        <p class="rb-home__section-label">{t.project[0]}</p>
-        <h2 id="home-project">{t.project[1]}</h2>
-        <p>{t.project[2]}</p>
+        <h2 id="home-project">{t.project.title}</h2>
+        <p>{t.project.description}</p>
         <dl class="rb-home__project-parts">
           <div>
             <dt>
               <a href={href("/docs/getting-started/first-content")}>
-                {t.project[3]}
+                {t.project.contentTitle}
               </a>
             </dt>
             <dd>
-              {t.project[4]} <code>content/</code> {t.project[5]}
+              {t.project.contentBefore} <code>content/</code>{" "}
+              {t.project.contentAfter}
             </dd>
           </div>
           <div>
             <dt>
-              <a href={href("/docs/getting-started/presets")}>{t.project[6]}</a>
+              <a href={href("/docs/getting-started/presets")}>
+                {t.project.interfaceTitle}
+              </a>
             </dt>
             <dd>
               {locale === "ja" ? (
                 <>
                   <code>app/routes/</code> と <code>app/components/</code>{" "}
-                  {t.project[7]}
+                  {t.project.interfaceDescription}
                 </>
               ) : (
                 <>
                   Use <code>app/routes/</code> and <code>app/components/</code>{" "}
-                  {t.project[7]}
+                  {t.project.interfaceDescription}
                 </>
               )}
             </dd>
@@ -54,11 +56,11 @@ export function HomeProjectSection({
           <div>
             <dt>
               <a href={href("/docs/reference/configuration-reference")}>
-                {t.project[8]}
+                {t.project.settingsTitle}
               </a>
             </dt>
             <dd>
-              {t.project[9]} <code>riebeckite.config.ts</code>
+              {t.project.settingsBefore} <code>riebeckite.config.ts</code>
               {locale === "ja" ? "。" : "."}
             </dd>
           </div>

@@ -1,5 +1,4 @@
 import { resolveSiteNavigation, SiteNav } from "@riebeckite/plugin-navigation";
-import { getRecentPosts, RecentPosts } from "@riebeckite/plugin-recent-posts";
 import { useSiteContext } from "@riebeckite/ui";
 import type { Child } from "hono/jsx";
 import { resolveWebLocale } from "../lib/locale";
@@ -63,17 +62,7 @@ export function SiteDrawerNavigation() {
 export function SiteFooter() {
   const site = useSiteContext();
   const path = site?.path ?? "/";
-  const language = resolveWebLocale(site?.language);
-  const posts = site
-    ? getRecentPosts({
-        manifest: {
-          discoverableEntries: site.manifest.discoverableEntries.filter(
-            (entry) =>
-              resolveWebLocale(entry.publicLocation.language) === language,
-          ),
-        },
-      })
-    : [];
+  const isJapanese = resolveWebLocale(site?.language) === "ja";
 
   return (
     <footer class="site-footer rb-site-footer">
@@ -84,11 +73,12 @@ export function SiteFooter() {
             Riebeckite
           </a>
           <p class="site-footer__description">
-            An open-source framework for building websites from Markdown and
-            Obsidian.
+            {isJapanese
+              ? "Markdown と Obsidian からサイトをつくるオープンソースフレームワークです。"
+              : "An open-source framework for building websites from Markdown and Obsidian."}
           </p>
           <div class="site-footer__author">
-            <span>Author</span>
+            <span>{isJapanese ? "作者" : "Author"}</span>
             <a href="https://x.com/rerurate" target="_blank" rel="noreferrer">
               X / Twitter
             </a>
@@ -101,9 +91,6 @@ export function SiteFooter() {
             </a>
           </div>
         </div>
-        <div class="site-footer__recent">
-          <RecentPosts posts={posts} locale={language} variant="compact" />
-        </div>
         <SiteNav
           placement="secondary"
           label={resolveUiLabels(site?.language).footerNavigation}
@@ -112,8 +99,16 @@ export function SiteFooter() {
         />
       </div>
       <div class="site-footer__meta">
-        <span>Open source · Apache-2.0</span>
-        <span>Project code: Riebeckite</span>
+        <span>
+          {isJapanese
+            ? "オープンソース · Apache-2.0"
+            : "Open source · Apache-2.0"}
+        </span>
+        <span>
+          {isJapanese
+            ? "プロジェクトコード: Riebeckite"
+            : "Project code: Riebeckite"}
+        </span>
       </div>
     </footer>
   );

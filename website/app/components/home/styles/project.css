@@ -4,7 +4,7 @@
   gap: clamp(2rem, 8vw, 8rem);
   align-items: center;
   padding-block: clamp(2rem, 5vw, 4rem);
-  border-block: 1px solid var(--rb-color-border-strong);
+  border-top: 1px solid var(--rb-color-border-strong);
 }
 .rb-home__project-tree {
   margin: 0;

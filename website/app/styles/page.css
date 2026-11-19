@@ -25,7 +25,7 @@
   }
 
   .rb-site-footer {
-    width: min(100% - 2rem, var(--rb-layout-page-max, 80rem));
+    width: min(100% - 3rem, var(--rb-layout-page-max, 80rem));
     margin-inline: auto;
   }
 }

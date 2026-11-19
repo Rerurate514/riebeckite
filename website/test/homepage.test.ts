@@ -135,7 +135,7 @@ for (const locale of locales) {
     assert.equal((html.match(/<main\b/g) ?? []).length, 0);
     assert.match(renderer, /<main id="main-content" tabindex=\{-1\}>/);
     assert.equal((html.match(/<h1\b/g) ?? []).length, 1);
-    assert.equal((html.match(/<h2\b/g) ?? []).length, 9);
+    assert.equal((html.match(/<h2\b/g) ?? []).length, 4);
     assert.match(html, /<h1[^>]*id="home-title"/);
 
     const ids = [...html.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]);
@@ -144,7 +144,7 @@ for (const locale of locales) {
     const labelled = [...html.matchAll(/aria-labelledby="([^"]+)"/g)].map(
       (match) => match[1],
     );
-    assert.ok(labelled.length >= 9);
+    assert.ok(labelled.length >= 4);
     for (const id of labelled) {
       assert.ok(ids.includes(id), `aria-labelledby target is missing: ${id}`);
     }
@@ -162,20 +162,11 @@ for (const locale of locales) {
     const docsPrefix = locale === "en" ? "" : "/ja";
 
     for (const href of [
-      `${docsPrefix}/docs/`,
       `${docsPrefix}/docs/getting-started/`,
-      `${docsPrefix}/docs/getting-started/first-content`,
-      `${docsPrefix}/docs/getting-started/presets`,
       `${docsPrefix}/docs/plugins/`,
       `${docsPrefix}/docs/plugins/search`,
-      `${docsPrefix}/docs/plugins/l10n`,
-      `${docsPrefix}/docs/plugins/local-graph`,
-      `${docsPrefix}/docs/plugins/related-posts`,
-      `${docsPrefix}/docs/plugins/showcase`,
       `${docsPrefix}/docs/reference/configuration-reference`,
-      `${docsPrefix}/docs/guides/customizing-your-site`,
       `${docsPrefix}/docs/themes/`,
-      locale === "en" ? "/themes" : "/ja/themes",
       "https://github.com/Rerurate514/riebeckite",
     ]) {
       assert.ok(html.includes(`href="${href}"`), `missing link: ${href}`);
@@ -184,10 +175,16 @@ for (const locale of locales) {
     assert.ok(html.includes('hreflang="en"') || html.includes('hreflang="ja"'));
     assert.ok(html.includes('lang="en"') || html.includes('lang="ja"'));
     assert.match(html, /data-code-copy="true"/);
-    assert.match(html, /class="rb-home__wordmark"/);
-    assert.match(html, /src="\/riebeckite-logo\.png"/);
   });
 }
+
+test("homepage removes fictional site previews and repeated closing calls to action", () => {
+  for (const locale of locales) {
+    const html = renderToString(HomePage({ locale }));
+    assert.doesNotMatch(html, /team-handbook\.example|Team Handbook|published/);
+    assert.equal((html.match(/rb-home__cta--primary/g) ?? []).length, 1);
+  }
+});
 
 test("both homepage sources are paired for hreflang", () => {
   for (const file of ["../../docs/index.md", "../../docs/index.ja.md"]) {

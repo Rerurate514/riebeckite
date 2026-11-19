@@ -21,6 +21,7 @@ import { extractTableOfContents } from "@riebeckite/plugin-toc";
 import { ArticleWebmentionSection } from "@riebeckite/plugin-webmention";
 import { createRoute } from "honox/factory";
 import Article from "../components/article/article";
+import { PostByline } from "../components/blog/post-byline";
 import HomePage from "../components/home/home";
 import { ThemeDocumentationPreview } from "../components/theme-preview";
 import { getArticleTitle } from "../lib/article-title";
@@ -78,6 +79,7 @@ export default createRoute(
     const entry = resolved.entry;
     const locale = resolveWebLocale(getEntryLanguage(entry));
     const themeId = getThemeIdForDocsSlug(slug);
+    const isBlog = /^\/(?:ja\/)?blog\//.test(c.req.path);
 
     c.set(
       "seo",
@@ -88,7 +90,7 @@ export default createRoute(
         getEntryLanguage(resolved.entry),
       ),
     );
-    c.set("shell", "docs");
+    c.set("shell", isBlog ? "blog" : "docs");
     c.set("tocItems", extractTableOfContents(resolved.post.html ?? ""));
 
     return c.render(
@@ -96,29 +98,50 @@ export default createRoute(
         content={resolved.post}
         entry={entry}
         title={getArticleTitle(slug, resolved.post.frontmatter.title)}
+        metadataLabels={
+          locale === "ja"
+            ? { published: "公開", updated: "更新", read: "読了", tags: "タグ" }
+            : undefined
+        }
         headerContent={
           <>
             <Breadcrumbs />
             <LanguageSwitcher />
           </>
         }
-        metadataContent={<Properties />}
+        metadataContent={
+          isBlog ? (
+            <PostByline frontmatter={resolved.post.frontmatter} />
+          ) : (
+            <Properties />
+          )
+        }
         beforeContent={
           themeId ? (
             <ThemeDocumentationPreview locale={locale} themeId={themeId} />
           ) : undefined
         }
         footerContent={
-          <>
-            <DocsPrevNext />
-            <SeriesNavigation />
-            <Backlinks />
-            <RelatedPosts />
-            <ShareControls />
-            <LocalGraph />
-            <ArticlePostDiffView />
-            <ArticleWebmentionSection />
-          </>
+          isBlog ? (
+            <>
+              <SeriesNavigation />
+              <Backlinks />
+              <RelatedPosts />
+              <ShareControls />
+              <ArticleWebmentionSection />
+            </>
+          ) : (
+            <>
+              <DocsPrevNext />
+              <SeriesNavigation />
+              <Backlinks />
+              <RelatedPosts />
+              <ShareControls />
+              <LocalGraph />
+              <ArticlePostDiffView />
+              <ArticleWebmentionSection />
+            </>
+          )
         }
       />,
     );

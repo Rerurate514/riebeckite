@@ -266,6 +266,10 @@ export default defineConfig({
           label: "Themes",
           href: "/docs/themes/",
         },
+        {
+          label: "Blog",
+          href: "/blog/",
+        },
       ],
       secondary: [
         {

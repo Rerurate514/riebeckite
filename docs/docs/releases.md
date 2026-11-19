@@ -14,6 +14,10 @@ The Unreleased section lists changes that are merged but not yet published to np
 
 ## Unreleased
 
+No user-facing changes recorded.
+
+## 0.0.52 - 2026-11-19
+
 > **Breaking changes are included.** Read the migration notes before upgrading.
 
 ### Changed
@@ -68,6 +72,8 @@ The Unreleased section lists changes that are merged but not yet published to np
 
 - Update the Vite development server dependency to a patched release that removes a critical request-handling vulnerability allowing arbitrary code execution.
   Packages: `@riebeckite/cli`, `@riebeckite/dev-inspector`, `@riebeckite/honox`
+
+[Compare](https://github.com/Rerurate514/riebeckite/compare/v0.0.51...v0.0.52)
 
 ## 0.0.51 - 2026-11-17
 

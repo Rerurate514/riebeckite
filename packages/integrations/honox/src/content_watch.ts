@@ -1,16 +1,10 @@
 import path from "node:path";
-import { isAttachmentPath, isImagePath } from "@riebeckite/core";
-import {
-  isIgnoredContentPath,
-  isPathInsideDirectory,
-  toLogicalPath,
-} from "@riebeckite/node";
 import type { EnvironmentModuleNode, Plugin, ViteDevServer } from "vite";
 import { isRiebeckiteRuntimeModuleId } from "./runtime_modules.js";
 
 type RiebeckiteContentWatchOptions = {
-  appRoot: () => string;
-  contentRoot: () => string;
+  appRoot: () => Promise<string>;
+  contentRoot: () => Promise<string>;
   exclude: () => readonly string[];
   onInvalidate?: (server: ViteDevServer) => void;
 };
@@ -31,57 +25,72 @@ export function riebeckiteContentWatch(
     configureServer(server) {
       if (configuredWatchers.has(server.watcher)) return;
       configuredWatchers.add(server.watcher);
-      const appRoot = options.appRoot();
-      const contentRoot = options.contentRoot();
-      const exclude = options.exclude();
-      const isContentFile = (file: string) =>
-        isPathInsideDirectory(contentRoot, file);
+      void Promise.all([
+        options.appRoot(),
+        options.contentRoot(),
+        import("@riebeckite/core"),
+        import("@riebeckite/node"),
+      ])
+        .then(([appRoot, contentRoot, core, nodeUtils]) => {
+          const { isAttachmentPath, isImagePath } = core;
+          const { isIgnoredContentPath, isPathInsideDirectory, toLogicalPath } =
+            nodeUtils;
+          const exclude = options.exclude();
+          const isContentFile = (file: string) =>
+            isPathInsideDirectory(contentRoot, file);
 
-      server.watcher.add(contentRoot);
-      suppressRestartOnContentEvents(server, isContentFile);
+          server.watcher.add(contentRoot);
+          suppressRestartOnContentEvents(server, isContentFile);
 
-      let timer: ReturnType<typeof setTimeout> | undefined;
-      const invalidate = () => {
-        if (timer) clearTimeout(timer);
-        timer = setTimeout(() => {
-          timer = undefined;
-          invalidateApplicationRuntime(server, appRoot);
-          options.onInvalidate?.(server);
-          server.hot.send({ type: "full-reload" });
-        }, CONTENT_RELOAD_DEBOUNCE_MS);
-      };
-      server.httpServer?.once("close", () => {
-        if (timer) clearTimeout(timer);
-      });
+          let timer: ReturnType<typeof setTimeout> | undefined;
+          const invalidate = () => {
+            if (timer) clearTimeout(timer);
+            timer = setTimeout(() => {
+              timer = undefined;
+              void invalidateApplicationRuntime(server, appRoot);
+              options.onInvalidate?.(server);
+              server.hot.send({ type: "full-reload" });
+            }, CONTENT_RELOAD_DEBOUNCE_MS);
+          };
+          server.httpServer?.once("close", () => {
+            if (timer) clearTimeout(timer);
+          });
 
-      const handle =
-        (event: ContentEvent) =>
-        (file: string): void => {
-          if (!isContentFile(file)) return;
-          const logicalPath = toLogicalPath(contentRoot, file);
-          if (isIgnoredContentPath(logicalPath, exclude)) return;
-          if (event === "change" && isSiteAssetPath(logicalPath)) {
-            server.hot.send({ type: "full-reload" });
-            return;
-          }
-          invalidate();
-        };
+          const handle =
+            (event: ContentEvent) =>
+            (file: string): void => {
+              if (!isContentFile(file)) return;
+              const logicalPath = toLogicalPath(contentRoot, file);
+              if (isIgnoredContentPath(logicalPath, exclude)) return;
+              if (
+                event === "change" &&
+                (isImagePath(logicalPath) || isAttachmentPath(logicalPath))
+              ) {
+                server.hot.send({ type: "full-reload" });
+                return;
+              }
+              invalidate();
+            };
 
-      server.watcher.on("add", handle("add"));
-      server.watcher.on("change", handle("change"));
-      server.watcher.on("unlink", handle("unlink"));
+          server.watcher.on("add", handle("add"));
+          server.watcher.on("change", handle("change"));
+          server.watcher.on("unlink", handle("unlink"));
+        })
+        .catch(() => {});
     },
   };
 }
 
-export function isSiteAssetPath(logicalPath: string): boolean {
+export async function isSiteAssetPath(logicalPath: string): Promise<boolean> {
+  const { isAttachmentPath, isImagePath } = await import("@riebeckite/core");
   return isImagePath(logicalPath) || isAttachmentPath(logicalPath);
 }
 
-export function invalidateApplicationRuntime(
+export async function invalidateApplicationRuntime(
   server: Pick<ViteDevServer, "environments">,
   appRoot: string,
-): number {
+): Promise<number> {
+  const { isPathInsideDirectory } = await import("@riebeckite/node");
   const moduleGraph = server.environments?.ssr?.moduleGraph;
   if (!moduleGraph) return 0;
   const appDirectory = path.join(appRoot, "app") + path.sep;
@@ -90,7 +99,8 @@ export function invalidateApplicationRuntime(
   let invalidated = 0;
 
   for (const mod of moduleGraph.idToModuleMap.values()) {
-    if (!isApplicationRuntimeModule(mod, appDirectory)) continue;
+    if (!isApplicationRuntimeModule(mod, appDirectory, isPathInsideDirectory))
+      continue;
     moduleGraph.invalidateModule(mod, seen, timestamp);
     invalidated += 1;
   }
@@ -101,6 +111,7 @@ export function invalidateApplicationRuntime(
 function isApplicationRuntimeModule(
   mod: EnvironmentModuleNode,
   appDirectory: string,
+  isPathInsideDirectory: (directory: string, file: string) => boolean,
 ): boolean {
   if (mod.file && isPathInsideDirectory(appDirectory, mod.file)) return true;
   return isRiebeckiteRuntimeModuleId(mod.id);

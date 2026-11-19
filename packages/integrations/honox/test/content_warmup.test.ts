@@ -9,7 +9,7 @@ test("warms the content manifest after the dev server listens", async () => {
   const httpServer = new EventEmitter();
   let loaded = 0;
   let built = 0;
-  const plugin = riebeckiteContentWarmup(true, () =>
+  const plugin = riebeckiteContentWarmup(true, async () =>
     createInvalid({ appRoot: "/site" }),
   );
   const server = createInvalid<ViteDevServer>({

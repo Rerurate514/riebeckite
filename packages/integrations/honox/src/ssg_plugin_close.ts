@@ -1,5 +1,4 @@
 import { resolve } from "node:path";
-import { buildOutputPlan, compareOutputPlan } from "@riebeckite/core";
 import {
   CLOUDFLARE_WORKER_ASSET_LIMIT,
   findOversizedAssets,
@@ -28,6 +27,9 @@ export async function closeSsgBundle(
 ): Promise<void> {
   if (!state.resolvedConfig) return;
   if (state.resolvedConfig.mode === "client") return;
+  const { buildOutputPlan, compareOutputPlan } = await import(
+    "@riebeckite/core"
+  );
   const outputDirectory = state.publicationOutputDirectory;
   if (!outputDirectory) {
     throw new Error(

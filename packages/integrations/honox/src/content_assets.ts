@@ -1,13 +1,11 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { isImagePath, normalizeContentPath } from "@riebeckite/core";
-import { isIgnoredContentPath, isPathInsideDirectory } from "@riebeckite/node";
 import type { Plugin } from "vite";
 import { loadContentModule } from "./content_module.js";
 
 type RiebeckiteContentAssetsOptions = {
-  appRoot: () => string;
-  contentRoot: () => string;
+  appRoot: () => Promise<string>;
+  contentRoot: () => Promise<string>;
 };
 
 type ContentAssetEntry = { assets?: ReadonlyArray<{ path: string }> };
@@ -69,7 +67,6 @@ export function riebeckiteContentAssets(
     apply: "serve",
     enforce: "pre",
     configureServer(server) {
-      const contentRoot = options.contentRoot();
       const base = server.config.base;
       const publicDir = server.config.publicDir;
       let cachedManifest: unknown;
@@ -81,7 +78,7 @@ export function riebeckiteContentAssets(
       const deferredContents = new Map<string, Promise<Uint8Array | string>>();
 
       const resolvePublicAssets = async (): Promise<PublicContentAssets> => {
-        const module = await loadContentModule(server, options.appRoot());
+        const module = await loadContentModule(server, await options.appRoot());
         const manifest = (await module.content?.getManifest?.()) as
           | PublicContentManifest
           | undefined;
@@ -96,9 +93,9 @@ export function riebeckiteContentAssets(
           cachedManifest = manifest;
           deferredContents.clear();
           cachedAssets = {
-            paths: collectPublicImagePaths(manifest),
-            generated: collectGeneratedImageContents(manifest),
-            deferred: collectDeferredGeneratedImages(manifest),
+            paths: await collectPublicImagePaths(manifest),
+            generated: await collectGeneratedImageContents(manifest),
+            deferred: await collectDeferredGeneratedImages(manifest),
           };
         }
         return cachedAssets;
@@ -110,7 +107,10 @@ export function riebeckiteContentAssets(
             next();
             return;
           }
-          const logicalPath = toContentPath(request.url, base);
+          const { isIgnoredContentPath, isPathInsideDirectory } = await import(
+            "@riebeckite/node"
+          );
+          const logicalPath = await toContentPath(request.url, base);
           if (!logicalPath) {
             next();
             return;
@@ -152,6 +152,7 @@ export function riebeckiteContentAssets(
             sendImage(request, response, contentType, content);
             return;
           }
+          const contentRoot = await options.contentRoot();
           const file = path.join(contentRoot, logicalPath);
           if (!isPathInsideDirectory(contentRoot, file)) {
             next();
@@ -172,9 +173,12 @@ export function riebeckiteContentAssets(
   };
 }
 
-export function collectPublicImagePaths(
+export async function collectPublicImagePaths(
   manifest: PublicContentManifest,
-): Set<string> {
+): Promise<Set<string>> {
+  const { isImagePath, normalizeContentPath } = await import(
+    "@riebeckite/core"
+  );
   const paths = new Set<string>();
   for (const entry of manifest.publicEntries ?? []) {
     for (const asset of entry.assets ?? []) {
@@ -185,9 +189,10 @@ export function collectPublicImagePaths(
   return paths;
 }
 
-export function collectGeneratedImageContents(
+export async function collectGeneratedImageContents(
   manifest: PublicContentManifest,
-): Map<string, Uint8Array | string> {
+): Promise<Map<string, Uint8Array | string>> {
+  const { normalizeContentPath } = await import("@riebeckite/core");
   const contents = new Map<string, Uint8Array | string>();
   for (const output of manifest.generatedOutputs ?? []) {
     if (output.content === undefined) continue;
@@ -198,9 +203,10 @@ export function collectGeneratedImageContents(
   return contents;
 }
 
-export function collectDeferredGeneratedImages(
+export async function collectDeferredGeneratedImages(
   manifest: PublicContentManifest,
-): Map<string, DeferredGeneratedImage> {
+): Promise<Map<string, DeferredGeneratedImage>> {
+  const { normalizeContentPath } = await import("@riebeckite/core");
   const outputs = new Map<string, DeferredGeneratedImage>();
   for (const output of manifest.generatedOutputs ?? []) {
     if (!output.generate) continue;
@@ -254,11 +260,12 @@ export async function collectSiteOwnedOutputPaths(
   return paths;
 }
 
-export function toContentPath(
+export async function toContentPath(
   url: string | undefined,
   base: string,
-): string | undefined {
+): Promise<string | undefined> {
   if (!url) return undefined;
+  const { normalizeContentPath } = await import("@riebeckite/core");
   const withoutQuery = url.split("?")[0]?.split("#")[0];
   if (!withoutQuery) return undefined;
   let decoded = withoutQuery;

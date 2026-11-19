@@ -1,11 +1,5 @@
 import { lstat, mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
-import {
-  BUILD_OUTPUT_MARKER_FILE,
-  createBuildOutputMarker,
-  isDeferredGeneratedOutput,
-  serializeBuildOutputMarker,
-} from "@riebeckite/core";
 import type { OutputCacheState } from "./ssg/output_cache.js";
 import type { GeneratedOutputAsset, SsgModule } from "./ssg/types.js";
 
@@ -67,6 +61,8 @@ export async function emitGeneratedOutputs(
   if (!content) return 0;
   if (affectedPaths?.size === 0) return 0;
 
+  const { isDeferredGeneratedOutput } = await import("@riebeckite/core");
+
   const manifest = await content.getManifest();
   let count = 0;
   for (const output of manifest.generatedOutputs ?? []) {
@@ -108,6 +104,11 @@ export async function writePublicationMarker(input: {
   readonly artifactFingerprint?: string;
   readonly warn: (message: string) => void;
 }): Promise<void> {
+  const {
+    BUILD_OUTPUT_MARKER_FILE,
+    createBuildOutputMarker,
+    serializeBuildOutputMarker,
+  } = await import("@riebeckite/core");
   const path = join(input.root, ".riebeckite", BUILD_OUTPUT_MARKER_FILE);
   try {
     await mkdir(dirname(path), { recursive: true });

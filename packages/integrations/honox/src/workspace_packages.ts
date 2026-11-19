@@ -1,8 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
-import { escapeRegExp } from "@riebeckite/core";
 
-export function createWorkspacePackageAliases(workspaceRoot: string) {
+type EscapeRegExp = (value: string) => string;
+
+export async function createWorkspacePackageAliases(
+  workspaceRoot: string,
+): Promise<{ find: RegExp; replacement: string }[]> {
+  const { escapeRegExp } = await import("@riebeckite/core");
   const packagesRoot = path.join(workspaceRoot, "packages");
   if (!fs.existsSync(packagesRoot)) return [];
 
@@ -16,13 +20,22 @@ export function createWorkspacePackageAliases(workspaceRoot: string) {
         packageJson.name,
         packageDirectory,
         packageJson,
+        escapeRegExp,
       );
     },
   );
 }
 
-export function workspacePackageResolver(workspaceRoot: string) {
-  const aliases = createWorkspacePackageAliases(workspaceRoot);
+export function workspacePackageJsonPaths(workspaceRoot: string): string[] {
+  const packagesRoot = path.join(workspaceRoot, "packages");
+  if (!fs.existsSync(packagesRoot)) return [];
+  return findWorkspacePackageDirectories(packagesRoot).map((packageDirectory) =>
+    path.join(packageDirectory, "package.json"),
+  );
+}
+
+export async function workspacePackageResolver(workspaceRoot: string) {
+  const aliases = await createWorkspacePackageAliases(workspaceRoot);
   return {
     name: "workspace-package-resolver",
     setup(buildApi: {
@@ -59,6 +72,7 @@ function createPackageAliases(
   packageName: string,
   packageDirectory: string,
   packageJson: { exports?: PackageJsonExports; main?: string },
+  escapeRegExp: EscapeRegExp,
 ) {
   const aliases: { find: RegExp; replacement: string }[] = [];
   const mainEntry =

@@ -1,16 +1,9 @@
-import {
+import type {
   buildOutputPlan,
-  type CompletedContentBuildSnapshot,
-  createContentFormatRegistry,
-  inspectContentAssets,
-  inspectRegeneration,
-  type OutputChangeSet,
+  CompletedContentBuildSnapshot,
+  OutputChangeSet,
 } from "@riebeckite/core";
-import {
-  type DevelopmentDiagnostic,
-  diagnoseOutputPlan,
-} from "@riebeckite/diagnostics";
-import { createContentSource } from "@riebeckite/node";
+import type { DevelopmentDiagnostic } from "@riebeckite/diagnostics";
 import type { ResolvedInspectorApplication } from "./application.js";
 import {
   dependencyLabel,
@@ -33,6 +26,10 @@ export async function inspectContentOutputs(
   application: ResolvedInspectorApplication,
 ): Promise<OutputResult> {
   try {
+    const { buildOutputPlan, inspectRegeneration } = await import(
+      "@riebeckite/core"
+    );
+    const { diagnoseOutputPlan } = await import("@riebeckite/diagnostics");
     const changes = snapshot.outputChangeSet;
     const plan = buildOutputPlan({
       inventory: [...changes.affected, ...changes.unchanged],
@@ -97,6 +94,10 @@ export async function inspectAssets(
   application: ResolvedInspectorApplication,
 ): Promise<AssetResult> {
   try {
+    const { createContentSource } = await import("@riebeckite/node");
+    const { createContentFormatRegistry, inspectContentAssets } = await import(
+      "@riebeckite/core"
+    );
     const source = createContentSource(
       application.config.content,
       application.contentRoot,

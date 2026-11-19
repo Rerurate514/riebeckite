@@ -3,7 +3,6 @@ import type {
   ContentMutationOperation,
   ContentMutationPlan,
 } from "@riebeckite/core";
-import { FileSystemContentMutation } from "@riebeckite/node";
 import {
   approvalPath,
   claimApproval,
@@ -35,14 +34,15 @@ export type BridgeMutationStore = {
   apply(planId: string): Promise<unknown>;
 };
 
-export function createBridgeMutationStore(
+export async function createBridgeMutationStore(
   contentRoot: string,
   approvalSecret: string,
   formats?: {
     readonly isContentPath: (path: string) => boolean;
     readonly toSlug: (path: string) => string | undefined;
   },
-): BridgeMutationStore {
+): Promise<BridgeMutationStore> {
+  const { FileSystemContentMutation } = await import("@riebeckite/node");
   const mutation = new FileSystemContentMutation(contentRoot, formats);
   return {
     async plan(operations) {

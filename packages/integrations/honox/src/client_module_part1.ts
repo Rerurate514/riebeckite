@@ -8,6 +8,7 @@ export const resolvedClientModuleId = `\0${clientModuleId}`;
 
 export function riebeckiteClientModule(
   getConfig: () => Pick<ResolvedRiebeckiteConfig, "plugins" | "spa">,
+  ensure: () => Promise<unknown> = async () => {},
 ): Plugin {
   let development = false;
   return {
@@ -19,9 +20,10 @@ export function riebeckiteClientModule(
       if (id === clientModuleId) return resolvedClientModuleId;
       return null;
     },
-    load(id) {
+    async load(id) {
+      await ensure();
       if (id !== resolvedClientModuleId) return null;
-      return createClientModule(getConfig(), development);
+      return await createClientModule(getConfig(), development);
     },
   };
 }

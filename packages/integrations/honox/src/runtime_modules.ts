@@ -24,6 +24,7 @@ const resolvedContentRenderersModuleId = `\0${riebeckiteContentRenderersModuleId
  */
 export function riebeckiteRuntimeModules(
   getApplication: () => ResolvedHonoxApplication,
+  ensure: () => Promise<unknown> = async () => {},
 ): Plugin {
   let development = false;
   return {
@@ -38,7 +39,8 @@ export function riebeckiteRuntimeModules(
         return resolvedContentRenderersModuleId;
       return null;
     },
-    load(id) {
+    async load(id) {
+      await ensure();
       if (id === resolvedConfigModuleId) {
         const { appRoot, configFile } = getApplication();
         return createConfigModule(appRoot, configFile);

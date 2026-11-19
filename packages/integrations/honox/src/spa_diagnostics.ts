@@ -1,8 +1,7 @@
-import {
-  type Diagnostic,
-  definePlugin,
-  type PluginGeneratedHtml,
-  type RiebeckitePlugin,
+import type {
+  Diagnostic,
+  PluginGeneratedHtml,
+  RiebeckitePlugin,
 } from "@riebeckite/core";
 
 export const SPA_DIAGNOSTICS_PLUGIN_NAME = "riebeckite:spa-diagnostics";
@@ -28,8 +27,8 @@ export function inspectSpaPage(page: PluginGeneratedHtml): Diagnostic[] {
 }
 
 export function spaDiagnostics(): RiebeckitePlugin {
-  return definePlugin({
+  return {
     name: SPA_DIAGNOSTICS_PLUGIN_NAME,
     inspectGeneratedHtml: inspectSpaPage,
-  });
+  } satisfies RiebeckitePlugin;
 }

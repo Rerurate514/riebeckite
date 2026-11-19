@@ -29,6 +29,19 @@ test("rich embed resolves known providers to controlled iframe origins", () => {
   });
 });
 
+test("rich embed resolves youtu.be short URLs", () => {
+  assert.deepEqual(
+    resolveEmbed("https://youtu.be/dQw4w9WgXcQ?si=tracking", { start: 30 }, {}),
+    {
+      kind: "iframe",
+      provider: "youtube",
+      src: "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?start=30",
+      title: "YouTube video",
+      aspect: "16/9",
+    },
+  );
+});
+
 test("generic rich embeds require an explicit host allow-list", () => {
   assert.equal(
     resolveEmbed("https://widgets.example/embed", {}, {}).kind,

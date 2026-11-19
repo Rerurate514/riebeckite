@@ -27,4 +27,5 @@ export const YOUTUBE_HOSTS = new Set([
   "music.youtube.com",
   "youtube-nocookie.com",
   "www.youtube-nocookie.com",
+  "youtu.be",
 ]);

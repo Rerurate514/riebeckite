@@ -1,0 +1,115 @@
+@layer components {
+  .rb-blog-index {
+    display: flex;
+    flex-direction: column;
+    padding-block: var(--rb-space-5) var(--rb-space-8);
+  }
+
+  .rb-blog-index__header {
+    display: flex;
+    flex-direction: column;
+    margin-block-end: var(--rb-space-5);
+  }
+
+  .rb-blog-index__header h1 {
+    margin-block: 0 var(--rb-space-2);
+  }
+
+  .rb-blog-index__description {
+    max-width: 42rem;
+    color: var(--rb-color-muted);
+    margin: 0;
+  }
+
+  .rb-blog-index__language {
+    font-size: 0.875rem;
+    margin-block-start: var(--rb-space-3);
+  }
+
+  .rb-blog-index__empty {
+    color: var(--rb-color-muted);
+    border-block-start: 1px solid var(--rb-color-border);
+    padding-block-start: var(--rb-space-4);
+    margin-block: 0;
+  }
+
+  .rb-blog-index__list {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .rb-blog-index__post {
+    display: flex;
+    flex-direction: column;
+    border-block-start: 1px solid var(--rb-color-border);
+    padding-block: var(--rb-space-3) var(--rb-space-4);
+  }
+
+  .rb-blog-index__date {
+    font-family: var(--rb-font-mono);
+    font-size: 0.875rem;
+    color: var(--rb-color-muted);
+    margin-block: 0 var(--rb-space-1);
+  }
+
+  .rb-blog-index__post-title {
+    font-size: 1.375rem;
+    line-height: 1.35;
+    margin: 0 0 var(--rb-space-1);
+  }
+
+  .rb-blog-index__post-title a {
+    color: var(--rb-color-ink);
+    text-decoration: none;
+  }
+
+  .rb-blog-index__post-title a:hover {
+    color: var(--rb-color-link);
+    text-decoration: underline;
+  }
+
+  .rb-blog-index__summary {
+    color: var(--rb-color-muted);
+    margin-block: 0 var(--rb-space-2);
+  }
+
+  .rb-blog-index__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--rb-space-1);
+    font-size: 0.875rem;
+    margin-block: 0;
+    color: var(--rb-color-muted);
+  }
+
+  .rb-blog-index__category {
+    font-size: 0.8125rem;
+    border: 1px solid var(--rb-color-border);
+    padding: 0.125rem 0.5rem;
+    color: var(--rb-color-muted);
+  }
+
+  .rb-blog-index__tag {
+    color: var(--rb-color-muted);
+  }
+
+  .rb-blog-index__tag:hover {
+    color: var(--rb-color-link);
+  }
+
+  .rb-blog-byline {
+    font-size: 0.875rem;
+    color: var(--rb-color-muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--rb-space-1);
+    margin-block: 0 var(--rb-space-2);
+  }
+
+  .rb-blog-byline__sep {
+    color: var(--rb-color-border-strong);
+  }
+}

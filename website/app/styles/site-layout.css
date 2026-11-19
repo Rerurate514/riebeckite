@@ -69,4 +69,21 @@
       border-inline-start: 1px solid var(--rb-color-border);
     }
   }
+
+  .site-layout--blog {
+    display: grid;
+    min-width: 0;
+  }
+
+  @media (min-width: 48rem) {
+    .site-layout--blog {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .site-layout--blog {
+      grid-template-columns: minmax(0, 1fr) minmax(13rem, 17rem);
+    }
+  }
 }

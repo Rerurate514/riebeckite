@@ -1,9 +1,3 @@
-import {
-  inspectDependencyGraph,
-  inspectPluginExecution,
-  loadContentBuildState,
-  resolveContentBuildStatePath,
-} from "@riebeckite/core";
 import type { ViteDevServer } from "vite";
 import {
   inspectorTabMetadata,
@@ -34,6 +28,7 @@ export function createDataMiddlewares(
     response: import("node:http").ServerResponse,
   ) => {
     try {
+      const { inspectDependencyGraph } = await import("@riebeckite/core");
       const application = state.getApplication();
       const entry = state.inspect(application, state.getRevision(), server);
       const snapshot = await entry.snapshot;
@@ -65,6 +60,7 @@ export function createDataMiddlewares(
     response: import("node:http").ServerResponse,
   ) => {
     try {
+      const { inspectPluginExecution } = await import("@riebeckite/core");
       const application = state.getApplication();
       const entry = state.inspect(application, state.getRevision(), server);
       const snapshot = await entry.snapshot;
@@ -93,6 +89,8 @@ export function createDataMiddlewares(
     response: import("node:http").ServerResponse,
   ) => {
     try {
+      const { loadContentBuildState, resolveContentBuildStatePath } =
+        await import("@riebeckite/core");
       const application = state.getApplication();
       const entry = state.inspect(application, state.getRevision(), server);
       const snapshot = await entry.snapshot;

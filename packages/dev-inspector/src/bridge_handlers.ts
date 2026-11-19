@@ -131,7 +131,7 @@ export async function handleMutationPost(
     response.end(JSON.stringify({ code: "BRIDGE_STATUS_UNAVAILABLE" }));
     return;
   }
-  state.mutations ??= createBridgeMutationStore(
+  state.mutations ??= await createBridgeMutationStore(
     contentRoot,
     options.mutationApprovalToken,
     options.contentFormats?.(),

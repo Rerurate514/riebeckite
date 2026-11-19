@@ -1,12 +1,10 @@
-import {
-  type ResolvedRiebeckiteConfig,
-  serializePublicClientConfig,
-} from "@riebeckite/core";
+import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
 
-export function createClientModule(
+export async function createClientModule(
   config: Pick<ResolvedRiebeckiteConfig, "plugins" | "spa">,
   development: boolean,
-): string {
+): Promise<string> {
+  const { serializePublicClientConfig } = await import("@riebeckite/core");
   const imports: string[] = [];
   const appInitializers: string[] = [];
   const appConditionalInitializers: string[] = [];

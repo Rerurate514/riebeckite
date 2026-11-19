@@ -23,7 +23,7 @@ test("asset entries are not rewritten when their contents are unchanged", async 
   } as ResolvedRiebeckiteConfig;
 
   try {
-    writeRiebeckiteAssetEntries(config, {
+    await writeRiebeckiteAssetEntries(config, {
       frameworkStyles,
       pluginStyles,
       themeStyles,
@@ -35,7 +35,7 @@ test("asset entries are not rewritten when their contents are unchanged", async 
       utimes(themeStyles, timestamp, timestamp),
     ]);
 
-    writeRiebeckiteAssetEntries(config, {
+    await writeRiebeckiteAssetEntries(config, {
       frameworkStyles,
       pluginStyles,
       themeStyles,
@@ -81,7 +81,7 @@ test("generated entries import the framework, plugin, and theme stylesheets", as
   } as ResolvedRiebeckiteConfig;
 
   try {
-    writeRiebeckiteAssetEntries(config, {
+    await writeRiebeckiteAssetEntries(config, {
       frameworkStyles,
       pluginStyles,
       themeStyles,

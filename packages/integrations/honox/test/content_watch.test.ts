@@ -68,7 +68,12 @@ function createServer(modules: FakeModule[]): FakeServer {
     watcher,
     sends,
     waitForSends(count) {
-      if (sends.length >= count) return Promise.resolve();
+      const flush = async () => {
+        for (let i = 0; i < 50; i += 1) {
+          await new Promise<void>((resolve) => setImmediate(resolve));
+        }
+      };
+      if (sends.length >= count) return flush();
       return new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
           const index = sendWaiters.indexOf(check);
@@ -78,7 +83,7 @@ function createServer(modules: FakeModule[]): FakeServer {
         const check = () => {
           if (sends.length < count) return;
           clearTimeout(timeout);
-          resolve();
+          void flush().then(resolve);
         };
         sendWaiters.push(check);
       });
@@ -102,14 +107,16 @@ async function configure(
   assert.equal(plugin.apply, "serve");
   const hook = plugin.configureServer as (server: ViteDevServer) => void;
   hook(fake.server);
-  await new Promise<void>((resolve) => setImmediate(resolve));
+  for (let i = 0; i < 50; i += 1) {
+    await new Promise<void>((resolve) => setImmediate(resolve));
+  }
 }
 
 describe("isSiteAssetPath", () => {
-  it("recognizes images and attachments", () => {
-    assert.equal(isSiteAssetPath("attachments/photo.png"), true);
-    assert.equal(isSiteAssetPath("attachments/report.pdf"), true);
-    assert.equal(isSiteAssetPath("notes/note.md"), false);
+  it("recognizes images and attachments", async () => {
+    assert.equal(await isSiteAssetPath("attachments/photo.png"), true);
+    assert.equal(await isSiteAssetPath("attachments/report.pdf"), true);
+    assert.equal(await isSiteAssetPath("notes/note.md"), false);
   });
 });
 
@@ -141,7 +148,7 @@ describe("toLogicalPath", () => {
 });
 
 describe("invalidateApplicationRuntime", () => {
-  it("invalidates application modules and keeps the rest", () => {
+  it("invalidates application modules and keeps the rest", async () => {
     const appRoot = path.resolve("/site");
     const fake = createServer([
       { file: path.join(appRoot, "app", "server.ts") },
@@ -150,7 +157,10 @@ describe("invalidateApplicationRuntime", () => {
       { file: path.resolve("/elsewhere/config.ts") },
     ]);
 
-    const invalidated = invalidateApplicationRuntime(fake.server, appRoot);
+    const invalidated = await invalidateApplicationRuntime(
+      fake.server,
+      appRoot,
+    );
 
     assert.equal(invalidated, 2);
     assert.deepEqual(fake.invalidated.sort(), [
@@ -159,16 +169,16 @@ describe("invalidateApplicationRuntime", () => {
     ]);
   });
 
-  it("does nothing when the ssr module graph is unavailable", () => {
+  it("does nothing when the ssr module graph is unavailable", async () => {
     const fake = createServer([]);
     const withoutGraph = {
       environments: {},
     } as ViteDevServer;
-    assert.equal(invalidateApplicationRuntime(withoutGraph, "/site"), 0);
+    assert.equal(await invalidateApplicationRuntime(withoutGraph, "/site"), 0);
     assert.equal(fake.invalidated.length, 0);
   });
 
-  it("invalidates framework runtime virtual modules", () => {
+  it("invalidates framework runtime virtual modules", async () => {
     const appRoot = path.resolve("/site");
     const fake = createServer([
       { file: path.join(appRoot, "app", "server.ts") },
@@ -182,7 +192,10 @@ describe("invalidateApplicationRuntime", () => {
       },
     ]);
 
-    const invalidated = invalidateApplicationRuntime(fake.server, appRoot);
+    const invalidated = await invalidateApplicationRuntime(
+      fake.server,
+      appRoot,
+    );
 
     assert.equal(invalidated, 3);
   });

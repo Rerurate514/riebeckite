@@ -1,8 +1,5 @@
 import path from "node:path";
-import {
-  createContentFormatRegistry,
-  type ResolvedRiebeckiteConfig,
-} from "@riebeckite/core";
+import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import {
   invalidateDevelopmentInspector,
   invalidateRiebeckiteBridge,
@@ -64,8 +61,13 @@ export function riebeckite(
   };
   let applicationPromise: Promise<ResolvedHonoxApplication> | undefined;
   let applicationAppRoot = "";
+  let contentFormatRegistryFactory:
+    | typeof import("@riebeckite/core")["createContentFormatRegistry"]
+    | undefined;
   const ensureApplication = () =>
     (applicationPromise ??= (async () => {
+      const core = await import("@riebeckite/core");
+      contentFormatRegistryFactory = core.createContentFormatRegistry;
       const resolvedApplication = await resolveHonoxApplication({
         configRoot: options.configRoot ?? applicationAppRoot,
         configFile: options.configFile,
@@ -82,7 +84,7 @@ export function riebeckite(
       ) as Plugin[];
       application = resolvedApplication;
       onApplicationResolved?.(resolvedApplication);
-      writeRiebeckiteAssetEntries(resolvedConfig, {
+      await writeRiebeckiteAssetEntries(resolvedConfig, {
         frameworkStyles: path.join(
           applicationAppRoot,
           "app/.riebeckite/framework-styles.css",
@@ -130,7 +132,7 @@ export function riebeckite(
           },
           resolve: {
             alias: options.workspaceRoot
-              ? createWorkspacePackageAliases(options.workspaceRoot)
+              ? await createWorkspacePackageAliases(options.workspaceRoot)
               : [],
           },
         };
@@ -186,7 +188,12 @@ export function riebeckite(
       mutationApprovalToken:
         process.env.RIEBECKITE_BRIDGE_MUTATION_APPROVAL_TOKEN,
       contentRoot: () => requireApplication(application).contentRoot,
-      contentFormats: () => createContentFormatRegistry(getConfig().plugins),
+      contentFormats: () => {
+        if (!contentFormatRegistryFactory) {
+          throw new Error("Riebeckite config has not been loaded yet.");
+        }
+        return contentFormatRegistryFactory(getConfig().plugins);
+      },
       publicOrigin: () => getConfig().site.baseUrl || undefined,
       async getSnapshot(server) {
         const { appRoot } = requireApplication(application);

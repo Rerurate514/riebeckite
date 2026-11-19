@@ -139,8 +139,8 @@ function writeFile(
 }
 
 describe("collectPublicImagePaths", () => {
-  it("collects image assets referenced by public entries only", () => {
-    const paths = collectPublicImagePaths({
+  it("collects image assets referenced by public entries only", async () => {
+    const paths = await collectPublicImagePaths({
       publicEntries: [
         { assets: [{ path: "attachments/photo.png" }] },
         {
@@ -159,22 +159,22 @@ describe("collectPublicImagePaths", () => {
 });
 
 describe("toContentPath", () => {
-  it("strips the query, the base and the leading slash", () => {
+  it("strips the query, the base and the leading slash", async () => {
     assert.equal(
-      toContentPath("/attachments/a%20b.png?t=1", "/"),
+      await toContentPath("/attachments/a%20b.png?t=1", "/"),
       "attachments/a b.png",
     );
     assert.equal(
-      toContentPath("/blog/attachments/a.png", "/blog/"),
+      await toContentPath("/blog/attachments/a.png", "/blog/"),
       "attachments/a.png",
     );
   });
 
-  it("rejects empty and traversing paths", () => {
-    assert.equal(toContentPath("/", "/"), undefined);
-    assert.equal(toContentPath("/../secret.png", "/"), undefined);
-    assert.equal(toContentPath("/attachments//a.png", "/"), undefined);
-    assert.equal(toContentPath(undefined, "/"), undefined);
+  it("rejects empty and traversing paths", async () => {
+    assert.equal(await toContentPath("/", "/"), undefined);
+    assert.equal(await toContentPath("/../secret.png", "/"), undefined);
+    assert.equal(await toContentPath("/attachments//a.png", "/"), undefined);
+    assert.equal(await toContentPath(undefined, "/"), undefined);
   });
 });
 

@@ -1,5 +1,3 @@
-import { inspectThemeConfig, resolveApiLifecycle } from "@riebeckite/core";
-import { sortDevelopmentDiagnostics } from "@riebeckite/diagnostics";
 import type { ViteDevServer } from "vite";
 import { inspectContentInventory } from "./development_inspector_content.js";
 import { inspectorTabMetadata } from "./development_inspector_helpers.js";
@@ -28,6 +26,9 @@ export function createReportMiddlewares(
     response: import("node:http").ServerResponse,
   ) => {
     try {
+      const { inspectThemeConfig, resolveApiLifecycle } = await import(
+        "@riebeckite/core"
+      );
       const application = state.getApplication();
       const entry = state.inspect(application, state.getRevision(), server);
       const report = await entry.report;
@@ -71,6 +72,9 @@ export function createReportMiddlewares(
     response: import("node:http").ServerResponse,
   ) => {
     try {
+      const { sortDevelopmentDiagnostics } = await import(
+        "@riebeckite/diagnostics"
+      );
       const application = state.getApplication();
       const entry = state.inspect(application, state.getRevision(), server);
       const result = await entry.output;

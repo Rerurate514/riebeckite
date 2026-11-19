@@ -1,10 +1,4 @@
 import {
-  publicationFingerprint as fingerprintPublication,
-  publicationEntriesFromManifest,
-  publicationOutputsFromManifest,
-  publicationRedirectsFromManifest,
-} from "@riebeckite/core";
-import {
   inspectGeneratedHtmlPages,
   logGeneratedHtmlAssetDiagnostics,
 } from "./ssg/diagnostics.js";
@@ -16,6 +10,12 @@ export async function finalizeSsgGeneration(
   ctx: SsgGeneration,
   state: SsgPluginState,
 ): Promise<void> {
+  const {
+    publicationFingerprint: fingerprintPublication,
+    publicationEntriesFromManifest,
+    publicationRedirectsFromManifest,
+    publicationOutputsFromManifest,
+  } = await import("@riebeckite/core");
   ctx.metrics.shadowedOutputCount = ctx.shadowedOutputs.size;
   if (ctx.shadowedOutputs.size > 0) {
     plugin.warn(

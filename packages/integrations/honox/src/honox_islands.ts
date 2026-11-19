@@ -1,6 +1,5 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { parse } from "@babel/parser";
 import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import type { Plugin, PluginOption } from "vite";
 
@@ -132,7 +131,7 @@ function scopedIslandDependencyPlugin(): Plugin {
 
       if (isInDirectory(currentModulePath, islandDirectory)) return true;
 
-      const importSources = getStaticImportSources(currentSourceCode);
+      const importSources = await getStaticImportSources(currentSourceCode);
       for (const importSource of importSources) {
         const resolved = await pluginContext.resolve(
           importSource,
@@ -166,7 +165,8 @@ function scopedIslandDependencyPlugin(): Plugin {
   }
 }
 
-function getStaticImportSources(sourceCode: string): string[] {
+async function getStaticImportSources(sourceCode: string): Promise<string[]> {
+  const { parse } = await import("@babel/parser");
   const ast = parse(sourceCode, {
     sourceType: "module",
     plugins: ["typescript", "jsx"],

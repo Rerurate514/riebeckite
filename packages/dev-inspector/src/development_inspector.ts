@@ -1,5 +1,4 @@
 import type { CompletedContentBuildSnapshot } from "@riebeckite/core";
-import { collectDevelopmentDiagnostics } from "@riebeckite/diagnostics";
 import type { Plugin, ViteDevServer } from "vite";
 import type { ResolvedInspectorApplication } from "./application.js";
 import { inspectorClientModule } from "./development_inspector_client.js";
@@ -66,16 +65,19 @@ export function riebeckiteDevelopmentInspector(
       (build) =>
         build && build.completedAt >= invalidatedAt ? build : undefined,
     );
-    const report = snapshot.then((build) =>
-      collectDevelopmentDiagnostics({
+    const report = snapshot.then(async (build) => {
+      const { collectDevelopmentDiagnostics } = await import(
+        "@riebeckite/diagnostics"
+      );
+      return collectDevelopmentDiagnostics({
         config: application.config,
         contentDiagnostics: build
           ? [...build.manifest.diagnostics, ...build.finalHtmlDiagnostics]
           : undefined,
         revision: currentRevision,
         includeOutput: false,
-      }),
-    );
+      });
+    });
     const output = snapshot.then((build) =>
       build
         ? inspectContentOutputs(build, application)
@@ -130,14 +132,14 @@ export function riebeckiteDevelopmentInspector(
         },
       });
     },
-    handleHotUpdate({ file, server }) {
+    async handleHotUpdate({ file, server }) {
       let application: ResolvedInspectorApplication | undefined;
       try {
         application = getApplication();
       } catch {
         application = undefined;
       }
-      if (!shouldInvalidateInspection(application, file)) return;
+      if (!(await shouldInvalidateInspection(application, file))) return;
       invalidateInspection(server);
     },
   };

@@ -1,7 +1,6 @@
 import { createRequire } from "node:module";
 import path from "node:path";
 import type { InspectorTabSnapshot } from "@riebeckite/core";
-import { isPathInsideDirectory } from "@riebeckite/node";
 import type { ResolvedInspectorApplication } from "./application.js";
 
 export function inspectorTabMetadata(tab: InspectorTabSnapshot) {
@@ -37,11 +36,12 @@ export function resolveInspectorClientUrl(
   }
 }
 
-export function shouldInvalidateInspection(
+export async function shouldInvalidateInspection(
   application: ResolvedInspectorApplication | undefined,
   file: string,
-): boolean {
+): Promise<boolean> {
   if (!application) return true;
+  const { isPathInsideDirectory } = await import("@riebeckite/node");
   return (
     !isPathInsideDirectory(application.appRoot, file) ||
     isPathInsideDirectory(application.contentRoot, file) ||

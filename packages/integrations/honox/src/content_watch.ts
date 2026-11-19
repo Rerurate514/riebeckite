@@ -1,10 +1,4 @@
 import path from "node:path";
-import { isAttachmentPath, isImagePath } from "@riebeckite/core";
-import {
-  isIgnoredContentPath,
-  isPathInsideDirectory,
-  toLogicalPath,
-} from "@riebeckite/node";
 import type { EnvironmentModuleNode, Plugin, ViteDevServer } from "vite";
 import { isRiebeckiteRuntimeModuleId } from "./runtime_modules.js";
 
@@ -31,8 +25,16 @@ export function riebeckiteContentWatch(
     configureServer(server) {
       if (configuredWatchers.has(server.watcher)) return;
       configuredWatchers.add(server.watcher);
-      void Promise.all([options.appRoot(), options.contentRoot()])
-        .then(([appRoot, contentRoot]) => {
+      void Promise.all([
+        options.appRoot(),
+        options.contentRoot(),
+        import("@riebeckite/core"),
+        import("@riebeckite/node"),
+      ])
+        .then(([appRoot, contentRoot, core, nodeUtils]) => {
+          const { isAttachmentPath, isImagePath } = core;
+          const { isIgnoredContentPath, isPathInsideDirectory, toLogicalPath } =
+            nodeUtils;
           const exclude = options.exclude();
           const isContentFile = (file: string) =>
             isPathInsideDirectory(contentRoot, file);
@@ -45,7 +47,7 @@ export function riebeckiteContentWatch(
             if (timer) clearTimeout(timer);
             timer = setTimeout(() => {
               timer = undefined;
-              invalidateApplicationRuntime(server, appRoot);
+              void invalidateApplicationRuntime(server, appRoot);
               options.onInvalidate?.(server);
               server.hot.send({ type: "full-reload" });
             }, CONTENT_RELOAD_DEBOUNCE_MS);
@@ -60,7 +62,10 @@ export function riebeckiteContentWatch(
               if (!isContentFile(file)) return;
               const logicalPath = toLogicalPath(contentRoot, file);
               if (isIgnoredContentPath(logicalPath, exclude)) return;
-              if (event === "change" && isSiteAssetPath(logicalPath)) {
+              if (
+                event === "change" &&
+                (isImagePath(logicalPath) || isAttachmentPath(logicalPath))
+              ) {
                 server.hot.send({ type: "full-reload" });
                 return;
               }
@@ -76,14 +81,16 @@ export function riebeckiteContentWatch(
   };
 }
 
-export function isSiteAssetPath(logicalPath: string): boolean {
+export async function isSiteAssetPath(logicalPath: string): Promise<boolean> {
+  const { isAttachmentPath, isImagePath } = await import("@riebeckite/core");
   return isImagePath(logicalPath) || isAttachmentPath(logicalPath);
 }
 
-export function invalidateApplicationRuntime(
+export async function invalidateApplicationRuntime(
   server: Pick<ViteDevServer, "environments">,
   appRoot: string,
-): number {
+): Promise<number> {
+  const { isPathInsideDirectory } = await import("@riebeckite/node");
   const moduleGraph = server.environments?.ssr?.moduleGraph;
   if (!moduleGraph) return 0;
   const appDirectory = path.join(appRoot, "app") + path.sep;
@@ -92,7 +99,8 @@ export function invalidateApplicationRuntime(
   let invalidated = 0;
 
   for (const mod of moduleGraph.idToModuleMap.values()) {
-    if (!isApplicationRuntimeModule(mod, appDirectory)) continue;
+    if (!isApplicationRuntimeModule(mod, appDirectory, isPathInsideDirectory))
+      continue;
     moduleGraph.invalidateModule(mod, seen, timestamp);
     invalidated += 1;
   }
@@ -103,6 +111,7 @@ export function invalidateApplicationRuntime(
 function isApplicationRuntimeModule(
   mod: EnvironmentModuleNode,
   appDirectory: string,
+  isPathInsideDirectory: (directory: string, file: string) => boolean,
 ): boolean {
   if (mod.file && isPathInsideDirectory(appDirectory, mod.file)) return true;
   return isRiebeckiteRuntimeModuleId(mod.id);

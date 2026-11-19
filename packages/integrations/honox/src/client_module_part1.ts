@@ -23,7 +23,7 @@ export function riebeckiteClientModule(
     async load(id) {
       await ensure();
       if (id !== resolvedClientModuleId) return null;
-      return createClientModule(getConfig(), development);
+      return await createClientModule(getConfig(), development);
     },
   };
 }

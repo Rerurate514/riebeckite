@@ -80,8 +80,8 @@ export function isReservedPublicImage(assetPath: string): boolean {
   );
 }
 
-export function isDirectExecution(): boolean {
+export function isDirectExecution(moduleUrl: string): boolean {
   return process.argv[1]
-    ? fileURLToPath(import.meta.url) === path.resolve(process.argv[1])
+    ? fileURLToPath(moduleUrl) === path.resolve(process.argv[1])
     : false;
 }

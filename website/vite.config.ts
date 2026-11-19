@@ -1,3 +1,4 @@
+import { spawn } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import build from "@hono/vite-build/cloudflare-workers";
@@ -52,6 +53,20 @@ export default defineConfig({
       workspaceRoot,
       ssg: { concurrency: 8 },
     }),
+    {
+      name: "riebeckite-website:build-images",
+      apply: "serve",
+      configureServer() {
+        const child = spawn(
+          process.execPath,
+          ["--import", "tsx", "--conditions=source", "scripts/build_images.ts"],
+          { cwd: appRoot, stdio: "inherit" },
+        );
+        child.on("error", (error) => {
+          console.error("Failed to build content assets:", error);
+        });
+      },
+    },
     build(),
   ],
 });

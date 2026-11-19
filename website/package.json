@@ -3,7 +3,6 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "predev": "tsx --conditions=source scripts/build_images.ts",
     "prebuild": "tsx --conditions=source scripts/build_images.ts",
     "build": "vite build --mode client && vite build",
     "preview": "wrangler dev",

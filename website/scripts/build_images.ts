@@ -88,7 +88,7 @@ export async function buildImages(options: BuildImagesOptions = {}) {
   return { copied, skipped, removed, failed };
 }
 
-if (isDirectExecution()) {
+if (isDirectExecution(import.meta.url)) {
   buildImages().catch((error) => {
     console.error("Failed to build images:", error);
     process.exitCode = 1;

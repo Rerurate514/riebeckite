@@ -62,6 +62,8 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 - Aliases now work on localized sites and can claim the URL of a private note. Previously the conflict check compared raw alias paths across every language, so an English and a Japanese note declaring the same alias cancelled each other and only one redirect survived; unpublished notes also reserved their canonical URLs and silently blocked legit aliases. The plugin now orders itself after the `l10n` plugin when present, compares aliases in the final per-locale URL space, and skips ownership reservation for notes marked `private: true`, so localized sites emit one redirect per language and private URLs can be taken over.
   Packages: `@riebeckite/plugin-alias`
 
+- Fix the website's content asset build script so its prebuild step actually runs: the direct-execution guard compared the helper module's own path instead of the entry script, so `prebuild` silently did nothing. The image build also moves out of `predev` into a background task started by the Vite dev server, so `pnpm dev` no longer waits about 14 seconds for it.
+
 ### Security
 
 - Update the Vite development server dependency to a patched release that removes a critical request-handling vulnerability allowing arbitrary code execution.

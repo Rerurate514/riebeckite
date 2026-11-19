@@ -268,7 +268,7 @@ export default defineConfig({
         },
         {
           label: "Blog",
-          href: "/blog/",
+          href: "/blog",
         },
       ],
       secondary: [

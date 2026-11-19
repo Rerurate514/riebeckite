@@ -11,17 +11,19 @@ export type BlogPostSummary = {
   title: string;
   description: string | undefined;
   date: string | undefined;
-  updated: string | undefined;
-  author: string | undefined;
   category: string | undefined;
   tags: readonly string[];
 };
 
 export function getBlogPath(locale: WebLocale): string {
-  return locale === "ja" ? "/ja/blog/" : "/blog/";
+  return locale === "ja" ? "/ja/blog" : "/blog";
 }
 
-function asString(value: unknown): string | undefined {
+export function isBlogPath(path: string): boolean {
+  return /^\/(?:ja\/)?blog(?:\/|$)/.test(path);
+}
+
+export function asString(value: unknown): string | undefined {
   return typeof value === "string" && value.trim() !== "" ? value : undefined;
 }
 
@@ -30,16 +32,13 @@ export function getBlogPosts(
   view: PublicContentView,
   manifest: ContentManifest,
 ): BlogPostSummary[] {
-  const prefix = getBlogPath(locale);
+  const prefix = `${getBlogPath(locale)}/`;
   const frontmatterBySlug = new Map(
     manifest.entries.map((entry) => [entry.slug, entry.frontmatter]),
   );
 
   return view.discoverableEntries
-    .filter(
-      (entry) =>
-        entry.permalink !== prefix && entry.permalink.startsWith(prefix),
-    )
+    .filter((entry) => entry.permalink.startsWith(prefix))
     .sort((a, b) => (b.date ?? "").localeCompare(a.date ?? ""))
     .map((entry) => {
       const frontmatter = frontmatterBySlug.get(entry.slug) ?? {};
@@ -49,8 +48,6 @@ export function getBlogPosts(
         title: entry.title,
         description: asString(frontmatter.description),
         date: entry.date ?? undefined,
-        updated: asString(frontmatter.updated),
-        author: asString(frontmatter.author),
         category: asString(frontmatter.category),
         tags: entry.tags,
       };
@@ -87,7 +84,7 @@ export function getBlogIndexHeadTags(locale: WebLocale): PluginHeadTag[] {
     },
     {
       tag: "link",
-      attrs: { rel: "alternate", hreflang: "x-default", href: "/blog/" },
+      attrs: { rel: "alternate", hreflang: "x-default", href: "/blog" },
     },
   ];
 }

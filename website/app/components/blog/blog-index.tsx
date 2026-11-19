@@ -11,7 +11,7 @@ const copy = {
     title: "Blog",
     description:
       "Release notes, engineering deep dives, comparisons with other static site generators, and practical guides for publishing Markdown and Obsidian notes with Riebeckite.",
-    language: { href: "/ja/blog/", lang: "ja", label: "日本語" },
+    language: { href: "/ja/blog", lang: "ja", label: "日本語" },
     listLabel: "Blog posts",
     empty:
       "No posts yet. Release notes, tutorials, and engineering notes will appear here.",
@@ -20,7 +20,7 @@ const copy = {
     title: "ブログ",
     description:
       "Markdown と Obsidian のノートを Web サイトとして公開するための、リリース情報・技術記事・他ツールとの比較・実践ガイド。",
-    language: { href: "/blog/", lang: "en", label: "English" },
+    language: { href: "/blog", lang: "en", label: "English" },
     listLabel: "記事一覧",
     empty:
       "まだ記事はありません。リリース情報やチュートリアル、技術ノートを順次公開していきます。",
@@ -36,11 +36,15 @@ const copy = {
   }
 >;
 
+export const blogIndexCopy = copy;
+
 export function BlogIndex({ locale }: { locale: WebLocale }) {
   const site = useSiteContext();
   const t = copy[locale];
   const posts = site ? getBlogPosts(locale, site.view, site.manifest) : [];
   const taxonomy = site ? resolveTaxonomyOptionsFromConfig(site.config) : null;
+  const tagsBasePath =
+    (locale === "ja" ? "/ja" : "") + (taxonomy?.tagsBasePath ?? "/tags");
 
   return (
     <div class="rb-blog-index">
@@ -86,10 +90,7 @@ export function BlogIndex({ locale }: { locale: WebLocale }) {
                       <a
                         class="rb-blog-index__tag"
                         key={tag}
-                        href={buildTaxonomyTagHref(
-                          tag,
-                          taxonomy?.tagsBasePath ?? "/tags",
-                        )}
+                        href={buildTaxonomyTagHref(tag, tagsBasePath)}
                       >
                         #{tag}
                       </a>

@@ -60,6 +60,7 @@
 ## 執筆ルール
 
 - 記事のURLは `docs/blog/<slug>.md` のファイル名で決まる。変更する場合は旧URLに `aliases` frontmatter を残す。
+- `docs/blog/` には `README.md`・`index.md` を置かない。ブログ一覧ページは `website/app/routes/blog/index.tsx` が提供しており、`/blog` のコンテンツエントリを増やすと上書きして衝突する（`folderPages({ exclude: ["blog"] })` がフォルダ一覧の干渉を防いでいる）。
 - 下書きは `draft: true`。ビルド・一覧・検索・sitemap・RSSから自動で除外される。
 - 翻訳は `.ja.md` ペアファイルで作る。翻訳が存在しない記事に無理な言語切替を出さない。
 - 架空の計測・根拠のない優位性主張・他OSSへの不当な批判を書かない。比較は検証可能な事実に限る。

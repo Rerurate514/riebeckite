@@ -13,7 +13,7 @@ test("localizeSiteHref prefixes docs and blog links on localized pages", () => {
     localizeSiteHref("/docs/themes/", "/ja/docs/reference/"),
     "/ja/docs/themes/",
   );
-  assert.equal(localizeSiteHref("/blog/", "/ja/blog/"), "/ja/blog/");
+  assert.equal(localizeSiteHref("/blog", "/ja/blog"), "/ja/blog");
   assert.equal(
     localizeSiteHref("/blog/from-obsidian-vault/", "/ja/blog/some-post/"),
     "/ja/blog/from-obsidian-vault/",
@@ -22,7 +22,8 @@ test("localizeSiteHref prefixes docs and blog links on localized pages", () => {
 
 test("localizeSiteHref keeps default and external links unchanged", () => {
   assert.equal(localizeSiteHref("/docs/", "/docs/reference/"), "/docs/");
-  assert.equal(localizeSiteHref("/blog/", "/blog/"), "/blog/");
+  assert.equal(localizeSiteHref("/blog", "/blog"), "/blog");
+  assert.equal(localizeSiteHref("/blogging/x", "/ja/blog"), "/blogging/x");
   assert.equal(
     localizeSiteHref("https://github.com/Rerurate514/riebeckite", "/ja/docs/"),
     "https://github.com/Rerurate514/riebeckite",

@@ -1,5 +1,5 @@
 import { createRoute } from "honox/factory";
-import { BlogIndex } from "../../../components/blog/blog-index";
+import { BlogIndex, blogIndexCopy } from "../../../components/blog/blog-index";
 import { getBlogIndexHeadTags } from "../../../lib/blog";
 import { buildWebsiteSeo } from "../../../lib/seo";
 
@@ -10,10 +10,9 @@ export default createRoute((c) => {
     "seo",
     buildWebsiteSeo(
       {
-        title: "ブログ",
-        description:
-          "Markdown と Obsidian のノートを Web サイトとして公開するための、リリース情報・技術記事・他ツールとの比較・実践ガイド。",
-        path: "/ja/blog/",
+        title: blogIndexCopy.ja.title,
+        description: blogIndexCopy.ja.description,
+        path: "/ja/blog",
       },
       headTags,
       "ja",

@@ -25,6 +25,7 @@ import { PostByline } from "../components/blog/post-byline";
 import HomePage from "../components/home/home";
 import { ThemeDocumentationPreview } from "../components/theme-preview";
 import { getArticleTitle } from "../lib/article-title";
+import { isBlogPath } from "../lib/blog";
 import { renderHomeRuntime } from "../lib/home-runtime";
 import { resolveWebLocale } from "../lib/locale";
 import { buildArticleSeo, buildHomeSeo, buildWebsiteSeo } from "../lib/seo";
@@ -79,7 +80,7 @@ export default createRoute(
     const entry = resolved.entry;
     const locale = resolveWebLocale(getEntryLanguage(entry));
     const themeId = getThemeIdForDocsSlug(slug);
-    const isBlog = /^\/(?:ja\/)?blog\//.test(c.req.path);
+    const isBlog = isBlogPath(c.req.path);
 
     c.set(
       "seo",
@@ -99,7 +100,7 @@ export default createRoute(
         entry={entry}
         title={getArticleTitle(slug, resolved.post.frontmatter.title)}
         metadataLabels={
-          locale === "ja"
+          locale === "ja" && isBlog
             ? { published: "公開", updated: "更新", read: "読了", tags: "タグ" }
             : undefined
         }

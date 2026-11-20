@@ -44,7 +44,7 @@ The trade is the one Publish has, minus the price: someone else's platform, whos
 
 ## If you already run a server: Perlite
 
-[Perlite](https://github.com/secure-77/Perlite) inverts the problem: instead of converting a vault into a site, it serves the vault as it lies. It is a PHP application you place next to the vault folder — Docker image included — and it renders on request: graph, search, tags, Mermaid, LaTeX, Canvas, no build step. An October 2026 release rebuilt the image on a patched PHP base, which says good things about the maintenance.
+[Perlite](https://github.com/secure-77/Perlite) inverts the problem: instead of converting a vault into a site, it serves the vault as it lies. It is a PHP application you place next to the vault folder — Docker image included — and it renders on request: graph, search, tags, Mermaid, LaTeX, Canvas, no build step. An October 2026 release rebuilt the image on a patched PHP base, which says good things about its maintenance.
 
 What you give up is selectivity — the vault it points at is the website, all of it. The author's README is blunt about treating it as fully public and about blocking direct access to the `.md` files. With a vault that is public anyway, on hardware you control, nothing here is more direct.
 
@@ -85,7 +85,7 @@ If you want the same landscape as a tool-by-tool comparison — including mainte
 
 ### Is there a free way to publish Obsidian notes?
 
-Yes, but not through the official service. Obsidian Publish is $10 per month ($8 billed yearly); the free routes all go through community tools — Digital Garden, Quartz, Flowershow, Perlite, or Webpage Export. The list above is ordered by setup effort, so your route is the first one whose trade you accept.
+Yes, but not through the official service. Obsidian Publish is $10 per month ($8 billed yearly); the free routes all go through community tools — Digital Garden, Quartz, Flowershow, Perlite, or Webpage Export. The list above is ordered by setup effort, so your route is the first one whose trade you can accept.
 
 ### Is free hosting actually enough for a notes site?
 

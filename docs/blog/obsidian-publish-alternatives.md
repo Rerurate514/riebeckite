@@ -93,3 +93,21 @@ The caveat across all repository routes: whatever was once public stays in the g
 - Risk: hosted means someone else's roadmap; repo-based means your maintenance; dormant-but-recommended (ObsidianHtml) is the outcome the dates column protects you from.
 
 For the practical walkthrough of the free routes, start with [how to publish Obsidian notes for free](/blog/publish-obsidian-notes-for-free/). For the generator question specifically, we wrote [Quartz vs. Riebeckite](/blog/quartz-vs-riebeckite/) — the honest version, since we are the biased party for once.
+
+## Frequently asked questions
+
+### What is the best free alternative to Obsidian Publish?
+
+There is no single best, and any post claiming otherwise is selling something. Quartz is the standard for a whole-vault site; Digital Garden is the easiest selective publishing; Flowershow is the closest experience to Publish without the price; Perlite serves a fully public vault from your own server. Pick by what you want to avoid, not by feature count.
+
+### Are these alternatives still maintained?
+
+As of November 20, 2026 — active: Quartz (v5.1.0, November 2026), Digital Garden (2.103.0, October 2026), Flowershow (November 2026), Perlite (1.6.4, October 2026). Slow: Webpage Export, last release July 2025. Dormant but still recommended in roundups: ObsidianHtml, last tagged release May 2023.
+
+### Can I publish only some of my notes?
+
+With most tools, yes — the mechanics differ. Publish ticks notes in the app; Digital Garden publishes only `dg-publish: true` notes and never auto-publishes linked ones; Flowershow lets you choose in the plugin; Quartz publishes everything in the repository, so selectivity becomes a repository-architecture decision; Perlite serves the whole vault or nothing.
+
+### Why not just use Obsidian Publish?
+
+Its constraints, not its price: community plugins mostly do not work (Dataview does not render), a site is capped at 4 GB with 50 MB per file, and search is basic. For plain-Markdown notes those limits are invisible — which is exactly why Publish is right for some people and wrong for the Dataview crowd.

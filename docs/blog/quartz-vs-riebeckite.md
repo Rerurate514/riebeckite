@@ -49,3 +49,17 @@ Choose **Riebeckite** if the notes are feeding something app-shaped — a site w
 The cheapest advice we can give: try both for an hour. Quartz's `npx quartz create` and Riebeckite's `npx create-riebeckite` each produce a site in minutes, and the one that feels like *your* project is usually the one that survives the next three upgrades.
 
 For the wider field — including plugins, hosted platforms, and Obsidian Publish itself — see [Obsidian Publish alternatives, compared honestly](/blog/obsidian-publish-alternatives/), and for the practical free-publishing walkthrough, [how to publish Obsidian notes for free](/blog/publish-obsidian-notes-for-free/).
+
+## Frequently asked questions
+
+### What is the difference between Quartz and Riebeckite?
+
+Quartz is a static site generator you configure: content sits inside a Quartz repository, and the site's behavior is assembled through its configuration and component model. Riebeckite is a HonoX + TypeScript application that Markdown feeds into: routes, components, and pages are ordinary code, and the vault can live outside the site's repository. Both take Obsidian syntax in and put static files out.
+
+### Is Riebeckite free?
+
+Yes — open source under Apache-2.0, with no hosted tier. The current release is 0.1.0, published November 19, 2026, and before 1.0, minor versions may carry breaking changes. If stability is the deciding criterion today, that is a point for Quartz, and we say so in the article above.
+
+### Which one should I pick for a digital garden?
+
+For most vault-publishing projects, Quartz: the mature tool, the largest community, and a built-in feature set that already covers gardens. Riebeckite fits when the site is app-shaped — its own pages and components, bilingual publishing, a vault that stays where it is — and you accept a day-old 0.1.0 framework in exchange.

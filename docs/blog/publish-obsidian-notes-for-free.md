@@ -80,3 +80,21 @@ And one boundary to draw deliberately: what leaves the vault. The plugin approac
 - Reading this list was tiring — Obsidian Publish. $8–10 is a fair price for never doing any of the above.
 
 If you want the same landscape as a tool-by-tool comparison — including maintenance status, because the realistic risk of free tools is not the price but dormancy — continue to [Obsidian Publish alternatives](/blog/obsidian-publish-alternatives/).
+
+## Frequently asked questions
+
+### Is there a free way to publish Obsidian notes?
+
+Yes, but not through the official service. Obsidian Publish is $10 per month ($8 billed yearly); the free routes all go through community tools — Digital Garden, Quartz, Flowershow, Perlite, or Webpage Export. The list above is ordered by setup effort, so your route is the first one whose trade you accept.
+
+### Is free hosting actually enough for a notes site?
+
+Usually, yes. GitHub Pages allows a 1 GB site with 100 GB of monthly bandwidth as a soft limit, and text is tiny — a thousand notes is roughly 10 MB. Attachments are what count: a few hundred screenshots, or years of photos, are worth a round of arithmetic before you choose a host.
+
+### Does Obsidian Publish render Dataview?
+
+No. Per the official limitations, community plugins mostly do not work on Publish, and plugin-rendered blocks — Dataview first — do not render. If your notes depend on Dataview, publishing means a tool that reads the vault: the Digital Garden plugin lists Dataview (including dataviewjs) support in its README, and Riebeckite renders Dataview queries (DQL, not dataviewjs).
+
+### What breaks when a vault goes to the web?
+
+Three things, repeatedly: literal `obsidian://` links, which mean nothing in a browser (every tool above converts wikilinks instead); attachment resolution, which depends on where the file actually sits; and plugin-rendered blocks, which vary by tool. Publish one small note with one image first and check.

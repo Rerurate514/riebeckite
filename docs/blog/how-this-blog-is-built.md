@@ -10,28 +10,30 @@ tags:
   - markdown
 ---
 
-The announcement post says the blog exists. This one documents how, because the answer is short: with the pieces Riebeckite already had. If you expect a bespoke blog plugin or a CMS, there is none.
+This post documents how, because the answer is short: with the pieces Riebeckite already had. If you expect a bespoke blog plugin or a CMS, there is none.
 
 ## Posts are Markdown files with frontmatter
 
 Every post lives under `docs/blog/` in the site's content directory, next to the documentation it links to. A post is a single Markdown file whose filename defines its URL:
 
 ```text
-docs/blog/introducing-riebeckite-blog.md    → /blog/introducing-riebeckite-blog/
-docs/blog/introducing-riebeckite-blog.ja.md → /ja/blog/introducing-riebeckite-blog/
+docs/blog/quartz-vs-riebeckite.md    → /blog/quartz-vs-riebeckite/
+docs/blog/quartz-vs-riebeckite.ja.md → /ja/blog/quartz-vs-riebeckite/
 ```
 
 The `.ja.md` suffix is the site's existing localization convention; nothing blog-specific happens here. Frontmatter carries the metadata the list page and the article page read:
 
 ```yaml
 ---
-title: Introducing the Riebeckite Blog
-description: Why the Riebeckite website now has a blog.
+title: Quartz vs. Riebeckite
+description: Both turn Obsidian notes into websites, both are open source, and they agree on almost nothing else.
 date: 2026-11-20
-category: Updates
+category: Comparisons
 author: Rerurate_514
 tags:
-  - announcements
+  - quartz
+  - obsidian
+  - comparison
 ---
 ```
 

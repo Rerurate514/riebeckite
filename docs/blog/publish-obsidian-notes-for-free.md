@@ -12,7 +12,7 @@ tags:
 
 The official way to put Obsidian notes on the web is [Obsidian Publish](https://obsidian.md/publish): $10 per month, or $8 if you pay a year up front. It works, the Obsidian team maintains it, and if you never want to hear the words *Git* or *deploy*, it is a fair price. This post is for everyone else: the free routes, ordered roughly by how little setup each needs, followed by the two parts that introductions tend to skip — the real limits of free hosting, and the things that break on the way from a vault to a website.
 
-One disclosure first: this blog runs on Riebeckite, a framework we develop, and it appears in the list below. The order is setup effort, not preference.
+One disclosure first: this blog runs on Riebeckite, a framework I develop, and it appears in the list below. The order is setup effort, not preference.
 
 ## If you only need to share one note
 
@@ -21,6 +21,9 @@ Sharing is not publishing. When the whole task is "let one person read this note
 ## What the $8–10 actually buys
 
 Publish is one site with hosting included: up to 4 GB per site, a custom domain, customization via CSS and JavaScript, password protection, and priority email support. Readers get hover previews, a graph view, backlinks, and full-text search. Assembled by someone else, maintained by someone else.
+
+![The Obsidian Publish homepage](/assets/blog/obsidian-publish.png)
+*publish.obsidian.md (screenshot as of November 2026).*
 
 Read the [official limitations](https://help.obsidian.md/publish/limitations) before paying, for the sake of one line in particular: community plugins mostly do not work. Raw-markdown output is fine, but plugin-rendered blocks — Dataview above all — do not render, and site search is basic. If your notes are held together by Dataview, paying does not fix that; only a tool that reads your vault does. That constraint alone pushes even happily-paying people toward the free routes.
 
@@ -34,11 +37,17 @@ Two design decisions stand out. Linked notes are never auto-published: a publish
 
 [Quartz](https://quartz.jzhao.xyz/) is the default free answer by now. It turns a Markdown vault into a full site — search, graph, backlinks, popover previews, LaTeX, RSS, sitemap — and its parser is built around Obsidian syntax: wikilinks, transclusions, callouts, `![alt|300]` image sizes, Mermaid, and since v5 also Bases and Canvas files. [Version 5.1.0](https://github.com/jackyzha0/quartz/releases) arrived in November 2026, and the project is very much alive.
 
-What you accept in exchange is that it is a developer tool. Content lives inside a Quartz repository, configuration is TypeScript, Node 22 is required, and hosting is left to you — GitHub Pages, Cloudflare Pages, Vercel, and Netlify are all documented paths. Within a major version, `npx quartz update` is genuinely smooth. Across major versions it has historically demanded real work: v4 was a rewrite that stranded v3 sites, and our own v4-to-v5 move ended up closer to a rebuild than an upgrade — we go into that in [Quartz vs. Riebeckite](/blog/quartz-vs-riebeckite/), because it is the honest cost of a config-driven generator.
+![The Quartz homepage](/assets/blog/quartz-site.png)
+*quartz.jzhao.xyz (screenshot as of November 2026).*
+
+What you accept in exchange is that it is a developer tool. Content lives inside a Quartz repository, configuration is TypeScript, Node 22 is required, and hosting is left to you — GitHub Pages, Cloudflare Pages, Vercel, and Netlify are all documented paths. I used to publish my own notes with Quartz 4, so I can say this from experience: within a major version, `npx quartz update` is genuinely smooth. Across major versions it has historically demanded real work. v4 was a rewrite that stranded v3 sites, and my own v4-to-v5 move ended up closer to a rebuild than an upgrade — we go into that in [Quartz vs. Riebeckite](/blog/quartz-vs-riebeckite/), because it is the honest cost of a config-driven generator.
 
 ## No repository, no build: Flowershow's free plan
 
 The closest free thing to Publish itself is [Flowershow](https://flowershow.app/): a hosted platform you publish to straight from Obsidian — or by drag and drop, or from a CLI. The free plan is one site on a `flowershow.me` subdomain with an attribution footer; custom domains arrive with the premium tier at $5 per month. Obsidian support is real (wikilinks, Canvas, Bases, Mermaid, LaTeX, graph, backlinks), the project is active, and the AGPL-licensed core can be self-hosted if you outgrow hosting.
+
+![The Flowershow homepage](/assets/blog/flowershow.png)
+*flowershow.app (screenshot as of November 2026).*
 
 The trade is the one Publish has, minus the price: someone else's platform, whose free tier can change. For an experimental garden that is fine. For a site that is meant to last years, keep it in a repository you own.
 
@@ -74,7 +83,7 @@ And one boundary to draw deliberately: what leaves the vault. The plugin approac
 
 - No terminal, ideally no GitHub — Digital Garden, or Flowershow, or Forestry.md.
 - A content-first wiki, and TypeScript is fine — Quartz.
-- The site should be yours down to its pages and components — Riebeckite, ours; the honest version of that pitch is in [Quartz vs. Riebeckite](/blog/quartz-vs-riebeckite/).
+- The site should be yours down to its pages and components — Riebeckite, mine; the honest version of that pitch is in [Quartz vs. Riebeckite](/blog/quartz-vs-riebeckite/).
 - A fully public vault on your own server — Perlite.
 - An archive more than a garden — Webpage Export.
 - Reading this list was tiring — Obsidian Publish. $8–10 is a fair price for never doing any of the above.

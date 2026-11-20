@@ -10,7 +10,7 @@ tags:
   - comparison
 ---
 
-Search for Obsidian Publish alternatives and you will find the same article several times over: Publish is somehow "expensive," followed by a list of free tools that all sound equally fine. This post is our attempt at the version we wanted to read — and since it runs on the official Riebeckite blog, and Riebeckite is one of the tools in it, every fact below was checked against official pages and release notes on November 20, 2026, and the biases are marked. If you find an error, [tell us](https://github.com/Rerurate514/riebeckite/issues) and we will correct it.
+Search for Obsidian Publish alternatives and you will find the same article several times over: Publish is somehow "expensive," followed by a list of free tools that all sound equally fine. This post is my attempt at the version I wanted to read — and since it runs on the official Riebeckite blog, and Riebeckite is one of the tools in it, every fact below was checked against official pages and release notes on November 20, 2026, and the biases are marked. If you find an error, [tell me](https://github.com/Rerurate514/riebeckite/issues) and I will correct it.
 
 ## When Publish is the right answer
 
@@ -34,11 +34,13 @@ That last point is the real boundary. Per the [official limitations](https://hel
 | Perlite | self-hosted PHP viewer | MIT | 1.6.4, Oct 2026 | none — the whole vault is served | free |
 | Webpage Export | HTML export plugin | MIT | 1.9.2, Jul 2025 | you pick files at export time | free |
 | ObsidianHtml | Python converter | GPL-3.0 | v3.5.2, May 2023 | unverified — see below | free |
-| Riebeckite | site framework (ours) | Apache-2.0 | 0.1.0, Nov 2026 | per-note flags, folder excludes | free |
+| Riebeckite | site framework (mine) | Apache-2.0 | 0.1.0, Nov 2026 | per-note flags, folder excludes | free |
+
+The column I care about most is Last release, for the record. More on that below.
 
 ### Quartz
 
-The mature default, with the largest community of the free tools (about 13.6k stars) and a November 2026 release. A vault becomes a git repository, a TypeScript configuration, and a build that outputs a full site — search, graph, backlinks, Obsidian syntax including Bases and Canvas as of v5. The trade is developer-shaped: Node 22, config as code, and major versions that have historically demanded real migration work — v3 sites could not upgrade to v4, and our own v4→v5 move was closer to a rebuild. If you want the deepest take on that trade, it is the subject of [Quartz vs. Riebeckite](/blog/quartz-vs-riebeckite/).
+The mature default, with the largest community of the free tools (about 13.6k stars) and a November 2026 release. A vault becomes a git repository, a TypeScript configuration, and a build that outputs a full site — search, graph, backlinks, Obsidian syntax including Bases and Canvas as of v5. The trade is developer-shaped: Node 22, config as code, and major versions that have historically demanded real migration work — v3 sites could not upgrade to v4, and my own v4→v5 move was closer to a rebuild. If you want the deepest take on that trade, it is the subject of [Quartz vs. Riebeckite](/blog/quartz-vs-riebeckite/).
 
 ### Digital Garden
 
@@ -58,11 +60,11 @@ The `webpage-html-export` plugin exports single files, canvas pages, or the whol
 
 ### ObsidianHtml
 
-Listed here only because it still appears in recommendation roundup posts — which is exactly why it belongs in an honest comparison. The last tagged release is v3.5.2 from May 2023, and the repository's last activity dates to mid-2025. If a roundup recommends it without dates, treat the rest of that roundup accordingly. (GPL-3.0, Python, converts notes to Markdown or an HTML site.)
+Listed here only because it still appears in recommendation roundup posts — which, honestly, is exactly why this post exists. The last tagged release is v3.5.2 from May 2023, and the repository's last activity dates to mid-2025. If a roundup recommends it without dates, treat the rest of that roundup accordingly. (GPL-3.0, Python, converts notes to Markdown or an HTML site.)
 
 ### Riebeckite
 
-Ours, so the constraints first: version 0.1.0, released November 19, 2026 — a day-old project by the standards of this table. Before 1.0, minor versions may carry breaking changes; the community is small; the number of sites running it in the wild is correspondingly small. The idea it sells instead: your site is a plain HonoX/TypeScript application that Markdown feeds into, not a configuration file driving a generator. The vault can live outside the site repository, pages and components are ordinary code, and a plugin set covering roughly seventy capabilities — Obsidian syntax (wikilinks, embeds, callouts, inline tags), Dataview queries (DQL, not dataviewjs), search, backlinks, graph, tags, and full English/Japanese publishing — installs from npm. The full argument for and against is [in its own post](/blog/quartz-vs-riebeckite/).
+Mine, so the constraints first: version 0.1.0, released November 19, 2026 — a day-old project by the standards of this table. Before 1.0, minor versions may carry breaking changes; the community is small; the number of sites running it in the wild is correspondingly small. The idea it sells instead: your site is a plain HonoX/TypeScript application that Markdown feeds into, not a configuration file driving a generator. The vault can live outside the site repository, pages and components are ordinary code, and a plugin set covering roughly seventy capabilities — Obsidian syntax (wikilinks, embeds, callouts, inline tags), Dataview queries (DQL, not dataviewjs), search, backlinks, graph, tags, and full English/Japanese publishing — installs from npm. The full argument for and against is [in its own post](/blog/quartz-vs-riebeckite/).
 
 ## The risk nobody prices in: dormancy
 
@@ -92,13 +94,13 @@ The caveat across all repository routes: whatever was once public stays in the g
 - Time: a plugin route is an evening; a generator is an evening plus upgrades forever after; a platform is an hour plus dependence; Publish is none of those.
 - Risk: hosted means someone else's roadmap; repo-based means your maintenance; dormant-but-recommended (ObsidianHtml) is the outcome the dates column protects you from.
 
-For the practical walkthrough of the free routes, start with [how to publish Obsidian notes for free](/blog/publish-obsidian-notes-for-free/). For the generator question specifically, we wrote [Quartz vs. Riebeckite](/blog/quartz-vs-riebeckite/) — the honest version, since we are the biased party for once.
+For the practical walkthrough of the free routes, start with [how to publish Obsidian notes for free](/blog/publish-obsidian-notes-for-free/). For the generator question specifically, I wrote [Quartz vs. Riebeckite](/blog/quartz-vs-riebeckite/) — the honest version, since I am the biased party for once.
 
 ## Frequently asked questions
 
 ### What is the best free alternative to Obsidian Publish?
 
-There is no single best, and any post claiming otherwise is selling something. Quartz is the standard for a whole-vault site; Digital Garden is the easiest selective publishing; Flowershow is the closest experience to Publish without the price; Perlite serves a fully public vault from your own server. Pick by what you want to avoid, not by feature count.
+There is no single best, and any post claiming otherwise is usually selling something. Quartz is the standard for a whole-vault site; Digital Garden is the easiest selective publishing; Flowershow is the closest experience to Publish without the price; Perlite serves a fully public vault from your own server. Pick by what you want to avoid, not by feature count.
 
 ### Are these alternatives still maintained?
 

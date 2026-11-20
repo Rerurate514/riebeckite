@@ -36,6 +36,7 @@ export function alias(options: AliasOptions = {}) {
     extendContentLocations: (context) => {
       applyAliases(context, resolved);
     },
+    developmentRouteCache: { version: "alias-route-v1" },
   });
 }
 

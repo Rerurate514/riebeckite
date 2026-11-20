@@ -54,6 +54,18 @@ export default defineConfig({
       ssg: { concurrency: 8 },
     }),
     {
+      name: "riebeckite-website:dev-warmup",
+      apply: "serve",
+      configureServer(server) {
+        setTimeout(() => {
+          const { host, port } = server.config.server;
+          fetch(`http://${host}:${port}/`)
+            .then(() => undefined)
+            .catch(() => undefined);
+        }, 3000);
+      },
+    },
+    {
       name: "riebeckite-website:build-images",
       apply: "serve",
       configureServer() {

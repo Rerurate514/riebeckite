@@ -44,6 +44,7 @@ pnpm test:plugin-dx:external   # packed tarball を隔離 Site へ install し�
 | コマンド | 内容 |
 | --- | --- |
 | `pnpm test` | `test` スクリプトを持つすべてのパッケージをテストする |
+| `pnpm coverage` | パッケージのテストをカバレッジ付きで実行する。CI では行・文が70%以上、関数が65%以上、分岐が78%以上であることを必須とする。 |
 | `pnpm --filter <package> test` | 特定のパッケージだけをテストする |
 | `pnpm test:update` | すべての Golden File を現在の出力で更新する |
 | `pnpm test:e2e:external` | External Site E2E を実行する |

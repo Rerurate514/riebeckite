@@ -42,6 +42,7 @@ distribute.
 |Command|What it does|
 |---|---|
 |`pnpm test`|Run every package that defines a `test` script (`pnpm -r test`)|
+|`pnpm coverage`|Run package tests with coverage. CI requires at least 70% lines and statements, 65% functions, and 78% branches.|
 |`pnpm --filter @riebeckite/plugin-toc test`|Run one package's tests|
 |`pnpm test:update`|Rewrite every golden file with the current output|
 |`pnpm test:e2e:external`|Run the external-site integration suite|

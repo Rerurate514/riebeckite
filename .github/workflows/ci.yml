@@ -134,7 +134,7 @@ jobs:
           name: package-dist-${{ github.sha }}
           path: .
       - run: pnpm ci:build-artifact verify
-      - run: pnpm -r --workspace-concurrency=1 test
+      - run: pnpm coverage
       - run: pnpm --filter @riebeckite/plugin-navigation test:browser
       - run: pnpm --filter @riebeckite/plugin-toc test:browser:required
       - run: pnpm --filter @riebeckite/cli test:integration

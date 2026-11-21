@@ -38,7 +38,7 @@
     "typecheck": "node scripts/typecheck_packages.mjs",
     "release": "node scripts/release.mjs",
     "test": "pnpm -r test",
-    "coverage": "c8 --all --src packages --exclude \"**/dist/**\" --exclude \"**/node_modules/**\" --exclude \"**/test/**\" --exclude \"**/*.test.*\" --exclude \"**/.riebeckite/**\" --reporter=text-summary --reporter=json-summary pnpm -r test",
+    "coverage": "c8 --all --merge-async --check-coverage --lines 70 --statements 70 --functions 65 --branches 78 --src packages --exclude \"**/dist/**\" --exclude \"**/node_modules/**\" --exclude \"**/test/**\" --exclude \"**/*.test.*\" --exclude \"**/.riebeckite/**\" --reporter=text-summary --reporter=json-summary pnpm -r --workspace-concurrency=1 test",
     "coverage:report": "c8 report --all --src packages --exclude \"**/dist/**\" --exclude \"**/node_modules/**\" --exclude \"**/test/**\" --exclude \"**/*.test.*\" --exclude \"**/.riebeckite/**\" --reporter=text",
     "test:docs": "node --test scripts/sync_plugin_docs.test.mjs scripts/check_plugin_docs_parity.test.mjs scripts/sync_theme_docs.test.mjs",
     "test:release": "node --test scripts/release.test.mjs",

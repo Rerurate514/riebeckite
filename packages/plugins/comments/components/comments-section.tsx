@@ -15,7 +15,7 @@ const CommentsSection = (({
 }: Readonly<CommentsSectionProps>) => {
   return (
     <section class={className} data-rr-comments aria-label="Comments">
-      <div class="giscus" />
+      <div class="rr-comments__thread" data-rr-comments-thread />
       <noscript>
         <p class="rr-comments__noscript">Comments require JavaScript.</p>
       </noscript>

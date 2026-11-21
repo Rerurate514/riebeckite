@@ -1,8 +1,35 @@
+import type { ConfigValidationIssue, JsonValue } from "@riebeckite/core";
+
+export type CommentsClientEntry = {
+  readonly moduleSpecifier: string;
+  readonly exportName: string;
+};
+
+export type CommentsProvider = {
+  readonly name: string;
+  readonly client: CommentsClientEntry;
+  readonly publicConfig: JsonValue;
+  readonly validateOptions?: () => readonly ConfigValidationIssue[];
+};
+
+export type CommentsInitializer<TConfig = JsonValue> = (
+  config: TConfig,
+) => void;
+
+export type CommentsOptions = {
+  provider: CommentsProvider;
+  className?: string;
+};
+
+export type ResolvedCommentsOptions = {
+  className: string;
+};
+
 export type GiscusMapping = "pathname" | "url" | "title" | "og:title";
 
 export type GiscusInputPosition = "top" | "bottom";
 
-export type CommentsOptions = {
+export type GiscusOptions = {
   repo: string;
   repoId: string;
   category: string;
@@ -13,10 +40,9 @@ export type CommentsOptions = {
   inputPosition?: GiscusInputPosition;
   theme?: string;
   lang?: string;
-  className?: string;
 };
 
-export type ResolvedCommentsOptions = {
+export type ResolvedGiscusOptions = {
   repo: string;
   repoId: string;
   category: string;
@@ -27,10 +53,9 @@ export type ResolvedCommentsOptions = {
   inputPosition: GiscusInputPosition;
   theme: string;
   lang: string;
-  className: string;
 };
 
-export type CommentsPublicConfig = {
+export type GiscusPublicConfig = {
   repo: string;
   repoId: string;
   category: string;

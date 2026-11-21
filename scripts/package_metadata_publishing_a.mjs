@@ -173,8 +173,9 @@ export const PUBLISHING_METADATA_A = {
     keywords: ["riebeckite", "plugin", "theme", "color-mode", "dark-mode"],
   },
   "packages/plugins/comments": {
-    description: "Giscus comment threads for Riebeckite pages.",
-    keywords: ["riebeckite", "plugin", "comments", "giscus", "github-discussions"],
+    description:
+      "Comment threads for Riebeckite pages with pluggable providers.",
+    keywords: ["riebeckite", "plugin", "comments", "giscus", "provider"],
   },
   "packages/plugins/d2": {
     description: "D2 diagram rendering for Riebeckite code blocks.",

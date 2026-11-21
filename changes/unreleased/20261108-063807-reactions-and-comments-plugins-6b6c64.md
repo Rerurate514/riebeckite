@@ -17,5 +17,6 @@ plugins that bring Zenn/Qiita-style engagement to published notes. Reactions
 renders emoji reaction buttons (👍 ❤️ 🎉 💡 🤔) with counts and is backed by
 pluggable providers, plus production adapters for Cloudflare D1
 (`@riebeckite/reactions-cloudflare`) and GitHub Discussions
-(`@riebeckite/reactions-github`). Comments embeds a Giscus thread on GitHub
-Discussions, so posting, sign-in, and moderation stay with GitHub.
+(`@riebeckite/reactions-github`). Comments renders a provider-mounted thread
+below articles; its built-in Giscus provider embeds GitHub Discussions, so
+posting, sign-in, and moderation stay with GitHub.

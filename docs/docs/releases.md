@@ -23,8 +23,9 @@ The Unreleased section lists changes that are merged but not yet published to np
   renders emoji reaction buttons (👍 ❤️ 🎉 💡 🤔) with counts and is backed by
   pluggable providers, plus production adapters for Cloudflare D1
   (`@riebeckite/reactions-cloudflare`) and GitHub Discussions
-  (`@riebeckite/reactions-github`). Comments embeds a Giscus thread on GitHub
-  Discussions, so posting, sign-in, and moderation stay with GitHub.
+  (`@riebeckite/reactions-github`). Comments renders a provider-mounted thread
+  below articles; its built-in Giscus provider embeds GitHub Discussions, so
+  posting, sign-in, and moderation stay with GitHub.
   Packages: `@riebeckite/plugin-reactions`, `@riebeckite/plugin-comments`, `@riebeckite/reactions-cloudflare`, `@riebeckite/reactions-github`
 
 - Add `navigation({ exclude })` to omit slug paths and their descendants from derived navigation.

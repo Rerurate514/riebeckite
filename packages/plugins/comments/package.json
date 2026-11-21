@@ -58,13 +58,13 @@
   "bugs": {
     "url": "https://github.com/Rerurate514/riebeckite/issues"
   },
-  "description": "Giscus comment threads for Riebeckite pages.",
+  "description": "Comment threads for Riebeckite pages with pluggable providers.",
   "keywords": [
     "riebeckite",
     "plugin",
     "comments",
     "giscus",
-    "github-discussions"
+    "provider"
   ],
   "engines": {
     "node": "^20.19.0 || >=22.12.0"

@@ -1,1 +1,1 @@
-export { initComments } from "./src/init.js";
+export { initGiscusComments } from "./src/giscus/client.js";

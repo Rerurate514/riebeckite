@@ -15,6 +15,7 @@ export {
   DEFAULT_COMMENTS_EMPTY_TEXT,
   DEFAULT_COMMENTS_HEADING_TEXT,
   DEFAULT_COMMENTS_LIMIT,
+  DEFAULT_COMMENTS_LOCALE,
   resolveCommentsOptions,
   validateCommentsOptions,
 } from "./src/options.js";

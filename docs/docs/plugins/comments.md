@@ -44,6 +44,7 @@ export default defineConfig({
 | `className` | `string` | `"rr-comments"` | Root CSS class of the rendered section. |
 | `limit` | `number` | `20` | Maximum comments rendered per note. |
 | `emptyText` | `string` | `"No comments yet."` | Text shown when there are no comments. |
+| `locale` | `string` | `"en-US"` | Locale used to format comment timestamps. |
 
 ## Rendering
 
@@ -57,8 +58,17 @@ import { ArticleCommentsSection } from "@riebeckite/plugin-comments";
 
 `ArticleCommentsSection` resolves the plugin options from the Site config, reads
 the current article's `contentId`, and renders nothing outside an article or
-when no `provider` is configured. Pass `headingText`, `className`, or
-`emptyText` to override the configured values for one placement.
+when no `provider` is configured. Pass `headingText`, `className`, `emptyText`,
+or `locale` to override the configured values for one placement.
+
+The `contentId` comes from the optional `id` field in the note's frontmatter, so
+notes without an `id` render no comments:
+
+```yaml
+---
+id: obsidian-cloudflare
+---
+```
 
 To render the markup yourself, fetch the page and pass it to `CommentsSection`:
 

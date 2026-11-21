@@ -52,6 +52,15 @@ current article's `contentId`, and renders nothing outside an article or when no
 `provider` is configured. Buttons are disabled unless `endpoint` and
 `resolveVisitorKey` are configured, so counts are display-only by default.
 
+The `contentId` comes from the optional `id` field in the note's frontmatter, so
+notes without an `id` render no reactions:
+
+```yaml
+---
+id: obsidian-cloudflare
+---
+```
+
 To render the markup yourself, call the provider and use the `Reactions`
 component directly:
 

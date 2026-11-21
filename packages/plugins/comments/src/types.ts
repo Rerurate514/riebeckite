@@ -27,6 +27,7 @@ export type CommentsOptions = {
   className?: string;
   limit?: number;
   emptyText?: string;
+  locale?: string;
 };
 
 export type ResolvedCommentsOptions = {
@@ -35,4 +36,5 @@ export type ResolvedCommentsOptions = {
   className: string;
   limit: number;
   emptyText: string;
+  locale: string;
 };

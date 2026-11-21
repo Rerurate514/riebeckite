@@ -8,6 +8,7 @@ import {
   DEFAULT_COMMENTS_EMPTY_TEXT,
   DEFAULT_COMMENTS_HEADING_TEXT,
   DEFAULT_COMMENTS_LIMIT,
+  DEFAULT_COMMENTS_LOCALE,
   resolveCommentsOptions,
   validateCommentsOptions,
 } from "../src/options.js";
@@ -37,6 +38,7 @@ test("resolveCommentsOptions applies defaults", () => {
   assert.equal(resolved.className, DEFAULT_COMMENTS_CLASS_NAME);
   assert.equal(resolved.limit, DEFAULT_COMMENTS_LIMIT);
   assert.equal(resolved.emptyText, DEFAULT_COMMENTS_EMPTY_TEXT);
+  assert.equal(resolved.locale, DEFAULT_COMMENTS_LOCALE);
 });
 
 test("validateCommentsOptions rejects invalid limit", () => {
@@ -49,6 +51,12 @@ test("validateCommentsOptions rejects invalid provider", () => {
   const issues = validateCommentsOptions({ provider: {} as never });
   assert.equal(issues.length, 1);
   assert.equal(issues[0].path, "provider");
+});
+
+test("validateCommentsOptions rejects empty locale", () => {
+  const issues = validateCommentsOptions({ locale: " " });
+  assert.equal(issues.length, 1);
+  assert.equal(issues[0].path, "locale");
 });
 
 test("MemoryCommentsProvider returns empty page for unknown content", async () => {
@@ -74,6 +82,7 @@ test("CommentsSection renders heading and comments", () => {
   assert.ok(html.includes("Great post!"));
   assert.ok(html.includes("Alice"));
   assert.ok(html.includes('data-comment-id="c1"'));
+  assert.ok(html.includes(">01/01/2026</time>"));
 });
 
 test("CommentsSection renders empty state", () => {

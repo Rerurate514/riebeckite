@@ -45,6 +45,14 @@ import { ArticleReactions } from "@riebeckite/plugin-reactions";
 
 `ArticleReactions` はサイト設定からプラグインのオプションを解決し、現在の記事の `contentId` を読み取ります。記事のコンテキスト外、または `provider` が設定されていない場合は何も描画しません。`endpoint` と `resolveVisitorKey` がそろっていない場合、ボタンは無効のまま表示専用になります。
 
+`contentId` はノートの frontmatter の任意フィールド `id` から決まります。`id` のないノートにはリアクションを描画しません。
+
+```yaml
+---
+id: obsidian-cloudflare
+---
+```
+
 マークアップを自分で組み立てる場合は、プロバイダーを呼び出して `Reactions` コンポーネントへ渡します。
 
 ```tsx

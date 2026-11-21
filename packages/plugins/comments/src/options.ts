@@ -6,6 +6,7 @@ export const DEFAULT_COMMENTS_HEADING_TEXT = "Comments";
 export const DEFAULT_COMMENTS_CLASS_NAME = "rr-comments";
 export const DEFAULT_COMMENTS_LIMIT = 20;
 export const DEFAULT_COMMENTS_EMPTY_TEXT = "No comments yet.";
+export const DEFAULT_COMMENTS_LOCALE = "en-US";
 
 export function resolveCommentsOptions(
   options: CommentsOptions = {},
@@ -25,6 +26,7 @@ export function resolveCommentsOptions(
       options.emptyText,
       DEFAULT_COMMENTS_EMPTY_TEXT,
     ),
+    locale: normalizeNonEmpty(options.locale, DEFAULT_COMMENTS_LOCALE),
   };
 }
 
@@ -42,7 +44,12 @@ export function validateCommentsOptions(
     });
   }
 
-  for (const key of ["headingText", "className", "emptyText"] as const) {
+  for (const key of [
+    "headingText",
+    "className",
+    "emptyText",
+    "locale",
+  ] as const) {
     const value = options[key];
     if (
       value !== undefined &&

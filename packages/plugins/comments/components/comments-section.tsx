@@ -1,6 +1,9 @@
 import { type PluginSiteComponent, resolvePlugins } from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
-import { resolveCommentsOptions } from "../src/options.js";
+import {
+  DEFAULT_COMMENTS_LOCALE,
+  resolveCommentsOptions,
+} from "../src/options.js";
 import type { CommentsOptions, CommentsPage } from "../src/types.js";
 import { isSafeImageUrl, isSafeLinkUrl } from "../src/url.js";
 
@@ -9,6 +12,7 @@ export type CommentsSectionProps = {
   readonly headingText?: string;
   readonly className?: string;
   readonly emptyText?: string;
+  readonly locale?: string;
 };
 
 const CommentsSection = (({
@@ -16,6 +20,7 @@ const CommentsSection = (({
   headingText = "Comments",
   className = "rr-comments",
   emptyText = "No comments yet.",
+  locale = DEFAULT_COMMENTS_LOCALE,
 }: Readonly<CommentsSectionProps>) => {
   return (
     <section
@@ -65,7 +70,7 @@ const CommentsSection = (({
                     </span>
                   )}
                   <time class="rr-comments__time" datetime={comment.createdAt}>
-                    {comment.createdAt}
+                    {formatCommentDate(comment.createdAt, locale)}
                   </time>
                 </div>
                 {commentUrl ? (
@@ -110,8 +115,20 @@ export async function ArticleCommentsSection(
       headingText={props.headingText ?? resolved.headingText}
       className={props.className ?? resolved.className}
       emptyText={props.emptyText ?? resolved.emptyText}
+      locale={props.locale ?? resolved.locale}
     />
   );
+}
+
+function formatCommentDate(value: string, locale: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat(locale, {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: "UTC",
+  }).format(date);
 }
 
 function findCommentsOptions(

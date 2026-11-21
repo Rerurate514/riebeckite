@@ -40,6 +40,7 @@ export default defineConfig({
 | `className` | `string` | `"rr-comments"` | 表示するセクションのルート CSS クラス。 |
 | `limit` | `number` | `20` | 1ノートに表示するコメントの上限。 |
 | `emptyText` | `string` | `"No comments yet."` | コメントがないときの文言。 |
+| `locale` | `string` | `"en-US"` | コメントの投稿日時の表示に使うロケール。 |
 
 ## 表示
 
@@ -51,7 +52,15 @@ import { ArticleCommentsSection } from "@riebeckite/plugin-comments";
 <ArticleCommentsSection />;
 ```
 
-`ArticleCommentsSection` はサイト設定からプラグインのオプションを解決し、現在の記事の `contentId` を読み取ります。記事のコンテキスト外、または `provider` が設定されていない場合は何も描画しません。`headingText`、`className`、`emptyText` を渡すと、その配置だけ設定値を上書きできます。
+`ArticleCommentsSection` はサイト設定からプラグインのオプションを解決し、現在の記事の `contentId` を読み取ります。記事のコンテキスト外、または `provider` が設定されていない場合は何も描画しません。`headingText`、`className`、`emptyText`、`locale` を渡すと、その配置だけ設定値を上書きできます。
+
+`contentId` はノートの frontmatter の任意フィールド `id` から決まります。`id` のないノートにはコメントを描画しません。
+
+```yaml
+---
+id: obsidian-cloudflare
+---
+```
 
 マークアップを自分で組み立てる場合は、ページを取得して `CommentsSection` へ渡します。
 

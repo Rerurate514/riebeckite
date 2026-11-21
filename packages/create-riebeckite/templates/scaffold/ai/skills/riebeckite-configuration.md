@@ -1,6 +1,6 @@
 ---
 name: riebeckite-configuration
-description: Use when changing riebeckite.config.ts, content locations, or deployment settings.
+description: Use when changing Riebeckite site configuration, scripts, content paths, or integration settings.
 riebeckiteVersion: "{{riebeckite-version}}"
 ---
 
@@ -8,9 +8,12 @@ riebeckiteVersion: "{{riebeckite-version}}"
 
 Read `references/guide.md` and complete `assets/checklist.md`.
 
-1. Read `riebeckite.config.ts`, package scripts, content root, deployment files, and active extensions before proposing a change.
-2. Change the smallest relevant setting. Do not add a Plugin, Theme, environment variable, or provider without a concrete requirement.
-3. Preserve unknown fields and project ordering. Verify every path against the project root and external-content boundary.
-4. Keep development settings separate from publication settings. Never put secrets in source, commands, or generated documentation.
-5. Run `npm run check` and `npm run build`. Inspect routes and output when changing URLs, locales, publishing, or content locations.
-6. Report the effective setting, affected environments, validation result, rollback path, and remaining deployment risk.
+1. Inspect `riebeckite.config.ts`, `package.json`, the content directory, deployment files, and installed extensions.
+2. Identify the smallest setting that solves the need. Prefer an existing option over a new abstraction or script.
+3. Preserve unknown configuration fields and unrelated settings.
+4. Check path, locale, base URL, publish strategy, and extension changes for route or publication impact.
+5. Keep secrets in environment variables or the provider's secret store. Report names only.
+6. Update the configuration in the project's existing style and keep TypeScript types valid.
+7. Run `npm run check`; run `npm run build` when paths, routes, extensions, or deployment output changed.
+8. Use `npm exec riebeckite inspect config` to confirm the resolved values when behaviour is unclear.
+9. Report the changed setting, reason, validation results, and any migration or deployment implication.

@@ -1,10 +1,15 @@
-# riebeckite-content-migration checklist
+# Content migration checklist
 
-- [ ] Define the source set, transformation, expected routes, and rollback method.
-- [ ] Inspect representative files and preserve unrelated frontmatter and Markdown.
-- [ ] Use the documented frontmatter transformer or produce a dry run for custom work.
-- [ ] Check links, embeds, aliases, redirects, locales, and publication before route-affecting changes.
-- [ ] Apply a small reversible batch and record exclusions.
-- [ ] Run `npm run check` after each batch and `npm run build` before completion.
-- [ ] Inspect routes, redirects, publication state, and unresolved links.
-- [ ] Report scope, route impact, validation, exclusions, and rollback path.
+- [ ] Record the exact source set, transformation, exclusions, and rollback path.
+- [ ] Inspect the project's frontmatter, link, and formatting conventions.
+- [ ] Determine `filters.publishStrategy` and each affected page's visibility.
+- [ ] Preserve unknown frontmatter keys and unrelated content.
+- [ ] Use `@riebeckite/plugin-frontmatter-transformer` for supported bulk changes.
+- [ ] If scripting, dry-run first and write only the declared source set.
+- [ ] List old/new URLs, inbound links, embeds, aliases, and redirects.
+- [ ] Apply one small reversible batch at a time.
+- [ ] Run `npm run check` after each batch.
+- [ ] Run `npm run build` before completion.
+- [ ] Inspect routes, redirects, publication, feeds, sitemap, and unresolved links.
+- [ ] Restore and replan at the first unexpected result.
+- [ ] Report scope, exclusions, route impact, validation, and rollback path.

@@ -1,18 +1,20 @@
 ---
 name: riebeckite-plugin-catalog
-description: Use when deciding whether to add an official Riebeckite plugin or which plugin to add.
+description: Use before writing local code for a reusable Riebeckite feature, to find and evaluate an official Plugin.
 riebeckiteVersion: "{{riebeckite-version}}"
 ---
 
-# Plugin selection workflow
+# Official Plugin selection workflow
 
 Read `references/guide.md` and complete `assets/checklist.md`.
 
-1. State the requested capability, affected content, and whether it needs build-time, browser, or server behavior.
-2. Inspect `riebeckite.config.ts` and installed `@riebeckite/plugin-*` packages before proposing a dependency.
-3. Consult the official catalog before writing a local implementation, using MCP `riebeckite_plugin_catalog` when available. Prefer one existing Plugin over custom code when it owns the requested behavior.
-4. Compare candidates for their content syntax, generated routes or assets, browser/runtime requirements, and compatibility with installed Plugins.
-5. Read the selected Plugin's reference before installing it; do not infer its API from its package name.
-6. Install the package and register only the chosen factory in `plugins`. Keep its options minimal and explicit.
-7. Run `npm run check` and `npm run build`; inspect affected pages or browser behavior when applicable.
-8. Report the selected Plugin, rejected alternatives, configuration change, validation result, and any required content migration.
+1. State the capability in one sentence, including the content or route it must affect and whether it needs build-time output or runtime interaction.
+2. Inspect `riebeckite.config.ts` and `package.json` for existing Plugins, Themes, local extensions, and overlapping capabilities.
+3. Consult the official catalog before writing local code. When MCP is connected, call `riebeckite_plugin_catalog` with a short capability query. Otherwise use <https://riebeckite.dev/docs/plugins/>.
+4. Compare candidates by supported input, output shape, configuration syntax, required companion packages, route or asset impact, and maintenance status.
+5. Choose the narrowest Plugin that satisfies the need. Do not add a broad bundle for one feature.
+6. Read the candidate's current documentation and version requirements. Do not rely on a remembered API or an old example.
+7. Install only the required package and register it with the project's existing configuration pattern.
+8. Run `npm run check` and `npm run build`; inspect the affected content, route, and assets.
+9. If no catalog Plugin fits, report the gap and explain why local Plugin or application code is the next option. Do not silently build a duplicate.
+10. Report the capability, candidates considered, chosen package and version, configuration changes, and verification results.

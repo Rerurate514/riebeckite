@@ -1,9 +1,15 @@
-# riebeckite-troubleshooting checklist
+# Troubleshooting checklist
 
-- [ ] Capture command, expected result, observed result, source, and first diagnostic.
-- [ ] Reproduce the failure before changing files.
-- [ ] Run `npm run doctor` and `npm run check`.
-- [ ] Classify the owning layer and make the smallest root-cause fix.
-- [ ] Verify the original reproduction and the narrowest relevant check.
-- [ ] Run `npm run build` if output behavior changed.
-- [ ] Report cause, evidence, validation, and unverified environment dependencies.
+- [ ] Capture the exact command, full error, project root, and versions.
+- [ ] Identify recent changes and whether the failure is local, CI, or deployed.
+- [ ] Reproduce with the smallest failing command.
+- [ ] Run `npm run check`.
+- [ ] Run `npm run doctor`.
+- [ ] Run `npm exec riebeckite inspect config` when paths or resolved values are unclear.
+- [ ] Run `npm exec riebeckite inspect content --list` before link/embed diagnosis.
+- [ ] Classify the failure before editing.
+- [ ] Test one hypothesis at a time.
+- [ ] Fix the shared root cause, not only the first symptom.
+- [ ] Do not disable checks or suppress diagnostics to pass.
+- [ ] Re-run the failing command and a broader check/build.
+- [ ] Report cause, evidence, changes, verification, and remaining risk.

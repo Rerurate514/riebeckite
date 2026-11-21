@@ -1,6 +1,6 @@
 ---
 name: riebeckite-troubleshooting
-description: Use when a Riebeckite command, build, publication state, or link is failing.
+description: Use when a Riebeckite check, build, preview, or content resolution fails.
 riebeckiteVersion: "{{riebeckite-version}}"
 ---
 
@@ -8,9 +8,13 @@ riebeckiteVersion: "{{riebeckite-version}}"
 
 Read `references/guide.md` and complete `assets/checklist.md`.
 
-1. Capture the command, affected source, expected result, observed result, and first diagnostic before changing files.
-2. Run `npm run doctor` and `npm run check`. With MCP, inspect context, diagnostics, publication, and links for the affected source.
-3. Classify the failure: configuration, source resolution, frontmatter/publication, link graph, Plugin/Theme, generated output, or environment.
-4. Reproduce with the smallest input and inspect the owning layer. Do not suppress diagnostics or make unrelated configuration changes.
-5. Verify the original reproduction first, then run the narrowest relevant check; build when output behavior changed.
-6. Report cause, evidence, changed files, validation, and any unverified environment dependency.
+1. Capture the exact failing command, full error, project root, Riebeckite version, and recent changes. Do not start by editing files.
+2. Reproduce with the smallest command that fails. Prefer `npm run check`, then `npm run doctor`, then `npm run build`.
+3. Use `npm exec riebeckite inspect config` to confirm the resolved project and content paths.
+4. Use `npm exec riebeckite inspect content --list` before diagnosing a missing file, WikiLink, embed, or route.
+5. Classify the failure: configuration, content source, frontmatter/format, Plugin contract, route/render, asset, environment, or deployment.
+6. Form one concrete hypothesis and test it with the smallest read-only inspection. Do not make several unrelated changes at once.
+7. Fix the root cause in shared code or configuration, not just the first symptom.
+8. Re-run the failing command and the broader check/build verification. Confirm the fix does not suppress diagnostics.
+9. If the cause is unclear, stop and report the evidence and the next discriminating check.
+10. Report the cause, changed files, commands run, verification, and any remaining risk.

@@ -36,7 +36,7 @@ test("adds selected AI development support", async (t) => {
       path.join(directory, ".agents", "skills", "riebeckite-site", "SKILL.md"),
       "utf8",
     ),
-    /publish: true/,
+    /publishStrategy/,
   );
   assert.match(
     await fs.readFile(
@@ -71,7 +71,7 @@ test("adds selected AI development support", async (t) => {
       ),
       "utf8",
     ),
-    /Treat routes as public contracts/,
+    /Route impact/,
   );
   assert.match(
     await fs.readFile(
@@ -85,7 +85,7 @@ test("adds selected AI development support", async (t) => {
       ),
       "utf8",
     ),
-    /Security and external content/,
+    /External content repository/,
   );
   assert.match(
     await fs.readFile(
@@ -113,7 +113,7 @@ test("adds selected AI development support", async (t) => {
       ),
       "utf8",
     ),
-    /dependencyMode/,
+    /dependencyMode[\s\S]*global/,
   );
   assert.match(
     await fs.readFile(
@@ -127,7 +127,49 @@ test("adds selected AI development support", async (t) => {
       ),
       "utf8",
     ),
-    /reduced motion/,
+    /reduced.motion/,
+  );
+  assert.match(
+    await fs.readFile(
+      path.join(
+        directory,
+        ".agents",
+        "skills",
+        "riebeckite-theme",
+        "references",
+        "guide.md",
+      ),
+      "utf8",
+    ),
+    /data-rb-mode="dark"/,
+  );
+  assert.match(
+    await fs.readFile(
+      path.join(
+        directory,
+        ".agents",
+        "skills",
+        "riebeckite-component",
+        "references",
+        "guide.md",
+      ),
+      "utf8",
+    ),
+    /createContentRoute/,
+  );
+  assert.match(
+    await fs.readFile(
+      path.join(
+        directory,
+        ".agents",
+        "skills",
+        "riebeckite-upgrade",
+        "references",
+        "guide.md",
+      ),
+      "utf8",
+    ),
+    /does not install/,
   );
   for (const name of [
     "riebeckite-site",
@@ -170,7 +212,7 @@ test("adds external-content guidance and no Skills when disabled", async (t) => 
       path.join(directory, ".agents", "skills", "riebeckite-site", "SKILL.md"),
       "utf8",
     ),
-    /separate content repository/,
+    /external content repository/,
   );
   assert.match(
     await fs.readFile(

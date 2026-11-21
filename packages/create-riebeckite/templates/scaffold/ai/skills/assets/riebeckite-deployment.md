@@ -1,10 +1,15 @@
-# riebeckite-deployment checklist
+# Deployment checklist
 
 - [ ] Identify provider, build command, output directory, public origin, and content source.
 - [ ] Inspect the existing workflow and provider configuration.
-- [ ] Keep credentials in the secret store and report secret names only.
-- [ ] Verify external-content checkout order, permissions, and configured path when used.
-- [ ] Preserve public URLs, redirects, locales, canonical URLs, and asset paths.
-- [ ] Run `npm run check` and `npm run build`; inspect generated output.
-- [ ] Verify public pages, assets, feeds or sitemap, and redirects after deployment.
-- [ ] Report target, configuration, verification, and rollback route.
+- [ ] Confirm `dist/` contains the expected routes, assets, feeds, and redirects.
+- [ ] Keep secrets in the provider store; report names only.
+- [ ] For external content, verify checkout path, permissions, fetch order, and `content.directory`.
+- [ ] Preserve base paths, locales, redirects, canonical URLs, assets, and cache headers.
+- [ ] Run `npm run check`.
+- [ ] Run `npm run build` and inspect the output.
+- [ ] Deploy through the existing command or CI workflow.
+- [ ] Verify the public origin, one deep link, assets, feeds/sitemap, and a redirect.
+- [ ] Confirm unpublished content is not reachable.
+- [ ] Record the previous deployment/artifact/revision as the rollback target.
+- [ ] Report target, changes, verification, secret names, and rollback path.

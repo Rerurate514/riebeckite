@@ -198,6 +198,8 @@ function pnpmWorkspace(): string {
 allowBuilds:\n${allowBuilds.map((name) => `  ${name}: true`).join("\n")}\n`;
 }
 
+const DEPLOY_PLUGIN_PACKAGE = "@riebeckite/plugin-deploy";
+
 function packageJson(
   preset: ScaffoldPreset,
   variables: SiteTemplateVariables,
@@ -216,6 +218,9 @@ function packageJson(
   };
   for (const plugin of preset.plugins) {
     dependencies[plugin.package] = RIEBECKITE_VERSION;
+  }
+  if (options.deployProvider) {
+    dependencies[DEPLOY_PLUGIN_PACKAGE] = RIEBECKITE_VERSION;
   }
   if (preset.theme) {
     dependencies[preset.theme.package] = RIEBECKITE_VERSION;
@@ -257,6 +262,9 @@ function riebeckiteConfig(
 ): string {
   const { title, description, baseUrl, locale } = variables;
   const lines: string[] = ['import { defineConfig } from "@riebeckite/core";'];
+  if (options.deployProvider) {
+    lines.push(`import { deploy } from "${DEPLOY_PLUGIN_PACKAGE}";`);
+  }
   for (const plugin of preset.plugins) {
     lines.push(`import { ${plugin.factory} } from "${plugin.package}";`);
   }
@@ -287,6 +295,11 @@ function riebeckiteConfig(
   lines.push("  plugins: [");
   for (const plugin of preset.plugins) {
     lines.push(`    ${pluginExpression(plugin, preset, variables)},`);
+  }
+  if (options.deployProvider) {
+    lines.push(
+      `    deploy({ provider: ${JSON.stringify(options.deployProvider)} }),`,
+    );
   }
   lines.push("  ],");
   lines.push("});");

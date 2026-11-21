@@ -1005,3 +1005,98 @@ test("setup does not prompt for a token that is already configured", async () =>
     await removeRepo(repoRoot);
   }
 });
+
+const SITE_CONFIG = [
+  'import { defineConfig } from "@riebeckite/core";',
+  'import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";',
+  "",
+  "export default defineConfig({",
+  "  plugins: [",
+  "    obsidianMarkdown(),",
+  "  ],",
+  "});",
+  "",
+].join("\n");
+
+test("setup registers the deploy plugin in an existing site", async () => {
+  const repoRoot = await makeRepo();
+  try {
+    await fs.writeFile(
+      path.join(repoRoot, "riebeckite.config.ts"),
+      SITE_CONFIG,
+      "utf8",
+    );
+    await fs.writeFile(
+      path.join(repoRoot, "package.json"),
+      `${JSON.stringify(
+        { name: "site", dependencies: { "@riebeckite/core": "^0.1.0" } },
+        null,
+        2,
+      )}\n`,
+      "utf8",
+    );
+    const { prompts } = createPrompts();
+    const { lines } = await setup(repoRoot, baseHandlers(repoRoot), prompts, {
+      CLOUDFLARE_API_TOKEN: "env-token",
+    });
+    const config = await fs.readFile(
+      path.join(repoRoot, "riebeckite.config.ts"),
+      "utf8",
+    );
+    assert.ok(
+      config.includes('import { deploy } from "@riebeckite/plugin-deploy";'),
+    );
+    assert.ok(config.includes('deploy({ provider: "cloudflare-workers" }),'));
+    assert.ok(
+      lines.includes(
+        '✓ Added deploy({ provider: "cloudflare-workers" }) to riebeckite.config.ts',
+      ),
+    );
+    const manifest = JSON.parse(
+      await fs.readFile(path.join(repoRoot, "package.json"), "utf8"),
+    );
+    assert.equal(manifest.dependencies["@riebeckite/plugin-deploy"], "^0.1.0");
+    await setup(repoRoot, baseHandlers(repoRoot), prompts, {
+      CLOUDFLARE_API_TOKEN: "env-token",
+    });
+    const rerun = await fs.readFile(
+      path.join(repoRoot, "riebeckite.config.ts"),
+      "utf8",
+    );
+    assert.equal(rerun, config);
+  } finally {
+    await removeRepo(repoRoot);
+  }
+});
+
+test("setup leaves a site that already registers the deploy plugin untouched", async () => {
+  const repoRoot = await makeRepo();
+  try {
+    const config = SITE_CONFIG.replace(
+      'import { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";',
+      'import { deploy } from "@riebeckite/plugin-deploy";\nimport { obsidianMarkdown } from "@riebeckite/plugin-obsidian-markdown";',
+    ).replace(
+      "    obsidianMarkdown(),",
+      '    obsidianMarkdown(),\n    deploy({ provider: "cloudflare-workers" }),',
+    );
+    await fs.writeFile(
+      path.join(repoRoot, "riebeckite.config.ts"),
+      config,
+      "utf8",
+    );
+    const { prompts } = createPrompts();
+    const { lines } = await setup(repoRoot, baseHandlers(repoRoot), prompts, {
+      CLOUDFLARE_API_TOKEN: "env-token",
+    });
+    assert.equal(
+      await fs.readFile(path.join(repoRoot, "riebeckite.config.ts"), "utf8"),
+      config,
+    );
+    assert.equal(
+      lines.some((line) => line.includes("Added deploy(")),
+      false,
+    );
+  } finally {
+    await removeRepo(repoRoot);
+  }
+});

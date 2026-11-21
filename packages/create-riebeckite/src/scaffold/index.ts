@@ -91,6 +91,8 @@ export async function scaffoldRiebeckiteSite(
   const files = [
     ...siteTemplateFiles(preset, templateVariables(options, targetDirectory), {
       cloudflareWorkers: deployment.type === "cloudflare-workers",
+      deployProvider:
+        deployment.type === "none" ? undefined : "cloudflare-workers",
       utilities: options.utilities,
       ...(options.contentDirectory === undefined
         ? {}

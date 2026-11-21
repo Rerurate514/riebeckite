@@ -20,4 +20,6 @@ Choose only the integrations you need when creating a project:
 npx create-riebeckite my-site --ai mcp,lint,rules,skills
 ```
 
-`mcp` adds the MCP package, `lint` adds `npm run content:lint`, `rules` creates `RIEBECKITE_AI.md`, and `skills` creates `.agents/skills/`. Client configuration is not changed automatically.
+`mcp` adds the MCP package, `lint` adds `npm run content:lint`, `rules` creates `AGENTS.md` and `RIEBECKITE_AI.md`, and `skills` creates `.agents/skills/`. Client configuration is not changed automatically.
+
+For an existing project, `npm exec riebeckite ai setup` adds the missing pieces without overwriting existing guidance files.

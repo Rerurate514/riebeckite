@@ -8,7 +8,11 @@ import { RIEBECKITE_VERSION } from "./version.js";
 
 const skillNames = [
   "riebeckite-site",
+  "riebeckite-plugin-catalog",
   "riebeckite-plugin",
+  "riebeckite-component",
+  "riebeckite-content-migration",
+  "riebeckite-deployment",
   "riebeckite-theme",
   "riebeckite-configuration",
   "riebeckite-troubleshooting",

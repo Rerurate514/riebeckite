@@ -20,7 +20,7 @@ npm exec riebeckite <command>
 ## Command list
 
 ```text
-riebeckite init [directory] [--preset <name>] [--features <names>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>]
+riebeckite init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>]
 riebeckite create site [create-riebeckite options]
 riebeckite create plugin [name] [options]
 riebeckite create theme [name] [options]
@@ -30,6 +30,7 @@ riebeckite theme preview <name> [--port <port>] [--no-open]
 riebeckite plugin dev <path> [--port <port>] [--no-open]
 riebeckite plugin verify <path> [--level basic | integration | full] [--json]
 riebeckite bridge approve <plan>
+riebeckite ai setup
 riebeckite ai mcp
 riebeckite skills sync
 riebeckite dev
@@ -79,8 +80,9 @@ The `publish` actions that read or write durable publication state (`plan`, `sta
 | `migrate` | plan and apply versioned content migrations, then inspect, roll back, or recover them | no |
 | `profile` | run tracing-based performance reporting; `--full` uses a full path | build-dependent |
 | `inspect` | display factual resolved state | no |
+| `ai setup` | add MCP, the `content:lint` script, `AGENTS.md`, `RIEBECKITE_AI.md`, and missing generated Skills | writes project files after confirmation |
 | `ai mcp` | start the development server and its local stdio MCP adapter with a temporary Bridge token | no |
-| `skills sync` | interactively review and update generated AI Skills | writes Skill guidance after confirmation |
+| `skills sync` | add missing generated Skills and files, then update outdated ones | writes Skill guidance after confirmation |
 
 ## Which command should I use?
 

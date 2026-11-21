@@ -45,6 +45,7 @@ import {
 import {
   aiGroupCommand,
   aiMcpCommand,
+  aiSetupCommand,
   buildCommand,
   checkCommand,
   cleanCommand,
@@ -80,6 +81,7 @@ function definitions(): readonly CliCommandDefinition[] {
     devCommand(),
     aiGroupCommand(),
     aiMcpCommand(),
+    aiSetupCommand(),
     buildCommand(),
     cleanCommand(),
     checkCommand(),

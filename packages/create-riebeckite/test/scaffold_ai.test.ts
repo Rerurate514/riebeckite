@@ -28,6 +28,10 @@ test("adds selected AI development support", async (t) => {
     /`content\/`/,
   );
   assert.match(
+    await fs.readFile(path.join(directory, "AGENTS.md"), "utf8"),
+    /RIEBECKITE_AI\.md/,
+  );
+  assert.match(
     await fs.readFile(
       path.join(directory, ".agents", "skills", "riebeckite-site", "SKILL.md"),
       "utf8",
@@ -40,6 +44,62 @@ test("adds selected AI development support", async (t) => {
       "utf8",
     ),
     /riebeckiteVersion: "0\.1\.0"/,
+  );
+  assert.match(
+    await fs.readFile(
+      path.join(
+        directory,
+        ".agents",
+        "skills",
+        "riebeckite-component",
+        "references",
+        "guide.md",
+      ),
+      "utf8",
+    ),
+    /Choose the right boundary/,
+  );
+  assert.match(
+    await fs.readFile(
+      path.join(
+        directory,
+        ".agents",
+        "skills",
+        "riebeckite-content-migration",
+        "references",
+        "guide.md",
+      ),
+      "utf8",
+    ),
+    /Treat routes as public contracts/,
+  );
+  assert.match(
+    await fs.readFile(
+      path.join(
+        directory,
+        ".agents",
+        "skills",
+        "riebeckite-deployment",
+        "references",
+        "guide.md",
+      ),
+      "utf8",
+    ),
+    /Security and external content/,
+  );
+  assert.match(
+    await fs.readFile(
+      path.join(
+        directory,
+        ".agents",
+        "skills",
+        "riebeckite-plugin-catalog",
+        "references",
+        "guide.md",
+      ),
+      "utf8",
+    ),
+    /Official Plugin catalog/,
   );
   assert.match(
     await fs.readFile(
@@ -71,7 +131,11 @@ test("adds selected AI development support", async (t) => {
   );
   for (const name of [
     "riebeckite-site",
+    "riebeckite-plugin-catalog",
     "riebeckite-plugin",
+    "riebeckite-component",
+    "riebeckite-content-migration",
+    "riebeckite-deployment",
     "riebeckite-theme",
     "riebeckite-configuration",
     "riebeckite-troubleshooting",
@@ -108,6 +172,13 @@ test("adds external-content guidance and no Skills when disabled", async (t) => 
     ),
     /separate content repository/,
   );
+  assert.match(
+    await fs.readFile(
+      path.join(directory, ".agents", "skills", "riebeckite-site", "SKILL.md"),
+      "utf8",
+    ),
+    /riebeckite:content-source external/,
+  );
   const withoutSkills = await fs.mkdtemp(
     path.join(os.tmpdir(), "riebeckite-scaffold-no-skills-"),
   );
@@ -121,4 +192,7 @@ test("adds external-content guidance and no Skills when disabled", async (t) => 
     fs.access(path.join(withoutSkills, ".agents", "skills")),
     { code: "ENOENT" },
   );
+  await assert.rejects(fs.access(path.join(withoutSkills, "AGENTS.md")), {
+    code: "ENOENT",
+  });
 });

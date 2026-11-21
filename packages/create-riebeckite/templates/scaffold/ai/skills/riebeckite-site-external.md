@@ -4,6 +4,8 @@ description: Use when adding or editing pages, frontmatter, or internal links in
 riebeckiteVersion: "{{riebeckite-version}}"
 ---
 
+<!-- riebeckite:content-source external -->
+
 # External site content workflow
 
 Read `references/guide.md` and complete `assets/checklist.md`.

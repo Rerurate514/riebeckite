@@ -20,7 +20,7 @@ npm exec riebeckite <command>
 ## コマンド一覧
 
 ```text id="7uw50m"
-riebeckite init [directory] [--preset <name>] [--features <names>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>]
+riebeckite init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>]
 riebeckite create site [create-riebeckite options]
 riebeckite create plugin [name] [options]
 riebeckite create theme [name] [options]
@@ -30,6 +30,7 @@ riebeckite theme preview <name> [--port <port>] [--no-open]
 riebeckite plugin dev <path> [--port <port>] [--no-open]
 riebeckite plugin verify <path> [--level basic | integration | full] [--json]
 riebeckite bridge approve <plan>
+riebeckite ai setup
 riebeckite ai mcp
 riebeckite skills sync
 riebeckite dev
@@ -79,8 +80,9 @@ riebeckite completion <bash | zsh | powershell> [--project]
 | `migrate` | バージョン付きのコンテンツ移行を計画・適用し、状態確認、ロールバック、リカバリーを行う | いいえ |
 | `profile` | トレースに基づくパフォーマンスレポートを実行する。`--full` はフルパスを使う | ビルドによる |
 | `inspect` | 解決済みの実際の状態を表示する | いいえ |
+| `ai setup` | MCP、`content:lint` スクリプト、`AGENTS.md`、`RIEBECKITE_AI.md`、不足している生成 Skill を追加する | 確認後にプロジェクトファイルを書き換える |
 | `ai mcp` | 一時的な Bridge トークンで開発サーバーとローカル stdio MCP アダプターを起動する | いいえ |
-| `skills sync` | 生成された AI Skills を対話的に確認・更新する | 確認後に Skill ガイダンスを書き換える |
+| `skills sync` | 不足している生成 Skill とファイルを追加し、古いものを更新する | 確認後に Skill ガイダンスを書き換える |
 
 ## 目的別のコマンドの選び方
 

@@ -1,3 +1,4 @@
+import { aiRuleFiles } from "./ai_rules.js";
 import { aiSkillFiles } from "./ai_skills.js";
 import { contentPageFiles } from "./content-pages.js";
 import {
@@ -50,9 +51,7 @@ export function siteTemplateFiles(
     ...utilityTemplateFiles(options.utilities ?? SCAFFOLD_DEFAULT_UTILITIES),
     ...presetFiles,
     ...notFoundPageFiles(presetFiles),
-    ...(options.ai?.rules
-      ? [{ path: "RIEBECKITE_AI.md", content: aiRules(variables, options) }]
-      : []),
+    ...(options.ai?.rules ? aiRuleFiles(variables, options) : []),
     ...(options.ai?.skills ? aiSkillFiles(variables, options) : []),
     ...(options.contentDirectory === undefined &&
     variables.externalContent !== true
@@ -263,32 +262,6 @@ function packageJson(
     null,
     2,
   )}\n`;
-}
-
-function aiRules(
-  variables: SiteTemplateVariables,
-  options: SiteTemplateOptions,
-): string {
-  const contentDirectory = options.contentDirectory ?? "content";
-  const check = options.ai?.lint ? "npm run content:lint" : "npm run check";
-  return `# Riebeckite AI guide
-
-## Scope
-
-- Write content only under \`${contentDirectory}/\`.
-- Keep generated output and dependencies unchanged.
-- Use root-relative Markdown links and preserve existing frontmatter keys.
-
-## Validation
-
-- Run \`${check}\` after changing content.
-- Run \`npm run build\` before publishing.
-
-## Site
-
-- Title: ${variables.title}
-- Default locale: ${variables.locale}
-`;
 }
 
 function riebeckiteConfig(

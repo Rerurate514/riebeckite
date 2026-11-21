@@ -20,6 +20,7 @@ import {
   wranglerConfigForDirectory,
 } from "./wrangler-defaults.js";
 
+export { aiRuleFiles } from "./ai_rules.js";
 export { aiSkillFiles } from "./ai_skills.js";
 export {
   deploymentWorkflow,

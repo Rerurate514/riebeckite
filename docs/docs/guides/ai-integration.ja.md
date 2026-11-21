@@ -27,14 +27,17 @@ npx create-riebeckite my-site --ai mcp,lint,rules,skills
 
 - `mcp` は `@riebeckite/mcp` を開発依存へ追加します。
 - `lint` は `npm run content:lint` として `riebeckite check` を追加します。
-- `rules` はプロジェクト固有の `RIEBECKITE_AI.md` を生成します。
+- `rules` は `AGENTS.md` とプロジェクト固有の `RIEBECKITE_AI.md` を生成します。
 - `skills` は OpenCode 互換の `.agents/skills/` を生成します。
 
 AI クライアントの設定は自動では行いません。
 
+既存プロジェクトでは、`npm exec riebeckite ai setup` で不足している MCP 依存、lint
+スクリプト、ガイダンス、Skills を追加できます。既存のガイダンスファイルは上書きしません。
+
 ## MCP を接続する
 
-MCP は開発時限定の Bridge を stdio で接続する薄いアダプターです。AI は、現在のプレビュー、公開状態、診断、リンク、コンテンツ一覧を Bridge から取得できます。Riebeckite が状態の唯一の基準です。
+MCP は開発時限定の Bridge を stdio で接続する薄いアダプターです。AI は、現在のプレビュー、公開状態、診断、リンク、コンテンツ一覧を Bridge から取得できます。`riebeckite_plugin_catalog` は、サイトを変更せずに公開 npm レジストリから公式 Plugin パッケージを検索します。ローカルのサイト状態の唯一の基準は Riebeckite です。
 
 開発サーバーと MCP に同じ32文字以上のトークンを渡します。
 
@@ -55,11 +58,13 @@ MCP クライアントには次を設定します。
 }
 ```
 
-MCP は読み取りと変更内容の検証だけを提供します。変更 Plan の作成・承認・適用は MCP から行えず、承認は引き続き人が CLI で行います。
+MCP は読み取りと変更内容の検証を提供します。変更トークンを設定した場合は、変更 Plan の
+作成と、人が `npm exec riebeckite bridge approve <plan-id>` で承認した後の適用も行えます。
+承認は引き続き人が CLI で行います。
 
 ## 生成される Skills
 
-Skills はサイト、Plugin、Theme、設定、トラブルシューティング、アップグレードを扱います。各 Skill には `SKILL.md`、`references/guide.md`、`assets/checklist.md` があり、編集できます。MCP が利用できる場合は先にその情報を使い、使えない場合は CLI の検証へ戻ります。
+Skills はサイトコンテンツ、Plugin の選定と作成、アプリケーションコンポーネント、コンテンツ移行、デプロイ、Theme、設定、トラブルシューティング、アップグレードを扱います。各 Skill には `SKILL.md`、`references/guide.md`、`assets/checklist.md` があり、編集できます。MCP が利用できる場合は先にその情報を使い、使えない場合は CLI の検証へ戻ります。
 
 `SKILL.md` の `riebeckiteVersion` が CLI と異なる場合は、対話端末で次を実行します。
 

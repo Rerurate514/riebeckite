@@ -33,7 +33,7 @@ In a pnpm project, use `pnpm exec riebeckite`.
 ## Usage
 
 ```text
-riebeckite init [directory] [--preset <name>] [--features <names>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>]
+riebeckite init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>]
 riebeckite create site [create-riebeckite options]
 riebeckite create plugin [name] [options]
 riebeckite create theme [name] [options]
@@ -43,6 +43,9 @@ riebeckite theme preview <name> [--port <port>] [--no-open]
 riebeckite plugin dev <path> [--port <port>] [--no-open]
 riebeckite plugin verify <path> [--level basic | integration | full] [--json]
 riebeckite bridge approve <plan>
+riebeckite ai setup
+riebeckite ai mcp
+riebeckite skills sync
 riebeckite dev
 riebeckite check
 riebeckite doctor [--explain | --json | --fix [--dry-run]] [--fail-on <error|warning|info>] [--code <code> ...]
@@ -84,6 +87,9 @@ riebeckite completion <bash | zsh | powershell> [--project]
 | `migrate` | Plan and apply versioned content migrations, then inspect, roll back, or recover them | no |
 | `profile` | Run tracing-based performance reporting; `--full` uses a full path | build-dependent |
 | `inspect` | Display factual resolved state (`config`, `plugins`, `content`, `graph`, `build`, `assets`, `provenance`, `api`) | no |
+| `ai setup` | Add MCP, `content:lint`, `AGENTS.md`, `RIEBECKITE_AI.md`, and missing Skills | project files after confirmation |
+| `ai mcp` | Start development and the local MCP adapter | no |
+| `skills sync` | Add missing generated Skills and files, then update outdated ones | after confirmation |
 
 `doctor` continues independent checks where possible and exits unsuccessfully
 when health checks fail. `inspect` is deliberately read-only and never triggers

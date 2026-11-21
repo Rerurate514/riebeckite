@@ -3,10 +3,20 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 
 const protocolHeader = { "x-riebeckite-bridge-protocol": "1" };
+const mutationTokenHeader = "x-riebeckite-bridge-mutation-token";
+const pluginPackagePrefix = "@riebeckite/plugin-";
+
+type PluginCatalogPackage = {
+  name: string;
+  version: string;
+  description?: string;
+  links?: Record<string, string>;
+};
 
 export type BridgeClientOptions = {
   origin: string;
   token: string;
+  mutationToken?: string;
 };
 
 export class BridgeClient {
@@ -27,6 +37,35 @@ export class BridgeClient {
       method: "POST",
       body: JSON.stringify(body),
       headers: { "content-type": "application/json" },
+    });
+  }
+
+  async planMutation(operations: readonly unknown[]) {
+    return this.postMutation("/__riebeckite/bridge/v1/mutations/plan", {
+      operations,
+    });
+  }
+
+  async applyMutation(planId: string) {
+    return this.postMutation(
+      `/__riebeckite/bridge/v1/mutations/${encodeURIComponent(planId)}/apply`,
+      {},
+    );
+  }
+
+  private async postMutation(pathname: string, body: Record<string, unknown>) {
+    const mutationToken = this.options.mutationToken;
+    if (!mutationToken) {
+      throw new Error("Mutation requires RIEBECKITE_BRIDGE_MUTATION_TOKEN.");
+    }
+    const origin = await this.privateOrigin();
+    return this.request(new URL(pathname, origin), {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: {
+        "content-type": "application/json",
+        [mutationTokenHeader]: mutationToken,
+      },
     });
   }
 
@@ -59,6 +98,36 @@ export class BridgeClient {
   }
 }
 
+export async function searchOfficialPlugins(
+  query = "",
+  limit = 20,
+): Promise<{
+  source: string;
+  query: string;
+  plugins: readonly PluginCatalogPackage[];
+}> {
+  const search = `${pluginPackagePrefix}${query}`;
+  const url = new URL("https://registry.npmjs.org/-/v1/search");
+  url.searchParams.set("text", search);
+  url.searchParams.set("size", `${Math.min(Math.max(limit, 1), 100)}`);
+  const response = await fetch(url);
+  if (!response.ok)
+    throw new Error(`Plugin catalog request failed (${response.status}).`);
+  const body = (await response.json()) as {
+    objects?: readonly { package?: PluginCatalogPackage }[];
+  };
+  return {
+    source: "npm registry",
+    query,
+    plugins: (body.objects ?? [])
+      .map((entry) => entry.package)
+      .filter(
+        (entry): entry is PluginCatalogPackage =>
+          entry?.name.startsWith(pluginPackagePrefix) === true,
+      ),
+  };
+}
+
 export function createServer(client: BridgeClient): McpServer {
   const server = new McpServer({ name: "riebeckite", version: "0.1.0" });
   const path = { path: z.string().min(1) };
@@ -79,6 +148,16 @@ export function createServer(client: BridgeClient): McpServer {
     "Read the Bridge API discovery document.",
     {},
     () => get("schema")({}),
+  );
+  server.tool(
+    "riebeckite_plugin_catalog",
+    "Search published official Riebeckite plugins by capability or package name.",
+    {
+      query: z.string().trim().max(200).optional(),
+      limit: z.number().int().positive().max(100).optional(),
+    },
+    async (input) =>
+      result(await searchOfficialPlugins(input.query, input.limit)),
   );
   server.tool(
     "riebeckite_context",
@@ -143,6 +222,22 @@ export function createServer(client: BridgeClient): McpServer {
         }),
       ),
   );
+  server.tool(
+    "riebeckite_mutation_plan",
+    "Create a persisted content mutation plan for human review without changing content. Requires RIEBECKITE_BRIDGE_MUTATION_TOKEN.",
+    {
+      operations: z.array(z.unknown()).min(1),
+    },
+    async (input) => result(await client.planMutation(input.operations)),
+  );
+  server.tool(
+    "riebeckite_mutation_apply",
+    "Apply a mutation plan after a human runs `riebeckite bridge approve <plan-id>`. Requires RIEBECKITE_BRIDGE_MUTATION_TOKEN.",
+    {
+      planId: z.string().min(1),
+    },
+    async (input) => result(await client.applyMutation(input.planId)),
+  );
   return server;
 }
 
@@ -156,6 +251,13 @@ export async function start(
       "RIEBECKITE_BRIDGE_DEVELOPMENT_ORIGIN and RIEBECKITE_BRIDGE_TOKEN are required.",
     );
   }
-  const server = createServer(new BridgeClient({ origin, token }));
+  const mutationToken = env.RIEBECKITE_BRIDGE_MUTATION_TOKEN;
+  const server = createServer(
+    new BridgeClient({
+      origin,
+      token,
+      ...(mutationToken ? { mutationToken } : {}),
+    }),
+  );
   await server.connect(new StdioServerTransport());
 }

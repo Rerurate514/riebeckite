@@ -2,6 +2,8 @@
 
 ローカルの Riebeckite development Bridge 用 MCP サーバーです。ビルド状態、
 コンテンツ、診断、変更検証の正本は引き続き Riebeckite です。
+`riebeckite_plugin_catalog` は、サイトを変更せずに公開 npm レジストリから
+公式 Plugin パッケージを検索します。
 
 [English](./README.md)
 
@@ -21,5 +23,8 @@
 }
 ```
 
-読み取り用 Bridge ツールと変更検証だけを公開します。変更プランの作成・適用は
-公開せず、Riebeckite の明示的な変更機能と人間による承認が必要です。
+読み取り用 Bridge ツール、npm レジストリの Plugin 検索、変更検証を公開します。
+`RIEBECKITE_BRIDGE_MUTATION_TOKEN`（32文字以上）を設定すると、変更プランの作成と
+適用も利用できます。別の `RIEBECKITE_BRIDGE_MUTATION_APPROVAL_TOKEN` は開発サーバーと
+MCP プロセスの両方に設定してください。プラン作成だけではコンテンツを変更しません。
+適用には、人が `riebeckite bridge approve <plan-id>` を実行する必要があります。

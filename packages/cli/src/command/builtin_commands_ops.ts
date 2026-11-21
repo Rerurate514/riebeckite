@@ -190,29 +190,31 @@ export function upgradeCommand(): CliCommandDefinition {
 export function skillsSyncCommand(): CliCommandDefinition {
   return defineCliCommand({
     id: "skills sync",
-    summary: "Review and update generated Riebeckite Skills.",
+    summary: "Add and update generated Riebeckite Skills.",
     requiresProject: true,
     async handler(context) {
       const { createSetupPrompts } = await import("../prompts.js");
       const { syncSkills } = await import("../commands/skills.js");
       const prompts = createSetupPrompts();
       const mode = await prompts.select(
-        "How should outdated Skills be updated?",
+        "How should Skills be added or updated?",
         [
           {
             value: "review" as const,
-            label: "Review each Skill before updating",
+            label: "Review each Skill before applying",
           },
-          { value: "reset" as const, label: "Replace all outdated Skills" },
-          { value: "skip" as const, label: "Do not update Skills" },
+          { value: "reset" as const, label: "Apply all Skill updates" },
+          { value: "skip" as const, label: "Do not change Skills" },
         ],
       );
-      if (mode !== "skip")
-        await syncSkills(
-          (await project(context)).projectRoot,
-          prompts.confirm,
-          mode,
-        );
+      if (mode !== "skip") {
+        const resolved = await project(context);
+        await syncSkills(resolved.projectRoot, prompts.confirm, mode, {
+          contentDirectory: resolved.config.content.directory,
+          title: resolved.config.site.title,
+          locale: resolved.config.site.locale,
+        });
+      }
     },
   });
 }
@@ -226,6 +228,19 @@ export function aiGroupCommand(): CliCommandDefinition {
     "ai",
     "Connect AI tools to local Riebeckite development.",
   );
+}
+
+export function aiSetupCommand(): CliCommandDefinition {
+  return defineCliCommand({
+    id: "ai setup",
+    summary: "Add Riebeckite AI guidance, Skills, and MCP configuration.",
+    requiresProject: true,
+    async handler(context) {
+      const { createSetupPrompts } = await import("../prompts.js");
+      const { runAiSetup } = await import("../commands/ai_setup.js");
+      await runAiSetup(await project(context), createSetupPrompts().confirm);
+    },
+  });
 }
 
 export function aiMcpCommand(): CliCommandDefinition {

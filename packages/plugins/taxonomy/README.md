@@ -77,6 +77,10 @@ export default defineConfig({
 example, `exclude: ["Config"]` omits `Config` and `Config/internal` from every
 taxonomy projection while leaving their published URLs unchanged.
 
+`exclude` uses logical content slugs, not display labels or glob patterns. For
+example, `exclude: ["Config"]` omits `Config` and `Config/internal` from every
+taxonomy projection while leaving their published URLs unchanged.
+
 ## Data endpoint
 
 The plugin registers one JSON endpoint (the endpoint contract is mounted by the

@@ -82,6 +82,14 @@ export const PUBLISHING_METADATA_A = {
       "Cloudflare Workers, D1, and KV runtime for Riebeckite analytics.",
     keywords: ["riebeckite", "analytics", "cloudflare", "workers", "d1"],
   },
+  "packages/integrations/reactions-cloudflare": {
+    description: "Cloudflare D1 runtime for Riebeckite reactions.",
+    keywords: ["riebeckite", "reactions", "cloudflare", "d1"],
+  },
+  "packages/integrations/reactions-github": {
+    description: "GitHub Discussions runtime for Riebeckite reactions.",
+    keywords: ["riebeckite", "reactions", "github", "discussions"],
+  },
   "packages/integrations/webmention-cloudflare": {
     description:
       "Cloudflare Workers, D1, and KV runtime for Riebeckite Webmentions.",
@@ -163,6 +171,11 @@ export const PUBLISHING_METADATA_A = {
   "packages/plugins/color-mode": {
     description: "Light / dark / system color-mode switching for Riebeckite.",
     keywords: ["riebeckite", "plugin", "theme", "color-mode", "dark-mode"],
+  },
+  "packages/plugins/comments": {
+    description:
+      "Comment threads for Riebeckite pages with pluggable providers.",
+    keywords: ["riebeckite", "plugin", "comments", "giscus", "provider"],
   },
   "packages/plugins/d2": {
     description: "D2 diagram rendering for Riebeckite code blocks.",

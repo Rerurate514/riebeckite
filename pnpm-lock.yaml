@@ -373,6 +373,26 @@ importers:
         specifier: ^4.22.4
         version: 4.22.4
 
+  packages/integrations/reactions-cloudflare:
+    dependencies:
+      '@riebeckite/plugin-reactions':
+        specifier: workspace:*
+        version: link:../../plugins/reactions
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
+  packages/integrations/reactions-github:
+    dependencies:
+      '@riebeckite/plugin-reactions':
+        specifier: workspace:*
+        version: link:../../plugins/reactions
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
   packages/integrations/webmention-cloudflare:
     dependencies:
       '@riebeckite/plugin-webmention':
@@ -676,6 +696,22 @@ importers:
       '@riebeckite/core':
         specifier: workspace:*
         version: link:../../core
+
+  packages/plugins/comments:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
+      hono:
+        specifier: 'catalog:'
+        version: 4.13.18
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
 
   packages/plugins/d2:
     dependencies:
@@ -1388,6 +1424,22 @@ importers:
       '@riebeckite/test':
         specifier: workspace:*
         version: link:../../test
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
+  packages/plugins/reactions:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
+      hono:
+        specifier: 'catalog:'
+        version: 4.13.18
+    devDependencies:
       tsx:
         specifier: ^4.22.4
         version: 4.22.4

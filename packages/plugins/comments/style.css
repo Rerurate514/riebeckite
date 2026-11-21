@@ -1,0 +1,17 @@
+/*
+ * @riebeckite/plugin-comments
+ *
+ * Giscus thread container. Plugin CSS loads before theme CSS, so a theme can
+ * restyle the stable `rr-comments` hooks without editing the plugin.
+ */
+
+.rr-comments {
+  --rr-comments-muted: var(--rb-color-muted, #5a5a5a);
+
+  margin-block: 2rem;
+}
+
+.rr-comments__noscript {
+  color: var(--rr-comments-muted);
+  font-style: italic;
+}

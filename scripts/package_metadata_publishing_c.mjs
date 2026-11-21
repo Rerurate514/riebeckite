@@ -3,6 +3,11 @@ export const PUBLISHING_METADATA_C = {
     description: "Build-time content queries for Riebeckite code blocks.",
     keywords: ["riebeckite", "plugin", "query", "markdown"],
   },
+  "packages/plugins/reactions": {
+    description:
+      "Emoji reactions for Riebeckite pages, backed by a pluggable provider.",
+    keywords: ["riebeckite", "plugin", "reactions", "emoji"],
+  },
   "packages/plugins/recent-posts": {
     description: "Recent posts lists for Riebeckite sites.",
     keywords: ["riebeckite", "plugin", "recent-posts", "blog"],

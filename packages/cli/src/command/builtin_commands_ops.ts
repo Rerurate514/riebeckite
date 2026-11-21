@@ -248,9 +248,17 @@ export function aiMcpCommand(): CliCommandDefinition {
     id: "ai mcp",
     summary: "Start local development and the Riebeckite MCP server.",
     requiresProject: true,
-    async handler(context) {
+    options: [
+      cliBoolean("mutations", {
+        description:
+          "Generate temporary mutation tokens and allow plan review for this session.",
+      }),
+    ],
+    async handler(context, input) {
       const { runAiMcp } = await import("../commands/ai_mcp.js");
-      await runAiMcp(await project(context));
+      await runAiMcp(await project(context), {
+        mutations: input.options.mutations === true,
+      });
     },
   });
 }

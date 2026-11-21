@@ -80,7 +80,7 @@ riebeckite completion <bash | zsh | powershell> [--project]
 | `profile` | トレースに基づく性能レポートを実行する。`--full` は全体を対象にする | ビルドの実行による |
 | `inspect` | 解決済みの状態を事実として表示する（`config`、`plugins`、`content`、`graph`、`build`、`assets`、`provenance`、`api`） | いいえ |
 | `ai setup` | MCP、`content:lint`、`AGENTS.md`、`RIEBECKITE_AI.md`、不足している Skill を追加する | 確認後にプロジェクトファイル |
-| `ai mcp` | 開発サーバーとローカル MCP アダプターを起動する | いいえ |
+| `ai mcp` | 開発サーバーとローカル MCP アダプターを起動する。`--mutations` で一時的な変更トークンを生成する | いいえ |
 | `skills sync` | 不足している生成 Skill とファイルを追加し、古いものを更新する | 確認後 |
 
 `doctor` は独立したチェックを可能な限り続行し、ヘルスチェックに失敗すると非ゼロで終了します。`inspect` は読み取り専用で、ビルドの実行や状態の書き込みは行いません。出力の読み方は [Diagnostics](../../docs/docs/framework/diagnostics.ja.md) と [Framework Inspector](../../docs/docs/framework/inspector.ja.md) を参照してください。

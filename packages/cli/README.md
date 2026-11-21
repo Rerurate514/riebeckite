@@ -88,7 +88,7 @@ riebeckite completion <bash | zsh | powershell> [--project]
 | `profile` | Run tracing-based performance reporting; `--full` uses a full path | build-dependent |
 | `inspect` | Display factual resolved state (`config`, `plugins`, `content`, `graph`, `build`, `assets`, `provenance`, `api`) | no |
 | `ai setup` | Add MCP, `content:lint`, `AGENTS.md`, `RIEBECKITE_AI.md`, and missing Skills | project files after confirmation |
-| `ai mcp` | Start development and the local MCP adapter | no |
+| `ai mcp` | Start development and the local MCP adapter; `--mutations` generates temporary mutation tokens | no |
 | `skills sync` | Add missing generated Skills and files, then update outdated ones | after confirmation |
 
 `doctor` continues independent checks where possible and exits unsuccessfully

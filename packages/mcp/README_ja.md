@@ -28,3 +28,5 @@
 適用も利用できます。別の `RIEBECKITE_BRIDGE_MUTATION_APPROVAL_TOKEN` は開発サーバーと
 MCP プロセスの両方に設定してください。プラン作成だけではコンテンツを変更しません。
 適用には、人が `riebeckite bridge approve <plan-id>` を実行する必要があります。
+CLI が `riebeckite ai mcp --mutations` で起動した場合は、両方のトークンを生成し、
+承認トークンを `bridge approve` 用に `.riebeckite/` へ保存します。

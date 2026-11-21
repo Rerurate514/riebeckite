@@ -81,7 +81,7 @@ The `publish` actions that read or write durable publication state (`plan`, `sta
 | `profile` | run tracing-based performance reporting; `--full` uses a full path | build-dependent |
 | `inspect` | display factual resolved state | no |
 | `ai setup` | add MCP, the `content:lint` script, `AGENTS.md`, `RIEBECKITE_AI.md`, and missing generated Skills | writes project files after confirmation |
-| `ai mcp` | start the development server and its local stdio MCP adapter with a temporary Bridge token | no |
+| `ai mcp` | start the development server and its local stdio MCP adapter with a temporary Bridge token; `--mutations` adds temporary mutation tokens | no |
 | `skills sync` | add missing generated Skills and files, then update outdated ones | writes Skill guidance after confirmation |
 
 ## Which command should I use?

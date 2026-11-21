@@ -5,15 +5,18 @@ import {
   reviewBridgeMutationPlan,
 } from "@riebeckite/dev-inspector";
 import type { RiebeckiteProject } from "../application_root.js";
+import { readBridgeApprovalToken } from "./bridge_approval_token.js";
 
 export async function runBridgeApproval(
   project: RiebeckiteProject,
   planId: string,
 ): Promise<boolean> {
-  const secret = process.env.RIEBECKITE_BRIDGE_MUTATION_APPROVAL_TOKEN;
+  const secret =
+    process.env.RIEBECKITE_BRIDGE_MUTATION_APPROVAL_TOKEN ??
+    (await readBridgeApprovalToken(project.projectRoot));
   if (!secret || secret.length < 32)
     throw new CliUsageError(
-      "RIEBECKITE_BRIDGE_MUTATION_APPROVAL_TOKEN must be at least 32 characters.",
+      "Set RIEBECKITE_BRIDGE_MUTATION_APPROVAL_TOKEN or run `riebeckite ai mcp --mutations`.",
     );
   if (process.stdin.isTTY !== true || process.stdout.isTTY !== true)
     throw new CliUsageError(

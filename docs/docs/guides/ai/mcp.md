@@ -17,4 +17,12 @@ MCP is a thin adapter over the development-only Bridge. It provides previews, pu
 
 Only use manual setup when necessary. In that case, give both the development server and `@riebeckite/mcp` the same `RIEBECKITE_BRIDGE_TOKEN`, with at least 32 characters.
 
-Mutation tools are opt-in. Set `RIEBECKITE_BRIDGE_MUTATION_TOKEN` and `RIEBECKITE_BRIDGE_MUTATION_APPROVAL_TOKEN` (each at least 32 characters and different) for both the development server and the MCP process. `riebeckite_mutation_plan` creates a stored plan without changing content. `riebeckite_mutation_apply` succeeds only after a human runs `npm exec riebeckite bridge approve <plan-id>` in an interactive terminal with the approval token; approval expires after five minutes and can be used once. Without the mutation token, the tools return an error.
+Mutation tools are opt-in. The shortest path is:
+
+```sh
+npm exec riebeckite ai mcp --mutations
+```
+
+This generates temporary mutation and approval tokens for the run. The approval token is stored in `.riebeckite/bridge/approval-token` (git-ignored) so `bridge approve` can read it without an environment variable; it is removed when the MCP process exits. `riebeckite_mutation_plan` creates a stored plan without changing content. `riebeckite_mutation_apply` succeeds only after a human runs `npm exec riebeckite bridge approve <plan-id>` in an interactive terminal; approval expires after five minutes and can be used once. Without mutation mode or a mutation token, the tools return an error.
+
+For a manual or editor setup, set `RIEBECKITE_BRIDGE_MUTATION_TOKEN` and `RIEBECKITE_BRIDGE_MUTATION_APPROVAL_TOKEN` (each at least 32 characters and different) for both the development server and the MCP process. Run `bridge approve` with the same approval token.

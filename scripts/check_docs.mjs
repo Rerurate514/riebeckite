@@ -198,6 +198,7 @@ const DOCS_ROOT = path.join(repositoryRoot, "docs");
 const DOCS_EXCLUDED_SEGMENTS = new Set([
   "agents",
   "assets",
+  "blog",
   ".obsidian",
   ".riebeckite",
 ]);

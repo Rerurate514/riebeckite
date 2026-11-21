@@ -4,6 +4,8 @@ MCP server for a local Riebeckite development Bridge. It is a thin adapter:
 Riebeckite remains the source of truth for build state, content, diagnostics,
 and mutation validation.
 
+[日本語](./README_ja.md)
+
 ## Setup
 
 Start `riebeckite dev` with `RIEBECKITE_BRIDGE_TOKEN`, then configure an MCP

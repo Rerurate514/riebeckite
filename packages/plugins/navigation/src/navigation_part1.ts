@@ -3,6 +3,7 @@ import {
   type ContentIcon,
   type ContentManifest,
   type ContentManifestEntry,
+  isExcludedSlugPath,
   selectEntriesByLanguage,
 } from "@riebeckite/core";
 import {
@@ -111,10 +112,7 @@ export function isExcluded(
   entry: NavigationEntry,
   excludedSlugs: readonly string[],
 ): boolean {
-  const slug = entry.entry.slug;
-  return excludedSlugs.some(
-    (excluded) => slug === excluded || slug.startsWith(`${excluded}/`),
-  );
+  return isExcludedSlugPath(entry.entry.slug, excludedSlugs);
 }
 
 export function toNavigationEntry(

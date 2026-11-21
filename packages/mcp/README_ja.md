@@ -3,6 +3,8 @@
 ローカルの Riebeckite development Bridge 用 MCP サーバーです。ビルド状態、
 コンテンツ、診断、変更検証の正本は引き続き Riebeckite です。
 
+[English](./README.md)
+
 ## 設定
 
 `RIEBECKITE_BRIDGE_TOKEN` を設定して `riebeckite dev` を起動し、MCP クライアントに

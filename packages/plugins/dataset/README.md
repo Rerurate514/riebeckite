@@ -13,7 +13,8 @@ time.
 `directory` option):
 
 - `pages.ndjson`: one JSON object per discoverable note —
-  `{ slug, permalink, title, tags, date }`
+  `{ slug, permalink, title, tags, date, excerpt, body }` plus `language`
+  for localized notes
 - `links.ndjson`: one JSON object per resolved note-to-note link —
   `{ sourceSlug, sourcePermalink, targetSlug, targetPermalink, raw, embed }`
 - `index.json`: `{ schemaVersion, generator, pages, links }` — the dataset
@@ -23,7 +24,9 @@ The dataset reads `manifest.discoverableEntries`, so `unlisted`, `draft`, and
 scheduled notes never appear in the output. Links whose source or target is
 not a discoverable note are dropped, and non-note links (images, attachments,
 unresolved wikilinks) are excluded from `links.ndjson`. `slug` stays the
-internal identity and `permalink` the public URL.
+internal identity and `permalink` the public URL. `excerpt` prefers the
+frontmatter `description` and falls back to the note body (180 characters);
+`body` carries up to 4,000 characters of plain text.
 
 Output is deterministic: records are sorted by slug and the files contain no
 timestamps, so building the same vault twice produces identical files.
@@ -50,13 +53,14 @@ export default defineConfig({
 | Option | Type | Default | Description |
 | ------ | ---- | ------- | ----------- |
 | `directory` | `string` | `data` | Output directory relative to the site root, without empty, `.`, or `..` segments |
+| `exclude` | `string[]` | `[]` | Slug paths (and their descendants) dropped from every output, matching the discovery exclude semantics of other plugins |
 
 ## Exports
 
 - `dataset()` — plugin factory
-- `buildDatasetPages(entries)` — page records from discoverable entries
-- `buildDatasetLinks(entries)` — link records between discoverable notes
-- `buildDatasetOutputs(entries, directory)` — planned generated outputs
+- `buildDatasetPages(entries, excludedSlugs?)` — page records from discoverable entries
+- `buildDatasetLinks(entries, excludedSlugs?)` — link records between discoverable notes
+- `buildDatasetOutputs(entries, directory, excludedSlugs?)` — planned generated outputs
 - `buildDatasetIndex(pages, links)` — `DatasetIndex` record
 - `toNdjson(records)` — NDJSON serialization
 - Constants: `DATASET_SCHEMA_VERSION`, `DEFAULT_DATASET_DIRECTORY`, `DATASET_GENERATOR`

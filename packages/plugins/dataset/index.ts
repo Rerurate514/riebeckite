@@ -32,6 +32,10 @@ export function dataset(options: DatasetPluginOptions = {}) {
     options,
     validateOptions: validateDatasetOptions,
     planGeneratedOutputs: ({ manifest }) =>
-      buildDatasetOutputs(manifest.discoverableEntries, directory),
+      buildDatasetOutputs(
+        manifest.discoverableEntries,
+        directory,
+        options.exclude ?? [],
+      ),
   });
 }

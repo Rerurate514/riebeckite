@@ -12,6 +12,7 @@ Riebeckite gives AI tools the current development state instead of asking them t
 - [Connect MCP](./mcp.md)
 - [Project guidance for AI](./project-guidance.md)
 - [Capability boundaries](./boundaries.md)
+- [Legacy AI integration page](../ai-integration.md)
 
 Choose only the integrations you need when creating a project:
 

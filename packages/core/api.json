@@ -1071,6 +1071,11 @@
       "type": false
     },
     {
+      "name": "createEntryExcerpt",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "createInvalid",
       "value": true,
       "type": false
@@ -1401,6 +1406,11 @@
       "type": false
     },
     {
+      "name": "extractHtmlHeadings",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "extractLinkOccurrences",
       "value": true,
       "type": false
@@ -1542,6 +1552,11 @@
     },
     {
       "name": "getEntryLanguage",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "getEntryPlainText",
       "value": true,
       "type": false
     },
@@ -1702,6 +1717,11 @@
     },
     {
       "name": "isExcluded",
+      "value": true,
+      "type": false
+    },
+    {
+      "name": "isExcludedSlugPath",
       "value": true,
       "type": false
     },

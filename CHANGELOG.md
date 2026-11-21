@@ -14,8 +14,11 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 ### Added
 
-- Added the `dataset` plugin, which exports the published content graph as versioned NDJSON files at build time. It writes `pages.ndjson`, `links.ndjson`, and `index.json` under a configurable `directory` (default `data`) from `manifest.discoverableEntries`, so unlisted, draft, and scheduled notes never appear, and links between non-discoverable notes are dropped. Output is deterministic and sorted, with no timestamps.
+- Added the `dataset` plugin, which exports the published content graph as versioned NDJSON files at build time. It writes `pages.ndjson`, `links.ndjson`, and `index.json` under a configurable `directory` (default `data`) from `manifest.discoverableEntries`, so unlisted, draft, and scheduled notes never appear, and links between non-discoverable notes are dropped. Page records also carry an `excerpt` (frontmatter `description` or body, 180 characters), a 4,000-character plain-text `body`, and the note `language` when localized. The `exclude` option drops slug paths and their descendants from every output. Output is deterministic and sorted, with no timestamps.
   Packages: `@riebeckite/plugin-dataset`
+
+- Added `@riebeckite/mcp`, an MCP server for the local Riebeckite development Bridge. AI assistants can connect it to `riebeckite dev` (via the bridge token) to read build state, content, and diagnostics and to run mutation validation. It is a read-only adapter: creating or applying mutation plans still requires Riebeckite's explicit mutation capability and human approval.
+  Packages: `@riebeckite/mcp`
 
 - New sites scaffolded with a deployment now register `deploy({ provider: "cloudflare-workers" })` in `riebeckite.config.ts`, so content redirects are emitted as Cloudflare Workers `_redirects` files on every build. The dependency is added to `package.json` automatically. For existing sites, `riebeckite deploy setup` now adds the same plugin entry (and the dependency) when the config does not register it yet, leaving any existing registration untouched.
   Packages: `create-riebeckite`, `@riebeckite/cli`
@@ -24,6 +27,24 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 - The `alias` plugin now declares a `developmentRouteCache` contract, so the development server persists alias routes and restores them across dev-server restarts instead of recomputing them every time. The serialized route state is versioned as `alias-route-v1` and is invalidated automatically when the format changes.
   Packages: `@riebeckite/plugin-alias`
+
+- Added shared content-projection helpers — `isExcludedSlugPath`, `getEntryPlainText`, `createEntryExcerpt`, and `extractHtmlHeadings` — so plugins no longer carry private copies of the discovery exclude check, the excerpt fallback, and the heading extraction. Existing behavior is unchanged; the helpers are now the single source of those projections across plugins.
+  Packages: `@riebeckite/core`
+
+- The taxonomy exclude check now delegates to the shared `isExcludedSlugPath` helper in `@riebeckite/core`, keeping the exact-match-and-descendants semantics in one place instead of a plugin-private copy. Behavior is unchanged; excluded slug paths are still dropped from every taxonomy view.
+  Packages: `@riebeckite/plugin-taxonomy`
+
+- The garden explorer now builds its note projections with the shared `@riebeckite/core` helpers (`isExcludedSlugPath`, `createEntryExcerpt`, `extractHtmlHeadings`, `getEntryPlainText`) instead of plugin-private copies. Behavior is unchanged, and note bodies now respect a cached `plainText` when the content format provides one.
+  Packages: `@riebeckite/plugin-garden-explorer`
+
+- The folder-pages exclude check now delegates to the shared `isExcludedSlugPath` helper in `@riebeckite/core` instead of a plugin-private copy. Behavior is unchanged; excluded slug paths and their descendants are still omitted from folder pages.
+  Packages: `@riebeckite/plugin-folder-pages`
+
+- The navigation exclude check now delegates to the shared `isExcludedSlugPath` helper in `@riebeckite/core` instead of a plugin-private copy. Behavior is unchanged; excluded slug paths and their descendants are still omitted from the navigation tree.
+  Packages: `@riebeckite/plugin-navigation`
+
+- The search index now builds its headings and excerpts with the shared `createEntryExcerpt` and `extractHtmlHeadings` helpers from `@riebeckite/core` instead of plugin-private copies. Behavior is unchanged and every language is still indexed.
+  Packages: `@riebeckite/plugin-search`
 
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.1.0...HEAD
 

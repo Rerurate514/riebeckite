@@ -115,6 +115,12 @@ export {
   extractFrontmatter,
   isPersistentlyCacheable,
 } from "./src/content/content_persistent_cache.js";
+export {
+  createEntryExcerpt,
+  extractHtmlHeadings,
+  getEntryPlainText,
+  isExcludedSlugPath,
+} from "./src/content/content_projection.js";
 export type {
   ContentQueryDateFilter,
   ContentQueryDateGranularity,

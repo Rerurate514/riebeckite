@@ -1,6 +1,10 @@
 import {
   type ConfigValidationIssue,
   type ContentManifestEntry,
+  createEntryExcerpt,
+  getEntryLanguage,
+  getEntryPlainText,
+  isExcludedSlugPath,
   type OutputDependency,
   type PlannedGeneratedOutput,
   resolveEntryDate,
@@ -10,8 +14,11 @@ export const DATASET_SCHEMA_VERSION = 1;
 export const DEFAULT_DATASET_DIRECTORY = "data";
 export const DATASET_GENERATOR = "@riebeckite/plugin-dataset";
 
+const MAX_BODY_LENGTH = 4_000;
+
 export type DatasetPluginOptions = {
   readonly directory?: string;
+  readonly exclude?: readonly string[];
 };
 
 export type DatasetPage = {
@@ -20,6 +27,9 @@ export type DatasetPage = {
   readonly title: string;
   readonly tags: readonly string[];
   readonly date: string | null;
+  readonly excerpt: string;
+  readonly body: string;
+  readonly language?: string;
 };
 
 export type DatasetLink = {
@@ -41,22 +51,38 @@ export type DatasetIndex = {
 export function validateDatasetOptions(
   options: DatasetPluginOptions | undefined,
 ): readonly ConfigValidationIssue[] {
-  if (!options || options.directory === undefined) return [];
   const issues: ConfigValidationIssue[] = [];
-  if (
-    typeof options.directory !== "string" ||
-    options.directory.trim() === ""
-  ) {
-    issues.push({
-      path: "directory",
-      message: "Expected a non-empty string.",
-    });
-  } else if (options.directory.split("/").some(isInvalidSegment)) {
-    issues.push({
-      path: "directory",
-      message:
-        "Expected a relative directory path without empty, '.', or '..' segments.",
-    });
+  if (!options) return issues;
+  if (options.directory !== undefined) {
+    if (
+      typeof options.directory !== "string" ||
+      options.directory.trim() === ""
+    ) {
+      issues.push({
+        path: "directory",
+        message: "Expected a non-empty string.",
+      });
+    } else if (options.directory.split("/").some(isInvalidSegment)) {
+      issues.push({
+        path: "directory",
+        message:
+          "Expected a relative directory path without empty, '.', or '..' segments.",
+      });
+    }
+  }
+  if (options.exclude !== undefined) {
+    if (!Array.isArray(options.exclude)) {
+      issues.push({ path: "exclude", message: "Expected an array." });
+    } else {
+      options.exclude.forEach((slug, index) => {
+        if (typeof slug !== "string" || slug.trim() === "") {
+          issues.push({
+            path: `exclude[${index}]`,
+            message: "Expected a non-empty string.",
+          });
+        }
+      });
+    }
   }
   return issues;
 }
@@ -67,26 +93,38 @@ export function resolveDatasetDirectory(directory: string | undefined): string {
 
 export function buildDatasetPages(
   entries: readonly ContentManifestEntry[],
+  excludedSlugs: readonly string[] = [],
 ): readonly DatasetPage[] {
   return entries
-    .map((entry) => ({
-      slug: entry.slug,
-      permalink: entry.permalink,
-      title: entry.title,
-      tags: entry.tags,
-      date: resolveEntryDate(entry.frontmatter),
-    }))
+    .filter((entry) => !isExcludedSlugPath(entry.slug, excludedSlugs))
+    .map((entry) => {
+      const language = getEntryLanguage(entry);
+      return {
+        slug: entry.slug,
+        permalink: entry.permalink,
+        title: entry.title,
+        tags: entry.tags,
+        date: resolveEntryDate(entry.frontmatter),
+        excerpt: createEntryExcerpt(entry),
+        body: getEntryPlainText(entry).slice(0, MAX_BODY_LENGTH),
+        ...(language === undefined ? {} : { language }),
+      };
+    })
     .sort(compareBySlug);
 }
 
 export function buildDatasetLinks(
   entries: readonly ContentManifestEntry[],
+  excludedSlugs: readonly string[] = [],
 ): readonly DatasetLink[] {
+  const published = entries.filter(
+    (entry) => !isExcludedSlugPath(entry.slug, excludedSlugs),
+  );
   const permalinks = new Map(
-    entries.map((entry) => [entry.slug, entry.permalink] as const),
+    published.map((entry) => [entry.slug, entry.permalink] as const),
   );
   const links: DatasetLink[] = [];
-  for (const entry of entries) {
+  for (const entry of published) {
     for (const link of entry.links) {
       if (link.kind !== "note" || link.slug === null) continue;
       const targetPermalink = permalinks.get(link.slug);
@@ -129,9 +167,10 @@ export function toNdjson(records: readonly unknown[]): string {
 export function buildDatasetOutputs(
   entries: readonly ContentManifestEntry[],
   directory: string,
+  excludedSlugs: readonly string[] = [],
 ): readonly PlannedGeneratedOutput[] {
-  const pages = buildDatasetPages(entries);
-  const links = buildDatasetLinks(entries);
+  const pages = buildDatasetPages(entries, excludedSlugs);
+  const links = buildDatasetLinks(entries, excludedSlugs);
   const dependencies: readonly OutputDependency[] = [{ type: "global" }];
   return [
     {

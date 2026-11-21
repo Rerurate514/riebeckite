@@ -12,9 +12,11 @@ import { dataset } from "../index.ts";
 type EntryOptions = {
   permalink?: string;
   title?: string;
+  html?: string;
   frontmatter?: Record<string, unknown>;
   links?: ContentLink[];
   tags?: string[];
+  language?: string;
 };
 
 function entry(slug: string, options: EntryOptions = {}): ContentManifestEntry {
@@ -22,11 +24,15 @@ function entry(slug: string, options: EntryOptions = {}): ContentManifestEntry {
   return {
     slug,
     permalink,
-    publicLocation: { slug, permalink },
+    publicLocation: {
+      slug,
+      permalink,
+      ...(options.language ? { language: options.language } : {}),
+    },
     title: options.title ?? slug,
     frontmatter: options.frontmatter ?? {},
     publishing: { visibility: "public", routable: true, discoverable: true },
-    html: "",
+    html: options.html ?? "",
     tags: options.tags ?? [],
     links: options.links ?? [],
     backlinks: [],
@@ -78,8 +84,9 @@ function records(content: string): unknown[] {
 test("dataset writes sorted pages, links, and index under the default directory", async () => {
   const a = entry("a", {
     title: "Note A",
+    html: "<p>Body of note A.</p>",
     tags: ["x"],
-    frontmatter: { date: "2026-01-02" },
+    frontmatter: { date: "2026-01-02", description: " Note A summary. " },
     links: [
       noteLink("[[b]]", "b"),
       { raw: "[[draft]]", slug: "draft", kind: "note", embed: false },
@@ -88,7 +95,7 @@ test("dataset writes sorted pages, links, and index under the default directory"
       { raw: "![[b]]", slug: "b", kind: "note", embed: true },
     ],
   });
-  const b = entry("b", { title: "Note B" });
+  const b = entry("b", { title: "Note B", language: "ja" });
   const draft = entry("draft", { permalink: "/private" });
   const outputs = await collectOutputs(dataset(), [b, a], [b, a, draft]);
 
@@ -97,16 +104,32 @@ test("dataset writes sorted pages, links, and index under the default directory"
     ["data/pages.ndjson", "data/links.ndjson", "data/index.json"],
   );
 
-  assert.deepEqual(records(text(output(outputs, "data/pages.ndjson"))), [
-    {
-      slug: "a",
-      permalink: "/a",
-      title: "Note A",
-      tags: ["x"],
-      date: "2026-01-02T00:00:00.000Z",
-    },
-    { slug: "b", permalink: "/b", title: "Note B", tags: [], date: null },
-  ]);
+  assert.deepEqual(
+    records(text(output(outputs, "data/pages.ndjson"))).map(
+      (record) => record as Record<string, unknown>,
+    ),
+    [
+      {
+        slug: "a",
+        permalink: "/a",
+        title: "Note A",
+        tags: ["x"],
+        date: "2026-01-02T00:00:00.000Z",
+        excerpt: "Note A summary.",
+        body: "Body of note A.",
+      },
+      {
+        slug: "b",
+        permalink: "/b",
+        title: "Note B",
+        tags: [],
+        date: null,
+        excerpt: "",
+        body: "",
+        language: "ja",
+      },
+    ],
+  );
 
   assert.deepEqual(records(text(output(outputs, "data/links.ndjson"))), [
     {
@@ -149,7 +172,7 @@ test("dataset drops non-discoverable targets from every output", async () => {
 
   assert.equal(
     text(output(outputs, "data/pages.ndjson")),
-    '{"slug":"a","permalink":"/a","title":"a","tags":[],"date":null}\n',
+    '{"slug":"a","permalink":"/a","title":"a","tags":[],"date":null,"excerpt":"","body":""}\n',
   );
   assert.equal(text(output(outputs, "data/links.ndjson")), "");
   assert.deepEqual(JSON.parse(text(output(outputs, "data/index.json"))), {
@@ -177,6 +200,35 @@ test("dataset honors the directory option", async () => {
   );
 });
 
+test("dataset drops excluded slug paths from pages and both link ends", async () => {
+  const a = entry("a", {
+    links: [noteLink("[[private/secret]]", "private/secret")],
+  });
+  const secret = entry("private/secret");
+  const outputs = await collectOutputs(
+    dataset({ exclude: ["private"] }),
+    [a, secret],
+    [a, secret],
+  );
+
+  assert.deepEqual(
+    records(text(output(outputs, "data/pages.ndjson"))).map(
+      (record) => (record as { slug: string }).slug,
+    ),
+    ["a"],
+  );
+  assert.deepEqual(text(output(outputs, "data/links.ndjson")), "");
+  assert.deepEqual(JSON.parse(text(output(outputs, "data/index.json"))), {
+    schemaVersion: 1,
+    generator: "@riebeckite/plugin-dataset",
+    pages: 1,
+    links: 0,
+  });
+  for (const candidate of outputs) {
+    assert.ok(!text(candidate).includes("/private"));
+  }
+});
+
 test("dataset validates the directory option", () => {
   const plugin = dataset();
   assert.deepEqual(plugin.validateOptions?.(undefined), []);
@@ -186,4 +238,10 @@ test("dataset validates the directory option", () => {
   assert.equal(plugin.validateOptions?.({ directory: "/data" })?.length, 1);
   assert.equal(plugin.validateOptions?.({ directory: "../up" })?.length, 1);
   assert.equal(plugin.validateOptions?.({ directory: "a//b" })?.length, 1);
+  assert.deepEqual(plugin.validateOptions?.({ exclude: [] }), []);
+  assert.deepEqual(plugin.validateOptions?.({ exclude: ["private"] }), []);
+  assert.equal(
+    plugin.validateOptions?.({ exclude: ["private", ""] })?.length,
+    1,
+  );
 });

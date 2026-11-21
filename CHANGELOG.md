@@ -14,8 +14,16 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 ### Added
 
+- Added the `dataset` plugin, which exports the published content graph as versioned NDJSON files at build time. It writes `pages.ndjson`, `links.ndjson`, and `index.json` under a configurable `directory` (default `data`) from `manifest.discoverableEntries`, so unlisted, draft, and scheduled notes never appear, and links between non-discoverable notes are dropped. Output is deterministic and sorted, with no timestamps.
+  Packages: `@riebeckite/plugin-dataset`
+
 - New sites scaffolded with a deployment now register `deploy({ provider: "cloudflare-workers" })` in `riebeckite.config.ts`, so content redirects are emitted as Cloudflare Workers `_redirects` files on every build. The dependency is added to `package.json` automatically. For existing sites, `riebeckite deploy setup` now adds the same plugin entry (and the dependency) when the config does not register it yet, leaving any existing registration untouched.
   Packages: `create-riebeckite`, `@riebeckite/cli`
+
+### Changed
+
+- The `alias` plugin now declares a `developmentRouteCache` contract, so the development server persists alias routes and restores them across dev-server restarts instead of recomputing them every time. The serialized route state is versioned as `alias-route-v1` and is invalidated automatically when the format changes.
+  Packages: `@riebeckite/plugin-alias`
 
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.1.0...HEAD
 

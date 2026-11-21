@@ -36,6 +36,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/plugins/color-mode",
   "packages/plugins/d2",
   "packages/plugins/daily-notes",
+  "packages/plugins/dataset",
   "packages/plugins/dataview",
   "packages/plugins/deploy",
   "packages/plugins/diagnostics",

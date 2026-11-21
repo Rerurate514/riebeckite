@@ -1,4 +1,9 @@
 export const PUBLISHING_METADATA_B = {
+  "packages/plugins/dataset": {
+    description:
+      "Versioned NDJSON dataset exports of the published Riebeckite content graph.",
+    keywords: ["riebeckite", "plugin", "dataset", "ndjson"],
+  },
   "packages/plugins/dataview": {
     description: "Build-time dataview queries for Riebeckite content.",
     keywords: ["riebeckite", "plugin", "dataview", "obsidian"],

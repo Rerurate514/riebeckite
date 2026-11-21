@@ -706,6 +706,15 @@ importers:
         specifier: ^4.22.4
         version: 4.22.4
 
+  packages/plugins/dataset:
+    devDependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../../core
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
   packages/plugins/dataview:
     dependencies:
       '@types/mdast':

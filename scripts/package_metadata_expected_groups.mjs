@@ -22,6 +22,7 @@ export function expectedGroupPackageMetadata(directory) {
       "code-annotations",
       "code-enhance",
       "daily-notes",
+      "dataset",
       "deploy",
       "diagnostics",
       "diff",

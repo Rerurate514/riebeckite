@@ -1,3 +1,4 @@
+import { aiSkillFiles } from "./ai_skills.js";
 import { contentPageFiles } from "./content-pages.js";
 import {
   defaultLanguageForLocale,
@@ -49,6 +50,10 @@ export function siteTemplateFiles(
     ...utilityTemplateFiles(options.utilities ?? SCAFFOLD_DEFAULT_UTILITIES),
     ...presetFiles,
     ...notFoundPageFiles(presetFiles),
+    ...(options.ai?.rules
+      ? [{ path: "RIEBECKITE_AI.md", content: aiRules(variables, options) }]
+      : []),
+    ...(options.ai?.skills ? aiSkillFiles(variables, options) : []),
     ...(options.contentDirectory === undefined &&
     variables.externalContent !== true
       ? [
@@ -232,6 +237,7 @@ function packageJson(
         check: "riebeckite check",
         doctor: "riebeckite doctor",
         inspect: "riebeckite inspect",
+        ...(options.ai?.lint ? { "content:lint": "riebeckite check" } : {}),
       },
       dependencies,
       devDependencies: {
@@ -242,12 +248,39 @@ function packageJson(
         "@types/node": "^24.5.2",
         typescript: "^5.0.0",
         vite: "^8.3.5",
+        ...(options.ai?.mcp ? { "@riebeckite/mcp": RIEBECKITE_VERSION } : {}),
         ...(options.cloudflareWorkers ? { wrangler: WRANGLER_VERSION } : {}),
       },
     },
     null,
     2,
   )}\n`;
+}
+
+function aiRules(
+  variables: SiteTemplateVariables,
+  options: SiteTemplateOptions,
+): string {
+  const contentDirectory = options.contentDirectory ?? "content";
+  const check = options.ai?.lint ? "npm run content:lint" : "npm run check";
+  return `# Riebeckite AI guide
+
+## Scope
+
+- Write content only under \`${contentDirectory}/\`.
+- Keep generated output and dependencies unchanged.
+- Use root-relative Markdown links and preserve existing frontmatter keys.
+
+## Validation
+
+- Run \`${check}\` after changing content.
+- Run \`npm run build\` before publishing.
+
+## Site
+
+- Title: ${variables.title}
+- Default locale: ${variables.locale}
+`;
 }
 
 function riebeckiteConfig(

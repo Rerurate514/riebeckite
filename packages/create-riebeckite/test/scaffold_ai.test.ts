@@ -1,0 +1,96 @@
+import assert from "node:assert/strict";
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import test from "node:test";
+import { scaffoldRiebeckiteSite } from "../src/scaffold/index.js";
+
+test("adds selected AI development support", async (t) => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-scaffold-ai-"),
+  );
+  t.after(() => fs.rm(directory, { recursive: true, force: true }));
+  await scaffoldRiebeckiteSite({
+    targetDirectory: directory,
+    preset: "minimal",
+    ai: { mcp: true, lint: true, rules: true, skills: true },
+  });
+  const manifest = JSON.parse(
+    await fs.readFile(path.join(directory, "package.json"), "utf8"),
+  ) as {
+    scripts: Record<string, string>;
+    devDependencies: Record<string, string>;
+  };
+  assert.equal(manifest.scripts["content:lint"], "riebeckite check");
+  assert.ok(manifest.devDependencies["@riebeckite/mcp"]);
+  assert.match(
+    await fs.readFile(path.join(directory, "RIEBECKITE_AI.md"), "utf8"),
+    /`content\/`/,
+  );
+  assert.match(
+    await fs.readFile(
+      path.join(directory, ".agents", "skills", "riebeckite-site", "SKILL.md"),
+      "utf8",
+    ),
+    /publish: true/,
+  );
+  assert.match(
+    await fs.readFile(
+      path.join(directory, ".agents", "skills", "riebeckite-theme", "SKILL.md"),
+      "utf8",
+    ),
+    /riebeckiteVersion: "0\.1\.0"/,
+  );
+  for (const name of [
+    "riebeckite-site",
+    "riebeckite-plugin",
+    "riebeckite-theme",
+    "riebeckite-configuration",
+    "riebeckite-troubleshooting",
+    "riebeckite-upgrade",
+  ]) {
+    await fs.access(
+      path.join(directory, ".agents", "skills", name, "SKILL.md"),
+    );
+  }
+});
+
+test("adds external-content guidance and no Skills when disabled", async (t) => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-scaffold-ai-external-"),
+  );
+  t.after(() => fs.rm(directory, { recursive: true, force: true }));
+  await scaffoldRiebeckiteSite({
+    targetDirectory: directory,
+    preset: "minimal",
+    ai: { skills: true },
+    deployment: {
+      type: "github-actions",
+      content: {
+        type: "external",
+        contentRepository: "owner/content",
+        siteRepository: "owner/site",
+      },
+    },
+  });
+  assert.match(
+    await fs.readFile(
+      path.join(directory, ".agents", "skills", "riebeckite-site", "SKILL.md"),
+      "utf8",
+    ),
+    /separate content repository/,
+  );
+  const withoutSkills = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-scaffold-no-skills-"),
+  );
+  t.after(() => fs.rm(withoutSkills, { recursive: true, force: true }));
+  await scaffoldRiebeckiteSite({
+    targetDirectory: withoutSkills,
+    preset: "minimal",
+    ai: { skills: false },
+  });
+  await assert.rejects(
+    fs.access(path.join(withoutSkills, ".agents", "skills")),
+    { code: "ENOENT" },
+  );
+});

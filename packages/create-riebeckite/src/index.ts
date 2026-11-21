@@ -64,6 +64,7 @@ export async function runCreateRiebeckite(
       features: options.features,
       utilities: options.utilities,
       deployment: options.deployment,
+      ai: options.ai,
       ...(options.contentDirectory === undefined
         ? {}
         : { contentDirectory: options.contentDirectory }),

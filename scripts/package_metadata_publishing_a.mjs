@@ -31,6 +31,10 @@ export const PUBLISHING_METADATA_A = {
     description: "Shared Git repository access for Riebeckite plugins.",
     keywords: ["riebeckite", "git", "history"],
   },
+  "packages/mcp": {
+    description: "MCP server for a local Riebeckite development Bridge.",
+    keywords: ["riebeckite", "mcp", "model-context-protocol", "development"],
+  },
   "packages/preview": {
     description: "Shared secure Markdown preview runtime for Riebeckite.",
     keywords: ["riebeckite", "preview", "markdown"],

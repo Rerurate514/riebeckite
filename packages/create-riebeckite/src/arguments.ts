@@ -3,7 +3,10 @@ import {
   parseScaffoldFeatures,
   type ScaffoldFeatureName,
 } from "./scaffold/features.js";
-import type { ScaffoldDeployment } from "./scaffold/options.js";
+import type {
+  ScaffoldAiOptions,
+  ScaffoldDeployment,
+} from "./scaffold/options.js";
 import {
   isScaffoldPresetName,
   SCAFFOLD_PRESET_NAMES,
@@ -27,10 +30,11 @@ export type CreateRiebeckiteOptions = {
   readonly contentDirectory?: string;
   readonly customDomain?: string;
   readonly cloneContent?: boolean;
+  readonly ai?: ScaffoldAiOptions;
 };
 
 export const CREATE_RIEBECKITE_USAGE =
-  "Usage: create-riebeckite [directory] [--preset <name>] [--features <names>] [--utilities <names>] [--content-directory <path>] [--domain <hostname>] [--github-actions | --cloudflare-workers] [--content-repository <owner/repository>] [--site-repository <owner/repository>] [--clone-content] [--force] [-h | --help]";
+  "Usage: create-riebeckite [directory] [--preset <name>] [--features <names>] [--utilities <names>] [--ai <mcp,lint,rules,skills>] [--content-directory <path>] [--domain <hostname>] [--github-actions | --cloudflare-workers] [--content-repository <owner/repository>] [--site-repository <owner/repository>] [--clone-content] [--force] [-h | --help]";
 
 export function parseArguments(
   arguments_: readonly string[],
@@ -48,6 +52,7 @@ export function parseArguments(
   let contentDirectory: string | undefined;
   let customDomain: string | undefined;
   let cloneContent = false;
+  let ai: ScaffoldAiOptions | undefined;
 
   for (let index = 0; index < arguments_.length; index += 1) {
     const argument = arguments_[index];
@@ -143,6 +148,15 @@ export function parseArguments(
       index += 1;
       continue;
     }
+    if (argument === "--ai") {
+      const value = arguments_[index + 1];
+      if (value === undefined || value.startsWith("-")) {
+        throw new Error("--ai requires comma-separated names.");
+      }
+      ai = parseAiOptions(value);
+      index += 1;
+      continue;
+    }
     if (argument.startsWith("-")) {
       throw new Error(`Unknown option: ${argument}`);
     }
@@ -180,7 +194,26 @@ export function parseArguments(
     ...(contentDirectory === undefined ? {} : { contentDirectory }),
     ...(customDomain === undefined ? {} : { customDomain }),
     ...(cloneContent ? { cloneContent: true } : {}),
+    ...(ai === undefined ? {} : { ai }),
     deployment,
+  };
+}
+
+function parseAiOptions(value: string): ScaffoldAiOptions {
+  const names = value.split(",").map((name) => name.trim());
+  const allowed = new Set(["mcp", "lint", "rules", "skills"]);
+  if (
+    names.length === 0 ||
+    names.some((name) => !allowed.has(name)) ||
+    new Set(names).size !== names.length
+  ) {
+    throw new Error("--ai accepts mcp, lint, rules, and skills.");
+  }
+  return {
+    mcp: names.includes("mcp"),
+    lint: names.includes("lint"),
+    rules: names.includes("rules"),
+    skills: names.includes("skills"),
   };
 }
 

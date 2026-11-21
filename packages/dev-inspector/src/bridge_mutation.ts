@@ -83,6 +83,18 @@ export async function createBridgeMutationStore(
   };
 }
 
+export async function validateBridgeMutation(
+  contentRoot: string,
+  operations: readonly ContentMutationOperation[],
+  formats?: {
+    readonly isContentPath: (path: string) => boolean;
+    readonly toSlug: (path: string) => string | undefined;
+  },
+): Promise<ContentMutationPlan> {
+  const { FileSystemContentMutation } = await import("@riebeckite/node");
+  return new FileSystemContentMutation(contentRoot, formats).plan(operations);
+}
+
 export async function reviewBridgeMutationPlan(
   contentRoot: string,
   planId: string,

@@ -11,6 +11,7 @@ import { createContentManifest, createInvalid } from "@riebeckite/core";
 import type { ViteDevServer } from "vite";
 import { riebeckiteBridge } from "../src/bridge.js";
 import {
+  inspectBridgeContext,
   inspectBridgeImpact,
   inspectBridgePage,
   inspectBridgePreview,
@@ -83,6 +84,12 @@ test("advertises inspection capabilities when a content root is supplied", async
     "publication",
     "seo",
     "build-impact",
+    "context",
+    "schema",
+    "inventory",
+    "links",
+    "content",
+    "mutation-validation",
   ]);
 });
 
@@ -509,6 +516,79 @@ test("returns content diagnostics and last-build impact", () => {
     ).completeness,
     "complete",
   );
+});
+
+test("returns a resolved source context at one revision", async (t) => {
+  const { bootstrap, close } = bridge({
+    contentRoot: "/vault",
+    publicOrigin: "https://example.com",
+    getSnapshot: fixtureSnapshot,
+  });
+  t.after(close);
+  const { origin } = await bootstrapOrigin(bootstrap);
+  const response = await bridgeRequest(
+    origin,
+    "/__riebeckite/bridge/v1/context?path=notes%2Fhello.md",
+  );
+  const context = (await response.json()) as {
+    status: string;
+    entry: { source: { path: string } };
+    publication: { canonicalUrl: string };
+    preview: { available: boolean };
+    diagnostics: unknown[];
+    impact: { kind: string };
+    revision: number;
+  };
+  assert.equal(response.status, 200);
+  assert.equal(context.status, "resolved");
+  assert.equal(context.entry.source.path, "notes/hello.md");
+  assert.equal(
+    context.publication.canonicalUrl,
+    "https://example.com/ja/hello/",
+  );
+  assert.equal(context.preview.available, true);
+  assert.deepEqual(context.diagnostics, []);
+  assert.equal(context.impact.kind, "last-build-result");
+  assert.equal(context.revision, 0);
+});
+
+test("preserves source resolution failures for context", () => {
+  const context = inspectBridgeContext(fixtureSnapshot(), "../secret.md", {
+    contentRoot: "/vault",
+    revision: 4,
+  });
+  assert.deepEqual(context, {
+    status: "unsupported",
+    reason: "INVALID_SOURCE_PATH",
+    revision: 4,
+  });
+});
+
+test("serves discovery, inventory, aggregate diagnostics, links, and guarded content", async (t) => {
+  const { bootstrap, close } = bridge({
+    contentRoot: "/vault",
+    getSnapshot: fixtureSnapshot,
+  });
+  t.after(close);
+  const { origin } = await bootstrapOrigin(bootstrap);
+  const [schema, inventory, diagnostics, links, content] = await Promise.all([
+    bridgeRequest(origin, "/__riebeckite/bridge/v1/schema"),
+    bridgeRequest(origin, "/__riebeckite/bridge/v1/inventory?limit=1"),
+    bridgeRequest(origin, "/__riebeckite/bridge/v1/diagnostics?since=0"),
+    bridgeRequest(
+      origin,
+      "/__riebeckite/bridge/v1/links?path=notes%2Fhello.md",
+    ),
+    bridgeRequest(
+      origin,
+      "/__riebeckite/bridge/v1/content?path=notes%2Fhello.md",
+    ),
+  ]);
+  assert.equal((await schema.json()).protocolVersion, 1);
+  assert.equal((await inventory.json()).page.total, 3);
+  assert.equal((await diagnostics.json()).delta, "unchanged");
+  assert.deepEqual((await links.json()).links, []);
+  assert.deepEqual((await content.json()).content, { available: false });
 });
 
 test("streams the State and content.changed event schema", async (t) => {

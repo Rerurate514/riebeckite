@@ -20,6 +20,7 @@ import {
   wranglerConfigForDirectory,
 } from "./wrangler-defaults.js";
 
+export { aiSkillFiles } from "./ai_skills.js";
 export {
   deploymentWorkflow,
   type ScaffoldPublicationSchedule,
@@ -38,6 +39,7 @@ export {
   type ScaffoldNextStepsOptions,
 } from "./next-steps.js";
 export {
+  type ScaffoldAiOptions,
   type ScaffoldContentSource,
   type ScaffoldDeployment,
   type ScaffoldDeploymentFlags,
@@ -95,6 +97,7 @@ export async function scaffoldRiebeckiteSite(
       ...(options.contentDirectory === undefined
         ? {}
         : { contentDirectory: options.contentDirectory }),
+      ...(options.ai === undefined ? {} : { ai: options.ai }),
     }),
     ...deploymentTemplateOrConfig(deployment, targetDirectory, options),
   ];

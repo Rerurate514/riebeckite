@@ -35,6 +35,7 @@ Guides only. For the full documentation map, see [Documentation](../README.md).
 | Build a multilingual site | [Localization](./localization.md) |
 | Develop a local Plugin | [Local Plugin Development](./local-plugin-development.md) |
 | Connect a local editor tool | [Editor integration](./editor-integration.md) |
+| Connect AI tools safely | [AI integration](./ai/README.md) |
 | Collect page views | [Analytics](./analytics.md) |
 | Replace the icon, logo, or link preview image | [Branding your site](./branding.md) |
 | Deploy | [Deployment](./deployment/README.md) |
@@ -50,6 +51,7 @@ Bulk content changes have two entry points. Use [Content mutation](../framework/
 - [Localization](./localization.md) — multiple languages, URLs, and language switching.
 - [Local Plugin Development](./local-plugin-development.md) — previewing a local Plugin with the real HonoX/Vite development server.
 - [Editor integration](./editor-integration.md) — connecting a local editor tool to the read-only development Bridge.
+- [AI integration](./ai/README.md) — connecting MCP and managing generated AI guidance.
 - [Analytics](./analytics.md) — adding analytics to a Riebeckite site.
 - [Branding your site](./branding.md) — replacing the site favicon, header logo, and link preview image.
 - [Customizing your site](./customizing-your-site.md) — editing routes, components, islands, and CSS in `app/` as a normal HonoX application.

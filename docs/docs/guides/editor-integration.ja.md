@@ -22,3 +22,5 @@ PowerShell では先に `$env:RIEBECKITE_BRIDGE_TOKEN` を設定してから `ri
 Bridge は標準では読み取り専用です。絶対ソースパスは返さず、routable でないコンテンツの非公開 Preview も提供せず、本番 URL を推測しません。変更機能には、それぞれ32文字以上で異なる `RIEBECKITE_BRIDGE_MUTATION_TOKEN` と `RIEBECKITE_BRIDGE_MUTATION_APPROVAL_TOKEN` の環境変数が必要です。Mutation Tokenを持つクライアントはPlanを作成できますが、適用には対話端末での `riebeckite bridge approve <plan-id>` によるレビューが必要です。両方の秘密情報をエディタの永続設定、URL、ログ、プロセス引数に入れないでください。承認はサーバー側に保持され、5分で失効し、1回だけ使用できます。エディタは承認、Recovery、Rollbackを実装してはいけません。
 
 リクエストと応答の仕様は [Bridge Protocol v1](https://github.com/Rerurate514/riebeckite/blob/main/packages/dev-inspector/BRIDGE_ja.md) を参照してください。
+
+AI クライアントには [AI 連携ガイド](./ai/README.ja.md) を参照してください。MCP ランチャーは一時的な Bridge トークンを管理するため、クライアント設定へ書く必要がありません。

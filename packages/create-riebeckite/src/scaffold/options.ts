@@ -25,6 +25,13 @@ export type ScaffoldDeployment =
       readonly content: ScaffoldContentSource;
     };
 
+export type ScaffoldAiOptions = {
+  readonly mcp: boolean;
+  readonly lint: boolean;
+  readonly rules: boolean;
+  readonly skills: boolean;
+};
+
 export type ScaffoldSiteOptions = {
   readonly targetDirectory: string;
   readonly name?: string;
@@ -36,6 +43,7 @@ export type ScaffoldSiteOptions = {
   readonly contentDirectory?: string;
   readonly customDomain?: string;
   readonly overwrite?: boolean;
+  readonly ai?: ScaffoldAiOptions;
 };
 
 export type ScaffoldSiteResult = {

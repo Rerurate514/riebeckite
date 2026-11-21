@@ -45,6 +45,9 @@ export function rejectBridgeRequest(
   }
   if (
     request.method === "POST" &&
+    ![`${bridgePath}/mutations/validate`, `${bridgePath}/mutations/plan`].some(
+      (pathname) => requestUrl.pathname === pathname,
+    ) &&
     !requestUrl.pathname.startsWith(`${bridgePath}/mutations/`)
   ) {
     response.statusCode = 405;
@@ -75,6 +78,10 @@ export async function handleBridgeRequest(
   try {
     const snapshot = await context.options.getSnapshot(context.server);
     if (request.method === "POST") {
+      if (requestUrl.pathname === `${bridgePath}/mutations/validate`) {
+        await handleMutationValidationPost(request, response, context);
+        return;
+      }
       await handleMutationPost(request, response, requestUrl, context);
       return;
     }
@@ -87,7 +94,7 @@ export async function handleBridgeRequest(
     response.setHeader("x-content-type-options", "nosniff");
     response.end(
       JSON.stringify(
-        bridgeResponse({
+        await bridgeResponse({
           requestUrl,
           snapshot,
           server: context.server,
@@ -102,6 +109,42 @@ export async function handleBridgeRequest(
     response.setHeader("content-type", "application/json; charset=utf-8");
     response.end(JSON.stringify({ code: "BRIDGE_STATUS_UNAVAILABLE" }));
   }
+}
+
+async function handleMutationValidationPost(
+  request: http.IncomingMessage,
+  response: http.ServerResponse,
+  context: BridgeRequestContext,
+): Promise<void> {
+  const { isMutationOperations, validateBridgeMutation } = await import(
+    "./bridge_mutation.js"
+  );
+  const { readJson } = await import("./bridge_response.js");
+  const body = await readJson(request);
+  const contentRoot =
+    typeof context.options.contentRoot === "function"
+      ? context.options.contentRoot()
+      : context.options.contentRoot;
+  if (!body || !isMutationOperations(body.operations)) {
+    response.statusCode = 400;
+    response.end(JSON.stringify({ code: "INVALID_OPERATIONS" }));
+    return;
+  }
+  if (!contentRoot) {
+    response.statusCode = 503;
+    response.end(JSON.stringify({ code: "BRIDGE_STATUS_UNAVAILABLE" }));
+    return;
+  }
+  response.setHeader("content-type", "application/json; charset=utf-8");
+  response.end(
+    JSON.stringify(
+      await validateBridgeMutation(
+        contentRoot,
+        body.operations,
+        context.options.contentFormats?.(),
+      ),
+    ),
+  );
 }
 
 export async function handleMutationPost(
@@ -236,6 +279,11 @@ export function isBridgePath(pathname: string): boolean {
       "publication",
       "diagnostics",
       "impact",
+      "context",
+      "schema",
+      "inventory",
+      "links",
+      "content",
       "events",
     ].some((name) => pathname === `${bridgePath}/${name}`)
   );

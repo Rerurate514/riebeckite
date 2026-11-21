@@ -6,6 +6,8 @@ sidebar.order: 20
 ---
 # Getting Started
 
+For MCP, project rules, and generated Skills for AI-assisted development, see [AI integration](../guides/ai/README.md).
+
 This section is the beginner path for publishing your first Riebeckite site. Follow it in order; layout variations, plugin development, and deployment details are linked only when you need them.
 
 ```text

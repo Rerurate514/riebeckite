@@ -15,10 +15,19 @@ export function isExcludedSlugPath(
   );
 }
 
+const plainTextByEntry = new WeakMap<
+  Pick<ContentManifestEntry, "html" | "plainText">,
+  string
+>();
+
 export function getEntryPlainText(
   entry: Pick<ContentManifestEntry, "html" | "plainText">,
 ): string {
-  return entry.plainText ?? htmlToPlainText(entry.html);
+  const cached = plainTextByEntry.get(entry);
+  if (cached !== undefined) return cached;
+  const plainText = entry.plainText ?? htmlToPlainText(entry.html);
+  plainTextByEntry.set(entry, plainText);
+  return plainText;
 }
 
 export function createEntryExcerpt(

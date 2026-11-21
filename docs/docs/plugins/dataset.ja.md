@@ -20,6 +20,22 @@ title: Dataset
 
 出力は決定的です。レコードは slug 順に並び、ファイルにタイムスタンプは含まれないため、同じ vault を2回ビルドすると同一のファイルが得られます。
 
+## スキーマ
+
+パッケージにはすべてのレコード型の正本（JSON Schema）が同梱されており、Riebeckite のパッケージを一切インストールせずに、ダウンロードしたファイルを検証できます。
+
+```text
+@riebeckite/plugin-dataset/schema/pages.schema.json
+@riebeckite/plugin-dataset/schema/links.schema.json
+@riebeckite/plugin-dataset/schema/index.schema.json
+```
+
+`pages.ndjson` の各行が `pages` レコード、`links.ndjson` の各行が `links` レコード、`index.json` は `index` に対応します。プラグイン自身のテストが生成結果をこれらのスキーマと `index.json` の件数で検証するため、スキーマと実装がずれるとビルドが失敗します。
+
+`schemaVersion` はレコード構造への破壊的変更のみをカウントします。オプションフィールドの追加はバージョンを維持し、フィールドの削除・リネーム・意味変更でバージョンを上げます。詳細は
+[データセットスキーマのバージョニングに関する ADR](https://github.com/Rerurate514/riebeckite/blob/main/docs/agents/adr/20261122-101500-dataset-schema-versioning-9d3f2a.md)
+を参照してください。
+
 ## インストール
 
 ```sh

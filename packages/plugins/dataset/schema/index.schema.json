@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:riebeckite:dataset:index:v1",
+  "title": "Riebeckite dataset index",
+  "description": "index.json emitted by @riebeckite/plugin-dataset.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "generator", "pages", "links"],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Version of the pages and links record schemas; increments on breaking changes, additive optional fields keep the version."
+    },
+    "generator": {
+      "type": "string",
+      "const": "@riebeckite/plugin-dataset"
+    },
+    "pages": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of records in pages.ndjson."
+    },
+    "links": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of records in links.ndjson."
+    }
+  }
+}

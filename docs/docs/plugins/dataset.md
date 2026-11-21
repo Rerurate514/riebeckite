@@ -33,6 +33,28 @@ frontmatter `description` and falls back to the note body (180 characters);
 Output is deterministic: records are sorted by slug and the files contain no
 timestamps, so building the same vault twice produces identical files.
 
+## Schemas
+
+The package ships normative JSON Schema documents for every record type, so
+standalone consumers can validate the downloaded files without installing any
+Riebeckite package:
+
+```text
+@riebeckite/plugin-dataset/schema/pages.schema.json
+@riebeckite/plugin-dataset/schema/links.schema.json
+@riebeckite/plugin-dataset/schema/index.schema.json
+```
+
+Each `pages.ndjson` line is one `pages` record, each `links.ndjson` line is one
+`links` record, and `index.json` matches `index`. The plugin's tests validate
+generated output against these schemas and check the `index.json` record
+counts, so a schema and implementation drift fails the build.
+
+`schemaVersion` counts breaking changes to the record shapes: appending an
+optional field keeps the version, while removing, renaming, or redefining a
+field bumps it. See
+[the dataset schema versioning ADR](https://github.com/Rerurate514/riebeckite/blob/main/docs/agents/adr/20261122-101500-dataset-schema-versioning-9d3f2a.md).
+
 ## Installation
 
 ```sh

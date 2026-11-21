@@ -11,7 +11,10 @@
       "import": "./dist/index.js",
       "source": "./index.ts",
       "default": "./dist/index.js"
-    }
+    },
+    "./schema/pages.schema.json": "./schema/pages.schema.json",
+    "./schema/links.schema.json": "./schema/links.schema.json",
+    "./schema/index.schema.json": "./schema/index.schema.json"
   },
   "peerDependencies": {
     "@riebeckite/core": "workspace:^"
@@ -27,6 +30,7 @@
     "LICENSE",
     "README.md",
     "README_ja.md",
+    "schema",
     "dist"
   ],
   "scripts": {

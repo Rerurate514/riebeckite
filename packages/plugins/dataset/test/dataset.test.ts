@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import {
   type ContentLink,
@@ -244,4 +245,139 @@ test("dataset validates the directory option", () => {
     plugin.validateOptions?.({ exclude: ["private", ""] })?.length,
     1,
   );
+});
+
+type Schema = {
+  readonly type?: string | readonly string[];
+  readonly const?: unknown;
+  readonly minimum?: number;
+  readonly required?: readonly string[];
+  readonly properties?: Record<string, Schema>;
+  readonly items?: Schema;
+  readonly additionalProperties?: boolean;
+};
+
+function schemaTypeMatches(value: unknown, type: string): boolean {
+  switch (type) {
+    case "object":
+      return (
+        typeof value === "object" && value !== null && !Array.isArray(value)
+      );
+    case "array":
+      return Array.isArray(value);
+    case "string":
+      return typeof value === "string";
+    case "boolean":
+      return typeof value === "boolean";
+    case "integer":
+      return typeof value === "number" && Number.isInteger(value);
+    case "null":
+      return value === null;
+    default:
+      return false;
+  }
+}
+
+function validateSchema(
+  value: unknown,
+  schema: Schema,
+  path: string,
+): string[] {
+  const errors: string[] = [];
+  const types =
+    schema.type === undefined
+      ? []
+      : Array.isArray(schema.type)
+        ? schema.type
+        : [schema.type];
+  if (
+    types.length > 0 &&
+    !types.some((type) => schemaTypeMatches(value, type))
+  ) {
+    return [`${path}: expected type ${types.join(" or ")}`];
+  }
+  if (schema.const !== undefined && value !== schema.const) {
+    errors.push(`${path}: expected ${JSON.stringify(schema.const)}`);
+  }
+  if (
+    typeof value === "number" &&
+    schema.minimum !== undefined &&
+    value < schema.minimum
+  ) {
+    errors.push(`${path}: expected at least ${schema.minimum}`);
+  }
+  if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+    const record = value as Record<string, unknown>;
+    for (const key of schema.required ?? []) {
+      if (!(key in record)) {
+        errors.push(`${path}: missing required key ${JSON.stringify(key)}`);
+      }
+    }
+    for (const [key, child] of Object.entries(schema.properties ?? {})) {
+      if (key in record) {
+        errors.push(...validateSchema(record[key], child, `${path}.${key}`));
+      }
+    }
+    if (schema.additionalProperties === false) {
+      for (const key of Object.keys(record)) {
+        if (!(key in (schema.properties ?? {}))) {
+          errors.push(`${path}: unexpected key ${JSON.stringify(key)}`);
+        }
+      }
+    }
+  }
+  if (Array.isArray(value) && schema.items !== undefined) {
+    value.forEach((item, index) => {
+      errors.push(
+        ...validateSchema(item, schema.items as Schema, `${path}[${index}]`),
+      );
+    });
+  }
+  return errors;
+}
+
+function loadSchema(name: string): Schema {
+  return JSON.parse(
+    readFileSync(
+      new URL(`../schema/${name}.schema.json`, import.meta.url),
+      "utf8",
+    ),
+  ) as Schema;
+}
+
+test("dataset outputs conform to the published schemas and index counts", async () => {
+  const a = entry("a", {
+    title: "Note A",
+    html: "<p>Body of note A.</p>",
+    tags: ["x"],
+    frontmatter: { date: "2026-01-02" },
+    links: [
+      noteLink("[[b]]", "b"),
+      { raw: "![[b]]", slug: "b", kind: "note", embed: true },
+    ],
+    language: "ja",
+  });
+  const b = entry("b", { html: "<h1>Heading</h1>" });
+  const outputs = await collectOutputs(dataset(), [a, b], [a, b]);
+
+  const pages = records(text(output(outputs, "data/pages.ndjson")));
+  const links = records(text(output(outputs, "data/links.ndjson")));
+  const index = JSON.parse(text(output(outputs, "data/index.json")));
+
+  assert.deepEqual(
+    pages.flatMap((record) =>
+      validateSchema(record, loadSchema("pages"), "page"),
+    ),
+    [],
+  );
+  assert.deepEqual(
+    links.flatMap((record) =>
+      validateSchema(record, loadSchema("links"), "link"),
+    ),
+    [],
+  );
+  assert.deepEqual(validateSchema(index, loadSchema("index"), "index"), []);
+  const counts = index as { pages: number; links: number };
+  assert.equal(counts.pages, pages.length);
+  assert.equal(counts.links, links.length);
 });

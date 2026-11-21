@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:riebeckite:dataset:pages:v1",
+  "title": "Riebeckite dataset page record",
+  "description": "One record per line of pages.ndjson, emitted by @riebeckite/plugin-dataset.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["slug", "permalink", "title", "tags", "date", "excerpt", "body"],
+  "properties": {
+    "slug": {
+      "type": "string",
+      "description": "Stable internal note identifier; unchanged when the public URL changes."
+    },
+    "permalink": {
+      "type": "string",
+      "description": "Published URL path of the page."
+    },
+    "title": {
+      "type": "string",
+      "description": "Resolved page title."
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Resolved entry tags."
+    },
+    "date": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "Resolved publication date as an ISO 8601 datetime, or null when the note has no date."
+    },
+    "excerpt": {
+      "type": "string",
+      "description": "Frontmatter description when set, otherwise the leading plain text of the note, capped at 180 characters."
+    },
+    "body": {
+      "type": "string",
+      "description": "Plain-text body capped at 4,000 characters."
+    },
+    "language": {
+      "type": "string",
+      "description": "Language of the entry's public location, omitted when unset."
+    }
+  }
+}

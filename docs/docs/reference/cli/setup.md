@@ -83,7 +83,7 @@ npm exec -- riebeckite init my-site --utilities editorconfig,npmrc,vscode
 | `gitignore` | `.gitignore` |
 | `editorconfig` | `.editorconfig` |
 | `gitattributes` | `.gitattributes` |
-| `biome` | `biome.json` |
+| `biome` | `biome.json`, plus `npm run lint` and `npm run format` scripts |
 | `npmrc` | `.npmrc` |
 | `vscode` | `.vscode/settings.json` |
 

@@ -70,7 +70,7 @@ npm exec -- riebeckite init my-site --utilities editorconfig,npmrc,vscode
 | `gitignore` | `.gitignore` |
 | `editorconfig` | `.editorconfig` |
 | `gitattributes` | `.gitattributes` |
-| `biome` | `biome.json` |
+| `biome` | `biome.json` と `npm run lint` / `npm run format` スクリプト |
 | `npmrc` | `.npmrc` |
 | `vscode` | `.vscode/settings.json` |
 

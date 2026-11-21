@@ -237,6 +237,9 @@ function packageJson(
         check: "riebeckite check",
         doctor: "riebeckite doctor",
         inspect: "riebeckite inspect",
+        ...(utilities.includes("biome")
+          ? { lint: "biome lint .", format: "biome format --write ." }
+          : {}),
       },
       dependencies,
       devDependencies: {

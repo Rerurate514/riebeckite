@@ -8,7 +8,9 @@
     "build": "riebeckite build",
     "check": "riebeckite check",
     "doctor": "riebeckite doctor",
-    "inspect": "riebeckite inspect"
+    "inspect": "riebeckite inspect",
+    "lint": "biome lint .",
+    "format": "biome format --write ."
   },
   "dependencies": {
     "@riebeckite/core": "^0.1.0",

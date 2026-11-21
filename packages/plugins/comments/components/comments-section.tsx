@@ -1,134 +1,41 @@
 import { type PluginSiteComponent, resolvePlugins } from "@riebeckite/core";
-import { useArticleContext, useSiteContext } from "@riebeckite/ui";
+import { useSiteContext } from "@riebeckite/ui";
 import {
-  DEFAULT_COMMENTS_LOCALE,
+  DEFAULT_COMMENTS_CLASS_NAME,
   resolveCommentsOptions,
 } from "../src/options.js";
-import type { CommentsOptions, CommentsPage } from "../src/types.js";
-import { isSafeImageUrl, isSafeLinkUrl } from "../src/url.js";
+import type { CommentsOptions } from "../src/types.js";
 
 export type CommentsSectionProps = {
-  readonly page: CommentsPage;
-  readonly headingText?: string;
   readonly className?: string;
-  readonly emptyText?: string;
-  readonly locale?: string;
 };
 
 const CommentsSection = (({
-  page,
-  headingText = "Comments",
-  className = "rr-comments",
-  emptyText = "No comments yet.",
-  locale = DEFAULT_COMMENTS_LOCALE,
+  className = DEFAULT_COMMENTS_CLASS_NAME,
 }: Readonly<CommentsSectionProps>) => {
   return (
-    <section
-      class={className}
-      data-rr-comments
-      data-content-id={page.contentId}
-      aria-label={headingText}
-    >
-      <h2 class="rr-comments__heading">{headingText}</h2>
-      {page.comments.length === 0 ? (
-        <p class="rr-comments__empty">{emptyText}</p>
-      ) : (
-        <ol class="rr-comments__list">
-          {page.comments.map((comment) => {
-            const authorUrl = isSafeLinkUrl(comment.author.url)
-              ? comment.author.url
-              : undefined;
-            const avatarUrl = isSafeImageUrl(comment.author.avatarUrl)
-              ? comment.author.avatarUrl
-              : undefined;
-            const commentUrl = isSafeLinkUrl(comment.url)
-              ? comment.url
-              : undefined;
-            return (
-              <li class="rr-comments__item" data-comment-id={comment.id}>
-                <div class="rr-comments__meta">
-                  {avatarUrl && (
-                    <img
-                      class="rr-comments__avatar"
-                      src={avatarUrl}
-                      alt=""
-                      loading="lazy"
-                    />
-                  )}
-                  {authorUrl ? (
-                    <a
-                      class="rr-comments__author-link"
-                      href={authorUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {comment.author.name}
-                    </a>
-                  ) : (
-                    <span class="rr-comments__author-name">
-                      {comment.author.name}
-                    </span>
-                  )}
-                  <time class="rr-comments__time" datetime={comment.createdAt}>
-                    {formatCommentDate(comment.createdAt, locale)}
-                  </time>
-                </div>
-                {commentUrl ? (
-                  <a
-                    class="rr-comments__body-link"
-                    href={commentUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {comment.body}
-                  </a>
-                ) : (
-                  <p class="rr-comments__body">{comment.body}</p>
-                )}
-              </li>
-            );
-          })}
-        </ol>
-      )}
+    <section class={className} data-rr-comments aria-label="Comments">
+      <div class="giscus" />
+      <noscript>
+        <p class="rr-comments__noscript">Comments require JavaScript.</p>
+      </noscript>
     </section>
   );
 }) satisfies PluginSiteComponent<CommentsSectionProps>;
 
 export default CommentsSection;
 
-export type ArticleCommentsSectionProps = Omit<CommentsSectionProps, "page">;
+export type ArticleCommentsSectionProps = CommentsSectionProps;
 
-export async function ArticleCommentsSection(
+export function ArticleCommentsSection(
   props: Readonly<ArticleCommentsSectionProps>,
 ) {
   const site = useSiteContext();
-  const article = useArticleContext();
-  const contentId = article?.entry?.contentId;
-  if (!site || !contentId) return [];
+  if (!site) return [];
   const options = findCommentsOptions(site.config.plugins);
-  if (!options?.provider) return [];
+  if (!options) return [];
   const resolved = resolveCommentsOptions(options);
-  const page = await resolved.provider.getComments(contentId, resolved.limit);
-  return (
-    <CommentsSection
-      page={page}
-      headingText={props.headingText ?? resolved.headingText}
-      className={props.className ?? resolved.className}
-      emptyText={props.emptyText ?? resolved.emptyText}
-      locale={props.locale ?? resolved.locale}
-    />
-  );
-}
-
-function formatCommentDate(value: string, locale: string): string {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  return new Intl.DateTimeFormat(locale, {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    timeZone: "UTC",
-  }).format(date);
+  return <CommentsSection className={props.className ?? resolved.className} />;
 }
 
 function findCommentsOptions(

@@ -18,12 +18,12 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 - Add `@riebeckite/plugin-reactions` and `@riebeckite/plugin-comments`, two new
   plugins that bring Zenn/Qiita-style engagement to published notes. Reactions
-  renders emoji reaction buttons (👍 ❤️ 🎉 💡 🤔) with counts, and Comments
-  renders comment threads. Both are backed by pluggable providers with in-memory
-  defaults, plus production adapters: Cloudflare D1
-  (`@riebeckite/reactions-cloudflare`, `@riebeckite/comments-cloudflare`) and
-  GitHub Discussions (`@riebeckite/reactions-github`, `@riebeckite/comments-github`).
-  Packages: `@riebeckite/plugin-reactions`, `@riebeckite/plugin-comments`, `@riebeckite/reactions-cloudflare`, `@riebeckite/comments-cloudflare`, `@riebeckite/reactions-github`, `@riebeckite/comments-github`
+  renders emoji reaction buttons (👍 ❤️ 🎉 💡 🤔) with counts and is backed by
+  pluggable providers, plus production adapters for Cloudflare D1
+  (`@riebeckite/reactions-cloudflare`) and GitHub Discussions
+  (`@riebeckite/reactions-github`). Comments embeds a Giscus thread on GitHub
+  Discussions, so posting, sign-in, and moderation stay with GitHub.
+  Packages: `@riebeckite/plugin-reactions`, `@riebeckite/plugin-comments`, `@riebeckite/reactions-cloudflare`, `@riebeckite/reactions-github`
 
 - Add `navigation({ exclude })` to omit slug paths and their descendants from derived navigation.
   Packages: `@riebeckite/plugin-navigation`

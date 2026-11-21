@@ -13,8 +13,6 @@ export const PACKAGE_DIRECTORIES = [
   "packages/create-riebeckite",
   "packages/ui",
   "packages/integrations/analytics-cloudflare",
-  "packages/integrations/comments-cloudflare",
-  "packages/integrations/comments-github",
   "packages/integrations/honox",
   "packages/dev-inspector",
   "packages/integrations/reactions-cloudflare",

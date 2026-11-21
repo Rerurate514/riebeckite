@@ -2,96 +2,146 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { createElement, Fragment } from "hono/jsx";
 import { renderToString } from "hono/jsx/dom/server";
-import { COMMENTS_PLUGIN_NAME, CommentsSection, comments } from "../index.ts";
+import {
+  COMMENTS_ATTRIBUTE,
+  COMMENTS_PLUGIN_NAME,
+  CommentsSection,
+  comments,
+  GISCUS_CONTAINER_CLASS,
+} from "../index.ts";
 import {
   DEFAULT_COMMENTS_CLASS_NAME,
-  DEFAULT_COMMENTS_EMPTY_TEXT,
-  DEFAULT_COMMENTS_HEADING_TEXT,
-  DEFAULT_COMMENTS_LIMIT,
-  DEFAULT_COMMENTS_LOCALE,
+  DEFAULT_GISCUS_LANG,
+  DEFAULT_GISCUS_MAPPING,
+  DEFAULT_GISCUS_THEME,
   resolveCommentsOptions,
+  resolveCommentsPublicConfig,
   validateCommentsOptions,
 } from "../src/options.js";
-import { MemoryCommentsProvider } from "../src/provider.js";
-import { COMMENTS_ATTRIBUTE } from "../src/render.js";
-import type { CommentsPage } from "../src/types.js";
+import type { CommentsOptions } from "../src/types.js";
 
 (globalThis as { React?: unknown }).React = { createElement, Fragment };
 
-const samplePage: CommentsPage = {
-  contentId: "page-1",
-  total: 1,
-  comments: [
-    {
-      id: "c1",
-      author: { name: "Alice", url: "https://example.com/alice" },
-      body: "Great post!",
-      createdAt: "2026-01-01T00:00:00Z",
-    },
-  ],
+const baseOptions: CommentsOptions = {
+  repo: "example/site",
+  repoId: "R_kgDOexample",
+  category: "Comments",
+  categoryId: "DIC_kwDOexample",
 };
 
 test("resolveCommentsOptions applies defaults", () => {
-  const resolved = resolveCommentsOptions();
-  assert.ok(resolved.provider instanceof MemoryCommentsProvider);
-  assert.equal(resolved.headingText, DEFAULT_COMMENTS_HEADING_TEXT);
+  const resolved = resolveCommentsOptions(baseOptions);
+  assert.equal(resolved.mapping, DEFAULT_GISCUS_MAPPING);
+  assert.equal(resolved.strict, false);
+  assert.equal(resolved.reactionsEnabled, true);
+  assert.equal(resolved.inputPosition, "bottom");
+  assert.equal(resolved.theme, DEFAULT_GISCUS_THEME);
+  assert.equal(resolved.lang, DEFAULT_GISCUS_LANG);
   assert.equal(resolved.className, DEFAULT_COMMENTS_CLASS_NAME);
-  assert.equal(resolved.limit, DEFAULT_COMMENTS_LIMIT);
-  assert.equal(resolved.emptyText, DEFAULT_COMMENTS_EMPTY_TEXT);
-  assert.equal(resolved.locale, DEFAULT_COMMENTS_LOCALE);
 });
 
-test("validateCommentsOptions rejects invalid limit", () => {
-  const issues = validateCommentsOptions({ limit: -1 });
-  assert.equal(issues.length, 1);
-  assert.equal(issues[0].path, "limit");
+test("resolveCommentsOptions keeps overrides", () => {
+  const resolved = resolveCommentsOptions({
+    ...baseOptions,
+    mapping: "title",
+    strict: true,
+    reactionsEnabled: false,
+    inputPosition: "top",
+    theme: "dark",
+    lang: "ja",
+    className: "site-comments",
+  });
+  assert.equal(resolved.mapping, "title");
+  assert.equal(resolved.strict, true);
+  assert.equal(resolved.reactionsEnabled, false);
+  assert.equal(resolved.inputPosition, "top");
+  assert.equal(resolved.theme, "dark");
+  assert.equal(resolved.lang, "ja");
+  assert.equal(resolved.className, "site-comments");
 });
 
-test("validateCommentsOptions rejects invalid provider", () => {
-  const issues = validateCommentsOptions({ provider: {} as never });
-  assert.equal(issues.length, 1);
-  assert.equal(issues[0].path, "provider");
+test("resolveCommentsPublicConfig serializes flags as giscus attributes", () => {
+  const config = resolveCommentsPublicConfig({
+    ...baseOptions,
+    strict: true,
+    reactionsEnabled: false,
+  });
+  assert.equal(config.strict, "1");
+  assert.equal(config.reactionsEnabled, "0");
 });
 
-test("validateCommentsOptions rejects empty locale", () => {
-  const issues = validateCommentsOptions({ locale: " " });
-  assert.equal(issues.length, 1);
-  assert.equal(issues[0].path, "locale");
+test("validateCommentsOptions reports missing required fields", () => {
+  const issues = validateCommentsOptions(undefined);
+  const paths = issues.map((issue) => issue.path);
+  for (const path of ["repo", "repoId", "category", "categoryId"]) {
+    assert.ok(paths.includes(path), `expected an issue for ${path}`);
+  }
 });
 
-test("MemoryCommentsProvider returns empty page for unknown content", async () => {
-  const provider = new MemoryCommentsProvider();
-  const page = await provider.getComments("unknown");
-  assert.equal(page.comments.length, 0);
-  assert.equal(page.total, 0);
-});
-
-test("MemoryCommentsProvider respects limit", async () => {
-  const provider = new MemoryCommentsProvider([
-    [samplePage.contentId, samplePage],
-  ]);
-  const page = await provider.getComments(samplePage.contentId, 0);
-  assert.equal(page.comments.length, 0);
-});
-
-test("CommentsSection renders heading and comments", () => {
-  const html = renderToString(
-    createElement(CommentsSection, { page: samplePage }),
+test("validateCommentsOptions rejects a malformed repository", () => {
+  const issues = validateCommentsOptions({ ...baseOptions, repo: "example" });
+  assert.deepEqual(
+    issues.map((issue) => issue.path),
+    ["repo"],
   );
-  assert.ok(html.includes(COMMENTS_ATTRIBUTE));
-  assert.ok(html.includes("Great post!"));
-  assert.ok(html.includes("Alice"));
-  assert.ok(html.includes('data-comment-id="c1"'));
-  assert.ok(html.includes(">01/01/2026</time>"));
 });
 
-test("CommentsSection renders empty state", () => {
-  const empty: CommentsPage = { contentId: "p", comments: [], total: 0 };
-  const html = renderToString(createElement(CommentsSection, { page: empty }));
-  assert.ok(html.includes(DEFAULT_COMMENTS_EMPTY_TEXT));
+test("validateCommentsOptions rejects unknown mapping and position", () => {
+  const issues = validateCommentsOptions({
+    ...baseOptions,
+    mapping: "specific",
+    inputPosition: "middle",
+  } as unknown as CommentsOptions);
+  assert.deepEqual(
+    issues.map((issue) => issue.path),
+    ["mapping", "inputPosition"],
+  );
 });
 
-test("comments() returns a plugin with the expected name", () => {
-  const plugin = comments();
+test("validateCommentsOptions rejects non-boolean flags", () => {
+  const issues = validateCommentsOptions({
+    ...baseOptions,
+    strict: "yes",
+  } as unknown as CommentsOptions);
+  assert.deepEqual(
+    issues.map((issue) => issue.path),
+    ["strict"],
+  );
+});
+
+test("comments registers the client entry and style asset", () => {
+  const plugin = comments(baseOptions);
   assert.equal(plugin.name, COMMENTS_PLUGIN_NAME);
+  const entry = plugin.clientEntries?.[0];
+  assert.equal(entry?.presenceSelector, `[${COMMENTS_ATTRIBUTE}]`);
+  assert.equal(entry?.moduleSpecifier, "@riebeckite/plugin-comments/client");
+  assert.equal(entry?.exportName, "initComments");
+  assert.equal(
+    (entry?.publicConfig as { repo?: string } | undefined)?.repo,
+    "example/site",
+  );
+  assert.ok(
+    plugin.assets?.some(
+      (asset) =>
+        asset.kind === "style" &&
+        asset.moduleSpecifier === "@riebeckite/plugin-comments/style.css",
+    ),
+  );
+});
+
+test("CommentsSection renders the giscus container", () => {
+  const html = renderToString(createElement(CommentsSection, {}));
+  assert.match(html, /<section class="rr-comments" data-rr-comments/);
+  assert.match(
+    html,
+    new RegExp(`<div class="${GISCUS_CONTAINER_CLASS}"></div>`),
+  );
+  assert.match(html, /Comments require JavaScript\./);
+});
+
+test("CommentsSection accepts a custom class", () => {
+  const html = renderToString(
+    createElement(CommentsSection, { className: "site-comments" }),
+  );
+  assert.match(html, /class="site-comments"/);
 });

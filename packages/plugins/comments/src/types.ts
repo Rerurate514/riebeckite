@@ -1,40 +1,44 @@
-import type { CommentsProvider } from "./provider.js";
+export type GiscusMapping = "pathname" | "url" | "title" | "og:title";
 
-export type CommentAuthor = {
-  name: string;
-  url?: string;
-  avatarUrl?: string;
-};
-
-export type Comment = {
-  id: string;
-  author: CommentAuthor;
-  body: string;
-  createdAt: string;
-  url?: string;
-  reactions?: readonly { type: string; count: number }[];
-};
-
-export type CommentsPage = {
-  contentId: string;
-  comments: readonly Comment[];
-  total: number;
-};
+export type GiscusInputPosition = "top" | "bottom";
 
 export type CommentsOptions = {
-  provider?: CommentsProvider;
-  headingText?: string;
+  repo: string;
+  repoId: string;
+  category: string;
+  categoryId: string;
+  mapping?: GiscusMapping;
+  strict?: boolean;
+  reactionsEnabled?: boolean;
+  inputPosition?: GiscusInputPosition;
+  theme?: string;
+  lang?: string;
   className?: string;
-  limit?: number;
-  emptyText?: string;
-  locale?: string;
 };
 
 export type ResolvedCommentsOptions = {
-  provider: CommentsProvider;
-  headingText: string;
+  repo: string;
+  repoId: string;
+  category: string;
+  categoryId: string;
+  mapping: GiscusMapping;
+  strict: boolean;
+  reactionsEnabled: boolean;
+  inputPosition: GiscusInputPosition;
+  theme: string;
+  lang: string;
   className: string;
-  limit: number;
-  emptyText: string;
-  locale: string;
+};
+
+export type CommentsPublicConfig = {
+  repo: string;
+  repoId: string;
+  category: string;
+  categoryId: string;
+  mapping: GiscusMapping;
+  strict: "0" | "1";
+  reactionsEnabled: "0" | "1";
+  inputPosition: GiscusInputPosition;
+  theme: string;
+  lang: string;
 };

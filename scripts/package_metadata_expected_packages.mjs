@@ -175,10 +175,7 @@ export function expectedFixedPackageMetadata(directory) {
     };
   }
 
-  if (
-    directory === "packages/integrations/reactions-cloudflare" ||
-    directory === "packages/integrations/comments-cloudflare"
-  ) {
+  if (directory === "packages/integrations/reactions-cloudflare") {
     return {
       ...publishingMetadata(directory, false),
       files: ["LICENSE", "README.md", "README_ja.md", "migrations", "dist"],
@@ -190,10 +187,7 @@ export function expectedFixedPackageMetadata(directory) {
     };
   }
 
-  if (
-    directory === "packages/integrations/reactions-github" ||
-    directory === "packages/integrations/comments-github"
-  ) {
+  if (directory === "packages/integrations/reactions-github") {
     return {
       ...publishingMetadata(directory, false),
       files: ["LICENSE", "README.md", "README_ja.md", "dist"],

@@ -1,5 +1,12 @@
-import { createStyleAsset, definePlugin } from "@riebeckite/core";
-import { validateCommentsOptions } from "./src/options.js";
+import {
+  createClientEntry,
+  createStyleAsset,
+  definePlugin,
+} from "@riebeckite/core";
+import {
+  resolveCommentsPublicConfig,
+  validateCommentsOptions,
+} from "./src/options.js";
 import type { CommentsOptions } from "./src/types.js";
 
 export type {
@@ -10,38 +17,41 @@ export {
   ArticleCommentsSection,
   default as CommentsSection,
 } from "./components/comments-section.js";
+export { initComments } from "./src/init.js";
 export {
   DEFAULT_COMMENTS_CLASS_NAME,
-  DEFAULT_COMMENTS_EMPTY_TEXT,
-  DEFAULT_COMMENTS_HEADING_TEXT,
-  DEFAULT_COMMENTS_LIMIT,
-  DEFAULT_COMMENTS_LOCALE,
+  DEFAULT_GISCUS_LANG,
+  DEFAULT_GISCUS_MAPPING,
+  DEFAULT_GISCUS_THEME,
+  GISCUS_INPUT_POSITIONS,
+  GISCUS_MAPPINGS,
   resolveCommentsOptions,
+  resolveCommentsPublicConfig,
   validateCommentsOptions,
 } from "./src/options.js";
+export {
+  COMMENTS_ATTRIBUTE,
+  COMMENTS_ROOT_CLASS,
+  GISCUS_CONTAINER_CLASS,
+  GISCUS_SCRIPT_URL,
+} from "./src/render.js";
 export type {
-  CommentsCapability,
-  CommentsProvider,
-} from "./src/provider.js";
-export { MemoryCommentsProvider } from "./src/provider.js";
-export { COMMENTS_ATTRIBUTE, COMMENTS_ROOT_CLASS } from "./src/render.js";
-export type {
-  Comment,
-  CommentAuthor,
   CommentsOptions,
-  CommentsPage,
+  CommentsPublicConfig,
+  GiscusInputPosition,
+  GiscusMapping,
   ResolvedCommentsOptions,
 } from "./src/types.js";
 
 export const COMMENTS_PLUGIN_NAME = "comments";
 
-export function comments(options: CommentsOptions = {}) {
+/**
+ * Registers the comments plugin, embedding a Giscus thread into every page that
+ * places `ArticleCommentsSection`.
+ */
+export function comments(options: CommentsOptions) {
   return definePlugin({
     name: COMMENTS_PLUGIN_NAME,
-    processedContentCache: {
-      version: "comments-v2",
-      dependencyMode: "none",
-    },
     options,
     validateOptions: validateCommentsOptions,
     assets: [
@@ -49,6 +59,14 @@ export function comments(options: CommentsOptions = {}) {
         COMMENTS_PLUGIN_NAME,
         "@riebeckite/plugin-comments/style.css",
       ),
+    ],
+    clientEntries: [
+      createClientEntry(COMMENTS_PLUGIN_NAME, {
+        moduleSpecifier: "@riebeckite/plugin-comments/client",
+        exportName: "initComments",
+        presenceSelector: "[data-rr-comments]",
+        publicConfig: resolveCommentsPublicConfig(options),
+      }),
     ],
   });
 }

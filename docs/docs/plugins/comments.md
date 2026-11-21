@@ -4,19 +4,31 @@ title: Comments
 ---
 # Comments
 
-Comment threads for published notes, backed by a pluggable provider. The Site
-renders the thread with the exported `CommentsSection` component; the plugin
-never injects manifest HTML. Pair with [Reactions](./reactions.md) for a
-Zenn/Qiita-style split between lightweight reactions and full comments.
+Comment threads for published notes, embedded from GitHub Discussions with
+[Giscus](https://giscus.app). Readers sign in with GitHub to comment, and GitHub
+owns storage, moderation, and notifications. Pair with
+[Reactions](./reactions.md) for a Zenn/Qiita-style split between lightweight
+reactions and full comments.
 
 [日本語](./comments.ja.md)
 
 ## What it does
 
-- Renders a flat comment list (newest first) with author, timestamp, and body wherever the Site places `CommentsSection` or `ArticleCommentsSection`. Replies/threading are not modeled yet; comments are shown as a single-level list.
-- Ships a `MemoryCommentsProvider` for local previews and tests.
-- Exposes a `CommentsProvider` interface so you can back comments with
-  GitHub Discussions (via Giscus), a database, or an edge function.
+- Embeds a Giscus thread wherever the Site places `CommentsSection` or `ArticleCommentsSection`.
+- Maps each page to a GitHub Discussion by URL, so notes need no extra frontmatter.
+- Leaves posting, sign-in, spam handling, and moderation to GitHub Discussions.
+
+## Before you start
+
+Giscus needs a public GitHub repository with Discussions enabled:
+
+1. Enable Discussions in the repository settings.
+2. Install the [giscus app](https://github.com/apps/giscus) on the repository.
+3. Create a discussion category for comments. An Announcements category keeps
+   new discussions limited to maintainers, so readers comment instead of
+   opening threads.
+4. Fill in the repository on [giscus.app](https://giscus.app) and copy the
+   generated `data-repo-id` and `data-category-id`.
 
 ## Quick start
 
@@ -26,12 +38,17 @@ npm install @riebeckite/plugin-comments
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { comments, MemoryCommentsProvider } from "@riebeckite/plugin-comments";
-
-const commentsProvider = new MemoryCommentsProvider();
+import { comments } from "@riebeckite/plugin-comments";
 
 export default defineConfig({
-  plugins: [comments({ provider: commentsProvider })],
+  plugins: [
+    comments({
+      repo: "owner/repo",
+      repoId: "R_kgDO...",
+      category: "Comments",
+      categoryId: "DIC_kwDO...",
+    }),
+  ],
 });
 ```
 
@@ -39,12 +56,17 @@ export default defineConfig({
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
-| `provider` | `CommentsProvider` | `MemoryCommentsProvider` | Storage/runtime seam for comments. Required for rendered sections. |
-| `headingText` | `string` | `"Comments"` | Section heading text. |
+| `repo` | `string` | required | Repository in `owner/name` form. |
+| `repoId` | `string` | required | Repository ID from giscus.app. |
+| `category` | `string` | required | Discussion category name. |
+| `categoryId` | `string` | required | Discussion category ID from giscus.app. |
+| `mapping` | `"pathname" \| "url" \| "title" \| "og:title"` | `"pathname"` | How a page maps to a discussion. |
+| `strict` | `boolean` | `false` | Match the discussion by the exact mapping value. |
+| `reactionsEnabled` | `boolean` | `true` | Show GitHub reactions on the discussion. |
+| `inputPosition` | `"top" \| "bottom"` | `"bottom"` | Where the comment box sits. |
+| `theme` | `string` | `"preferred_color_scheme"` | Giscus theme name or URL. |
+| `lang` | `string` | `"en"` | Giscus UI language. |
 | `className` | `string` | `"rr-comments"` | Root CSS class of the rendered section. |
-| `limit` | `number` | `20` | Maximum comments rendered per note. |
-| `emptyText` | `string` | `"No comments yet."` | Text shown when there are no comments. |
-| `locale` | `string` | `"en-US"` | Locale used to format comment timestamps. |
 
 ## Rendering
 
@@ -56,41 +78,18 @@ import { ArticleCommentsSection } from "@riebeckite/plugin-comments";
 <ArticleCommentsSection />;
 ```
 
-`ArticleCommentsSection` resolves the plugin options from the Site config, reads
-the current article's `contentId`, and renders nothing outside an article or
-when no `provider` is configured. Pass `headingText`, `className`, `emptyText`,
-or `locale` to override the configured values for one placement.
+`ArticleCommentsSection` resolves the plugin options from the Site config and
+renders an empty section; the Giscus iframe loads in the browser. It renders
+nothing when the plugin is not configured. Pass `className` to override the
+configured value for one placement.
 
-The `contentId` comes from the optional `id` field in the note's frontmatter, so
-notes without an `id` render no comments:
+The section is client-side only, so built HTML contains no comments and readers
+need JavaScript. If your server sends Content-Security-Policy headers, allow
+`https://giscus.app` in both `script-src` and `frame-src`.
 
-```yaml
----
-id: obsidian-cloudflare
----
-```
-
-To render the markup yourself, fetch the page and pass it to `CommentsSection`:
-
-```tsx
-const page = await provider.getComments(contentId, limit);
-
-<CommentsSection page={page} />;
-```
-
-The plugin does not inject build-time manifest HTML and registers no client
-entry; comments are read-only.
-
-## Providers
-
-Implement `CommentsProvider` to connect a real backend:
-
-```ts
-interface CommentsProvider {
-  readonly capabilities: ReadonlySet<"read" | "write">;
-  getComments(contentId: string, limit?: number): Promise<CommentsPage>;
-}
-```
+`theme` is fixed per build. `preferred_color_scheme` follows the operating
+system, not the Site's color-mode toggle; set an explicit theme name to match
+the Site.
 
 ## Related
 

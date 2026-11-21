@@ -18,7 +18,13 @@
       "source": "./components/comments-section.tsx",
       "default": "./dist/components/comments-section.js"
     },
-    "./style.css": "./style.css"
+    "./style.css": "./style.css",
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "import": "./dist/client.js",
+      "source": "./client.ts",
+      "default": "./dist/client.js"
+    }
   },
   "dependencies": {
     "@riebeckite/core": "workspace:*",
@@ -52,12 +58,13 @@
   "bugs": {
     "url": "https://github.com/Rerurate514/riebeckite/issues"
   },
-  "description": "Comment threads for Riebeckite pages, backed by a pluggable provider.",
+  "description": "Giscus comment threads for Riebeckite pages.",
   "keywords": [
     "riebeckite",
     "plugin",
     "comments",
-    "discussion"
+    "giscus",
+    "github-discussions"
   ],
   "engines": {
     "node": "^20.19.0 || >=22.12.0"

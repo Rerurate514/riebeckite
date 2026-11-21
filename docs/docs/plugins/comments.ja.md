@@ -4,15 +4,24 @@ title: Comments（コメント）
 ---
 # Comments（コメント）
 
-公開ノートにコメントスレッドを表示するプラグインです。表示は Site が `CommentsSection` コンポーネントを配置して行い、プラグインはマニフェストの HTML を注入しません。[Reactions](./reactions.ja.md) と組み合わせると、Zenn/Qiita風に軽いリアクションと本格コメントを分けられます。
+公開ノートにコメントスレッドを表示するプラグインです。[Giscus](https://giscus.app) で GitHub Discussions のスレッドを埋め込みます。読者は GitHub でサインインしてコメントし、保存・モデレーション・通知は GitHub が担います。[Reactions](./reactions.ja.md) と組み合わせると、Zenn/Qiita風に軽いリアクションと本格コメントを分けられます。
 
 [English](./comments.md)
 
 ## できること
 
-- 著者・投稿日時・本文つきのコメント一覧をフラットに表示（新しい順）。Site が `CommentsSection` または `ArticleCommentsSection` を配置した場所に表示されます。返信・スレッド構造は未対応で、単一階層の一覧として表示されます
-- ローカルプレビュー用の `MemoryCommentsProvider` を同梱
-- `CommentsProvider` インターフェースで GitHub Discussions（Giscus経由）などに接続
+- Site が `CommentsSection` または `ArticleCommentsSection` を配置した場所に Giscus のスレッドを埋め込みます
+- 各ページと GitHub Discussion を URL で対応づけるため、ノートに追加の frontmatter は不要です
+- 投稿・サインイン・スパム対策・モデレーションは GitHub Discussions に任せます
+
+## 事前準備
+
+Giscus には Discussions を有効にした公開 GitHub リポジトリが必要です。
+
+1. リポジトリ設定で Discussions を有効にします
+2. リポジトリに [giscus アプリ](https://github.com/apps/giscus)をインストールします
+3. コメント用の Discussion カテゴリを作ります。Announcements カテゴリにすると新しいスレッドはメンテナーのみが作成でき、読者はコメントだけを行えます
+4. [giscus.app](https://giscus.app) でリポジトリを指定し、生成された `data-repo-id` と `data-category-id` を控えます
 
 ## クイックスタート
 
@@ -22,12 +31,17 @@ npm install @riebeckite/plugin-comments
 
 ```ts
 import { defineConfig } from "@riebeckite/core";
-import { comments, MemoryCommentsProvider } from "@riebeckite/plugin-comments";
-
-const commentsProvider = new MemoryCommentsProvider();
+import { comments } from "@riebeckite/plugin-comments";
 
 export default defineConfig({
-  plugins: [comments({ provider: commentsProvider })],
+  plugins: [
+    comments({
+      repo: "owner/repo",
+      repoId: "R_kgDO...",
+      category: "Comments",
+      categoryId: "DIC_kwDO...",
+    }),
+  ],
 });
 ```
 
@@ -35,12 +49,17 @@ export default defineConfig({
 
 | オプション | 型 | 既定値 | 説明 |
 | --- | --- | --- | --- |
-| `provider` | `CommentsProvider` | `MemoryCommentsProvider` | コメントの保存・実行層。表示には設定が必要です。 |
-| `headingText` | `string` | `"Comments"` | セクションの見出し。 |
+| `repo` | `string` | 必須 | `owner/name` 形式のリポジトリ。 |
+| `repoId` | `string` | 必須 | giscus.app で取得するリポジトリ ID。 |
+| `category` | `string` | 必須 | Discussion カテゴリ名。 |
+| `categoryId` | `string` | 必須 | giscus.app で取得するカテゴリ ID。 |
+| `mapping` | `"pathname" \| "url" \| "title" \| "og:title"` | `"pathname"` | ページと Discussion の対応づけ方。 |
+| `strict` | `boolean` | `false` | 対応づけの値を完全一致で照合します。 |
+| `reactionsEnabled` | `boolean` | `true` | Discussion の GitHub リアクションを表示します。 |
+| `inputPosition` | `"top" \| "bottom"` | `"bottom"` | コメント入力欄の位置。 |
+| `theme` | `string` | `"preferred_color_scheme"` | Giscus のテーマ名または URL。 |
+| `lang` | `string` | `"en"` | Giscus の UI 言語。 |
 | `className` | `string` | `"rr-comments"` | 表示するセクションのルート CSS クラス。 |
-| `limit` | `number` | `20` | 1ノートに表示するコメントの上限。 |
-| `emptyText` | `string` | `"No comments yet."` | コメントがないときの文言。 |
-| `locale` | `string` | `"en-US"` | コメントの投稿日時の表示に使うロケール。 |
 
 ## 表示
 
@@ -52,25 +71,11 @@ import { ArticleCommentsSection } from "@riebeckite/plugin-comments";
 <ArticleCommentsSection />;
 ```
 
-`ArticleCommentsSection` はサイト設定からプラグインのオプションを解決し、現在の記事の `contentId` を読み取ります。記事のコンテキスト外、または `provider` が設定されていない場合は何も描画しません。`headingText`、`className`、`emptyText`、`locale` を渡すと、その配置だけ設定値を上書きできます。
+`ArticleCommentsSection` はサイト設定からプラグインのオプションを解決し、空のセクションを描画します。Giscus の iframe はブラウザで読み込まれます。プラグインが設定されていない場合は何も描画しません。`className` を渡すと、その配置だけ設定値を上書きできます。
 
-`contentId` はノートの frontmatter の任意フィールド `id` から決まります。`id` のないノートにはコメントを描画しません。
+セクションはクライアント側でのみ表示されるため、ビルド後の HTML にコメントは含まれず、読者には JavaScript が必要です。サーバーが Content-Security-Policy ヘッダーを返す場合は、`script-src` と `frame-src` の両方で `https://giscus.app` を許可してください。
 
-```yaml
----
-id: obsidian-cloudflare
----
-```
-
-マークアップを自分で組み立てる場合は、ページを取得して `CommentsSection` へ渡します。
-
-```tsx
-const page = await provider.getComments(contentId, limit);
-
-<CommentsSection page={page} />;
-```
-
-プラグインはビルド時にマニフェストの HTML を注入せず、クライアントエントリも登録しません。コメントは読み取り専用です。
+`theme` はビルド時の値で固定です。`preferred_color_scheme` は OS の設定に従い、サイトのカラーモード切り替えには連動しません。サイトに合わせる場合はテーマ名を明示してください。
 
 ## 関連
 

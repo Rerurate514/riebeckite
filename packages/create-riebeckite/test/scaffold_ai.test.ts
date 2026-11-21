@@ -41,6 +41,34 @@ test("adds selected AI development support", async (t) => {
     ),
     /riebeckiteVersion: "0\.1\.0"/,
   );
+  assert.match(
+    await fs.readFile(
+      path.join(
+        directory,
+        ".agents",
+        "skills",
+        "riebeckite-plugin",
+        "references",
+        "guide.md",
+      ),
+      "utf8",
+    ),
+    /dependencyMode/,
+  );
+  assert.match(
+    await fs.readFile(
+      path.join(
+        directory,
+        ".agents",
+        "skills",
+        "riebeckite-theme",
+        "assets",
+        "checklist.md",
+      ),
+      "utf8",
+    ),
+    /reduced motion/,
+  );
   for (const name of [
     "riebeckite-site",
     "riebeckite-plugin",

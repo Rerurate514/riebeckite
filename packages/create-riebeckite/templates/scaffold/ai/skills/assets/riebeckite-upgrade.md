@@ -1,6 +1,9 @@
 # riebeckite-upgrade checklist
 
-- [ ] Inspect the existing project state.
-- [ ] Make the smallest required change.
-- [ ] Run the relevant Riebeckite check.
-- [ ] Report changed files and remaining risk.
+- [ ] Record current and target versions, dependency ranges, and local extensions.
+- [ ] Run `npm exec riebeckite upgrade --to <version>`.
+- [ ] Read migration output before editing configuration or content.
+- [ ] Keep feature work separate from the upgrade.
+- [ ] Ask before syncing outdated generated Skills.
+- [ ] Run `npm run check` and `npm run build`.
+- [ ] Report migrations, validation, deferred work, compatibility, and rollback.

@@ -30,6 +30,8 @@ riebeckite theme preview <name> [--port <port>] [--no-open]
 riebeckite plugin dev <path> [--port <port>] [--no-open]
 riebeckite plugin verify <path> [--level basic | integration | full] [--json]
 riebeckite bridge approve <plan>
+riebeckite ai mcp
+riebeckite skills sync
 riebeckite dev
 riebeckite check
 riebeckite doctor [--explain | --json | --fix [--dry-run]] [--fail-on <error|warning|info>] [--code <code> ...]
@@ -77,6 +79,8 @@ The `publish` actions that read or write durable publication state (`plan`, `sta
 | `migrate` | plan and apply versioned content migrations, then inspect, roll back, or recover them | no |
 | `profile` | run tracing-based performance reporting; `--full` uses a full path | build-dependent |
 | `inspect` | display factual resolved state | no |
+| `ai mcp` | start the development server and its local stdio MCP adapter with a temporary Bridge token | no |
+| `skills sync` | interactively review and update generated AI Skills | writes Skill guidance after confirmation |
 
 ## Which command should I use?
 

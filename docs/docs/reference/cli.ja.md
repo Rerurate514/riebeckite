@@ -30,6 +30,8 @@ riebeckite theme preview <name> [--port <port>] [--no-open]
 riebeckite plugin dev <path> [--port <port>] [--no-open]
 riebeckite plugin verify <path> [--level basic | integration | full] [--json]
 riebeckite bridge approve <plan>
+riebeckite ai mcp
+riebeckite skills sync
 riebeckite dev
 riebeckite check
 riebeckite doctor [--explain | --json | --fix [--dry-run]] [--fail-on <error|warning|info>] [--code <code> ...]
@@ -77,6 +79,8 @@ riebeckite completion <bash | zsh | powershell> [--project]
 | `migrate` | バージョン付きのコンテンツ移行を計画・適用し、状態確認、ロールバック、リカバリーを行う | いいえ |
 | `profile` | トレースに基づくパフォーマンスレポートを実行する。`--full` はフルパスを使う | ビルドによる |
 | `inspect` | 解決済みの実際の状態を表示する | いいえ |
+| `ai mcp` | 一時的な Bridge トークンで開発サーバーとローカル stdio MCP アダプターを起動する | いいえ |
+| `skills sync` | 生成された AI Skills を対話的に確認・更新する | 確認後に Skill ガイダンスを書き換える |
 
 ## 目的別のコマンドの選び方
 

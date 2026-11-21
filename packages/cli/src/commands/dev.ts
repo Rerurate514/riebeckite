@@ -3,7 +3,10 @@ import type { RiebeckiteProject } from "../application_root.js";
 import { loadProjectConfig } from "../load_config.js";
 import { managedDevReporter, managedSiteId } from "./managed_dev.js";
 
-export async function runDev(project: RiebeckiteProject): Promise<void> {
+export async function runDev(
+  project: RiebeckiteProject,
+  onReady?: (urls: readonly string[]) => void | Promise<void>,
+): Promise<void> {
   const managed = managedDevReporter();
   managed?.starting();
   const bridgeToken = process.env.RIEBECKITE_BRIDGE_TOKEN;
@@ -12,12 +15,14 @@ export async function runDev(project: RiebeckiteProject): Promise<void> {
     await startHonoxDevServer({
       root: project.appRoot,
       bridgeToken,
-      onServerReady: (urls) =>
-        onDevServerReady(urls, {
+      onServerReady: async (urls) => {
+        await onDevServerReady(urls, {
           managed,
           bridgeToken,
           siteId: managedSiteId(project.contentRoot),
-        }),
+        });
+        await onReady?.(urls);
+      },
     });
   } catch (error) {
     managed?.failed();

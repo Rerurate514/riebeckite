@@ -79,6 +79,12 @@ Riebeckite のサイトに Analytics を導入する方法を説明します。
 
 エディタ拡張などのローカルツールを、読み取り専用の開発用 Bridge に接続する方法を説明します。
 
+### AI ツールを安全に連携する
+
+[AI 連携](./ai/README.ja.md)
+
+MCP と生成される AI 向けガイダンスを使う方法を説明します。
+
 ### アイコンやロゴを差し替える
 
 [サイトのアイコンとロゴ](./branding.ja.md)
@@ -143,6 +149,7 @@ Riebeckite のパッケージを新しいバージョンへ更新する手順と
 | コンテンツとサイトを別リポジトリにする | [コンテンツとサイトを分ける](./deployment/separate-content-repository.ja.md) |
 | 多言語サイトにする | [多言語サイト](./localization.ja.md) |
 | ローカルのエディタツールを連携する | [エディタ連携](./editor-integration.ja.md) |
+| AI ツールを安全に連携する | [AI 連携](./ai/README.ja.md) |
 | Analytics を導入する | [アクセス解析](./analytics.ja.md) |
 | サイトのアイコンやロゴを差し替える | [サイトのアイコンとロゴ](./branding.ja.md) |
 | サイトの UI をカスタマイズする | [サイトのカスタマイズ](./customizing-your-site.ja.md) |

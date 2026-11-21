@@ -6,6 +6,7 @@ import {
   cliString,
   defineCliCommand,
 } from "@riebeckite/core";
+import { groupCommand } from "./builtin_commands_help.js";
 import { project } from "./builtin_commands_shared.js";
 
 export function devCommand(): CliCommandDefinition {
@@ -182,6 +183,59 @@ export function upgradeCommand(): CliCommandDefinition {
         to: input.options.to as string,
         json: input.options.json as boolean,
       });
+    },
+  });
+}
+
+export function skillsSyncCommand(): CliCommandDefinition {
+  return defineCliCommand({
+    id: "skills sync",
+    summary: "Review and update generated Riebeckite Skills.",
+    requiresProject: true,
+    async handler(context) {
+      const { createSetupPrompts } = await import("../prompts.js");
+      const { syncSkills } = await import("../commands/skills.js");
+      const prompts = createSetupPrompts();
+      const mode = await prompts.select(
+        "How should outdated Skills be updated?",
+        [
+          {
+            value: "review" as const,
+            label: "Review each Skill before updating",
+          },
+          { value: "reset" as const, label: "Replace all outdated Skills" },
+          { value: "skip" as const, label: "Do not update Skills" },
+        ],
+      );
+      if (mode !== "skip")
+        await syncSkills(
+          (await project(context)).projectRoot,
+          prompts.confirm,
+          mode,
+        );
+    },
+  });
+}
+
+export function skillsGroupCommand(): CliCommandDefinition {
+  return groupCommand("skills", "Manage generated Riebeckite Skills.");
+}
+
+export function aiGroupCommand(): CliCommandDefinition {
+  return groupCommand(
+    "ai",
+    "Connect AI tools to local Riebeckite development.",
+  );
+}
+
+export function aiMcpCommand(): CliCommandDefinition {
+  return defineCliCommand({
+    id: "ai mcp",
+    summary: "Start local development and the Riebeckite MCP server.",
+    requiresProject: true,
+    async handler(context) {
+      const { runAiMcp } = await import("../commands/ai_mcp.js");
+      await runAiMcp(await project(context));
     },
   });
 }

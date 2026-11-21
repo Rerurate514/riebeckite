@@ -44,6 +44,12 @@ read-only endpoints are advertised as additional capabilities:
 | `/__riebeckite/bridge/v1/publication` | `path` | Return visibility, routing, publication, and redirect state. |
 | `/__riebeckite/bridge/v1/diagnostics` | `path` | Return existing content diagnostics related to the source. |
 | `/__riebeckite/bridge/v1/impact` | `path` | Return the relevant outputs from the last completed build. |
+| `/__riebeckite/bridge/v1/context` | `path` | Return the resolved source, publication, preview, diagnostics, and last-build impact at one revision. |
+| `/__riebeckite/bridge/v1/schema` | — | Return protocol endpoint and input-shape discovery. |
+| `/__riebeckite/bridge/v1/inventory` | `offset`, `limit`, `query` | Return a paginated, optionally filtered content inventory. |
+| `/__riebeckite/bridge/v1/diagnostics` | `path`, `since` | Without `path`, return all build diagnostics; `since` returns unchanged or a full current snapshot. |
+| `/__riebeckite/bridge/v1/links` | `path` | Return outbound links, including unresolved links, and inbound links. |
+| `/__riebeckite/bridge/v1/content` | `path` | Return the Markdown body of a resolved source within the content root and at most 1 MiB. |
 | `/__riebeckite/bridge/v1/events` | — | Open an authenticated server-sent event stream. |
 | `/__riebeckite/bridge/v1/page` | `source` | Protocol v1 compatibility alias for a single-page summary. |
 
@@ -61,6 +67,23 @@ suffix such as `hello.md`. A match that is ambiguous is reported as
 A source response is `resolved`, `not-found`, `unsupported` for an invalid or
 ambiguous path, or `unavailable` while no completed build exists. An unavailable
 manifest is not the same as a missing page.
+
+`GET /__riebeckite/bridge/v1/context?path=<content-source>` combines the
+resolved source with the results of `/publication`, `/preview`, `/diagnostics`,
+and `/impact`. It does not read source file contents or predict future build
+impact. Clients can use it to obtain a consistent context snapshot before
+subscribing to `/events`.
+
+`/inventory` is ordered by slug. `offset` defaults to 0, `limit` defaults to
+100 and is capped at 500. `counts` describes the whole inventory while
+`page.total` describes the filtered result. The Bridge does not retain previous
+diagnostic snapshots: a differing `since` returns `delta: "full"` and current
+diagnostics, while a matching revision returns `delta: "unchanged"` and none.
+
+`/content` uses the normal Bridge token. It resolves the manifest source and
+filesystem paths, rejects symlink escapes, and returns only
+`{ "available": false }` when it cannot safely read the file. It never exposes
+an absolute path or reads outside the content root.
 
 `GET /__riebeckite/bridge/v1/page?source=<vault-relative-markdown-path>` is the
 Protocol v1 compatibility endpoint used by the Obsidian client. It uses the same
@@ -145,6 +168,11 @@ checks that binding, five-minute expiry, and one-time use before applying. Neith
 the approval token nor a bearer approval ID crosses HTTP, appears in URLs, or is
 returned by the API. Plans stay server-side, and apply uses the existing
 fingerprint, lock, journal, backup, and path validation implementation.
+
+`POST /__riebeckite/bridge/v1/mutations/validate` accepts the same operations
+under the normal Bridge token and returns a plan without persisting it or
+allowing it to be applied. Creating an approvable plan still requires the
+mutation capability.
 An apply rejected by approval or fingerprint validation returns HTTP 409 with
 `applied: false` and the existing `conflicts` shape. An approval rejection
 carries one of these codes:

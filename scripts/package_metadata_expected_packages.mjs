@@ -99,6 +99,7 @@ export function expectedFixedPackageMetadata(directory) {
   }
 
   if (
+    directory === "packages/mcp" ||
     directory === "packages/preview" ||
     directory === "packages/spa" ||
     directory === "packages/runtime"

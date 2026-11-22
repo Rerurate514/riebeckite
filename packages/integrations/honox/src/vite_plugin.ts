@@ -1,4 +1,5 @@
 import path from "node:path";
+import { createMutationPathPolicy, resolveAiIntegration } from "@riebeckite/ai";
 import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import {
   invalidateDevelopmentInspector,
@@ -195,6 +196,16 @@ export function riebeckite(
         return contentFormatRegistryFactory(getConfig().plugins);
       },
       publicOrigin: () => getConfig().site.baseUrl || undefined,
+      isMutationPathAllowed: () =>
+        createMutationPathPolicy(
+          resolveAiIntegration(getConfig().integrations?.ai).mutationPolicy,
+        ),
+      project: () => ({
+        contentDirectory: getConfig().content.directory,
+        locale: getConfig().site.locale,
+        mutationPolicy: resolveAiIntegration(getConfig().integrations?.ai)
+          .mutationPolicy,
+      }),
       async getSnapshot(server) {
         const { appRoot } = requireApplication(application);
         if (!isContentModuleLoaded(server, appRoot)) return undefined;

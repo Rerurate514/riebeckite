@@ -62,6 +62,8 @@ test("serves authenticated status from its private loopback listener", async (t)
         build: { status: "unavailable" },
       },
       inspection: { available: false },
+      revision: 0,
+      evidence: [],
     },
   );
 });
@@ -229,6 +231,7 @@ test("resolves a public page through the Obsidian page endpoint", async (t) => {
     publishAt: null,
     revision: 0,
     productionUrl: "https://example.com/ja/hello/",
+    evidence: [],
   });
 });
 
@@ -252,6 +255,7 @@ test("never reports a draft as public and never infers a production URL", async 
     publishAt: "2026-11-05T00:00:00.000Z",
     revision: 0,
     productionUrl: null,
+    evidence: [],
   });
 });
 
@@ -268,7 +272,7 @@ test("distinguishes an unavailable manifest from a missing page", async (t) => {
         "/__riebeckite/bridge/v1/page?source=notes%2Fhello.md",
       )
     ).json(),
-    { status: "unavailable" },
+    { status: "unavailable", revision: 0, evidence: [] },
   );
 
   const ready = bridge({ getSnapshot: fixtureSnapshot });
@@ -281,6 +285,8 @@ test("distinguishes an unavailable manifest from a missing page", async (t) => {
   assert.deepEqual(await missing.json(), {
     status: "not-found",
     source: "notes/missing.md",
+    revision: 0,
+    evidence: [],
   });
 });
 
@@ -294,7 +300,11 @@ test("rejects invalid page sources and reports ambiguous sources honestly", asyn
       origin,
       `/__riebeckite/bridge/v1/page?source=${source}`,
     );
-    assert.deepEqual(await response.json(), { status: "invalid-source" });
+    assert.deepEqual(await response.json(), {
+      status: "invalid-source",
+      revision: 0,
+      evidence: [],
+    });
   }
   const ambiguous = await bridgeRequest(
     origin,
@@ -305,6 +315,8 @@ test("rejects invalid page sources and reports ambiguous sources honestly", asyn
     source: "shared.md",
     reason: "AMBIGUOUS_SOURCE",
     candidates: ["a/shared", "b/shared"],
+    revision: 0,
+    evidence: [],
   });
 });
 
@@ -591,6 +603,42 @@ test("serves discovery, inventory, aggregate diagnostics, links, and guarded con
   assert.deepEqual((await content.json()).content, { available: false });
 });
 
+test("serves project facts with response evidence", async (t) => {
+  const { bootstrap, close } = bridge({
+    contentRoot: "/vault",
+    project: {
+      contentDirectory: "content",
+      locale: "ja",
+      mutationPolicy: {
+        writable: ["notes/**"],
+        protected: ["notes/legal/**"],
+      },
+    },
+  });
+  t.after(close);
+  const { origin } = await bootstrapOrigin(bootstrap);
+  const response = await bridgeRequest(
+    origin,
+    "/__riebeckite/bridge/v1/project",
+  );
+  const body = (await response.json()) as {
+    project: { contentDirectory: string; locale: string };
+    revision: number;
+    evidence: unknown[];
+  };
+  assert.equal(response.status, 200);
+  assert.deepEqual(body.project, {
+    contentDirectory: "content",
+    locale: "ja",
+    mutationPolicy: {
+      writable: ["notes/**"],
+      protected: ["notes/legal/**"],
+    },
+  });
+  assert.equal(body.revision, 0);
+  assert.deepEqual(body.evidence, []);
+});
+
 test("streams the State and content.changed event schema", async (t) => {
   const { bootstrap, close } = bridge({ getSnapshot: fixtureSnapshot });
   t.after(close);
@@ -715,6 +763,99 @@ test("requires a mutation token to create mutation plans", async (t) => {
     },
   );
   assert.equal(response.status, 403);
+});
+
+test("enforces project mutation policy during validation and planning", async (t) => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "riebeckite-bridge-"));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const instance = bridge({
+    contentRoot: root,
+    mutationToken,
+    mutationApprovalToken: approvalToken,
+    project: {
+      contentDirectory: "content",
+      locale: "en",
+      mutationPolicy: {
+        writable: ["notes/**"],
+        protected: ["notes/legal/**"],
+      },
+    },
+    isMutationPathAllowed: (value) =>
+      value.startsWith("notes/") && !value.startsWith("notes/legal/"),
+    contentFormats: {
+      isContentPath: () => true,
+      toSlug: (value) => value.replace(/\.md$/, ""),
+    },
+  });
+  t.after(instance.close);
+  const origin = await privateOrigin(instance.bootstrap);
+  const allowed = await mutationPlan(origin, [
+    { kind: "create", path: "notes/allowed.md", content: "ok" },
+  ]);
+  assert.deepEqual(allowed.conflicts, []);
+  const protectedPlan = await mutationPlan(origin, [
+    { kind: "create", path: "notes/legal/notice.md", content: "blocked" },
+  ]);
+  assert.ok(protectedPlan.conflicts.length > 0);
+  const outside = await mutationPlan(origin, [
+    { kind: "create", path: "other/blocked.md", content: "blocked" },
+  ]);
+  assert.ok(outside.conflicts.length > 0);
+  const validation = await fetch(
+    `${origin}/__riebeckite/bridge/v1/mutations/validate`,
+    {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-riebeckite-bridge-token": token,
+        "x-riebeckite-bridge-protocol": "1",
+      },
+      body: JSON.stringify({
+        operations: [
+          { kind: "create", path: "notes/legal/validated.md", content: "no" },
+        ],
+      }),
+    },
+  );
+  assert.equal(validation.status, 200);
+  assert.ok(
+    ((await validation.json()) as { conflicts: unknown[] }).conflicts.length >
+      0,
+  );
+});
+
+test("inspects mutation plans with a mutation token", async (t) => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "riebeckite-bridge-"));
+  t.after(() => fs.rm(root, { recursive: true, force: true }));
+  const instance = bridge({
+    contentRoot: root,
+    mutationToken,
+    mutationApprovalToken: approvalToken,
+  });
+  t.after(instance.close);
+  const origin = await privateOrigin(instance.bootstrap);
+  const plan = await mutationPlan(origin, [
+    { kind: "create", path: "notes/hello.md", content: "Hello" },
+  ]);
+  const unauthorized = await fetch(
+    `${origin}/__riebeckite/bridge/v1/mutations/${plan.id}`,
+    {
+      headers: {
+        "x-riebeckite-bridge-token": token,
+        "x-riebeckite-bridge-protocol": "1",
+      },
+    },
+  );
+  assert.equal(unauthorized.status, 403);
+  const inspection = await mutationInspect(origin, plan.id);
+  assert.equal(inspection.risk, "safe");
+  assert.equal(inspection.approval.status, "required");
+  assert.deepEqual(inspection.evidence, []);
+  assert.ok(await approveBridgeMutationPlan(root, plan.id, approvalToken));
+  assert.equal(
+    (await mutationInspect(origin, plan.id)).approval.status,
+    "ready",
+  );
 });
 
 test("preserves frontmatter objects while persisting mutation plans", async (t) => {
@@ -1144,6 +1285,16 @@ function bridge(input?: {
   getSnapshot?: () => CompletedContentBuildSnapshot | undefined;
   mutationToken?: string;
   mutationApprovalToken?: string;
+  project?: {
+    contentDirectory: string;
+    locale: string;
+    mutationPolicy: { writable: string[]; protected: string[] };
+  };
+  isMutationPathAllowed?: (path: string) => boolean;
+  contentFormats?: {
+    isContentPath: (path: string) => boolean;
+    toSlug: (path: string) => string | undefined;
+  };
 }): {
   bootstrap: (request: unknown, response: unknown) => Promise<void>;
   close: () => void;
@@ -1156,6 +1307,13 @@ function bridge(input?: {
     publicOrigin: input?.publicOrigin,
     mutationToken: input?.mutationToken,
     mutationApprovalToken: input?.mutationApprovalToken,
+    project: input?.project ? () => input.project : undefined,
+    isMutationPathAllowed: input?.isMutationPathAllowed
+      ? () => input.isMutationPathAllowed
+      : undefined,
+    contentFormats: input?.contentFormats
+      ? () => input.contentFormats
+      : undefined,
     getSnapshot: input?.getSnapshot ?? (() => undefined),
   });
   const configure = plugin.configureServer as (server: ViteDevServer) => void;
@@ -1283,6 +1441,32 @@ function mutationApply(origin: string, planId: string): Promise<Response> {
     headers: mutationHeaders(),
     body: "{}",
   });
+}
+
+async function mutationInspect(
+  origin: string,
+  planId: string,
+): Promise<{
+  risk: string;
+  approval: { status: string };
+  evidence: unknown[];
+}> {
+  const response = await fetch(
+    `${origin}/__riebeckite/bridge/v1/mutations/${planId}`,
+    {
+      headers: {
+        "x-riebeckite-bridge-token": token,
+        "x-riebeckite-bridge-protocol": "1",
+        "x-riebeckite-bridge-mutation-token": mutationToken,
+      },
+    },
+  );
+  assert.equal(response.status, 200);
+  return response.json() as Promise<{
+    risk: string;
+    approval: { status: string };
+    evidence: unknown[];
+  }>;
 }
 async function callBootstrap(
   bootstrap: (request: unknown, response: unknown) => Promise<void>,

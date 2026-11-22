@@ -109,6 +109,9 @@ export function resolveConfig(
       enabled: config.provenance?.enabled ?? true,
     },
     publication: resolvePublicationConfig(config.publication),
+    ...(config.integrations === undefined
+      ? {}
+      : { integrations: config.integrations }),
     ...(spa === undefined ? {} : { spa }),
     ...(config.ui === undefined ? {} : { ui: config.ui }),
   };

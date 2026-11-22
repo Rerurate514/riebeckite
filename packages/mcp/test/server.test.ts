@@ -72,6 +72,9 @@ test("plans and applies mutations with the mutation token", async () => {
     assert.deepEqual(await client.applyMutation("plan-1"), {
       applied: true,
     });
+    assert.deepEqual(await client.inspectMutation("plan-1"), {
+      applied: true,
+    });
     assert.equal(
       requests[1].url,
       "http://127.0.0.1:61345/__riebeckite/bridge/v1/mutations/plan",
@@ -92,6 +95,17 @@ test("plans and applies mutations with the mutation token", async () => {
       "http://127.0.0.1:61345/__riebeckite/bridge/v1/mutations/plan-1/apply",
     );
     assert.equal(apply?.body, "{}");
+    const inspect = requests.find((request) =>
+      request.url.endsWith("/mutations/plan-1"),
+    );
+    assert.equal(
+      inspect?.url,
+      "http://127.0.0.1:61345/__riebeckite/bridge/v1/mutations/plan-1",
+    );
+    assert.equal(
+      inspect?.headers.get("x-riebeckite-bridge-mutation-token"),
+      mutationToken,
+    );
   } finally {
     globalThis.fetch = originalFetch;
   }

@@ -3,6 +3,17 @@ import type { CompletedContentBuildSnapshot } from "@riebeckite/core";
 import type { ViteDevServer } from "vite";
 import type { BridgeMutationStore } from "./bridge_mutation.js";
 
+export type BridgeMutationPolicy = {
+  writable: readonly string[];
+  protected: readonly string[];
+};
+
+export type BridgeProject = {
+  contentDirectory: string;
+  locale: string;
+  mutationPolicy: BridgeMutationPolicy;
+};
+
 export type RiebeckiteBridgeOptions = {
   token?: string;
   mutationToken?: string;
@@ -21,6 +32,8 @@ export type RiebeckiteBridgeOptions = {
     readonly isContentPath: (path: string) => boolean;
     readonly toSlug: (path: string) => string | undefined;
   };
+  project?: () => BridgeProject;
+  isMutationPathAllowed?: () => (path: string) => boolean;
   getSnapshot: (
     server: ViteDevServer,
   ) =>

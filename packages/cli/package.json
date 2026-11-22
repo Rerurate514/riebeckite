@@ -22,6 +22,7 @@
   "dependencies": {
     "@clack/prompts": "^1.8.1",
     "@hono/vite-build": "^1.11.1",
+    "@riebeckite/ai": "workspace:*",
     "@riebeckite/diagnostics": "workspace:*",
     "@riebeckite/dev-inspector": "workspace:*",
     "@riebeckite/mcp": "workspace:*",

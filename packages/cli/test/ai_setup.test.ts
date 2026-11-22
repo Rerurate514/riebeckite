@@ -4,7 +4,7 @@ import { createRequire } from "node:module";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import { aiSkillFiles } from "create-riebeckite/scaffold";
+import { aiSkillFiles } from "@riebeckite/ai";
 import type { RiebeckiteProject } from "../src/application_root.js";
 import { runAiSetup } from "../src/commands/ai_setup.js";
 import { syncSkills } from "../src/commands/skills.js";
@@ -162,6 +162,7 @@ test("ai setup adds MCP, lint, rules, and Skills without overwriting AGENTS.md",
     devDependencies: Record<string, string>;
   };
   assert.equal(manifest.scripts["content:lint"], "riebeckite check");
+  assert.match(manifest.devDependencies["@riebeckite/ai"] ?? "", /^\^/);
   assert.match(manifest.devDependencies["@riebeckite/mcp"] ?? "", /^\^/);
   assert.match(
     await fs.readFile(path.join(directory, "RIEBECKITE_AI.md"), "utf8"),

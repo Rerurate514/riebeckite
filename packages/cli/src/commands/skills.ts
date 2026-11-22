@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import { createRequire } from "node:module";
 import path from "node:path";
-import { aiSkillFiles } from "create-riebeckite/scaffold";
+import { aiSkillFiles } from "@riebeckite/ai";
 
 const require = createRequire(import.meta.url);
 

@@ -66,7 +66,12 @@ export default defineConfig({
           const elapsed = () =>
             `${((performance.now() - devStartedAt) / 1000).toFixed(1)}s`;
           console.log(`riebeckite: preparing the first page (${elapsed()})`);
+          const ticker = setInterval(() => {
+            console.log(`riebeckite: preparing the first page (${elapsed()})`);
+          }, 5000);
+          ticker.unref();
           sendDevWarmupRequest(origin).then((status) => {
+            clearInterval(ticker);
             if (status === undefined) {
               console.error(
                 `riebeckite: dev server did not respond (${elapsed()})`,

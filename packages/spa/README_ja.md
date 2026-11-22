@@ -48,7 +48,6 @@ export default defineConfig({
 
 ## 公開API
 
-- `spa(options)` — RiebeckiteのSPA設定値を作成します。
 - `startSpaNavigation(options)` — 独自のブラウザ連携向けにページ移動の処理を開始し、クリーンアップ関数を返します。
 
 有効にする手順は [SPAナビゲーションガイド](../../docs/docs/guides/spa-navigation.ja.md)、実装上の制約は [SPAランタイムの内部実装](../../docs/docs/framework/spa-runtime.ja.md) を参照してください。

@@ -68,7 +68,6 @@ the browser reports data saving or a connection at 2G or slower.
 
 ## Public API
 
-- `spa(options)` — creates a Riebeckite SPA configuration value.
 - `startSpaNavigation(options)` — starts navigation and returns a cleanup
   function for custom browser integrations.
 

@@ -93,6 +93,12 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
   Packages: `@riebeckite/ui`, `@riebeckite/plugin-code-tabs`, `@riebeckite/plugin-source-files`, `@riebeckite/plugin-local-graph`, `create-riebeckite`
   Migration: Replace `import \"@riebeckite/ui/drawer/client\"` with an explicit `initDrawers({ signal })` call inside the page initializer. Migrate code-tabs off `CodeTabsClientOptions` to the new `initCodeTabs()` client export (cache key becomes `code-tabs-v3`). Users importing `@riebeckite/ui/tabs` must move to the code-tabs island or their own implementation.
 
+### Removed
+
+- **Breaking:** Removed the unused `spa()` helper from `@riebeckite/spa`. SPA navigation is configured through the `spa` key in `riebeckite.config.ts`, and the helper never affected the runtime, so existing sites behave the same.
+  Packages: `@riebeckite/spa`
+  Migration: Replace `spa({ ... })` with the options object itself: `spa: { ... }` in `riebeckite.config.ts`.
+
 ### Fixed
 
 - The sandboxed iframe runtime's guest bridge script lost its sandbox handshake: the bridge document was generated with `export function send` inside a plain script, so the script failed with a syntax error, the guest never answered the init handshake, and every `createIframeRuntime` mount stalled until its start timeout. The bridge is now emitted with a plain function declaration again, so iframe runtimes become ready and respond to invocations.

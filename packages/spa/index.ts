@@ -5,4 +5,4 @@ export type {
   SpaOptions,
   SpaPageCommit,
 } from "./options.js";
-export { SPA_NAVIGATION_EVENT, spa } from "./options.js";
+export { SPA_NAVIGATION_EVENT } from "./options.js";

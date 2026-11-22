@@ -1,4 +1,3 @@
-import type { ScaffoldFeatureName } from "./features.js";
 import type { ScaffoldPresetName } from "./presets.js";
 import type { ScaffoldUtilityName } from "./utilities.js";
 
@@ -37,7 +36,6 @@ export type ScaffoldSiteOptions = {
   readonly name?: string;
   readonly site?: ScaffoldSiteMetadata;
   readonly preset?: ScaffoldPresetName;
-  readonly features?: readonly ScaffoldFeatureName[];
   readonly utilities?: readonly ScaffoldUtilityName[];
   readonly deployment?: ScaffoldDeployment;
   readonly contentDirectory?: string;

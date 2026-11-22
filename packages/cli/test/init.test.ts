@@ -6,7 +6,6 @@ test("init defaults the directory and leaves preset defaults to the generator", 
   assert.deepEqual(resolveInput(["init"]).arguments, { directory: "." });
   assert.deepEqual(resolveInput(["init"]).options, {
     preset: undefined,
-    features: undefined,
     utilities: undefined,
     force: false,
     listPresets: false,
@@ -36,17 +35,14 @@ test("init reads the GitHub Actions deployment options", () => {
   assert.equal(input.options.siteRepository, "octo-org/site");
 });
 
-test("init reads project file selection and feature packs", () => {
+test("init reads the project file selection", () => {
   const input = resolveInput([
     "init",
     "site",
     "--utilities",
     "gitignore,editorconfig,npmrc,vscode",
-    "--features",
-    "diagrams,i18n",
   ]);
   assert.equal(input.options.utilities, "gitignore,editorconfig,npmrc,vscode");
-  assert.equal(input.options.features, "diagrams,i18n");
   assert.throws(
     () => resolveInput(["init", "--utilities"]),
     /requires a value/,

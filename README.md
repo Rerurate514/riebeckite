@@ -56,7 +56,7 @@ Create a site:
 npx create-riebeckite
 ```
 
-For a first try, accept the defaults: `Starter site` (the `starter` preset), no optional feature packs, no extra project file changes, `This project`, `Not now`, and `Yes` for installing dependencies. The default folder is `my-riebeckite-site`. Then:
+For a first try, accept the defaults: `Starter site` (the `starter` preset), no extra project file changes, `This project`, `Not now`, and `Yes` for installing dependencies. The default folder is `my-riebeckite-site`. Then:
 
 ```bash
 cd my-riebeckite-site

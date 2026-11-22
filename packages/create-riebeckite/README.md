@@ -7,8 +7,8 @@ Create a new Riebeckite site from an official starter preset.
 ## Usage
 
 Interactive (recommended): run without arguments and answer the prompts for
-the project name, preset, optional feature packs, extra project files, content
-source, deployment, and dependency installation.
+the project name, preset, extra project files, content source, deployment,
+and dependency installation.
 
 ```sh
 npx create-riebeckite
@@ -31,7 +31,6 @@ The prompts ask, in order:
 | --- | --- | --- |
 | Project name | the folder to create (empty input uses the default name) | any name, e.g. `my-site` |
 | What would you like to build? | `Starter site`, `Digital garden`, `Blog`, `Writer`, `Documentation`, `Portfolio`, `Minimal site`, `Empty application` | `Starter site` (`starter`) for most sites |
-| Add optional feature packs? | `Yes` or `No`; `Yes` then selects feature packs | `No` |
 | Customize extra project files? | `Yes` or `No`; `Yes` then selects project files | `No` uses the recommended set |
 | Where will you write content? | `This project`, `Separate directory in this repository`, `Separate GitHub repository` | `This project` to start |
 | Set up deployment? | `Cloudflare Workers`, `GitHub Actions`, `Not now` | `Not now` for local development |
@@ -55,7 +54,6 @@ Deployment can be added later, described in
 | `--list-presets` | Print the available presets and their descriptions, then exit |
 | `--github-actions` | Generate the Cloudflare deployment workflow |
 | `--cloudflare-workers` | Generate the Cloudflare Workers deployment configuration |
-| `--features <names>` | Comma-separated feature pack names to add extra plugins |
 | `--content-directory <path>` | Relative content directory to write into, such as `../vault`; absolute paths are rejected |
 | `--domain <hostname>` | Custom domain for the generated Cloudflare Worker routes, such as `docs.example.com` |
 | `--content-repository <owner/repository>` | Use this repository as the deployment content source. Requires `--github-actions` and `--site-repository`; also generates `github/notify-site.yml`. |

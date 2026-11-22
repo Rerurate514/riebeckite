@@ -4,7 +4,6 @@ import {
   assertGitHubRepository,
   deploymentTemplateFiles,
 } from "./deployment.js";
-import { composeScaffoldPreset } from "./features.js";
 import {
   type ScaffoldContentSource,
   type ScaffoldDeployment,
@@ -27,14 +26,6 @@ export {
   type ScaffoldPublicationSchedule,
   scaffoldDeploymentFromFlags,
 } from "./deployment.js";
-export {
-  isScaffoldFeatureName,
-  parseScaffoldFeatures,
-  SCAFFOLD_FEATURE_NAMES,
-  SCAFFOLD_FEATURE_PACKS,
-  type ScaffoldFeatureName,
-  type ScaffoldFeaturePack,
-} from "./features.js";
 export {
   formatScaffoldNextSteps,
   type ScaffoldNextStepsOptions,
@@ -76,10 +67,7 @@ export async function scaffoldRiebeckiteSite(
   options: ScaffoldSiteOptions,
 ): Promise<ScaffoldSiteResult> {
   const targetDirectory = path.resolve(options.targetDirectory);
-  const preset = composeScaffoldPreset(
-    resolveScaffoldPreset(options.preset),
-    options.features ?? [],
-  );
+  const preset = resolveScaffoldPreset(options.preset);
   const deployment = options.deployment ?? NO_DEPLOYMENT;
   const externalContent = externalContentSource(deployment);
 

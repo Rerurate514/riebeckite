@@ -57,7 +57,7 @@ To use the interactive prompts instead, run `npx create-riebeckite my-site` and 
 | Site repository | `OWNER/my-site` |
 | Install dependencies now? | `Yes` or `No` |
 
-The CLI also asks about a template and optional feature packs. Keep the defaults unless you have a preference.
+The CLI also asks about a template. Keep the default unless you have a preference.
 
 When content lives in a separate repository, the CLI does not ask `Set up deployment?`. It adds the GitHub Actions deployment setup automatically.
 

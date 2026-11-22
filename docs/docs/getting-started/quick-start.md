@@ -24,7 +24,6 @@ Answer the prompts (recommended answers shown):
 
 - **Project name** — press Enter for the default `my-riebeckite-site`
 - **What would you like to build?** ([[glossary/preset|preset]]) — keep `Starter site` (the `starter` preset) when unsure. Choose `Blog` if you are publishing posts, tags, and series; see [Presets](./presets.md)
-- **Add optional feature packs?** — press Enter for `No`
 - **Customize extra project files?** — press Enter for `No`; the default project files are still generated
 - **Where will you write content?** — choose `This project` for `content/` inside the site, `Separate directory in this repository` for a vault next to the site (for example `../vault`), or `Separate GitHub repository` to keep content in another repository
 - **Set up deployment?** — press Enter for `Not now` if you want a local project first. Choose `Cloudflare Workers` only when you want local publishing set up immediately. It installs dependencies and then asks `Deploy now?`: `Yes` publishes immediately, `Later` finishes the scaffold. Choose `GitHub Actions` to deploy on every push to `main`; see [Deployment](../guides/deployment/README.md)

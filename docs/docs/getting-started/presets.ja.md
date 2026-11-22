@@ -120,23 +120,6 @@ sidebar:
 ---
 ```
 
-## 任意の Feature Pack
-
-Feature Pack は、選んだプリセットに Plugin を明示的に追加します。`--features <names>` にカンマ区切りで指定するか、対話式の質問で選んでください。
-
-```sh
-npx create-riebeckite my-site --preset portfolio --features diagrams,i18n
-```
-
-| Pack | 追加する機能 |
-| --- | --- |
-| `knowledge` | リンクプレビューとローカルグラフ |
-| `diagrams` | Mermaid と Graphviz の Markdown 図表 |
-| `media` | 音声・動画の埋め込み、レスポンシブ画像、lightbox |
-| `i18n` | 追加するコンテンツ向けの英語・日本語ローカライズ対応 |
-
-プリセットに含まれる Plugin と重複する Pack は、重複した import を生成せずに無視されます。Pack を追加しないことを明示する場合は `--features none` を使えます。
-
 ## 生成された UI を編集するときの起点
 
 生成されるアプリケーションのファイルは通常の TypeScript、JSX、HonoX のルートです。ページや API ルートは `app/routes/`、記事 [[glossary/ui|UI]] の並べ替えは `app/components/article.tsx`、ヘッダーとフッターは `app/components/site-header.tsx`、サイトの CSS は `app/style.css` と `app/styles/` を編集します。すべてのプリセットにサイトフッターがあり、`empty` は `app/routes/_renderer.tsx` に直接定義し、それ以外は `app/components/site-header.tsx` に定義します。`SiteNav` をはじめとするプラグインの UI コンポーネントは、設定済みのデータを自分で解決します。そのため、サイト側のコンポーネントで[[glossary/manifest|マニフェスト]]を解決せず、必要な場所に配置してください。

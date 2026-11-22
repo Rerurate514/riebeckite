@@ -7,10 +7,6 @@ import {
   text,
 } from "@clack/prompts";
 import type { CreateRiebeckiteOptions } from "./arguments.js";
-import {
-  SCAFFOLD_FEATURE_PACKS,
-  type ScaffoldFeatureName,
-} from "./scaffold/features.js";
 import type {
   ScaffoldAiOptions,
   ScaffoldDeployment,
@@ -36,7 +32,6 @@ type InteractiveAnswers =
   | {
       readonly directory: string;
       readonly preset: ScaffoldPresetName;
-      readonly features?: readonly ScaffoldFeatureName[];
       readonly utilities: readonly ScaffoldUtilityName[];
       readonly contentSource: "local" | "directory";
       readonly contentDirectory?: string;
@@ -46,7 +41,6 @@ type InteractiveAnswers =
   | {
       readonly directory: string;
       readonly preset: ScaffoldPresetName;
-      readonly features?: readonly ScaffoldFeatureName[];
       readonly utilities: readonly ScaffoldUtilityName[];
       readonly contentSource: "external";
       readonly contentRepository: string;
@@ -67,7 +61,6 @@ export function interactiveAnswersToOptions(
     directory: answers.directory,
     force: false,
     preset: answers.preset,
-    ...(answers.features ? { features: answers.features } : {}),
     utilities: answers.utilities,
     listPresets: false,
     ...(answers.contentSource === "directory" &&
@@ -128,24 +121,6 @@ export async function promptInteractiveAnswers(): Promise<InteractiveSetupAnswer
     })),
   });
   if (isCancel(preset)) return null;
-
-  const addFeatures = await confirm({
-    message: "Add optional feature packs?",
-    initialValue: false,
-  });
-  if (isCancel(addFeatures)) return null;
-  const features = addFeatures
-    ? await multiselect<ScaffoldFeatureName>({
-        message: "Feature packs",
-        options: SCAFFOLD_FEATURE_PACKS.map(({ name, description }) => ({
-          value: name,
-          label: name,
-          hint: description,
-        })),
-        required: false,
-      })
-    : [];
-  if (isCancel(features)) return null;
 
   const customize = await confirm({
     message: "Customize extra project files?",
@@ -223,7 +198,6 @@ export async function promptInteractiveAnswers(): Promise<InteractiveSetupAnswer
     answers = {
       directory,
       preset,
-      features,
       utilities,
       contentSource,
       contentRepository: contentRepository.trim(),
@@ -253,7 +227,6 @@ export async function promptInteractiveAnswers(): Promise<InteractiveSetupAnswer
     answers = {
       directory,
       preset,
-      features,
       utilities,
       contentSource,
       ...(contentDirectory === undefined ? {} : { contentDirectory }),

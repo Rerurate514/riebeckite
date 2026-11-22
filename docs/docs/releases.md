@@ -49,6 +49,9 @@ The Unreleased section lists changes that are merged but not yet published to np
 - The development Bridge and MCP now expose project facts, last-build source impact, response evidence, and mutation plan inspection. The new `@riebeckite/ai` package owns AI configuration, Rules, Skills, and mutation boundaries through `integrations.ai.mutationPolicy`; protected paths override writable paths and are checked when plans are validated, saved, and applied.
   Packages: `@riebeckite/core`, `@riebeckite/ai`, `@riebeckite/dev-inspector`, `@riebeckite/honox`, `@riebeckite/mcp`
 
+- Added project-local MCP client configuration to `riebeckite ai setup --client claude|cursor|vscode|opencode`, with merge behavior that preserves existing servers and never overwrites a `riebeckite` entry. Setup now writes `CLAUDE.md` and `.github/copilot-instructions.md`, records the Riebeckite version in `RIEBECKITE_AI.md`, and uses the detected npm or pnpm commands. `riebeckite doctor` reports incomplete AI guidance, outdated rules or Skills, and a missing MCP dependency.
+  Packages: `@riebeckite/ai`, `@riebeckite/cli`, `@riebeckite/diagnostics`, `create-riebeckite`
+
 ### Changed
 
 - The `alias` plugin now declares a `developmentRouteCache` contract, so the development server persists alias routes and restores them across dev-server restarts instead of recomputing them every time. The serialized route state is versioned as `alias-route-v1` and is invalidated automatically when the format changes.

@@ -29,6 +29,7 @@ test("resolveConfig fills documented defaults", () => {
   });
   assert.equal(config.content.directory, "content");
   assert.equal(config.content.filters.publishStrategy, "explicit");
+  assert.equal(config.integrations, undefined);
   assert.deepEqual(config.theme, {
     name: "riebeckite",
     colorMode: "system",
@@ -38,6 +39,41 @@ test("resolveConfig fills documented defaults", () => {
     styles: [{ moduleSpecifier: "@riebeckite/theme-default/style.css" }],
   });
   assert.deepEqual(config.plugins, []);
+});
+
+test("resolveConfig preserves integration settings", () => {
+  const config = resolveConfig({
+    site: { title: "My Site" },
+    integrations: {
+      example: {
+        enabled: true,
+      },
+    },
+  });
+
+  assert.deepEqual(config.integrations, {
+    example: { enabled: true },
+  });
+});
+
+test("resolveConfig rejects invalid integration settings", () => {
+  assert.throws(
+    () =>
+      resolveConfig(
+        createInvalid<RiebeckiteConfig>({
+          site: { title: "Site" },
+          integrations: ["invalid"],
+        }),
+      ),
+    (error: unknown) => {
+      assert.ok(error instanceof ConfigValidationError);
+      assert.deepEqual(
+        error.issues.map((issue) => issue.path),
+        ["integrations"],
+      );
+      return true;
+    },
+  );
 });
 
 test("resolveConfig normalizes the SPA switch", () => {

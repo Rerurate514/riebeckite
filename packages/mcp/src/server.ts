@@ -53,17 +53,34 @@ export class BridgeClient {
     );
   }
 
+  async inspectMutation(planId: string) {
+    return this.getMutation(
+      `/__riebeckite/bridge/v1/mutations/${encodeURIComponent(planId)}`,
+    );
+  }
+
   private async postMutation(pathname: string, body: Record<string, unknown>) {
+    return this.requestMutation(pathname, {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: { "content-type": "application/json" },
+    });
+  }
+
+  private async getMutation(pathname: string) {
+    return this.requestMutation(pathname);
+  }
+
+  private async requestMutation(pathname: string, init?: RequestInit) {
     const mutationToken = this.options.mutationToken;
     if (!mutationToken) {
       throw new Error("Mutation requires RIEBECKITE_BRIDGE_MUTATION_TOKEN.");
     }
     const origin = await this.privateOrigin();
     return this.request(new URL(pathname, origin), {
-      method: "POST",
-      body: JSON.stringify(body),
+      ...init,
       headers: {
-        "content-type": "application/json",
+        ...init?.headers,
         [mutationTokenHeader]: mutationToken,
       },
     });
@@ -150,6 +167,12 @@ export function createServer(client: BridgeClient): McpServer {
     () => get("schema")({}),
   );
   server.tool(
+    "riebeckite_project",
+    "Read site facts and content mutation boundaries.",
+    {},
+    () => get("project")({}),
+  );
+  server.tool(
     "riebeckite_plugin_catalog",
     "Search published official Riebeckite plugins by capability or package name.",
     {
@@ -164,6 +187,12 @@ export function createServer(client: BridgeClient): McpServer {
     "Read publication, preview, diagnostics, and build impact for one source.",
     path,
     get("context"),
+  );
+  server.tool(
+    "riebeckite_impact",
+    "Read outputs affected by one source in the last completed build.",
+    path,
+    get("impact"),
   );
   server.tool(
     "riebeckite_inventory",
@@ -237,6 +266,14 @@ export function createServer(client: BridgeClient): McpServer {
       planId: z.string().min(1),
     },
     async (input) => result(await client.applyMutation(input.planId)),
+  );
+  server.tool(
+    "riebeckite_mutation_inspect",
+    "Inspect a persisted mutation plan for human review. Requires RIEBECKITE_BRIDGE_MUTATION_TOKEN.",
+    {
+      planId: z.string().uuid(),
+    },
+    async (input) => result(await client.inspectMutation(input.planId)),
   );
   return server;
 }

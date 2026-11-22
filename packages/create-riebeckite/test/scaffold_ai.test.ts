@@ -22,6 +22,7 @@ test("adds selected AI development support", async (t) => {
     devDependencies: Record<string, string>;
   };
   assert.equal(manifest.scripts["content:lint"], "riebeckite check");
+  assert.ok(manifest.devDependencies["@riebeckite/ai"]);
   assert.ok(manifest.devDependencies["@riebeckite/mcp"]);
   assert.match(
     await fs.readFile(path.join(directory, "RIEBECKITE_AI.md"), "utf8"),

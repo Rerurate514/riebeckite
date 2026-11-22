@@ -34,6 +34,7 @@ export function validateConfigIssues(
   validateCache(value.cache, issues);
   validateProvenance(value.provenance, issues);
   validatePublication(value.publication, issues);
+  validateIntegrations(value.integrations, issues);
   validateSpa(value.spa, issues);
   validateUi(value.ui, issues);
   validateTheme(value.theme, issues);
@@ -197,6 +198,16 @@ export function validatePublication(
     });
   }
   validatePublicationSchedule(value.schedule, issues);
+}
+
+export function validateIntegrations(
+  value: unknown,
+  issues: ConfigValidationIssue[],
+): void {
+  if (value === undefined) return;
+  if (!isRecord(value)) {
+    issues.push({ path: "integrations", message: "Expected an object." });
+  }
 }
 
 export function validatePublicationSchedule(

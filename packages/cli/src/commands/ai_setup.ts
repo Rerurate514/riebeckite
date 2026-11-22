@@ -1,11 +1,12 @@
 import fs from "node:fs/promises";
 import { createRequire } from "node:module";
 import path from "node:path";
-import { aiRuleFiles } from "create-riebeckite/scaffold";
+import { aiRuleFiles } from "@riebeckite/ai";
 import type { RiebeckiteProject } from "../application_root.js";
 import { syncSkills } from "./skills.js";
 
 const MCP_PACKAGE = "@riebeckite/mcp";
+const AI_PACKAGE = "@riebeckite/ai";
 const require = createRequire(import.meta.url);
 
 export async function runAiSetup(
@@ -23,7 +24,7 @@ export async function runAiSetup(
     },
     {
       contentDirectory,
-      ai: { mcp: true, lint: true, rules: true, skills: true },
+      lint: true,
     },
   );
   for (const file of rules) {
@@ -55,14 +56,18 @@ async function updatePackageJson(projectRoot: string): Promise<void> {
   const packagePath = path.join(projectRoot, "package.json");
   const raw = await fs.readFile(packagePath, "utf8").catch(() => undefined);
   if (raw === undefined) {
-    console.log(`  Add ${MCP_PACKAGE} to package.json devDependencies.`);
+    console.log(
+      `  Add ${AI_PACKAGE} and ${MCP_PACKAGE} to package.json devDependencies.`,
+    );
     return;
   }
   let parsed: unknown;
   try {
     parsed = JSON.parse(raw);
   } catch {
-    console.log(`  Add ${MCP_PACKAGE} to package.json devDependencies.`);
+    console.log(
+      `  Add ${AI_PACKAGE} and ${MCP_PACKAGE} to package.json devDependencies.`,
+    );
     return;
   }
   if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
@@ -70,18 +75,23 @@ async function updatePackageJson(projectRoot: string): Promise<void> {
   }
   const manifest = parsed as Record<string, unknown>;
   let changed = false;
-  const hasMcp =
-    isRecord(manifest.dependencies) &&
-    typeof manifest.dependencies[MCP_PACKAGE] === "string";
   const devDependencies = isRecord(manifest.devDependencies)
     ? manifest.devDependencies
     : {};
-  if (!hasMcp && typeof devDependencies[MCP_PACKAGE] !== "string") {
-    const version = require("@riebeckite/cli/package.json").version as string;
-    devDependencies[MCP_PACKAGE] = `^${version}`;
+  const dependencies = isRecord(manifest.dependencies)
+    ? manifest.dependencies
+    : {};
+  const version = require("@riebeckite/cli/package.json").version as string;
+  for (const packageName of [AI_PACKAGE, MCP_PACKAGE]) {
+    if (
+      typeof dependencies[packageName] === "string" ||
+      typeof devDependencies[packageName] === "string"
+    )
+      continue;
+    devDependencies[packageName] = `^${version}`;
     manifest.devDependencies = devDependencies;
     changed = true;
-    console.log(`✓ Added ${MCP_PACKAGE} to devDependencies`);
+    console.log(`✓ Added ${packageName} to devDependencies`);
   }
   const scripts = isRecord(manifest.scripts) ? manifest.scripts : {};
   if (typeof scripts["content:lint"] !== "string") {

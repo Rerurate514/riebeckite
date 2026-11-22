@@ -163,6 +163,7 @@ export { isPublishable } from "./src/types/publish_strategy.js";
 export type { ResolvedRiebeckiteConfig } from "./src/types/resolved_riebeckite_config.js";
 export type {
   RiebeckiteConfig,
+  RiebeckiteIntegrations,
   SpaConfig,
   UiConfig,
 } from "./src/types/riebeckite_config.js";

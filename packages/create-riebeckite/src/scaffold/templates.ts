@@ -252,6 +252,9 @@ function packageJson(
         "@hono/vite-build": "^1.11.1",
         "@hono/node-server": "^2.1.3",
         "@riebeckite/cli": RIEBECKITE_VERSION,
+        ...(options.ai && Object.values(options.ai).some((enabled) => enabled)
+          ? { "@riebeckite/ai": RIEBECKITE_VERSION }
+          : {}),
         "@types/node": "^24.5.2",
         typescript: "^5.0.0",
         vite: "^8.3.5",

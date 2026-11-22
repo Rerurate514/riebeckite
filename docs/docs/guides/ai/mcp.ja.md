@@ -14,10 +14,13 @@ npm exec riebeckite ai mcp
 このコマンドはローカル開発サーバーと MCP サーバーを起動し、その実行中だけ有効な
 Bridge トークンを生成します。トークンを AI クライアントの設定へ書く必要はありません。
 
-MCP は開発時限定の Bridge に接続する薄いアダプターです。プレビュー、公開状態、診断、
-リンク、コンテンツ一覧と本文、変更内容の検証を AI に渡します。`riebeckite_plugin_catalog` は
+MCP は開発時限定の Bridge に接続する薄いアダプターです。サイト情報と変更境界、プレビュー、公開状態、診断、
+リンク、コンテンツ一覧と本文、最後のビルド影響範囲、変更内容の検証を AI に渡します。`riebeckite_plugin_catalog` は
 公開 npm レジストリから公開済みの `@riebeckite/plugin-*` パッケージを検索します。読み取り専用で、
 ネットワーク接続が必要です。ローカルのサイト状態の唯一の基準は引き続き Riebeckite です。
+
+`riebeckite ai setup` は、AI 設定・Rules・Skills 用に `@riebeckite/ai` を追加し、MCP 接続用に
+`@riebeckite/mcp` も追加します。
 
 手動接続が必要な場合だけ、開発サーバーと `@riebeckite/mcp` に同じ
 `RIEBECKITE_BRIDGE_TOKEN` を渡します。トークンは32文字以上にしてください。
@@ -31,7 +34,8 @@ npm exec -- riebeckite ai mcp --mutations
 このコマンドは、その実行中だけ有効な変更トークンと承認トークンを生成します。承認トークンは
 `.riebeckite/bridge/approval-token`（git 管理外）に保存されるため、環境変数を設定しなくても
 `bridge approve` が読み取れます。MCP プロセスの終了時に削除されます。`riebeckite_mutation_plan`
-はコンテンツを変更せずに Plan を保存します。`riebeckite_mutation_apply` は、人が対話端末で
+はコンテンツを変更せずに Plan を保存します。承認前に、`riebeckite_mutation_inspect` で本文を
+含まない要約と決定的なリスク分類を確認してください。`riebeckite_mutation_apply` は、人が対話端末で
 `npm exec riebeckite bridge approve <plan-id>` を実行した後だけ成功します。承認は5分で失効し、
 1回だけ使えます。変更モードまたは変更トークンがない場合、ツールはエラーを返します。
 

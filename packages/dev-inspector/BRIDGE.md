@@ -45,6 +45,7 @@ read-only endpoints are advertised as additional capabilities:
 | `/__riebeckite/bridge/v1/diagnostics` | `path` | Return existing content diagnostics related to the source. |
 | `/__riebeckite/bridge/v1/impact` | `path` | Return the relevant outputs from the last completed build. |
 | `/__riebeckite/bridge/v1/context` | `path` | Return the resolved source, publication, preview, diagnostics, and last-build impact at one revision. |
+| `/__riebeckite/bridge/v1/project` | — | Return site facts and content mutation boundaries. |
 | `/__riebeckite/bridge/v1/schema` | — | Return protocol endpoint and input-shape discovery. |
 | `/__riebeckite/bridge/v1/inventory` | `offset`, `limit`, `query` | Return a paginated, optionally filtered content inventory. |
 | `/__riebeckite/bridge/v1/diagnostics` | `path`, `since` | Without `path`, return all build diagnostics; `since` returns unchanged or a full current snapshot. |
@@ -84,6 +85,14 @@ diagnostics, while a matching revision returns `delta: "unchanged"` and none.
 filesystem paths, rejects symlink escapes, and returns only
 `{ "available": false }` when it cannot safely read the file. It never exposes
 an absolute path or reads outside the content root.
+
+Every non-event response includes `revision` and `evidence`. `revision` identifies
+the Bridge state used for the response. `evidence` is an empty array or lists the
+root-relative source paths that directly support the response.
+
+`/project` returns the configured content directory, site locale, mutation policy,
+and stable site identity. It never returns absolute filesystem paths or arbitrary
+configuration.
 
 `GET /__riebeckite/bridge/v1/page?source=<vault-relative-markdown-path>` is the
 Protocol v1 compatibility endpoint used by the Obsidian client. It uses the same
@@ -168,6 +177,32 @@ checks that binding, five-minute expiry, and one-time use before applying. Neith
 the approval token nor a bearer approval ID crosses HTTP, appears in URLs, or is
 returned by the API. Plans stay server-side, and apply uses the existing
 fingerprint, lock, journal, backup, and path validation implementation.
+
+`GET /__riebeckite/bridge/v1/mutations/<plan-id>` requires the mutation token and
+returns a persisted plan's file summaries, conflicts, warnings, approval state,
+and deterministic risk (`safe`, `review`, `destructive`, or `blocked`). It does
+not return operations or changed content.
+
+Configure mutation boundaries in `riebeckite.config.ts` with
+`@riebeckite/ai`:
+
+```ts
+import { defineAiIntegration } from "@riebeckite/ai";
+
+integrations: {
+  ai: defineAiIntegration({
+    mutationPolicy: {
+      writable: ["**"],
+      protected: ["glossary.yml"],
+    },
+  }),
+},
+```
+
+Patterns are relative to the content root. The defaults are `writable: ["**"]`
+and `protected: []`. A protected pattern always overrides a writable pattern.
+The Bridge enforces this policy when it validates and persists plans, and checks
+it again before applying a plan.
 
 `POST /__riebeckite/bridge/v1/mutations/validate` accepts the same operations
 under the normal Bridge token and returns a plan without persisting it or

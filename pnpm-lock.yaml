@@ -99,6 +99,16 @@ importers:
         specifier: ^5.0.0
         version: 5.9.3
 
+  packages/ai:
+    dependencies:
+      '@riebeckite/core':
+        specifier: workspace:*
+        version: link:../core
+    devDependencies:
+      tsx:
+        specifier: ^4.22.4
+        version: 4.22.4
+
   packages/cli:
     dependencies:
       '@clack/prompts':
@@ -107,6 +117,9 @@ importers:
       '@hono/vite-build':
         specifier: ^1.11.1
         version: 1.11.1(hono@4.13.18)
+      '@riebeckite/ai':
+        specifier: workspace:*
+        version: link:../ai
       '@riebeckite/dev-inspector':
         specifier: workspace:*
         version: link:../dev-inspector
@@ -229,6 +242,9 @@ importers:
       '@clack/prompts':
         specifier: ^1.8.1
         version: 1.8.1
+      '@riebeckite/ai':
+        specifier: workspace:*
+        version: link:../ai
     devDependencies:
       '@riebeckite/test':
         specifier: workspace:*
@@ -317,6 +333,9 @@ importers:
       '@babel/parser':
         specifier: ^7.29.3
         version: 7.29.7
+      '@riebeckite/ai':
+        specifier: workspace:*
+        version: link:../../ai
       '@riebeckite/dev-inspector':
         specifier: workspace:*
         version: link:../../dev-inspector

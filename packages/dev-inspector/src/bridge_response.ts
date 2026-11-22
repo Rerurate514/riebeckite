@@ -138,6 +138,7 @@ export async function bridgeResponse(input: {
           "seo",
           "build-impact",
           "context",
+          ...(options.project ? ["project"] : []),
           "schema",
           "inventory",
           "links",
@@ -180,6 +181,20 @@ export async function bridgeResponse(input: {
     publicOrigin,
   };
   const source = requestUrl.searchParams.get("path");
+  if (requestUrl.pathname === `${bridgePath}/project`) {
+    const project = options.project?.();
+    return {
+      project: project
+        ? {
+            contentDirectory: project.contentDirectory,
+            locale: project.locale,
+            mutationPolicy: project.mutationPolicy,
+          }
+        : undefined,
+      identity: base.identity,
+      revision,
+    };
+  }
   if (requestUrl.pathname === `${bridgePath}/schema`) return bridgeSchema();
   if (requestUrl.pathname === `${bridgePath}/inventory`) {
     const inventory = inspectContentInventory(snapshot);
@@ -251,10 +266,13 @@ export function bridgeSchema(): Record<string, unknown> {
       diagnostics: { query: { path: "string", since: "revision" } },
       links: { query: { path: "string" } },
       content: { query: { path: "string" } },
+      project: { method: "GET" },
+      impact: { query: { path: "string" } },
       "mutations/validate": {
         method: "POST",
         body: { operations: "ContentMutationOperation[]" },
       },
+      "mutations/{planId}": { method: "GET", authentication: "mutation" },
     },
   };
 }

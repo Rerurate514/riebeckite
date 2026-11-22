@@ -23,11 +23,16 @@ client to run this package with:
 }
 ```
 
-The server exposes read-only Bridge tools, npm registry Plugin lookup, and
-mutation validation. With `RIEBECKITE_BRIDGE_MUTATION_TOKEN` (at least 32
+The server exposes read-only Bridge tools, including `riebeckite_project` for
+site facts and mutation boundaries and `riebeckite_impact` for last-build
+source impact, npm registry Plugin lookup, and mutation validation. With
+`RIEBECKITE_BRIDGE_MUTATION_TOKEN` (at least 32
 characters) it can also create and apply mutation plans. Set the separate
 `RIEBECKITE_BRIDGE_MUTATION_APPROVAL_TOKEN` on both the development server and
 the MCP process. A plan does not change content. Applying it requires a human
 to run `riebeckite bridge approve <plan-id>`. When the CLI starts the server
 with `riebeckite ai mcp --mutations`, it generates both tokens and stores the
 approval token in `.riebeckite/` for `bridge approve`.
+
+`riebeckite_mutation_inspect` requires the mutation token and returns a
+content-free summary for review before approval.

@@ -44,6 +44,9 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
   Packages: `@riebeckite/dev-inspector`, `@riebeckite/preview`, `@riebeckite/runtime`, `@riebeckite/honox`, `@riebeckite/plugin-diagnostics`, `@riebeckite/plugin-image-optimizer`
   PR: https://github.com/Rerurate514/riebeckite/pull/16
 
+- The development Bridge and MCP now expose project facts, last-build source impact, response evidence, and mutation plan inspection. The new `@riebeckite/ai` package owns AI configuration, Rules, Skills, and mutation boundaries through `integrations.ai.mutationPolicy`; protected paths override writable paths and are checked when plans are validated, saved, and applied.
+  Packages: `@riebeckite/core`, `@riebeckite/ai`, `@riebeckite/dev-inspector`, `@riebeckite/honox`, `@riebeckite/mcp`
+
 ### Changed
 
 - The `alias` plugin now declares a `developmentRouteCache` contract, so the development server persists alias routes and restores them across dev-server restarts instead of recomputing them every time. The serialized route state is versioned as `alias-route-v1` and is invalidated automatically when the format changes.
@@ -73,9 +76,22 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 - Expanded the generated Skill guides and checklists with concrete examples, exact commands, failure symptoms, and reporting templates. Added the missing Plugin `global` cache mode and corrected the upgrade Skill to describe `riebeckite upgrade` as a preflight check rather than an install. `riebeckite skills sync` picks up the expanded content when updates are accepted.
   Packages: `create-riebeckite`, `@riebeckite/cli`
 
+- Development route-cache fingerprints now use content source metadata (`modifiedAt` and `size`) instead of rereading and hashing every file, so a warm dev-server start no longer re-reads the whole vault. The route cache version was bumped, so existing saved state is recomputed once. Plugins that participate in development route caching through content locations, localization, or route manifest hooks must now declare `developmentRouteCache`; a missing descriptor fails startup with an error naming the plugin instead of silently disabling the cache. The `permalink` plugin and the plugin generator's `urls` template now declare this contract.
+  Packages: `@riebeckite/core`, `@riebeckite/plugin-permalink`, `@riebeckite/cli`
+
+- `riebeckite dev` now shows a progress indicator while the site becomes reachable: the elapsed time of each startup phase (loading the config, starting the Vite dev server, preparing the first page) and a `Ready` line once the development server answers its first request. The indicator only runs for interactive `riebeckite dev`; managed development sessions and `riebeckite ai mcp` keep their existing machine-readable output.
+
+  The warmer is now built into the HonoX integration's Vite plugin and enabled by default (`warmContent` defaults to true). After the dev server listens, the first page is requested so the content graph and SSR render finish during startup. While it is being prepared, `riebeckite:` progress lines appear every five seconds; the Vite URL banner and `printUrls` output are held back until the first response, so the local URL appears only once the site is actually reachable. Sites that run dev servers where no local URL can be resolved fall back to warming the content manifest only. Set `warmContent: false` in `riebeckiteVite()` to opt out.
+  Packages: `@riebeckite/cli`, `@riebeckite/honox`
+
 - **Breaking:** Replaced the drawer's self-initializing side-effect import with an explicit `initDrawers({ signal })` API (preset scaffolds and website already rewired, `:target` フォールバックや `data-rb-*` プロトコルは不変). code-tabs is now a hooks island: one SSR-hydrated `CodeTabsGroup` component via `hydrateRoot`, a `data-code-tabs-props` payload with sanitizer support, and a cache version bump to v3. Removed the dead `./tabs` export from `@riebeckite/ui` (createTabs) and the provably-dead `spa:navigation` listener in source-files. Fixed the local-graph hydration payload to `{ graph, showExplorerLink }` so the explorer link survives hydration. Added the interactive-roots decision guide (hydrateRoot vs createRoot) and refreshed the UI docs accordingly.
   Packages: `@riebeckite/ui`, `@riebeckite/plugin-code-tabs`, `@riebeckite/plugin-source-files`, `@riebeckite/plugin-local-graph`, `create-riebeckite`
   Migration: Replace `import \"@riebeckite/ui/drawer/client\"` with an explicit `initDrawers({ signal })` call inside the page initializer. Migrate code-tabs off `CodeTabsClientOptions` to the new `initCodeTabs()` client export (cache key becomes `code-tabs-v3`). Users importing `@riebeckite/ui/tabs` must move to the code-tabs island or their own implementation.
+
+### Fixed
+
+- The sandboxed iframe runtime's guest bridge script lost its sandbox handshake: the bridge document was generated with `export function send` inside a plain script, so the script failed with a syntax error, the guest never answered the init handshake, and every `createIframeRuntime` mount stalled until its start timeout. The bridge is now emitted with a plain function declaration again, so iframe runtimes become ready and respond to invocations.
+  Packages: `@riebeckite/runtime`
 
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.1.0...HEAD
 

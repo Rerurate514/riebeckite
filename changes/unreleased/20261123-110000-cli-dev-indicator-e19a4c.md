@@ -2,7 +2,6 @@
 packages:
   - "@riebeckite/cli"
   - "@riebeckite/honox"
-  - "@riebeckite/web"
 type: changed
 breaking: false
 migration: ""

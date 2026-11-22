@@ -67,6 +67,8 @@ It starts the site through the Riebeckite integration's development workflow. Th
 
 While the site becomes reachable, the command shows a progress indicator with the elapsed time for each startup phase: loading the config, starting the Vite dev server, and preparing the first page. The `Ready` line appears once the development server answers its first request, so the browser opens against an already-warm site.
 
+The same startup behavior is built into the Vite plugin, so sites started with plain `vite` or a package script get it too: the first page is warmed after the server listens, `riebeckite:` progress lines appear while it is being prepared, and the Vite URL banner is held back until the site actually responds. Pass `warmContent: false` to `riebeckiteVite()` to disable it.
+
 On Windows, save related edits together and wait for the server to finish restarting before reloading. Saving several files in quick succession can restart the Vite server repeatedly and briefly show `transport was disconnected`; reload after the restart to clear it.
 
 ## `check`

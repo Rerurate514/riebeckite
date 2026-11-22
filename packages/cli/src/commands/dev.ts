@@ -18,6 +18,7 @@ export async function runDev(
   const bridgeToken = process.env.RIEBECKITE_BRIDGE_TOKEN;
   const indicator =
     options.indicator && !managed ? createDevIndicator() : undefined;
+  if (indicator) process.env.RIEBECKITE_DEV_INDICATOR = "1";
   let interrupted = false;
   const onInterrupt = () => {
     interrupted = true;

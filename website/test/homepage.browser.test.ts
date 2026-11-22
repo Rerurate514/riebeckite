@@ -179,6 +179,8 @@ for (const theme of ["light", "dark"] as const) {
         const heroAside = document.querySelector<HTMLElement>(
           ".rb-home__hero-aside",
         );
+        const install =
+          document.querySelector<HTMLElement>(".rb-home__install");
         if (
           !code ||
           !window ||
@@ -190,7 +192,8 @@ for (const theme of ["light", "dark"] as const) {
           !pluginCode ||
           !brand ||
           !brandMark ||
-          !heroAside
+          !heroAside ||
+          !install
         ) {
           throw new Error("homepage color test fixture is incomplete");
         }
@@ -215,6 +218,12 @@ for (const theme of ["light", "dark"] as const) {
               brandMark.getBoundingClientRect().width / 2 -
               (heroAside.getBoundingClientRect().left +
                 heroAside.getBoundingClientRect().width / 2),
+          ),
+          brandVerticalSpaceOffset: Math.abs(
+            brand.getBoundingClientRect().top -
+              heroAside.getBoundingClientRect().top -
+              (install.getBoundingClientRect().top -
+                brand.getBoundingClientRect().bottom),
           ),
         };
       });
@@ -251,6 +260,7 @@ for (const theme of ["light", "dark"] as const) {
       assert.equal(styles.brandBackground, expected.codeBackground);
       assert.equal(styles.brandColor, expected.codeColor);
       assert.ok(styles.brandCenterOffset <= 1);
+      assert.ok(styles.brandVerticalSpaceOffset <= 1);
       assert.ok(
         contrastRatio(rgb(styles.codeColor), rgb(styles.codeBackground)) >= 4.5,
       );

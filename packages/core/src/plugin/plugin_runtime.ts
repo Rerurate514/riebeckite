@@ -393,7 +393,11 @@ export class PluginRuntime {
         continue;
       }
       const cache = plugin.developmentRouteCache;
-      if (!cache) return undefined;
+      if (!cache) {
+        throw new Error(
+          `Plugin "${plugin.name}" participates in development route caching (content locations, localization, or route manifest) but does not declare developmentRouteCache. Add a developmentRouteCache descriptor with a version string.`,
+        );
+      }
       snapshots.push({
         name: plugin.name,
         version: cache.version,

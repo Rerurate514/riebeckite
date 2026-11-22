@@ -93,7 +93,7 @@ export function example(
 
 開発時は、記事 HTML を処理する前に frontmatter とリンクのメタデータでルートを解決します。`extendContentGraph` または `onManifestCreated` を使うプラグインでは、`entry.html === ""` でも正しく処理でき、[[glossary/generated-output|生成物]]やアセット変換を必要とせず、開発サーバーでも実行する必要がある場合に限り、`developmentRouteManifest: true` を指定します。それ以外の[[glossary/manifest|マニフェスト]]へ影響するプラグインは、互換性を保つため開発時も Full Manifest を使います。
 
-開発時のルートマニフェストへ影響し、実行時の状態を持つプラグインは、`developmentRouteCache` にバージョンと `serialize`、`restore` を指定します。すべての参加プラグインがこの契約を宣言し、すべてのコンテンツハッシュが一致するときだけ、Core は再起動後にルートマニフェストを再利用します。ルートの結果または復元する状態を変えたらバージョンを更新し、安全に復元できない状態には契約を指定しません。
+`resolveContentLocations`、`extendContentLocations`、`resolveContentLocalization`、ルートマニフェストのフックのいずれかで開発時のルートキャッシュに参加するプラグインは、`developmentRouteCache` にバージョン文字列の宣言が必須です。宣言がない場合、Core はプラグイン名を含むエラーで失敗します。実行時の状態を持つプラグインは `serialize` と `restore` も指定します。すべての参加プラグインがこの契約を宣言し、すべてのコンテンツの fingerprint が一致するとき、Core は再起動後にルートマニフェストを再利用します。ルートの結果または復元する状態を変えたらバージョンを更新します。状態を永続化しないプラグインは `serialize` と `restore` を省略できます。
 
 ## プラグインを有効にする
 

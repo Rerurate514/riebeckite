@@ -18,7 +18,8 @@ const featureCode: Readonly<Record<PluginFeatureId, string>> = {
       const line = markdown.split(/\\r?\\n/).findIndex((value) => value.includes("TODO"));
       if (line >= 0) diagnostics.push({ code: "PLUGIN/todo", severity: "warning", message: "Remove TODO before publishing.", slug, line: line + 1 });
     },`,
-  urls: `extendContentLocations({ entries, locations, diagnostics }) {
+  urls: `developmentRouteCache: { version: "1" },
+    extendContentLocations({ entries, locations, diagnostics }) {
       for (const entry of entries) {
         const location = locations.get(entry.slug);
         const legacy = \`/notes/\${entry.slug}\`;

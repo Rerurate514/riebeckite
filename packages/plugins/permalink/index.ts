@@ -16,6 +16,7 @@ export function permalink(options: PermalinkOptions = {}) {
   return definePlugin({
     name: "permalink",
     options,
+    developmentRouteCache: { version: "permalink-route-v1" },
     resolveContentLocations: ({ entries }) => {
       const contents = entries.map((entry) => ({
         ...entry,

@@ -97,12 +97,15 @@ with `entry.html === ""`, need no generated outputs or asset transforms, and
 are required while serving. Other manifest-affecting plugins use the full
 manifest in development to preserve compatibility.
 
-When a plugin affects a development route manifest and keeps runtime state,
-declare `developmentRouteCache` with a version plus `serialize` and `restore`.
-Core reuses a route manifest after a restart only when every participating
-plugin declares this contract and all content hashes still match. Increment the
-version when the route result or restored state changes; omit the contract when
-the state cannot be restored safely.
+A plugin that participates in development route caching—through
+`resolveContentLocations`, `extendContentLocations`, `resolveContentLocalization`,
+or route-manifest hooks—must declare `developmentRouteCache` with a version string;
+Core fails fast with an error naming the plugin when the descriptor is missing. When
+the plugin keeps runtime state, add `serialize` and `restore`. Core reuses a route
+manifest after a restart when every participating plugin declares this contract and
+all entry fingerprints still match. Increment the version when the route result or
+restored state changes; omit `serialize` and `restore` when the plugin has no state
+to persist.
 
 ## Ordering and capabilities
 

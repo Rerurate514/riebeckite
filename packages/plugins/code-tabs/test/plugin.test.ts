@@ -48,9 +48,10 @@ test("renders grouped code tabs through the HAST transform", async () => {
   assert.match(html, /role="tablist"/);
   assert.match(html, /data-code-tabs-label="TypeScript"/);
   assert.match(html, /data-code-tabs-label="JavaScript"/);
-  assert.equal(html.split('role="tabpanel"').length - 1, 2);
-  assert.match(html, /const value = 1;/);
-  assert.match(html, /const value = 2;/);
+  const panels = html.split('role="tabpanel"');
+  assert.equal(panels.length - 1, 2);
+  assert.match(panels[1] ?? "", /const value = 1;/);
+  assert.match(panels[2] ?? "", /const value = 2;/);
 });
 
 test("renders the first panel visible without JavaScript", async () => {
@@ -67,21 +68,18 @@ test("renders the first panel visible without JavaScript", async () => {
 test("serializes the hydration props onto the grouped markup", async () => {
   const serialized = (await renderTabs()).match(PROPS_ATTRIBUTE)?.[1];
   assert.ok(serialized);
+  const decoded = decodeAttribute(serialized);
 
-  const props = JSON.parse(decodeAttribute(serialized)) as {
+  const props = JSON.parse(decoded) as {
     groupId: string;
     sync: boolean;
-    tabs: Array<{ label: string; html: string }>;
+    labels: string[];
   };
 
   assert.equal(props.groupId, "rr-code-tabs-1");
   assert.equal(props.sync, false);
-  assert.deepEqual(
-    props.tabs.map((tab) => tab.label),
-    ["TypeScript", "JavaScript"],
-  );
-  assert.match(props.tabs[0]?.html ?? "", /const value = 1;/);
-  assert.match(props.tabs[1]?.html ?? "", /const value = 2;/);
+  assert.deepEqual(props.labels, ["TypeScript", "JavaScript"]);
+  assert.doesNotMatch(decoded, /const value/);
 });
 
 test("marks synchronized groups in the markup and props", async () => {

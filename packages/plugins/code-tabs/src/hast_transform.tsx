@@ -42,13 +42,18 @@ export const codeTabsTransform = defineHastTransform({
         } as never),
       })),
     };
+    const island = {
+      groupId: props.groupId,
+      sync: props.sync,
+      labels: props.tabs.map((tab) => tab.label),
+    };
 
     return renderToString(
       <div
         class="rr-code-tabs"
         data-code-tabs="true"
         data-code-tabs-sync={props.sync ? "true" : undefined}
-        data-code-tabs-props={JSON.stringify(props)}
+        data-code-tabs-props={JSON.stringify(island)}
       >
         <CodeTabsGroup {...props} />
       </div>,

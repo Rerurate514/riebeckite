@@ -53,15 +53,23 @@ import "@riebeckite/ui/styles/drawer.css";
 <Drawer id="site-menu" label="Navigation">{navigation}</Drawer>
 ```
 
-Import the client entry once for focus management, Escape, outside clicks, and SPA cleanup:
+Initialize the drawer behavior from the page client initializer:
 
 ```ts
-import "@riebeckite/ui/drawer/client";
+import { initDrawers } from "@riebeckite/ui/drawer/client";
+
+// inside the page initializer
+const cleanup = initDrawers({ signal });
 ```
+
+`initDrawers` is idempotent and returns a cleanup function. Pass the page
+lifecycle `signal` to tear it down with the page, or ignore the return value
+where it should persist for the document. It closes open drawers whose markup is
+removed, including an SPA navigation that replaces `main#main-content`.
 
 The component emits `data-rb-drawer`, `data-rb-drawer-backdrop`, `data-rb-drawer-panel`, `data-rb-drawer-trigger`, and `data-rb-drawer-target`. Customize its placement with `--rb-drawer-inset-block-start`, `--rb-drawer-width`, `--rb-drawer-padding`, and `--rb-drawer-background`.
 
-Without JavaScript, the trigger remains a fragment link and `:target` reveals the panel. This fallback cannot provide dialog semantics, a focus trap or focus restore, Escape and outside-click dismissal, scroll lock, or a dependable close affordance. Provide an in-panel close link when no-JavaScript use matters; use the client entry when full dialog behavior is required.
+Without JavaScript, the trigger remains a fragment link and `:target` reveals the panel. This fallback cannot provide dialog semantics, a focus trap or focus restore, Escape and outside-click dismissal, scroll lock, or a dependable close affordance. Provide an in-panel close link when no-JavaScript use matters; call `initDrawers` when full dialog behavior is required.
 
 ## Dialog
 
@@ -79,22 +87,6 @@ const controller = createDialogController(dialog, {
 ```
 
 The controller keeps `aria-expanded` in sync, closes on backdrop clicks, restores focus on close, and reference-counts scroll locking. Pass the page lifecycle's `AbortSignal` as `signal`; aborting it destroys the controller and releases the scroll lock, so SPA teardown does not depend on remembering a separate `destroy()` call. It also handles Escape and traps focus while open, restoring focus on close.
-
-## Tabs
-
-Use native buttons with the WAI-ARIA tabs pattern. `createTabs()` manages selection, arrow keys, Home/End, focus, `aria-selected`, `tabindex`, and panel visibility:
-
-```ts
-import { createTabs } from "@riebeckite/ui/tabs";
-
-const tabs = createTabs(tablist, {
-  onSelect: ({ index }) => {
-    /* feature-specific side effects */
-  },
-});
-```
-
-Call `tabs.destroy()` when the tab group is removed. The primitive does not own tab markup or feature semantics; plugins such as Code Tabs keep their Markdown conversion and synchronization rules.
 
 ## Clipboard
 

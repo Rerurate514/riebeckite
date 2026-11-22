@@ -329,6 +329,12 @@ test("generated docs site installs, checks, and builds the shell", async () => {
     );
     assert.match(article ?? "", /<DrawerTrigger/);
     assert.match(article ?? "", /<div data-spa-region="docs-navigation">/);
+    const client = await readFile(targetDir, "app/client.ts");
+    assert.match(
+      client ?? "",
+      /import \{ initDrawers \} from "@riebeckite\/ui\/drawer\/client";/,
+    );
+    assert.match(client ?? "", /initDrawers\(\);/);
     assert.ok(
       !(article ?? "").includes("docs-navigation-mobile"),
       "the docs shell must render the sidebar exactly once",

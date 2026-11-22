@@ -1,5 +1,5 @@
 import { initRiebeckiteClient } from "virtual:riebeckite/client";
-import "@riebeckite/ui/drawer/client";
+import { initDrawers } from "@riebeckite/ui/drawer/client";
 import { createClient } from "honox/client";
 import { crossesShellBoundary } from "./lib/shell-navigation";
 
@@ -23,6 +23,7 @@ if (typeof document !== "undefined") {
 
 function initPage() {
   initRiebeckiteClient();
+  initDrawers();
   mountThemeShowcase();
   new MutationObserver(mountThemeShowcase).observe(document.body, {
     childList: true,

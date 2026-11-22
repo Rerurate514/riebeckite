@@ -681,9 +681,6 @@ importers:
 
   packages/plugins/code-tabs:
     dependencies:
-      '@riebeckite/ui':
-        specifier: workspace:*
-        version: link:../../ui
       hono:
         specifier: 'catalog:'
         version: 4.13.18

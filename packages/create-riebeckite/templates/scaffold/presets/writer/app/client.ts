@@ -1,5 +1,5 @@
 import { initRiebeckiteClient } from "virtual:riebeckite/client";
-import "@riebeckite/ui/drawer/client";
+import { initDrawers } from "@riebeckite/ui/drawer/client";
 import { createClient } from "honox/client";
 
 createClient();
@@ -12,4 +12,5 @@ if (document.readyState === "loading") {
 
 function initPage() {
   initRiebeckiteClient();
+  initDrawers();
 }

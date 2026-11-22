@@ -12,12 +12,13 @@ import { Drawer, DrawerTrigger } from "../drawer.tsx";
 declare global {
   var RbDrawer: typeof import("../drawer-client.ts");
   var RbDialog: typeof import("../dialog.ts");
-  var RbTabs: typeof import("../tabs.ts");
   var RbCopy: typeof import("../copy.ts");
   var RbLoading: typeof import("../loading.ts");
 
   interface Window {
     loadingAbort: AbortController;
+    drawerAbort: AbortController;
+    drawerFixture: HTMLElement;
     loadingController: import("../loading.ts").LoadingController;
   }
 }
@@ -46,7 +47,6 @@ async function bundle(entry: string, globalName: string): Promise<string> {
 
 const drawerJs = await bundle("../drawer-client.ts", "RbDrawer");
 const dialogJs = await bundle("../dialog.ts", "RbDialog");
-const tabsJs = await bundle("../tabs.ts", "RbTabs");
 const copyJs = await bundle("../copy.ts", "RbCopy");
 const loadingJs = await bundle("../loading.ts", "RbLoading");
 
@@ -71,20 +71,6 @@ const pageMarkup = `<!doctype html>
     <button id="dialog-close">Close</button>
     <input id="dialog-input">
   </dialog>
-  <div id="tabs" role="tablist" aria-label="Tabs">
-    <button id="tab-1" role="tab" aria-controls="panel-1" aria-selected="true">One</button>
-    <button id="tab-2" role="tab" aria-controls="panel-2" aria-selected="false" tabindex="-1">Two</button>
-    <button id="tab-3" role="tab" aria-controls="panel-3" aria-selected="false" tabindex="-1">Three</button>
-  </div>
-  <div id="panel-1" role="tabpanel">Panel one</div>
-  <div id="panel-2" role="tabpanel" hidden>Panel two</div>
-  <div id="panel-3" role="tabpanel" hidden>Panel three</div>
-  <div id="vertical-tabs" role="tablist" aria-label="Vertical tabs" aria-orientation="vertical">
-    <button id="vertical-1" role="tab" aria-controls="vertical-panel-1" aria-selected="true">A</button>
-    <button id="vertical-2" role="tab" aria-controls="vertical-panel-2" aria-selected="false" tabindex="-1">B</button>
-  </div>
-  <div id="vertical-panel-1" role="tabpanel">Vertical A</div>
-  <div id="vertical-panel-2" role="tabpanel" hidden>Vertical B</div>
   <section id="loading-root" data-loading-state="ready">
     <p id="loading-indicator" data-loading hidden>Loading</p>
     <p id="loading-error" data-loading-error role="alert" hidden></p>
@@ -130,15 +116,15 @@ before(async () => {
 after(async () => browser?.close());
 
 test("UI modules import without a document", async () => {
-  const [dialog, tabs, copy, loading, behaviors] = await Promise.all([
+  const [drawer, dialog, copy, loading, behaviors] = await Promise.all([
+    import("../drawer-client.ts"),
     import("../dialog.ts"),
-    import("../tabs.ts"),
     import("../copy.ts"),
     import("../loading.ts"),
     import("../behaviors.ts"),
   ]);
+  assert.equal(typeof drawer.initDrawers, "function");
   assert.equal(typeof dialog.createDialogController, "function");
-  assert.equal(typeof tabs.createTabs, "function");
   assert.equal(typeof copy.copyText, "function");
   assert.equal(typeof loading.createLoadingController, "function");
   assert.equal(typeof behaviors.lockScroll, "function");
@@ -162,7 +148,7 @@ test("Drawer composes with standard HTML at supported viewports", async (t) => {
   }
 });
 
-test("Drawer keeps focus, scroll lock, dismissal, and reinitialization", async (t) => {
+test("Drawer keeps focus, scroll lock, dismissal, and cleanup", async (t) => {
   if (!browser) return t.skip("Puppeteer browser is unavailable");
   const page = await openPage(375, [{ name: "drawer", source: drawerJs }]);
   await page.evaluate(() => {
@@ -248,14 +234,38 @@ test("Drawer keeps focus, scroll lock, dismissal, and reinitialization", async (
   );
 
   await page.click(trigger);
-  await page.evaluate(() =>
-    document.dispatchEvent(new Event("spa:navigation")),
+  await page.evaluate(() => {
+    const drawer = document.querySelector("[data-rb-drawer]");
+    if (!drawer) throw new Error("Missing drawer");
+    window.drawerFixture = drawer as HTMLElement;
+    drawer.remove();
+  });
+  await page.waitForFunction(
+    () => document.documentElement.style.overflow === "",
   );
-  assert.equal(
-    await page.$eval(trigger, (element) =>
-      element.getAttribute("aria-expanded"),
-    ),
-    "false",
+  assert.deepEqual(
+    await page.evaluate(() => ({
+      expanded: document
+        .querySelector("[data-rb-drawer-trigger]")
+        ?.getAttribute("aria-expanded"),
+      lockMarker: document.documentElement.dataset.rbScrollLock ?? null,
+    })),
+    { expanded: "false", lockMarker: null },
+  );
+
+  await page.evaluate(() => {
+    window.drawerFixture = window.drawerFixture.cloneNode(true) as HTMLElement;
+    document.body.append(window.drawerFixture);
+  });
+  await page.click(trigger);
+  assert.deepEqual(
+    await page.evaluate(() => ({
+      expanded: document
+        .querySelector("[data-rb-drawer-trigger]")
+        ?.getAttribute("aria-expanded"),
+      lockMarker: document.documentElement.dataset.rbScrollLock ?? null,
+    })),
+    { expanded: "true", lockMarker: "true" },
   );
   await page.close();
 });
@@ -279,8 +289,17 @@ test("Drawer keeps navigation scroll position across SPA navigation", async (t) 
     }),
     180,
   );
-  await page.evaluate(() =>
-    document.dispatchEvent(new Event("spa:navigation")),
+  await page.evaluate(() => {
+    const main = document.querySelector("main#main-content");
+    const next = main?.cloneNode(true);
+    if (!main || !next) throw new Error("Missing page root");
+    main.replaceWith(next);
+  });
+  await page.waitForFunction(
+    () =>
+      document
+        .querySelector("[data-rb-drawer-trigger]")
+        ?.getAttribute("aria-expanded") === "false",
   );
   await page.click(trigger);
   assert.equal(
@@ -288,6 +307,57 @@ test("Drawer keeps navigation scroll position across SPA navigation", async (t) 
       () => document.querySelector<HTMLElement>("#navigation")?.scrollTop,
     ),
     180,
+  );
+  assert.equal(
+    await page.$eval(trigger, (element) =>
+      element.getAttribute("aria-expanded"),
+    ),
+    "true",
+  );
+  await page.close();
+});
+
+test("Drawer destroys when its lifecycle signal aborts", async (t) => {
+  if (!browser) return t.skip("Puppeteer browser is unavailable");
+  const page = await openPage(375, [{ name: "drawer", source: drawerJs }]);
+  await page.evaluate(() => {
+    window.drawerAbort = new AbortController();
+    RbDrawer.initDrawers({ signal: window.drawerAbort.signal });
+  });
+
+  await page.click("#drawer-trigger");
+  assert.deepEqual(
+    await page.evaluate(() => ({
+      expanded: document
+        .querySelector("[data-rb-drawer-trigger]")
+        ?.getAttribute("aria-expanded"),
+      locked: document.documentElement.style.overflow,
+      role: document.querySelector("#navigation")?.getAttribute("role"),
+    })),
+    { expanded: "true", locked: "hidden", role: "dialog" },
+  );
+
+  await page.evaluate(() => window.drawerAbort.abort());
+  await page.waitForFunction(
+    () => document.documentElement.style.overflow === "",
+  );
+  assert.deepEqual(
+    await page.evaluate(() => ({
+      expanded: document
+        .querySelector("[data-rb-drawer-trigger]")
+        ?.getAttribute("aria-expanded"),
+      lockMarker: document.documentElement.dataset.rbScrollLock ?? null,
+      role: document.querySelector("#navigation")?.getAttribute("role"),
+    })),
+    { expanded: "false", lockMarker: null, role: null },
+  );
+
+  await page.click("#drawer-trigger");
+  assert.equal(
+    await page.$eval("#drawer-trigger", (element) =>
+      element.getAttribute("aria-expanded"),
+    ),
+    "false",
   );
   await page.close();
 });
@@ -461,76 +531,6 @@ test("Dialog destroys when its lifecycle signal aborts", async (t) => {
       () => document.querySelector<HTMLDialogElement>("#test-dialog")?.open,
     ),
     false,
-  );
-  await page.close();
-});
-
-test("Tabs expose ARIA state and keyboard navigation", async (t) => {
-  if (!browser) return t.skip("Puppeteer browser is unavailable");
-  const page = await openPage(1440, [{ name: "tabs", source: tabsJs }]);
-  await page.evaluate(() => {
-    const horizontal = document.querySelector<HTMLElement>("#tabs");
-    const vertical = document.querySelector<HTMLElement>("#vertical-tabs");
-    if (!horizontal || !vertical) throw new Error("Missing tablist");
-    RbTabs.createTabs(horizontal);
-    RbTabs.createTabs(vertical);
-  });
-
-  assert.deepEqual(
-    await page.evaluate(() => ({
-      selected: document.querySelector("#tab-1")?.getAttribute("aria-selected"),
-      tabIndex: document.querySelector<HTMLElement>("#tab-1")?.tabIndex,
-      panelHidden: document.querySelector<HTMLElement>("#panel-2")?.hidden,
-      active: document.querySelector("#panel-1")?.getAttribute("data-active"),
-    })),
-    {
-      selected: "true",
-      tabIndex: 0,
-      panelHidden: true,
-      active: "true",
-    },
-  );
-
-  await page.click("#tab-2");
-  assert.deepEqual(
-    await page.evaluate(() => ({
-      selected: document.querySelector("#tab-2")?.getAttribute("aria-selected"),
-      tabIndex: document.querySelector<HTMLElement>("#tab-2")?.tabIndex,
-      focus: document.activeElement?.id,
-      panelHidden: document.querySelector<HTMLElement>("#panel-2")?.hidden,
-      active: document.querySelector("#panel-2")?.getAttribute("data-active"),
-      previousHidden: document.querySelector<HTMLElement>("#panel-1")?.hidden,
-    })),
-    {
-      selected: "true",
-      tabIndex: 0,
-      focus: "tab-2",
-      panelHidden: false,
-      active: "true",
-      previousHidden: true,
-    },
-  );
-
-  await page.keyboard.press("ArrowRight");
-  assert.equal(await page.evaluate(() => document.activeElement?.id), "tab-3");
-  await page.keyboard.press("Home");
-  assert.equal(await page.evaluate(() => document.activeElement?.id), "tab-1");
-  await page.keyboard.press("End");
-  assert.equal(await page.evaluate(() => document.activeElement?.id), "tab-3");
-  await page.keyboard.press("ArrowLeft");
-  assert.deepEqual(
-    await page.evaluate(() => ({
-      focus: document.activeElement?.id,
-      selected: document.activeElement?.getAttribute("aria-selected"),
-    })),
-    { focus: "tab-2", selected: "true" },
-  );
-
-  await page.focus("#vertical-1");
-  await page.keyboard.press("ArrowDown");
-  assert.equal(
-    await page.evaluate(() => document.activeElement?.id),
-    "vertical-2",
   );
   await page.close();
 });

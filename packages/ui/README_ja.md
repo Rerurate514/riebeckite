@@ -25,7 +25,6 @@ composition と公開境界の要件は [HonoX UI ドキュメント](../../docs
 | `@riebeckite/ui/drawer` | `Drawer` と `DrawerTrigger` のマークアップ |
 | `@riebeckite/ui/drawer/client` | フォーカス、Escape、外側クリック、スクロールロック、SPA 遷移時の後始末 |
 | `@riebeckite/ui/dialog` | ネイティブ `<dialog>` 用のコントローラ |
-| `@riebeckite/ui/tabs` | WAI-ARIA のタブ選択とキーボード動作 |
 | `@riebeckite/ui/copy` | フォールバック付きのクリップボードコピー |
 | `@riebeckite/ui/behaviors` | フォーカス、dismiss、スクロールロックのユーティリティ |
 | `@riebeckite/ui/loading` | DOM 領域の読み込み中、完了、エラー状態 |
@@ -41,8 +40,13 @@ import "@riebeckite/ui/styles/drawer.css";
 ```
 
 ```ts
-import "@riebeckite/ui/drawer/client";
+import { initDrawers } from "@riebeckite/ui/drawer/client";
+
+// ページのクライアント初期化処理の中
+const cleanup = initDrawers({ signal });
 ```
+
+`initDrawers` は冪等で、後始末用の関数を返します。ページのライフサイクルの `signal` を渡すとページとともに破棄され、ドキュメント全体で動かし続けたい場合は戻り値を無視してかまいません。マークアップが削除された Drawer は、`main#main-content` を置き換える SPA 遷移を含めて閉じられます。
 
 Drawer は Escape と外側クリックによる閉じる操作、フォーカストラップと復元、初期フォーカス、参照カウント付きスクロールロック、トリガーの ARIA 状態、SPA 遷移時の後始末、重複初期化の防止を提供します。JavaScript がない場合、トリガーはフラグメントリンクとして動作し、CSS の `:target` でパネルを開けます。ただしこのフォールバックには、ダイアログのセマンティクス、フォーカスの閉じ込めと復元、Escape と外側クリックによる閉じる操作、スクロールロック、確実な閉じる導線がありません。
 

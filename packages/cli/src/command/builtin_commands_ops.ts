@@ -1,3 +1,4 @@
+import { AI_CLIENTS, type AiClient } from "@riebeckite/ai";
 import {
   type CliCommandDefinition,
   cliBoolean,
@@ -235,10 +236,24 @@ export function aiSetupCommand(): CliCommandDefinition {
     id: "ai setup",
     summary: "Add Riebeckite AI guidance, Skills, and MCP configuration.",
     requiresProject: true,
-    async handler(context) {
+    options: [
+      cliString("client", {
+        description:
+          "Write project-local MCP configuration for a client. Repeat for multiple clients.",
+        valueName: "client",
+        repeatable: true,
+        validate: (value: string) =>
+          AI_CLIENTS.includes(value as AiClient)
+            ? undefined
+            : `Expected one of: ${AI_CLIENTS.join(", ")}.`,
+      }),
+    ],
+    async handler(context, input) {
       const { createSetupPrompts } = await import("../prompts.js");
       const { runAiSetup } = await import("../commands/ai_setup.js");
-      await runAiSetup(await project(context), createSetupPrompts().confirm);
+      await runAiSetup(await project(context), createSetupPrompts().confirm, {
+        clients: (input.options.client ?? []) as readonly AiClient[],
+      });
     },
   });
 }

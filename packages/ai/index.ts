@@ -3,6 +3,9 @@ import {
   ConfigValidationError,
   type ConfigValidationIssue,
 } from "@riebeckite/core";
+import type { AiPackageManager } from "./clients.js";
+
+export * from "./clients.js";
 
 export type AiMutationPolicy = {
   writable?: readonly string[];
@@ -35,6 +38,7 @@ export type AiSetupOptions = {
   rules?: boolean;
   skills?: boolean;
   contentDirectory?: string;
+  packageManager?: AiPackageManager;
 };
 
 export type AiSetupFile = {
@@ -60,7 +64,7 @@ export function getAiSetupFiles(
   version = "0.0.0",
 ): readonly AiSetupFile[] {
   return [
-    ...(options.rules ? aiRuleFiles(context, options) : []),
+    ...(options.rules ? aiRuleFiles(context, options, version) : []),
     ...(options.skills ? aiSkillFiles(context, options, version) : []),
   ];
 }
@@ -68,13 +72,20 @@ export function getAiSetupFiles(
 export function aiRuleFiles(
   context: AiSetupContext,
   options: AiSetupOptions = {},
+  version = "0.0.0",
 ): readonly AiSetupFile[] {
   const contentDirectory = options.contentDirectory ?? "content";
-  const check = options.lint ? "npm run content:lint" : "npm run check";
+  const packageManager = options.packageManager ?? "npm";
+  const check = `${packageManager} run ${options.lint ? "content:lint" : "check"}`;
+  const build = `${packageManager} run build`;
+  const guidance = `Content lives under \`${contentDirectory}/\`; run \`${check}\` after content changes and \`${build}\` before publishing.`;
   return [
     {
       path: "RIEBECKITE_AI.md",
-      content: `# Riebeckite AI guide
+      content: `---
+riebeckiteVersion: "${version}"
+---
+# Riebeckite AI guide
 
 ## Scope
 
@@ -85,7 +96,7 @@ export function aiRuleFiles(
 ## Validation
 
 - Run \`${check}\` after changing content.
-- Run \`npm run build\` before publishing.
+- Run \`${build}\` before publishing.
 
 ## Site
 
@@ -97,7 +108,21 @@ export function aiRuleFiles(
       path: "AGENTS.md",
       content: `# Riebeckite project instructions
 
-Read \`RIEBECKITE_AI.md\` before editing. Content lives under \`${contentDirectory}/\`; run \`${check}\` after content changes and \`npm run build\` before publishing.
+Read \`RIEBECKITE_AI.md\` before editing. ${guidance}
+`,
+    },
+    {
+      path: "CLAUDE.md",
+      content: `# Riebeckite project instructions
+
+Read \`AGENTS.md\` and \`RIEBECKITE_AI.md\` before editing. ${guidance}
+`,
+    },
+    {
+      path: ".github/copilot-instructions.md",
+      content: `# Riebeckite project instructions
+
+Read \`AGENTS.md\` and \`RIEBECKITE_AI.md\` before editing. ${guidance}
 `,
     },
   ];

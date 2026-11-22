@@ -14,6 +14,20 @@ npm exec riebeckite ai mcp
 このコマンドはローカル開発サーバーと MCP サーバーを起動し、その実行中だけ有効な
 Bridge トークンを生成します。トークンを AI クライアントの設定へ書く必要はありません。
 
+`riebeckite ai setup --client <client>` は、プロジェクト内に AI クライアント設定を
+書き込みます。複数のクライアントを設定するには、オプションを繰り返します。
+
+```sh
+npm exec -- riebeckite ai setup --client claude --client cursor
+```
+
+対応するクライアントは `claude`（`.mcp.json`）、`cursor`（`.cursor/mcp.json`）、
+`vscode`（`.vscode/mcp.json`）、`opencode`（`opencode.json`）です。既存の JSON に
+`riebeckite` サーバーをマージし、ほかのキーとサーバーは保持します。既存の
+`riebeckite` エントリは置き換えず、グローバルのクライアント設定は変更しません。
+JSON を解析できない場合はファイルを変更しません。pnpm のロックファイルがある場合、
+生成されるコマンドは `pnpm exec` を使います。
+
 MCP は開発時限定の Bridge に接続する薄いアダプターです。サイト情報と変更境界、プレビュー、公開状態、診断、
 リンク、コンテンツ一覧と本文、最後のビルド影響範囲、変更内容の検証を AI に渡します。`riebeckite_plugin_catalog` は
 公開 npm レジストリから公開済みの `@riebeckite/plugin-*` パッケージを検索します。読み取り専用で、

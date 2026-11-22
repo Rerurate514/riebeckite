@@ -33,6 +33,21 @@ test("adds selected AI development support", async (t) => {
     /RIEBECKITE_AI\.md/,
   );
   assert.match(
+    await fs.readFile(path.join(directory, "CLAUDE.md"), "utf8"),
+    /AGENTS\.md/,
+  );
+  assert.match(
+    await fs.readFile(
+      path.join(directory, ".github", "copilot-instructions.md"),
+      "utf8",
+    ),
+    /RIEBECKITE_AI\.md/,
+  );
+  assert.match(
+    await fs.readFile(path.join(directory, "RIEBECKITE_AI.md"), "utf8"),
+    /riebeckiteVersion: "0\.1\.0"/,
+  );
+  assert.match(
     await fs.readFile(
       path.join(directory, ".agents", "skills", "riebeckite-site", "SKILL.md"),
       "utf8",

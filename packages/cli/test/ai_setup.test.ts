@@ -166,10 +166,25 @@ test("ai setup adds MCP, lint, rules, and Skills without overwriting AGENTS.md",
   assert.match(manifest.devDependencies["@riebeckite/mcp"] ?? "", /^\^/);
   assert.match(
     await fs.readFile(path.join(directory, "RIEBECKITE_AI.md"), "utf8"),
+    /riebeckiteVersion: "0\.1\.0"/,
+  );
+  assert.match(
+    await fs.readFile(path.join(directory, "RIEBECKITE_AI.md"), "utf8"),
     /`notes\/`/,
   );
   assert.match(
     await fs.readFile(path.join(directory, "AGENTS.md"), "utf8"),
+    /RIEBECKITE_AI\.md/,
+  );
+  assert.match(
+    await fs.readFile(path.join(directory, "CLAUDE.md"), "utf8"),
+    /AGENTS\.md/,
+  );
+  assert.match(
+    await fs.readFile(
+      path.join(directory, ".github", "copilot-instructions.md"),
+      "utf8",
+    ),
     /RIEBECKITE_AI\.md/,
   );
   await fs.access(
@@ -189,6 +204,86 @@ test("ai setup adds MCP, lint, rules, and Skills without overwriting AGENTS.md",
     "custom\n",
   );
 });
+
+test("ai setup writes requested client configs and detects pnpm", async (t) => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-ai-clients-"),
+  );
+  t.after(() => fs.rm(directory, { recursive: true, force: true }));
+  await fs.writeFile(path.join(directory, "pnpm-lock.yaml"), "");
+  await fs.writeFile(
+    path.join(directory, "package.json"),
+    `${JSON.stringify({ name: "site", scripts: {}, devDependencies: {} }, null, 2)}\n`,
+  );
+
+  await runAiSetup(siteProject(directory), async () => true, {
+    clients: ["claude", "vscode"],
+  });
+
+  const claude = JSON.parse(
+    await fs.readFile(path.join(directory, ".mcp.json"), "utf8"),
+  ) as { mcpServers: { riebeckite: unknown } };
+  assert.deepEqual(claude.mcpServers.riebeckite, {
+    command: "pnpm",
+    args: ["exec", "riebeckite", "ai", "mcp"],
+  });
+  const vscode = JSON.parse(
+    await fs.readFile(path.join(directory, ".vscode", "mcp.json"), "utf8"),
+  ) as { servers: { riebeckite: { type: string } } };
+  assert.equal(vscode.servers.riebeckite.type, "stdio");
+  assert.match(
+    await fs.readFile(path.join(directory, "RIEBECKITE_AI.md"), "utf8"),
+    /pnpm run content:lint/,
+  );
+  await assert.rejects(fs.access(path.join(directory, ".cursor", "mcp.json")));
+});
+
+test("ai setup preserves an existing riebeckite server", async (t) => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-ai-existing-client-"),
+  );
+  t.after(() => fs.rm(directory, { recursive: true, force: true }));
+  await fs.writeFile(
+    path.join(directory, ".mcp.json"),
+    `${JSON.stringify(
+      {
+        custom: true,
+        mcpServers: { riebeckite: { command: "custom" } },
+      },
+      null,
+      2,
+    )}\n`,
+  );
+
+  await runAiSetup(siteProject(directory), async () => true, {
+    clients: ["claude"],
+  });
+
+  const config = JSON.parse(
+    await fs.readFile(path.join(directory, ".mcp.json"), "utf8"),
+  ) as {
+    custom: boolean;
+    mcpServers: { riebeckite: { command: string } };
+  };
+  assert.equal(config.custom, true);
+  assert.equal(config.mcpServers.riebeckite.command, "custom");
+});
+
+function siteProject(directory: string): RiebeckiteProject {
+  return {
+    projectRoot: directory,
+    contentRoot: path.join(directory, "notes"),
+    config: {
+      site: {
+        title: "Site",
+        description: "",
+        baseUrl: "https://example.com",
+        locale: "en",
+      },
+      content: { directory: "notes" },
+    },
+  } as RiebeckiteProject;
+}
 
 async function writeFiles(
   root: string,

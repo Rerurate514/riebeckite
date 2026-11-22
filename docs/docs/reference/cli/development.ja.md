@@ -117,7 +117,7 @@ npm exec -- riebeckite doctor --fail-on warning --code CONTENT_UNAVAILABLE
 
 `--explain` は安定した fingerprint、原因、詳細、推奨される修正を含めます。`--json` はツール向けにシリアライズ可能なレポートだけを出力し、追加された summary には unavailable ・ skipped ・ category ・ code ごとの件数も含まれます。`--code` は繰り返して[[glossary/diagnostic-code|診断コード]]を絞り込めます。`--fail-on` は失敗にする最小 severity を指定します（既定値は `error`）。`--fix` は安全な自動修正に限定されますが、現在は対応する自動修正がないため、`--dry-run` でファイルを変更せずにそのことを確認できます。
 
-`doctor` は、観測できる範囲で、実行環境、設定、プラグイン、コンテンツ、出力計画、テーマの参照を確認します。観測できない項目は推測せず、利用不可として明示します。
+`doctor` は、観測できる範囲で、実行環境、設定、プラグイン、コンテンツ、出力計画、テーマの参照、AI 設定を確認します。観測できない項目は推測せず、利用不可として明示します。
 
 ```mermaid id="f8k3hz"
 flowchart LR
@@ -127,6 +127,7 @@ flowchart LR
     Content["コンテンツ"]
     Output["出力"]
     Theme["テーマ"]
+    AI["AI 設定"]
 
     Environment --> Doctor["doctor"]
     Config --> Doctor
@@ -134,6 +135,7 @@ flowchart LR
     Content --> Doctor
     Output --> Doctor
     Theme --> Doctor
+    AI --> Doctor
 
     Doctor --> Diagnostics["診断"]
 ```

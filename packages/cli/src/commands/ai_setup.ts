@@ -1,19 +1,31 @@
 import fs from "node:fs/promises";
 import { createRequire } from "node:module";
 import path from "node:path";
-import { aiRuleFiles } from "@riebeckite/ai";
+import {
+  type AiClient,
+  type AiPackageManager,
+  aiClientConfigPath,
+  aiRuleFiles,
+  mergeAiClientConfig,
+} from "@riebeckite/ai";
 import type { RiebeckiteProject } from "../application_root.js";
 import { syncSkills } from "./skills.js";
+import { detectPackageManager } from "./upgrade_install.js";
 
 const MCP_PACKAGE = "@riebeckite/mcp";
 const AI_PACKAGE = "@riebeckite/ai";
 const require = createRequire(import.meta.url);
+const version = require("@riebeckite/cli/package.json").version as string;
+const versionPattern = /^riebeckiteVersion:\s*["']?([^"'\n]+)["']?/m;
 
 export async function runAiSetup(
   project: RiebeckiteProject,
   confirm: (message: string, initial: boolean) => Promise<boolean>,
+  options: { readonly clients?: readonly AiClient[] } = {},
 ): Promise<void> {
   const contentDirectory = project.config.content.directory;
+  const packageManager: AiPackageManager =
+    (await detectPackageManager(project.projectRoot)) ?? "npm";
   const rules = aiRuleFiles(
     {
       name: path.basename(project.projectRoot),
@@ -25,23 +37,55 @@ export async function runAiSetup(
     {
       contentDirectory,
       lint: true,
+      packageManager,
     },
+    version,
   );
   for (const file of rules) {
-    if (file.content === undefined) continue;
     const target = path.join(project.projectRoot, file.path);
     const exists = await fs
       .access(target)
       .then(() => true)
       .catch(() => false);
     if (exists) {
+      if (file.path === "RIEBECKITE_AI.md") {
+        const currentVersion = versionPattern.exec(
+          await fs.readFile(target, "utf8"),
+        )?.[1];
+        if (currentVersion !== version) {
+          console.log(
+            `  RIEBECKITE_AI.md was generated for ${currentVersion ?? "an unknown version"}; review it for ${version}.`,
+          );
+        }
+      }
       console.log(`  ${file.path} already exists; not changed.`);
       continue;
     }
+    await fs.mkdir(path.dirname(target), { recursive: true });
     await fs.writeFile(target, file.content, "utf8");
     console.log(`✓ Created ${file.path}`);
   }
-  await updatePackageJson(project.projectRoot);
+  for (const client of options.clients ?? []) {
+    const target = path.join(project.projectRoot, aiClientConfigPath(client));
+    const existing = await fs.readFile(target, "utf8").catch(() => undefined);
+    const result = mergeAiClientConfig(client, existing, packageManager);
+    if (result.status === "invalid") {
+      console.log(`  ${result.path} was not changed: ${result.message}`);
+      continue;
+    }
+    if (result.status === "unchanged") {
+      console.log(
+        `  ${result.path} already has a riebeckite server; not changed.`,
+      );
+      continue;
+    }
+    await fs.mkdir(path.dirname(target), { recursive: true });
+    await fs.writeFile(target, result.content, "utf8");
+    console.log(
+      `✓ ${existing === undefined ? "Created" : "Updated"} ${result.path}`,
+    );
+  }
+  await updatePackageJson(project.projectRoot, packageManager);
   await syncSkills(project.projectRoot, confirm, "reset", {
     contentDirectory,
     title: project.config.site.title,
@@ -49,10 +93,15 @@ export async function runAiSetup(
   });
   console.log("");
   console.log("Register this stdio command with your AI client:");
-  console.log("  npm exec riebeckite ai mcp");
+  console.log(
+    `  ${packageManager === "pnpm" ? "pnpm exec" : "npm exec --"} riebeckite ai mcp`,
+  );
 }
 
-async function updatePackageJson(projectRoot: string): Promise<void> {
+async function updatePackageJson(
+  projectRoot: string,
+  packageManager: AiPackageManager,
+): Promise<void> {
   const packagePath = path.join(projectRoot, "package.json");
   const raw = await fs.readFile(packagePath, "utf8").catch(() => undefined);
   if (raw === undefined) {
@@ -81,7 +130,6 @@ async function updatePackageJson(projectRoot: string): Promise<void> {
   const dependencies = isRecord(manifest.dependencies)
     ? manifest.dependencies
     : {};
-  const version = require("@riebeckite/cli/package.json").version as string;
   for (const packageName of [AI_PACKAGE, MCP_PACKAGE]) {
     if (
       typeof dependencies[packageName] === "string" ||
@@ -106,7 +154,7 @@ async function updatePackageJson(projectRoot: string): Promise<void> {
     `${JSON.stringify(manifest, null, 2)}\n`,
     "utf8",
   );
-  console.log("Run npm install to install new dependencies.");
+  console.log(`Run ${packageManager} install to install new dependencies.`);
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

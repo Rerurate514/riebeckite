@@ -24,7 +24,7 @@ Interactive `create-riebeckite` setup lets you choose each option. In non-intera
 npx create-riebeckite my-site --ai mcp,lint,rules,skills
 ```
 
-`mcp` adds `@riebeckite/mcp`; `lint` adds `npm run content:lint` for `riebeckite check`; `rules` creates `AGENTS.md` and `RIEBECKITE_AI.md`; and `skills` creates OpenCode-compatible `.agents/skills/`. Client configuration is not created automatically.
+`mcp` adds `@riebeckite/mcp`; `lint` adds `npm run content:lint` for `riebeckite check`; `rules` creates `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, and `RIEBECKITE_AI.md`; and `skills` creates OpenCode-compatible `.agents/skills/`. Client configuration is not created unless `ai setup --client` is used.
 
 For an existing project, `npm exec riebeckite ai setup` adds the missing MCP dependency, lint script, guidance files, and Skills without overwriting existing guidance files.
 

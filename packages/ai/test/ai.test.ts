@@ -77,7 +77,20 @@ test("selects and renders requested setup files", () => {
   );
   assert.match(
     files.find((file) => file.path === "RIEBECKITE_AI.md")?.content ?? "",
+    /riebeckiteVersion: "0\.1\.0"/,
+  );
+  assert.match(
+    files.find((file) => file.path === "RIEBECKITE_AI.md")?.content ?? "",
     /`notes\/`/,
+  );
+  assert.match(
+    files.find((file) => file.path === "CLAUDE.md")?.content ?? "",
+    /RIEBECKITE_AI\.md/,
+  );
+  assert.match(
+    files.find((file) => file.path === ".github/copilot-instructions.md")
+      ?.content ?? "",
+    /AGENTS\.md/,
   );
   assert.match(
     files.find(
@@ -98,4 +111,21 @@ test("selects and renders requested setup files", () => {
     ),
     [],
   );
+});
+
+test("renders commands for the selected package manager", () => {
+  const files = getAiSetupFiles(
+    {
+      name: "site",
+      title: "Site",
+      description: "",
+      baseUrl: "https://example.com",
+      locale: "en",
+    },
+    { rules: true, lint: true, packageManager: "pnpm" },
+    "0.1.0",
+  );
+  const guide = files.find((file) => file.path === "RIEBECKITE_AI.md");
+  assert.match(guide?.content ?? "", /pnpm run content:lint/);
+  assert.match(guide?.content ?? "", /pnpm run build/);
 });

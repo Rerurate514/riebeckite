@@ -21,8 +21,9 @@ npx create-riebeckite my-site --ai mcp,lint,rules,skills
 ```
 
 `mcp` は MCP パッケージ、`lint` は `npm run content:lint`、`rules` は
-`AGENTS.md` と `RIEBECKITE_AI.md`、`skills` は `.agents/skills/` を追加します。
-AI クライアントの設定自体は自動では変更しません。
+`AGENTS.md`、`CLAUDE.md`、`.github/copilot-instructions.md`、`RIEBECKITE_AI.md`、
+`skills` は `.agents/skills/` を追加します。`ai setup --client` を使わない限り、
+AI クライアントの設定は変更しません。
 
 既存プロジェクトでは、`npm exec riebeckite ai setup` で不足分を追加できます。
 既存のガイダンスファイルは上書きしません。

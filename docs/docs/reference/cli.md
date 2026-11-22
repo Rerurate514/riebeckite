@@ -30,7 +30,7 @@ riebeckite theme preview <name> [--port <port>] [--no-open]
 riebeckite plugin dev <path> [--port <port>] [--no-open]
 riebeckite plugin verify <path> [--level basic | integration | full] [--json]
 riebeckite bridge approve <plan>
-riebeckite ai setup
+riebeckite ai setup [--client <claude | cursor | vscode | opencode> ...]
 riebeckite ai mcp
 riebeckite skills sync
 riebeckite dev
@@ -70,7 +70,7 @@ The `publish` actions that read or write durable publication state (`plan`, `sta
 | `plugin verify` | check a distributable Plugin package boundary before adding it to a site | no |
 | `dev` | start the integration development workflow | integration-dependent |
 | `check` | validate app configuration, content root availability, plugin options, and capability resolution | no |
-| `doctor` | report shared diagnostics for environment, configuration, plugins, content, output, and theme | no |
+| `doctor` | report shared diagnostics for environment, configuration, plugins, content, output, theme, and AI setup | no |
 | `upgrade` | compare isolated baseline and candidate builds before updating Riebeckite packages | no |
 | `build` | run the build path; `--full` bypasses incremental reuse | yes; committed before output rendering, so a later failure can leave the new state |
 | `clean` | remove Riebeckite-managed state (`--all` also removes the build output; `--output` removes only the build output) | no |
@@ -80,7 +80,7 @@ The `publish` actions that read or write durable publication state (`plan`, `sta
 | `migrate` | plan and apply versioned content migrations, then inspect, roll back, or recover them | no |
 | `profile` | run tracing-based performance reporting; `--full` uses a full path | build-dependent |
 | `inspect` | display factual resolved state | no |
-| `ai setup` | add MCP, the `content:lint` script, `AGENTS.md`, `RIEBECKITE_AI.md`, and missing generated Skills | writes project files after confirmation |
+| `ai setup` | add MCP, the `content:lint` script, `AGENTS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `RIEBECKITE_AI.md`, missing generated Skills, and optional `--client` configs | writes project files after confirmation |
 | `ai mcp` | start the development server and its local stdio MCP adapter with a temporary Bridge token; `--mutations` adds temporary mutation tokens | no |
 | `skills sync` | add missing generated Skills and files, then update outdated ones | writes Skill guidance after confirmation |
 

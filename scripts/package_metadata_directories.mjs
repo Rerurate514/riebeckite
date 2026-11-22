@@ -5,6 +5,7 @@ export const PACKAGE_DIRECTORIES = [
   "packages/graph",
   "packages/diagram",
   "packages/diagnostics",
+  "packages/ai",
   "packages/git-history",
   "packages/mcp",
   "packages/og-image",

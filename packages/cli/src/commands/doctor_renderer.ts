@@ -10,6 +10,7 @@ const categories: readonly DevelopmentDiagnosticCategory[] = [
   "content",
   "output",
   "theme",
+  "ai",
 ];
 
 export function renderDoctorReport(

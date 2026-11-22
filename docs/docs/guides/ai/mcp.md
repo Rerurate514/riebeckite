@@ -13,6 +13,14 @@ npm exec riebeckite ai mcp
 
 It starts the local development server and MCP server, generating a temporary Bridge token for that run. The client configuration does not need the token.
 
+`riebeckite ai setup --client <client>` writes a project-local client configuration. Pass the option more than once to configure several clients:
+
+```sh
+npm exec -- riebeckite ai setup --client claude --client cursor
+```
+
+Supported clients are `claude` (`.mcp.json`), `cursor` (`.cursor/mcp.json`), `vscode` (`.vscode/mcp.json`), and `opencode` (`opencode.json`). Setup merges a `riebeckite` server into the existing JSON and keeps other keys and servers. It does not replace an existing `riebeckite` entry, does not write global client configuration, and leaves a file unchanged when the JSON cannot be parsed. With a pnpm lockfile, generated commands use `pnpm exec`.
+
 MCP is a thin adapter over the development-only Bridge. It provides project facts and mutation boundaries, previews, publication state, diagnostics, links, content inventory and bodies, last-build impact, and mutation validation. `riebeckite_plugin_catalog` also searches the public npm registry for published `@riebeckite/plugin-*` packages; it is read-only and needs network access. Riebeckite remains the source of truth for local site state.
 
 `riebeckite ai setup` adds `@riebeckite/ai` for AI configuration, Rules, and Skills. It also adds `@riebeckite/mcp` for MCP access.

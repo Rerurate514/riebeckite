@@ -1,6 +1,14 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import type { ContentManifest, PublicContentView } from "@riebeckite/core";
+import {
+  type ContentManifest,
+  type ContentManifestEntry,
+  createContentManifest,
+  createContentManifestEntry,
+  createPublicContentView,
+  type PostFrontmatter,
+  type PublicContentView,
+} from "@riebeckite/core";
 import {
   formatBlogDate,
   getBlogIndexHeadTags,
@@ -9,12 +17,12 @@ import {
   isBlogPath,
 } from "../app/lib/blog";
 
-function viewOf(entries: unknown[]): PublicContentView {
-  return { discoverableEntries: entries } as unknown as PublicContentView;
-}
-
-function manifestOf(entries: unknown[]): ContentManifest {
-  return { entries } as unknown as ContentManifest;
+function siteOf(entries: ContentManifestEntry[]): {
+  manifest: ContentManifest;
+  view: PublicContentView;
+} {
+  const manifest = createContentManifest({ entries });
+  return { manifest, view: createPublicContentView(manifest) };
 }
 
 function post(
@@ -22,20 +30,19 @@ function post(
   permalink: string,
   title: string,
   date: string | undefined,
-  frontmatter: Record<string, unknown> = {},
-) {
-  return {
+  frontmatter: PostFrontmatter = {},
+): ContentManifestEntry {
+  return createContentManifestEntry({
     slug,
     permalink,
     title,
-    date,
-    tags: (frontmatter.tags as string[] | undefined) ?? [],
-    publishing: { visibility: "public", routable: true, discoverable: true },
-  };
+    frontmatter: { ...frontmatter, date },
+    tags: frontmatter.tags ?? [],
+  });
 }
 
 test("getBlogPosts lists English posts newest first", () => {
-  const view = viewOf([
+  const { view, manifest } = siteOf([
     post("blog/b", "/blog/b", "Second post", "2026-11-19", {
       description: "B description",
       category: "Updates",
@@ -47,17 +54,6 @@ test("getBlogPosts lists English posts newest first", () => {
     post("blog/c", "/blog/c", "Third post", "2026-11-18"),
     post("blog/a.ja", "/ja/blog/a", "First post", "2026-11-20"),
     post("docs/quick-start", "/docs/quick-start", "Quick start", "2026-10-01"),
-  ]);
-  const manifest = manifestOf([
-    { slug: "blog/a", frontmatter: { description: "A description", tags: [] } },
-    {
-      slug: "blog/b",
-      frontmatter: {
-        description: "B description",
-        category: "Updates",
-        tags: ["announcements"],
-      },
-    },
   ]);
 
   const posts = getBlogPosts("en", view, manifest);
@@ -75,12 +71,11 @@ test("getBlogPosts lists English posts newest first", () => {
 });
 
 test("getBlogPosts lists Japanese posts from the localized prefix", () => {
-  const view = viewOf([
+  const { view, manifest } = siteOf([
     post("blog/a", "/blog/a", "First post", "2026-11-20"),
     post("blog/a.ja", "/ja/blog/a", "最初の投稿", "2026-11-20"),
     post("blog/c", "/blog/c", "Third post", "2026-11-18"),
   ]);
-  const manifest = manifestOf([{ slug: "blog/a.ja", frontmatter: {} }]);
 
   const posts = getBlogPosts("ja", view, manifest);
 
@@ -92,12 +87,11 @@ test("getBlogPosts lists Japanese posts from the localized prefix", () => {
 });
 
 test("getBlogPosts ignores sibling permalinks that only share the prefix spelling", () => {
-  const view = viewOf([
+  const { view, manifest } = siteOf([
     post("blog/a", "/blog/a", "First post", "2026-11-20"),
     post("blogging/x", "/blogging/x", "Not a blog post", "2026-11-21"),
     post("blog/index", "/blog", "Blog root entry", "2026-11-21"),
   ]);
-  const manifest = manifestOf([]);
 
   const posts = getBlogPosts("en", view, manifest);
 
@@ -108,13 +102,13 @@ test("getBlogPosts ignores sibling permalinks that only share the prefix spellin
 });
 
 test("getBlogPosts sorts posts without dates after dated posts", () => {
-  const view = viewOf([
+  const { view, manifest } = siteOf([
     post("blog/older", "/blog/older", "Older", "2026-11-01"),
     post("blog/newer", "/blog/newer", "Newer", undefined),
     post("blog/newest", "/blog/newest", "Newest", "2026-11-20"),
   ]);
 
-  const posts = getBlogPosts("en", view, manifestOf([]));
+  const posts = getBlogPosts("en", view, manifest);
 
   assert.deepEqual(
     posts.map((p) => p.slug),
@@ -123,20 +117,17 @@ test("getBlogPosts sorts posts without dates after dated posts", () => {
 });
 
 test("getBlogPosts with no posts returns an empty list", () => {
-  const posts = getBlogPosts("en", viewOf([]), manifestOf([]));
+  const { view, manifest } = siteOf([]);
+  const posts = getBlogPosts("en", view, manifest);
   assert.deepEqual(posts, []);
 });
 
 test("getBlogPosts enriches summaries with category and trims blank descriptions", () => {
-  const view = viewOf([post("blog/a", "/blog/a", "First post", "2026-11-20")]);
-  const manifest = manifestOf([
-    {
-      slug: "blog/a",
-      frontmatter: {
-        category: "Engineering",
-        description: "  ",
-      },
-    },
+  const { view, manifest } = siteOf([
+    post("blog/a", "/blog/a", "First post", "2026-11-20", {
+      category: "Engineering",
+      description: "  ",
+    }),
   ]);
 
   const [summary] = getBlogPosts("en", view, manifest);

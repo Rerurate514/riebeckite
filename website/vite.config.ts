@@ -52,17 +52,19 @@ export default defineConfig({
       appRoot,
       workspaceRoot,
       ssg: { concurrency: 8 },
+      warmContent: true,
     }),
     {
       name: "riebeckite-website:dev-warmup",
       apply: "serve",
       configureServer(server) {
-        setTimeout(() => {
+        if (!server.httpServer) return;
+        server.httpServer.once("listening", () => {
           const { host, port } = server.config.server;
           fetch(`http://${host}:${port}/`)
             .then(() => undefined)
             .catch(() => undefined);
-        }, 3000);
+        });
       },
     },
     {

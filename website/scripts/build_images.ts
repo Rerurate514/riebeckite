@@ -17,11 +17,36 @@ import {
   fileExists,
   isDirectExecution,
 } from "./build_images_copy.js";
+import {
+  fingerprintTree,
+  readBuildImagesState,
+  resolveBuildImagesStatePath,
+  writeBuildImagesState,
+} from "./build_images_state.js";
 
 export async function buildImages(options: BuildImagesOptions = {}) {
   const contentDir = options.contentDir ?? CONTENT_DIR;
   const assetsRoot = options.assetsRoot ?? ASSETS_ROOT;
   const exclude = options.exclude ?? config.content.exclude;
+  const statePath = options.statePath ?? resolveBuildImagesStatePath();
+  const key = JSON.stringify({
+    contentDir,
+    assetsRoot,
+    exclude,
+    filters: config.content.filters,
+  });
+  const contentFingerprint = await fingerprintTree(contentDir);
+  const assetsFingerprint = await fingerprintTree(assetsRoot);
+  const state = await readBuildImagesState(statePath, key);
+  if (
+    contentFingerprint &&
+    assetsFingerprint &&
+    state?.content === contentFingerprint &&
+    state.assets === assetsFingerprint
+  ) {
+    console.log("Content assets: cache hit, skipping image build");
+    return { copied: 0, skipped: 0, removed: 0, failed: 0 };
+  }
   const images = await collectContentImages(contentDir, assetsRoot);
   const attachments = await collectContentAttachments(contentDir, assetsRoot);
   const referencedAssets = await collectReferencedAssets(
@@ -84,6 +109,13 @@ export async function buildImages(options: BuildImagesOptions = {}) {
   );
   if (failed > 0) {
     process.exitCode = 1;
+  } else if (contentFingerprint) {
+    await writeBuildImagesState(
+      statePath,
+      key,
+      contentFingerprint,
+      (await fingerprintTree(assetsRoot)) ?? assetsFingerprint ?? "",
+    );
   }
   return { copied, skipped, removed, failed };
 }

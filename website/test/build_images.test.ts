@@ -30,7 +30,11 @@ test("buildImages copies only public referenced assets and removes stale outputs
   await writeFixture(assetsRoot, "images/debug.json", "DEBUG");
   await writeFixture(assetsRoot, "logo.png", "LOGO");
 
-  await buildImages({ contentDir, assetsRoot, exclude: [] });
+  const statePath = path.join(root, "state.json");
+  const run = () =>
+    buildImages({ contentDir, assetsRoot, exclude: [], statePath });
+
+  await run();
 
   assert.equal(await readText(assetsRoot, "images/live.png"), "LIVE-V1");
   assert.equal(await exists(assetsRoot, "fixtures/test-only.png"), false);
@@ -49,14 +53,14 @@ test("buildImages copies only public referenced assets and removes stale outputs
     "export const source = true;",
   );
 
-  const repeated = await buildImages({ contentDir, assetsRoot, exclude: [] });
-  assert.deepEqual(repeated, { copied: 0, skipped: 3, removed: 0, failed: 0 });
+  const repeated = await run();
+  assert.deepEqual(repeated, { copied: 0, skipped: 0, removed: 0, failed: 0 });
 
   await writeFixture(contentDir, "images/live.png", "LIVE-V2");
   await writeFixture(contentDir, "index.md", publishedNote("images/added.png"));
   await writeFixture(contentDir, "images/added.png", "ADDED");
 
-  await buildImages({ contentDir, assetsRoot, exclude: [] });
+  await run();
 
   assert.equal(await exists(assetsRoot, "images/live.png"), false);
   assert.equal(await readText(assetsRoot, "images/added.png"), "ADDED");

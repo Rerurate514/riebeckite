@@ -53,6 +53,17 @@ with the serialized props. You do not choose a mount for these components.
 Write the component so its server and client renders match, because the client
 render replaces the wrapper's children.
 
+### Nesting hydrated islands
+
+A hydrated island replaces its container's children on every render. If that
+render outputs markup containing another hydrated island, the inner island's
+nodes are replaced and its hydration is lost, so the next render of the outer
+component leaves the inner one as inert markup. Components that work through
+document-level delegated listeners survive because their listeners live outside
+the replaced nodes; components that hydrate their own subtree do not. Do not
+nest `markdownComponents` islands inside a subtree that an island re-renders
+from props.
+
 ## createRoot: take over a host element
 
 Use `createRoot` when the client builds the UI only at runtime, or swaps a

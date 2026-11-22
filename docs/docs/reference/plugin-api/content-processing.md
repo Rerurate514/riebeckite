@@ -222,6 +222,20 @@ processedContentCache: {
 - `unsafe` is for inputs Core cannot track, such as Git, network, time, or
   process state. It safely bypasses persistent processed-content reuse.
 
+### Version bumps and stale output
+
+The pipeline fingerprint that keys the processed content cache is built from
+plugin configuration, not from plugin source code. Editing a plugin's markup or
+transform code does not change the fingerprint, so the cache keeps serving the
+HTML the previous code produced, in tests as well. Bump
+`processedContentCache.version` in the same change that alters a plugin's
+rendering or transform behavior.
+
+When a resolved config has neither `cache.directory` nor `buildDirectory`,
+entries are written under `riebeckite-content-cache` in the OS temp directory,
+so they outlive repository cleanup. Delete that directory when test output looks
+impossible.
+
 Content dependencies decide which source content must be processed again.
 Output dependencies decide which emitted files must be written again. They are
 separate contracts. Page types declare `outputDependencies`; a plugin that

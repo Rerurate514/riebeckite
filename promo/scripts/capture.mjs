@@ -1,8 +1,10 @@
-import { createRequire } from "node:module";
 import { copyFileSync, mkdirSync } from "node:fs";
+import { createRequire } from "node:module";
 import path from "node:path";
 
-const require = createRequire(path.resolve(import.meta.dirname, "../../package.json"));
+const require = createRequire(
+  path.resolve(import.meta.dirname, "../../package.json"),
+);
 const puppeteer = require("puppeteer");
 
 const base = process.env.PROMO_SITE ?? "http://127.0.0.1:4321";
@@ -18,7 +20,9 @@ await page.setViewport(viewport);
 const settle = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const captureFullPage = async (name) => {
-  const height = await page.evaluate(() => document.documentElement.scrollHeight);
+  const height = await page.evaluate(
+    () => document.documentElement.scrollHeight,
+  );
   await page.setViewport({ ...viewport, height });
   await settle(300);
   await page.screenshot({ path: path.join(out, name), fullPage: true });
@@ -26,7 +30,9 @@ const captureFullPage = async (name) => {
   await settle(300);
 };
 
-await page.goto(`${base}/blog/obsidian-digital-garden`, { waitUntil: "networkidle0" });
+await page.goto(`${base}/blog/obsidian-digital-garden`, {
+  waitUntil: "networkidle0",
+});
 await settle(800);
 await captureFullPage("article.png");
 
@@ -53,7 +59,11 @@ await settle(900);
 await page.screenshot({ path: path.join(out, "search-results.png") });
 
 const results = await page.evaluate(() => {
-  const items = [...document.querySelectorAll(".rr-search-modal a[href], .rr-search-result a[href]")];
+  const items = [
+    ...document.querySelectorAll(
+      ".rr-search-modal a[href], .rr-search-result a[href]",
+    ),
+  ];
   return items.slice(0, 6).map((a) => ({
     text: a.textContent.trim().replace(/\s+/g, " ").slice(0, 70),
     href: a.getAttribute("href"),

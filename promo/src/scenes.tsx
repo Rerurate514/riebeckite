@@ -1,8 +1,14 @@
-import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame } from "remotion";
+import {
+  AbsoluteFill,
+  Img,
+  interpolate,
+  staticFile,
+  useCurrentFrame,
+} from "remotion";
 import { Caption } from "./components/Caption";
-import { BrowserWindow, MarkdownSource, PageScroll } from "./components/Window";
 import { Cursor, useCursorState } from "./components/Cursor";
-import { colors, easeInOut, easeOut, sans, mono } from "./theme";
+import { BrowserWindow, MarkdownSource, PageScroll } from "./components/Window";
+import { colors, easeInOut, easeOut, mono, sans } from "./theme";
 
 export const SceneNotes = () => {
   return (
@@ -35,7 +41,11 @@ export const SceneWebsite = () => {
 
   return (
     <AbsoluteFill>
-      <BrowserWindow url="riebeckite.dev/blog/obsidian-digital-garden" opacity={enter} scale={scale}>
+      <BrowserWindow
+        url="riebeckite.dev/blog/obsidian-digital-garden"
+        opacity={enter}
+        scale={scale}
+      >
         <PageScroll src={staticFile("article.png")} scroll={scroll} />
       </BrowserWindow>
       <Caption appear={6} disappear={138}>
@@ -125,7 +135,11 @@ export const SceneDemo = () => {
               }}
             >
               <Img
-                src={staticFile(searchState === -1 ? "search-results.png" : searchStates[searchState])}
+                src={staticFile(
+                  searchState === -1
+                    ? "search-results.png"
+                    : searchStates[searchState],
+                )}
                 style={{ display: "block", width: 1600, height: 900 }}
               />
             </div>
@@ -208,7 +222,14 @@ export const SceneClosing = () => {
           }}
         >
           <Img src={staticFile("logo.png")} style={{ width: 64, height: 64 }} />
-          <span style={{ fontSize: 62, fontWeight: 600, letterSpacing: "-0.02em", color: colors.text }}>
+          <span
+            style={{
+              fontSize: 62,
+              fontWeight: 600,
+              letterSpacing: "-0.02em",
+              color: colors.text,
+            }}
+          >
             Riebeckite
           </span>
         </div>

@@ -25,7 +25,7 @@ MCP は開発時限定の Bridge に接続する薄いアダプターです。�
 変更ツールはオプトインです。最短の手順は次のとおりです。
 
 ```sh
-npm exec riebeckite ai mcp --mutations
+npm exec -- riebeckite ai mcp --mutations
 ```
 
 このコマンドは、その実行中だけ有効な変更トークンと承認トークンを生成します。承認トークンは

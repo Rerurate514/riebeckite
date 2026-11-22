@@ -1,6 +1,6 @@
 import type { CSSProperties, ReactNode } from "react";
 import { AbsoluteFill, Img, interpolate, useCurrentFrame } from "remotion";
-import { colors, easeOut, easeInOut, mono, sans } from "../theme";
+import { colors, easeInOut, easeOut, mono, sans } from "../theme";
 
 type Segment = { text: string; color?: string; weight?: number };
 
@@ -15,29 +15,63 @@ const lines: Segment[][] = [
   [
     { text: "title", color: key },
     { text: ":", color: rule },
-    { text: ' "Obsidian as a Digital Garden: Why the Tool Fits the Practice"', color: val },
+    {
+      text: ' "Obsidian as a Digital Garden: Why the Tool Fits the Practice"',
+      color: val,
+    },
   ],
   [
     { text: "description", color: key },
     { text: ":", color: rule },
-    { text: " What a digital garden actually is, where the idea came from,", color: val },
+    {
+      text: " What a digital garden actually is, where the idea came from,",
+      color: val,
+    },
   ],
-  [{ text: "  and how Obsidian's features map onto it — plus how each publishing tool", color: val }],
+  [
+    {
+      text: "  and how Obsidian's features map onto it — plus how each publishing tool",
+      color: val,
+    },
+  ],
   [{ text: "  handles selective sharing.", color: val }],
   [
     { text: "date", color: key },
     { text: ":", color: rule },
     { text: " 2026-11-21", color: val },
   ],
-  [{ text: "tags", color: key }, { text: ":", color: rule }],
-  [{ text: "  - ", color: rule }, { text: "obsidian", color: body }],
-  [{ text: "  - ", color: rule }, { text: "publishing", color: body }],
-  [{ text: "  - ", color: rule }, { text: "digital-garden", color: body }],
+  [
+    { text: "tags", color: key },
+    { text: ":", color: rule },
+  ],
+  [
+    { text: "  - ", color: rule },
+    { text: "obsidian", color: body },
+  ],
+  [
+    { text: "  - ", color: rule },
+    { text: "publishing", color: body },
+  ],
+  [
+    { text: "  - ", color: rule },
+    { text: "digital-garden", color: body },
+  ],
   [{ text: " " }],
-  [{ text: "Disclosure first: this blog runs on Riebeckite, a framework I develop, and", color: body }],
+  [
+    {
+      text: "Disclosure first: this blog runs on Riebeckite, a framework I develop, and",
+      color: body,
+    },
+  ],
   [{ text: "Riebeckite ships a digital-garden preset.", color: body }],
   [{ text: " " }],
-  [{ text: "## What a digital garden actually is", color: heading, weight: 600 }],
+  [
+    {
+      text: "## What a digital garden actually is",
+      color: heading,
+      weight: 600,
+    },
+  ],
 ];
 
 const panelStyle: CSSProperties = {
@@ -84,7 +118,14 @@ export const MarkdownSource = () => {
             borderBottom: `1px solid ${colors.panelBorder}`,
           }}
         >
-          <span style={{ fontFamily: mono, fontSize: 15, color: "#93a1b3", letterSpacing: "0.01em" }}>
+          <span
+            style={{
+              fontFamily: mono,
+              fontSize: 15,
+              color: "#93a1b3",
+              letterSpacing: "0.01em",
+            }}
+          >
             obsidian-digital-garden.md
           </span>
           <span
@@ -99,11 +140,21 @@ export const MarkdownSource = () => {
             Markdown
           </span>
         </div>
-        <div style={{ padding: "24px 30px", fontFamily: mono, fontSize: 19, lineHeight: "32px" }}>
+        <div
+          style={{
+            padding: "24px 30px",
+            fontFamily: mono,
+            fontSize: 19,
+            lineHeight: "32px",
+          }}
+        >
           {lines.map((line, i) => (
             <div key={i} style={{ whiteSpace: "pre", height: 32 }}>
               {line.map((seg, j) => (
-                <span key={j} style={{ color: seg.color, fontWeight: seg.weight ?? 400 }}>
+                <span
+                  key={j}
+                  style={{ color: seg.color, fontWeight: seg.weight ?? 400 }}
+                >
                   {seg.text}
                 </span>
               ))}
@@ -116,9 +167,27 @@ export const MarkdownSource = () => {
 };
 
 export const LockIcon = () => (
-  <svg width="10" height="12" viewBox="0 0 10 12" fill="none">
-    <rect x="0.75" y="5" width="8.5" height="6.25" rx="1.25" stroke="#66788c" strokeWidth="1.2" />
-    <path d="M2.75 5V3.5a2.25 2.25 0 0 1 4.5 0V5" stroke="#66788c" strokeWidth="1.2" />
+  <svg
+    aria-hidden="true"
+    width="10"
+    height="12"
+    viewBox="0 0 10 12"
+    fill="none"
+  >
+    <rect
+      x="0.75"
+      y="5"
+      width="8.5"
+      height="6.25"
+      rx="1.25"
+      stroke="#66788c"
+      strokeWidth="1.2"
+    />
+    <path
+      d="M2.75 5V3.5a2.25 2.25 0 0 1 4.5 0V5"
+      stroke="#66788c"
+      strokeWidth="1.2"
+    />
   </svg>
 );
 
@@ -131,7 +200,14 @@ type WindowProps = {
   children: ReactNode;
 };
 
-export const BrowserWindow = ({ url, opacity = 1, scale = 1, left = 176, top = 32, children }: WindowProps) => (
+export const BrowserWindow = ({
+  url,
+  opacity = 1,
+  scale = 1,
+  left = 176,
+  top = 32,
+  children,
+}: WindowProps) => (
   <div
     style={{
       position: "absolute",
@@ -161,7 +237,15 @@ export const BrowserWindow = ({ url, opacity = 1, scale = 1, left = 176, top = 3
       }}
     >
       {[0, 1, 2].map((i) => (
-        <div key={i} style={{ width: 8, height: 8, borderRadius: 4, background: "#39424e" }} />
+        <div
+          key={i}
+          style={{
+            width: 8,
+            height: 8,
+            borderRadius: 4,
+            background: "#39424e",
+          }}
+        />
       ))}
       <div
         style={{
@@ -185,11 +269,26 @@ export const BrowserWindow = ({ url, opacity = 1, scale = 1, left = 176, top = 3
         {url}
       </div>
     </div>
-    <div style={{ position: "relative", width: 1600, height: 900, overflow: "hidden" }}>{children}</div>
+    <div
+      style={{
+        position: "relative",
+        width: 1600,
+        height: 900,
+        overflow: "hidden",
+      }}
+    >
+      {children}
+    </div>
   </div>
 );
 
-export const PageScroll = ({ src, scroll }: { src: string; scroll: number }) => (
+export const PageScroll = ({
+  src,
+  scroll,
+}: {
+  src: string;
+  scroll: number;
+}) => (
   <Img
     src={src}
     style={{

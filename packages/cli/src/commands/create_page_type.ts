@@ -19,8 +19,6 @@ import {
 import { renderPluginFiles } from "../plugin_generator/templates.js";
 import { resolvePrompt, validateInput } from "../prompt_helpers.js";
 
-export type { CreatePageTypeOptions, CreatePageTypeResult };
-
 export type CreatePageTypeOptions = {
   readonly name: string;
   readonly plugin?: string;
@@ -247,6 +245,7 @@ export async function addPageTypeToPlugin(
   await fs.mkdir(path.dirname(pagePath), { recursive: true });
   const temporaryPage = `${pagePath}.tmp-${process.pid}`;
   const temporaryIndex = `${indexPath}.tmp-${process.pid}`;
+  const temporaryTest = `${testPath}.tmp-${process.pid}`;
   let testCreated = false;
   let pageCreated = false;
   try {

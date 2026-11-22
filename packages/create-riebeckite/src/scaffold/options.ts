@@ -25,10 +25,10 @@ export type ScaffoldDeployment =
     };
 
 export type ScaffoldAiOptions = {
-  readonly mcp: boolean;
-  readonly lint: boolean;
-  readonly rules: boolean;
-  readonly skills: boolean;
+  readonly mcp?: boolean;
+  readonly lint?: boolean;
+  readonly rules?: boolean;
+  readonly skills?: boolean;
 };
 
 export type ScaffoldSiteOptions = {

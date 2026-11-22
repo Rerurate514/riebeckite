@@ -13,6 +13,8 @@ const PUBLIC_RUNTIME_EXPORTS = [
   "SCAFFOLD_UTILITIES",
   "SCAFFOLD_UTILITY_NAMES",
   "ScaffoldSiteError",
+  "aiRuleFiles",
+  "aiSkillFiles",
   "deploymentWorkflow",
   "formatScaffoldNextSteps",
   "isScaffoldPresetName",
@@ -25,6 +27,8 @@ const PUBLIC_RUNTIME_EXPORTS = [
 
 const ALLOWED_CLI_IMPORTS = new Set([
   "GITHUB_ACTIONS_SECRETS",
+  "aiRuleFiles",
+  "aiSkillFiles",
   "SCAFFOLD_DEFAULT_PRESET",
   "SCAFFOLD_DEFAULT_UTILITIES",
   "SCAFFOLD_PRESETS",

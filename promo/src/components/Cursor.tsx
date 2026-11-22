@@ -14,6 +14,7 @@ type CursorProps = {
 
 export const Cursor = ({ state }: CursorProps) => (
   <svg
+    aria-hidden="true"
     width="24"
     height="26"
     viewBox="0 0 24 26"

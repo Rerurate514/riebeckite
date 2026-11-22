@@ -40,6 +40,10 @@ The Unreleased section lists changes that are merged but not yet published to np
 - Added `riebeckite ai mcp --mutations`, which generates temporary Bridge mutation and approval tokens for the session. The approval token is stored in the git-ignored `.riebeckite/` directory so `riebeckite bridge approve` works without environment variables.
   Packages: `@riebeckite/cli`
 
+- The development Bridge now exposes `context`, `schema`, `inventory`, `links`, and `content` endpoints, adds a `since` snapshot mode to `diagnostics`, and accepts `mutations/validate` under the normal Bridge token so clients can check mutation operations without creating an approvable plan. The preview, runtime, honox, diagnostics, and image-optimizer packages only consolidate internal module files; their published behavior is unchanged.
+  Packages: `@riebeckite/dev-inspector`, `@riebeckite/preview`, `@riebeckite/runtime`, `@riebeckite/honox`, `@riebeckite/plugin-diagnostics`, `@riebeckite/plugin-image-optimizer`
+  PR: https://github.com/Rerurate514/riebeckite/pull/16
+
 ### Changed
 
 - The `alias` plugin now declares a `developmentRouteCache` contract, so the development server persists alias routes and restores them across dev-server restarts instead of recomputing them every time. The serialized route state is versioned as `alias-route-v1` and is invalidated automatically when the format changes.

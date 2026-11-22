@@ -21,7 +21,19 @@ const Promo = () => (
 
 export const RemotionRoot = () => (
   <>
-    <Composition id="RiebeckitePromo" component={Promo} durationInFrames={840} fps={30} width={1920} height={1080} />
-    <Still id="RiebeckiteThumbnail" component={Thumbnail} width={1920} height={1080} />
+    <Composition
+      id="RiebeckitePromo"
+      component={Promo}
+      durationInFrames={840}
+      fps={30}
+      width={1920}
+      height={1080}
+    />
+    <Still
+      id="RiebeckiteThumbnail"
+      component={Thumbnail}
+      width={1920}
+      height={1080}
+    />
   </>
 );

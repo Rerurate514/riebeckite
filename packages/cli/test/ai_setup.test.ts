@@ -151,7 +151,7 @@ test("ai setup adds MCP, lint, rules, and Skills without overwriting AGENTS.md",
       },
       content: { directory: "notes" },
     },
-  } as unknown as RiebeckiteProject;
+  } as RiebeckiteProject;
 
   await runAiSetup(project, async () => true);
 

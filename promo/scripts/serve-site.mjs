@@ -24,18 +24,12 @@ const resolveFile = (urlPath) => {
   const clean = decodeURIComponent(urlPath.split("?")[0]);
   const base = path.join(root, clean);
   if (!base.startsWith(root)) return null;
-  const candidates = [
-    base,
-    `${base}.html`,
-    path.join(base, "index.html"),
-  ];
+  const candidates = [base, `${base}.html`, path.join(base, "index.html")];
   for (const candidate of candidates) {
     try {
       const stat = statSync(candidate);
       if (stat.isFile()) return candidate;
-    } catch {
-      continue;
-    }
+    } catch {}
   }
   return null;
 };

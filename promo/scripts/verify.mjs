@@ -1,6 +1,6 @@
+import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { createRequire } from "node:module";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(path.join(here, "..", "..", "package.json"));
@@ -10,13 +10,16 @@ const file = path.join(here, "..", "riebeckite-demo.mp4");
 
 const browser = await puppeteer.launch({ headless: "new" });
 const page = await browser.newPage();
-await page.goto("file:///" + file.replace(/\\/g, "/"));
+await page.goto(`file:///${file.replace(/\\/g, "/")}`);
 await page.waitForSelector("video");
-await page.evaluate(() => new Promise((resolve) => {
-  const video = document.querySelector("video");
-  if (video.readyState >= 1) return resolve();
-  video.addEventListener("loadedmetadata", resolve, { once: true });
-}));
+await page.evaluate(
+  () =>
+    new Promise((resolve) => {
+      const video = document.querySelector("video");
+      if (video.readyState >= 1) return resolve();
+      video.addEventListener("loadedmetadata", resolve, { once: true });
+    }),
+);
 
 const meta = await page.evaluate(() => {
   const v = document.querySelector("video");
@@ -30,8 +33,14 @@ const played = await page.evaluate(async () => {
   const v = document.querySelector("video");
   v.pause();
   v.currentTime = v.duration - 0.5;
-  await new Promise((resolve) => v.addEventListener("seeked", resolve, { once: true }));
-  return { currentTime: v.currentTime, readyState: v.readyState, error: v.error ? v.error.message : null };
+  await new Promise((resolve) =>
+    v.addEventListener("seeked", resolve, { once: true }),
+  );
+  return {
+    currentTime: v.currentTime,
+    readyState: v.readyState,
+    error: v.error ? v.error.message : null,
+  };
 });
 
 console.log(JSON.stringify({ meta, played }, null, 2));

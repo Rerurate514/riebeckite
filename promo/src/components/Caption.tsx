@@ -9,7 +9,12 @@ type CaptionProps = {
   style?: CSSProperties;
 };
 
-export const Caption = ({ children, appear, disappear, style }: CaptionProps) => {
+export const Caption = ({
+  children,
+  appear,
+  disappear,
+  style,
+}: CaptionProps) => {
   const frame = useCurrentFrame();
   const enter = interpolate(frame, [appear, appear + 8], [0, 1], {
     extrapolateLeft: "clamp",

@@ -27,10 +27,12 @@ import type {
   ApiInspection,
   ApplicationInspection,
   AssetInspection,
+  BuildInspection,
   ConfigInspection,
   ContentInspection,
   GraphInspection,
   PluginInspection,
+  ProvenanceInspection,
 } from "./types.js";
 
 export async function collectApplicationInspection(

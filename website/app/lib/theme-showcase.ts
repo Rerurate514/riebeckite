@@ -4,6 +4,7 @@ import {
   type ThemePreset,
   type ThemeSettingsSchema,
 } from "@riebeckite/core";
+import type { PreviewFixture } from "@riebeckite/preview";
 import { defaultTheme } from "@riebeckite/theme-default";
 import { editorialTheme } from "@riebeckite/theme-editorial";
 import { fieldnotesTheme } from "@riebeckite/theme-fieldnotes";

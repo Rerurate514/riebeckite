@@ -20,7 +20,7 @@ Only use manual setup when necessary. In that case, give both the development se
 Mutation tools are opt-in. The shortest path is:
 
 ```sh
-npm exec riebeckite ai mcp --mutations
+npm exec -- riebeckite ai mcp --mutations
 ```
 
 This generates temporary mutation and approval tokens for the run. The approval token is stored in `.riebeckite/bridge/approval-token` (git-ignored) so `bridge approve` can read it without an environment variable; it is removed when the MCP process exits. `riebeckite_mutation_plan` creates a stored plan without changing content. `riebeckite_mutation_apply` succeeds only after a human runs `npm exec riebeckite bridge approve <plan-id>` in an interactive terminal; approval expires after five minutes and can be used once. Without mutation mode or a mutation token, the tools return an error.

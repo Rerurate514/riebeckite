@@ -9,6 +9,9 @@ export function expectedGroupPackageMetadata(directory) {
     const hasStyle = fs.existsSync(
       path.join(repositoryRoot, directory, "style.css"),
     );
+    const hasSchema = fs.existsSync(
+      path.join(repositoryRoot, directory, "schema"),
+    );
     const hasTests = [
       "alias",
       "analytics",
@@ -74,6 +77,7 @@ export function expectedGroupPackageMetadata(directory) {
         "LICENSE",
         "README.md",
         "README_ja.md",
+        ...(hasSchema ? ["schema"] : []),
         "dist",
         ...(hasStyle ? ["style.css"] : []),
       ],

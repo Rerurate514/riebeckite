@@ -242,6 +242,21 @@ export const showcaseFixtures: readonly PreviewFixture[] = [
     id: "notes",
     title: "Notes",
     markdown: `---\ntags: [design, notes]\nstatus: growing\n---\n\n# Theme observations\n\n[[Reading list]] collects references; [[Design principles]] holds the decisions behind this page.\n\n## Backlinks\n\n- [[Project index]] links here from the current release note.\n- A short note can still carry useful properties.\n\n> [!TIP]\n> Select **Reading list** from the page menu to inspect a related page.`,
+    currentPageId: "observations",
+    pages: [
+      {
+        id: "observations",
+        title: "Theme observations",
+        path: "notes/Theme observations.md",
+        markdown: `# Theme observations\n\n[[Reading list]] collects references; [[Design principles]] holds the decisions behind this page.\n\n> [!NOTE]\n> Notes stay small, linked, and easy to revisit.`,
+      },
+      {
+        id: "reading-list",
+        title: "Reading list",
+        path: "notes/Reading list.md",
+        markdown: `# Reading list\n\n- [[Theme observations]]\n- *The Elements of Typographic Style*\n- A useful design decision record`,
+      },
+    ],
   },
   {
     id: "documentation",
@@ -263,6 +278,20 @@ export const japaneseFixtureContent = [
   {
     title: "ノート",
     markdown: `---\ntags: [デザイン, ノート]\nstatus: 作成中\n---\n\n# テーマについての観察\n\n[[読書リスト]] には参考資料を、[[デザイン原則]] にはこのページの判断をまとめています。\n\n## バックリンク\n\n- [[プロジェクト一覧]] から現在のリリースノートにリンクされています。\n- 短いノートにも役立つ情報を残せます。\n\n> [!TIP]\n> ページメニューから **読書リスト** を選ぶと、関連ページを確認できます。`,
+    pages: [
+      {
+        id: "observations",
+        title: "テーマについての観察",
+        path: "notes/テーマについての観察.md",
+        markdown: `# テーマについての観察\n\n[[読書リスト]] には参考資料を、[[デザイン原則]] にはこのページの判断をまとめています。\n\n> [!NOTE]\n> ノートは小さく、つながりを持たせ、何度でも見返せるようにしておきます。`,
+      },
+      {
+        id: "reading-list",
+        title: "読書リスト",
+        path: "notes/読書リスト.md",
+        markdown: `# 読書リスト\n\n- [[テーマについての観察]]\n- *The Elements of Typographic Style*\n- 役立つデザイン判断の記録`,
+      },
+    ],
   },
   {
     title: "ドキュメント",

@@ -17,7 +17,7 @@ export function devCommand(): CliCommandDefinition {
     examples: [cliExample("riebeckite dev")],
     async handler(context, _input) {
       const { runDev } = await import("../commands/dev.js");
-      await runDev(await project(context));
+      await runDev(await project(context), undefined, { indicator: true });
     },
   });
 }

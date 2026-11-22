@@ -1,21 +1,52 @@
 import { startHonoxDevServer } from "@riebeckite/honox";
 import type { RiebeckiteProject } from "../application_root.js";
 import { loadProjectConfig } from "../load_config.js";
+import { createDevIndicator, waitForFirstResponse } from "./dev_indicator.js";
 import { managedDevReporter, managedSiteId } from "./managed_dev.js";
+
+export type RiebeckiteDevStartOptions = {
+  readonly indicator?: boolean;
+};
 
 export async function runDev(
   project: RiebeckiteProject,
   onReady?: (urls: readonly string[]) => void | Promise<void>,
+  options: RiebeckiteDevStartOptions = {},
 ): Promise<void> {
   const managed = managedDevReporter();
   managed?.starting();
   const bridgeToken = process.env.RIEBECKITE_BRIDGE_TOKEN;
+  const indicator =
+    options.indicator && !managed ? createDevIndicator() : undefined;
+  let interrupted = false;
+  const onInterrupt = () => {
+    interrupted = true;
+  };
+  process.once("SIGINT", onInterrupt);
   try {
+    indicator?.phase("Loading the project config");
     await loadProjectConfig(project);
+    indicator?.phase("Starting the Vite dev server");
     await startHonoxDevServer({
       root: project.appRoot,
       bridgeToken,
       onServerReady: async (urls) => {
+        const origin = urls.find(isLoopbackOrigin);
+        if (origin && !interrupted) {
+          indicator?.phase("Preparing the first page");
+          const response = await waitForFirstResponse(origin, {
+            isAborted: () => interrupted,
+          });
+          if (interrupted) indicator?.fail("Interrupted");
+          else if (!response)
+            indicator?.fail("Development server did not become reachable");
+          else
+            indicator?.done(
+              response.status >= 400
+                ? `Ready at ${origin} (HTTP ${response.status})`
+                : `Ready at ${origin}`,
+            );
+        }
         await onDevServerReady(urls, {
           managed,
           bridgeToken,
@@ -24,9 +55,13 @@ export async function runDev(
         await onReady?.(urls);
       },
     });
+    if (interrupted) indicator?.fail("Interrupted");
   } catch (error) {
+    indicator?.fail("Development server failed to start");
     managed?.failed();
     throw error;
+  } finally {
+    process.removeListener("SIGINT", onInterrupt);
   }
 }
 

@@ -299,6 +299,7 @@ async function sanitizeHtml(html: string): Promise<string> {
         "dataCodeTabs",
         "dataCodeTabsLabel",
         "dataCodeTabsPanel",
+        "dataCodeTabsProps",
         "dataCodeTabsSync",
         "dataCodeTabsTab",
         "dataLine",

@@ -58,7 +58,7 @@ const greeting = "Hello";
 | --- | --- | --- |
 | `syncTabs` | `false` | あるタブを選ぶと、同じページの同名タブも切り替えるか |
 
-生成する要素には `tablist`、`tab`、`tabpanel` のロールを設定します。矢印キー、`Home`、`End`、`Enter`、`Space` で操作でき、JavaScript が動かない場合は全パネルをそのまま読めます。
+生成する要素には `tablist`、`tab`、`tabpanel` のロールを設定します。サーバー側でタブの HTML をすべて出力するため、JavaScript が動かない場合でも先頭のパネルをそのまま読めます。クライアントはその HTML をハイドレートし、クリック、矢印キー、`Home`、`End`、`Enter`、`Space` で操作できます。
 
 `@riebeckite/plugin-code-enhance` と併用する場合は、強調表示後の出力をまとめられるよう `codeEnhance()` の後に `codeTabs()` を置いてください。
 
@@ -67,9 +67,9 @@ const greeting = "Hello";
 - `codeTabs(options?)`：プラグインファクトリ
 - `rehypeCodeTabs(options?)`：rehype 変換
 - `codeTabsTransform`：HAST 変換
-- `initCodeTabs(options?)`：ブラウザ初期化関数
+- `initCodeTabs()`：ブラウザ初期化関数（`@riebeckite/plugin-code-tabs/client`）
 - `remarkCodeMeta`：remark プラグイン
-- `CodeTabsOptions`、`CodeTabsClientOptions`：型
+- `CodeTabsOptions`：型
 
 ## 関連資料
 

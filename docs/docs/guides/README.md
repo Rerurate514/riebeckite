@@ -29,6 +29,7 @@ Guides only. For the full documentation map, see [Documentation](../README.md).
 | Change many notes or frontmatter fields safely | [Content mutation](../framework/content-mutation.md) and [Content migration](../framework/content-migration.md) |
 | Customize the site UI with HonoX | [Customizing your site](./customizing-your-site.md) |
 | Keep the shell while navigating between pages | [SPA Navigation](./spa-navigation.md) |
+| Choose how client code mounts interactive UI | [Interactive Roots](./interactive-roots.md) |
 | Build a homepage and browse routes | [Discovery recipes](./discovery-recipes.md) |
 | Publish an Obsidian vault | [Obsidian](./obsidian.md) |
 | Keep content and the site in separate repositories | [Content repositories](./deployment/separate-content-repository.md) |
@@ -56,6 +57,7 @@ Bulk content changes have two entry points. Use [Content mutation](../framework/
 - [Branding your site](./branding.md) — replacing the site favicon, header logo, and link preview image.
 - [Customizing your site](./customizing-your-site.md) — editing routes, components, islands, and CSS in `app/` as a normal HonoX application.
 - [SPA Navigation](./spa-navigation.md) — enabling client-side page transitions, supported links, and the renderer contract.
+- [Interactive Roots](./interactive-roots.md) — choosing between `hydrateRoot` and `createRoot` for interactive components, and the page and app mount scopes.
 - [Discovery recipes](./discovery-recipes.md) — building a homepage and browse routes.
 - [Upgrading](./upgrading.md) — updating Riebeckite packages and reviewing changes.
 

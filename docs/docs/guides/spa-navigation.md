@@ -138,7 +138,8 @@ links and you want to avoid extra requests.
 Islands inside the new main element are hydrated after replacement. A plain
 `<script>` tag is not re-executed during an SPA navigation. Put page interaction
 in an island or in a plugin client entry so Riebeckite can initialize it on each
-page.
+page. How client code mounts an interactive component, and which mount scope to
+use, is covered in [Interactive Roots](./interactive-roots.md).
 
 Only global stylesheets stay loaded. Stylesheet changes are not applied: a
 stylesheet that exists only on the next page is not added. Include shared styles
@@ -186,5 +187,6 @@ initial page load.
 
 - [SPA navigation architecture](../framework/spa-navigation.md)
 - [SPA runtime internals](../framework/spa-runtime.md)
+- [Interactive Roots](./interactive-roots.md)
 - [HonoX integration](../framework/honox-integration.md)
 - [Configuration](../reference/configuration.md)

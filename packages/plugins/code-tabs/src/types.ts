@@ -2,8 +2,6 @@ export type CodeTabsOptions = {
   syncTabs?: boolean;
 };
 
-export type CodeTabsClientOptions = CodeTabsOptions;
-
 export type ElementNode = {
   type: string;
   tagName?: string;

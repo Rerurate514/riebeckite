@@ -67,6 +67,12 @@ Riebeckite のサイトに Analytics を導入する方法を説明します。
 
 ヘッダーやフッターを残したままページの内容だけを切り替える方法、対象になるリンク、ページを描画する側の要件を説明します。
 
+### インタラクティブな UI をマウントする
+
+[インタラクティブなルート](./interactive-roots.ja.md)
+
+`hydrateRoot` と `createRoot` のどちらでインタラクティブなコンポーネントをマウントするか、page と app のスコープの使い分けを説明します。
+
 ### ローカルプラグインを開発する
 
 [ローカルプラグインの開発](./local-plugin-development.ja.md)
@@ -146,6 +152,7 @@ Riebeckite のパッケージを新しいバージョンへ更新する手順と
 | コンテンツの変更と移行 | [コンテンツ変更](../framework/content-mutation.ja.md) / [コンテンツ移行](../framework/content-migration.ja.md) |
 | Obsidian Vault を公開する | [Obsidian のノートをサイトにする](./obsidian.ja.md) |
 | SPA ナビゲーションを有効にする | [SPAナビゲーション](./spa-navigation.ja.md) |
+| インタラクティブな UI のマウント方法を選ぶ | [インタラクティブなルート](./interactive-roots.ja.md) |
 | コンテンツとサイトを別リポジトリにする | [コンテンツとサイトを分ける](./deployment/separate-content-repository.ja.md) |
 | 多言語サイトにする | [多言語サイト](./localization.ja.md) |
 | ローカルのエディタツールを連携する | [エディタ連携](./editor-integration.ja.md) |

@@ -14,6 +14,8 @@ The Unreleased section lists changes that are merged but not yet published to np
 
 ## Unreleased
 
+> **Breaking changes are included.** Read the migration notes before upgrading.
+
 ### Added
 
 - Added the `dataset` plugin, which exports the published content graph as versioned NDJSON files at build time. It writes `pages.ndjson`, `links.ndjson`, and `index.json` under a configurable `directory` (default `data`) from `manifest.discoverableEntries`, so unlisted, draft, and scheduled notes never appear, and links between non-discoverable notes are dropped. Page records also carry an `excerpt` (frontmatter `description` or body, 180 characters), a 4,000-character plain-text `body`, and the note `language` when localized. The `exclude` option drops slug paths and their descendants from every output. Output is deterministic and sorted, with no timestamps. The package also ships normative JSON Schema documents for the page, link, and index records (exported as `./schema/*.schema.json`), and the plugin's tests validate generated output against those schemas and the `index.json` record counts, so external consumers can validate the artifacts without depending on any Riebeckite package.
@@ -72,6 +74,10 @@ The Unreleased section lists changes that are merged but not yet published to np
 
 - Expanded the generated Skill guides and checklists with concrete examples, exact commands, failure symptoms, and reporting templates. Added the missing Plugin `global` cache mode and corrected the upgrade Skill to describe `riebeckite upgrade` as a preflight check rather than an install. `riebeckite skills sync` picks up the expanded content when updates are accepted.
   Packages: `create-riebeckite`, `@riebeckite/cli`
+
+- **Breaking:** Replaced the drawer's self-initializing side-effect import with an explicit `initDrawers({ signal })` API (preset scaffolds and website already rewired, `:target` フォールバックや `data-rb-*` プロトコルは不変). code-tabs is now a hooks island: one SSR-hydrated `CodeTabsGroup` component via `hydrateRoot`, a `data-code-tabs-props` payload with sanitizer support, and a cache version bump to v3. Removed the dead `./tabs` export from `@riebeckite/ui` (createTabs) and the provably-dead `spa:navigation` listener in source-files. Fixed the local-graph hydration payload to `{ graph, showExplorerLink }` so the explorer link survives hydration. Added the interactive-roots decision guide (hydrateRoot vs createRoot) and refreshed the UI docs accordingly.
+  Packages: `@riebeckite/ui`, `@riebeckite/plugin-code-tabs`, `@riebeckite/plugin-source-files`, `@riebeckite/plugin-local-graph`, `create-riebeckite`
+  Migration: Replace `import \"@riebeckite/ui/drawer/client\"` with an explicit `initDrawers({ signal })` call inside the page initializer. Migrate code-tabs off `CodeTabsClientOptions` to the new `initCodeTabs()` client export (cache key becomes `code-tabs-v3`). Users importing `@riebeckite/ui/tabs` must move to the code-tabs island or their own implementation.
 
 ## 0.1.0 - 2026-11-19
 

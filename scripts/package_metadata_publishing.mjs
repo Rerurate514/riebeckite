@@ -69,7 +69,6 @@ const packagePublishingMetadata = {
       "headless",
       "accessibility",
       "drawer",
-      "tabs",
       "context",
       "hono",
       "jsx",

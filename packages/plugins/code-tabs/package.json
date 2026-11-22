@@ -15,13 +15,12 @@
     "./client": {
       "types": "./dist/client.d.ts",
       "import": "./dist/client.js",
-      "source": "./client.ts",
+      "source": "./client.tsx",
       "default": "./dist/client.js"
     },
     "./style.css": "./style.css"
   },
   "dependencies": {
-    "@riebeckite/ui": "workspace:*",
     "hono": "catalog:",
     "rehype-stringify": "^10.0.1",
     "unified": "catalog:"

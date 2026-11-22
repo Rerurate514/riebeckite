@@ -116,7 +116,7 @@ region 名は文書内で一意にし、現在のページと取得したペー�
 
 ## ページのスクリプトとisland
 
-新しい main 要素内の island は、置き換え後に hydrate されます。通常の `<script>` タグは、SPA ナビゲーションでは再実行されません。ページ固有の操作は island か Plugin の[[glossary/client-entry|クライアントエントリ]]に置き、Riebeckite がページごとに初期化できるようにします。
+新しい main 要素内の island は、置き換え後に hydrate されます。通常の `<script>` タグは、SPA ナビゲーションでは再実行されません。ページ固有の操作は island か Plugin の[[glossary/client-entry|クライアントエントリ]]に置き、Riebeckite がページごとに初期化できるようにします。クライアントコードがインタラクティブなコンポーネントをどうマウントするか、どのスコープを使うかは [インタラクティブなルート](./interactive-roots.ja.md) で説明しています。
 
 グローバルなスタイルシートは読み込まれたままです。スタイルシートの変更は反映されません。次のページにだけ存在するスタイルシートは追加されません。共有するスタイルはグローバルに読み込んでください。
 
@@ -150,5 +150,6 @@ document.addEventListener("spa:navigation", (event) => {
 
 - [SPA ナビゲーションの構成](../framework/spa-navigation.ja.md)
 - [SPA ランタイムの内部実装](../framework/spa-runtime.ja.md)
+- [インタラクティブなルート](./interactive-roots.ja.md)
 - [HonoX との連携](../framework/honox-integration.ja.md)
 - [設定リファレンス](../reference/configuration.ja.md)

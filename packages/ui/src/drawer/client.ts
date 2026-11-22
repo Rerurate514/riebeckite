@@ -11,46 +11,149 @@ type DrawerState = {
   releaseScroll?: () => void;
 };
 
-const states = new Map<string, DrawerState>();
-const openStates: DrawerState[] = [];
-let listening = false;
+export type DrawerInitOptions = {
+  readonly signal?: AbortSignal;
+};
 
-export function initDrawers(): void {
-  if (typeof document === "undefined") return;
+type DrawerRuntime = {
+  readonly states: WeakMap<HTMLElement, DrawerState>;
+  readonly open: DrawerState[];
+  readonly controller: AbortController;
+  readonly observer: MutationObserver;
+};
 
-  if (!listening) {
-    listening = true;
-    document.addEventListener("click", onClick);
-    document.addEventListener("keydown", onKeyDown);
-    document.addEventListener("spa:navigation", onNavigation);
+let runtime: DrawerRuntime | null = null;
+
+export function initDrawers(options: DrawerInitOptions = {}): () => void {
+  if (typeof document === "undefined") return () => {};
+  if (runtime) {
+    return () => {
+      if (runtime) destroy(runtime);
+    };
   }
 
-  for (const [key, state] of states) {
-    if (state.drawer.isConnected) continue;
-    states.delete(key);
-  }
+  const controller = new AbortController();
+  const observer = new MutationObserver((records) => {
+    const current = runtime;
+    if (!current) return;
+    let navigated = false;
+    for (const record of records) {
+      for (const node of record.removedNodes) {
+        if (
+          node instanceof Element &&
+          (node.matches("main#main-content") ||
+            node.querySelector("main#main-content"))
+        ) {
+          navigated = true;
+        }
+      }
+      for (const node of record.addedNodes) adopt(current, node);
+    }
+    for (const state of [...current.open]) {
+      if (navigated || !state.drawer.isConnected) {
+        setOpen(current, state, false, false);
+      }
+    }
+  });
+  const current: DrawerRuntime = {
+    states: new WeakMap(),
+    open: [],
+    controller,
+    observer,
+  };
+  runtime = current;
+
+  document.addEventListener("click", onClick, { signal: controller.signal });
+  document.addEventListener("keydown", onKeyDown, {
+    signal: controller.signal,
+  });
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+  });
 
   for (const drawer of document.querySelectorAll<HTMLElement>(
     "[data-rb-drawer]",
   )) {
-    const panel = drawer.querySelector<HTMLElement>("[data-rb-drawer-panel]");
-    if (!panel?.id || states.has(panel.id)) continue;
+    const state = drawerState(current, drawer);
+    if (state?.panel.matches(":target")) setOpen(current, state, true, false);
+  }
 
-    const state: DrawerState = {
-      drawer,
-      panel,
-      backdrop: drawer.querySelector<HTMLElement>("[data-rb-drawer-backdrop]"),
-      returnFocus: null,
-    };
-    states.set(panel.id, state);
-    if (panel.matches(":target")) setOpen(state, true, false);
+  if (options.signal) {
+    if (options.signal.aborted) destroy(current);
+    else
+      options.signal.addEventListener("abort", () => destroy(current), {
+        once: true,
+      });
+  }
+
+  return () => destroy(current);
+}
+
+function destroy(current: DrawerRuntime): void {
+  if (runtime !== current) return;
+  runtime = null;
+  current.observer.disconnect();
+  current.controller.abort();
+  for (const state of [...current.open]) setOpen(current, state, false, false);
+}
+
+function drawerState(
+  current: DrawerRuntime,
+  drawer: HTMLElement,
+): DrawerState | undefined {
+  const existing = current.states.get(drawer);
+  if (existing) return existing;
+
+  const panel = drawer.querySelector<HTMLElement>("[data-rb-drawer-panel]");
+  if (!panel?.id) return undefined;
+
+  const state: DrawerState = {
+    drawer,
+    panel,
+    backdrop: drawer.querySelector<HTMLElement>("[data-rb-drawer-backdrop]"),
+    returnFocus: null,
+  };
+  current.states.set(drawer, state);
+  return state;
+}
+
+function triggerState(
+  current: DrawerRuntime,
+  trigger: HTMLElement,
+): DrawerState | undefined {
+  const target = trigger.dataset.rbDrawerTarget;
+  if (!target) return undefined;
+
+  const panel = document.getElementById(target);
+  if (!(panel instanceof HTMLElement)) return undefined;
+  if (!panel.hasAttribute("data-rb-drawer-panel")) return undefined;
+
+  const drawer = panel.closest<HTMLElement>("[data-rb-drawer]");
+  return drawer ? drawerState(current, drawer) : undefined;
+}
+
+function adopt(current: DrawerRuntime, node: Node): void {
+  if (!(node instanceof Element)) return;
+  const drawers = node.matches("[data-rb-drawer]")
+    ? [node]
+    : [...node.querySelectorAll<HTMLElement>("[data-rb-drawer]")];
+  for (const drawer of drawers) {
+    if (!(drawer instanceof HTMLElement)) continue;
+    const state = drawerState(current, drawer);
+    if (state?.panel.matches(":target")) setOpen(current, state, true, false);
   }
 }
 
-function setOpen(state: DrawerState, open: boolean, restoreFocus = true): void {
+function setOpen(
+  current: DrawerRuntime,
+  state: DrawerState,
+  open: boolean,
+  restoreFocus = true,
+): void {
   if (open) {
-    for (const other of [...openStates]) {
-      if (other !== state) setOpen(other, false, false);
+    for (const other of [...current.open]) {
+      if (other !== state) setOpen(current, other, false, false);
     }
     if (!state.panel.isConnected) return;
 
@@ -68,11 +171,11 @@ function setOpen(state: DrawerState, open: boolean, restoreFocus = true): void {
       state.releaseScroll ??= lockScroll();
     }
 
-    if (!openStates.includes(state)) openStates.push(state);
+    if (!current.open.includes(state)) current.open.push(state);
     state.releaseDismiss ??= createDismissable({
-      dismiss: () => setOpen(state, false),
+      dismiss: () => setOpen(current, state, false),
       contains: (target) =>
-        state.drawer.contains(target) || isTriggerFor(target, state),
+        state.drawer.contains(target) || isTriggerFor(current, target, state),
     });
     syncTriggers(state, true);
     focusFirst(state.panel);
@@ -87,8 +190,8 @@ function setOpen(state: DrawerState, open: boolean, restoreFocus = true): void {
   state.panel.removeAttribute("role");
   state.panel.removeAttribute("aria-modal");
 
-  const index = openStates.indexOf(state);
-  if (index >= 0) openStates.splice(index, 1);
+  const index = current.open.indexOf(state);
+  if (index >= 0) current.open.splice(index, 1);
   state.releaseDismiss?.();
   state.releaseDismiss = undefined;
   state.releaseScroll?.();
@@ -99,15 +202,6 @@ function setOpen(state: DrawerState, open: boolean, restoreFocus = true): void {
   state.returnFocus = null;
 }
 
-function closeAll(restoreFocus: boolean): void {
-  for (const state of [...openStates]) setOpen(state, false, restoreFocus);
-}
-
-function onNavigation(): void {
-  closeAll(false);
-  initDrawers();
-}
-
 function syncTriggers(state: DrawerState, open: boolean): void {
   for (const trigger of document.querySelectorAll<HTMLElement>(
     `[data-rb-drawer-trigger][data-rb-drawer-target="${CSS.escape(state.panel.id)}"]`,
@@ -116,52 +210,50 @@ function syncTriggers(state: DrawerState, open: boolean): void {
   }
 }
 
-function isTriggerFor(target: Node, state: DrawerState): boolean {
+function isTriggerFor(
+  current: DrawerRuntime,
+  target: Node,
+  state: DrawerState,
+): boolean {
   if (!(target instanceof Element)) return false;
   const trigger = target.closest<HTMLElement>("[data-rb-drawer-trigger]");
-  return trigger ? drawerForTrigger(trigger) === state : false;
-}
-
-function drawerForTrigger(trigger: HTMLElement): DrawerState | undefined {
-  const target = trigger.dataset.rbDrawerTarget;
-  return target ? states.get(target) : undefined;
-}
-
-function stateForDrawer(drawer: HTMLElement): DrawerState | undefined {
-  for (const state of states.values()) {
-    if (state.drawer === drawer) return state;
-  }
-  return undefined;
+  return trigger ? triggerState(current, trigger) === state : false;
 }
 
 function onClick(event: MouseEvent): void {
+  const current = runtime;
+  if (!current) return;
+
   const target = event.target;
   if (!(target instanceof Element)) return;
 
   const trigger = target.closest<HTMLElement>("[data-rb-drawer-trigger]");
   if (trigger) {
-    const state = drawerForTrigger(trigger);
+    const state = triggerState(current, trigger);
     if (!state) return;
     event.preventDefault();
-    setOpen(state, state.drawer.dataset.rbDrawerOpen !== "true");
+    setOpen(current, state, state.drawer.dataset.rbDrawerOpen !== "true");
     return;
   }
 
   if (target.closest("[data-rb-drawer-backdrop]")) {
     const drawer = target.closest<HTMLElement>("[data-rb-drawer]");
-    const state = drawer ? stateForDrawer(drawer) : undefined;
-    if (state) setOpen(state, false);
+    const state = drawer ? drawerState(current, drawer) : undefined;
+    if (state) setOpen(current, state, false);
     return;
   }
 
-  for (const state of [...openStates]) {
+  for (const state of [...current.open]) {
     if (!state.drawer.contains(target)) continue;
-    if (target.closest("a[href]")) setOpen(state, false);
+    if (target.closest("a[href]")) setOpen(current, state, false);
     return;
   }
 }
 
 function onKeyDown(event: KeyboardEvent): void {
+  const current = runtime;
+  if (!current) return;
+
   const target = event.target;
   if (
     event.key === " " &&
@@ -173,17 +265,9 @@ function onKeyDown(event: KeyboardEvent): void {
     return;
   }
 
-  const state = openStates.at(-1);
+  const state = current.open.at(-1);
   if (!state) return;
   if (getComputedStyle(state.panel).position !== "fixed") return;
 
   trapFocus(event, state.panel);
-}
-
-if (typeof document !== "undefined") {
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initDrawers, { once: true });
-  } else {
-    initDrawers();
-  }
 }

@@ -81,11 +81,11 @@ test("plugin dev previews a real local plugin", async () => {
       60_000,
     );
 
-    const clientFile = path.join(pluginRoot, "src", "init.ts");
+    const clientFile = path.join(pluginRoot, "client.tsx");
     const client = await fs.readFile(clientFile, "utf8");
     const updatedClient = client.replace(
-      "export function initCodeTabs(options: CodeTabsClientOptions = {}) {",
-      `export function initCodeTabs(options: CodeTabsClientOptions = {}) {
+      "export function initCodeTabs(): (() => void) | undefined {",
+      `export function initCodeTabs(): (() => void) | undefined {
   document.documentElement.dataset.pluginDevClient = "updated";`,
     );
     assert.notEqual(updatedClient, client);

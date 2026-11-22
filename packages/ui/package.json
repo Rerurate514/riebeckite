@@ -18,7 +18,6 @@
     "headless",
     "accessibility",
     "drawer",
-    "tabs",
     "context",
     "hono",
     "jsx"
@@ -53,12 +52,6 @@
       "import": "./dist/dialog.js",
       "source": "./dialog.ts",
       "default": "./dist/dialog.js"
-    },
-    "./tabs": {
-      "types": "./dist/tabs.d.ts",
-      "import": "./dist/tabs.js",
-      "source": "./tabs.ts",
-      "default": "./dist/tabs.js"
     },
     "./copy": {
       "types": "./dist/copy.d.ts",

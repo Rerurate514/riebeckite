@@ -14,14 +14,29 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 ### Added
 
-- Added the `dataset` plugin, which exports the published content graph as versioned NDJSON files at build time. It writes `pages.ndjson`, `links.ndjson`, and `index.json` under a configurable `directory` (default `data`) from `manifest.discoverableEntries`, so unlisted, draft, and scheduled notes never appear, and links between non-discoverable notes are dropped. Page records also carry an `excerpt` (frontmatter `description` or body, 180 characters), a 4,000-character plain-text `body`, and the note `language` when localized. The `exclude` option drops slug paths and their descendants from every output. Output is deterministic and sorted, with no timestamps.
+- Added the `dataset` plugin, which exports the published content graph as versioned NDJSON files at build time. It writes `pages.ndjson`, `links.ndjson`, and `index.json` under a configurable `directory` (default `data`) from `manifest.discoverableEntries`, so unlisted, draft, and scheduled notes never appear, and links between non-discoverable notes are dropped. Page records also carry an `excerpt` (frontmatter `description` or body, 180 characters), a 4,000-character plain-text `body`, and the note `language` when localized. The `exclude` option drops slug paths and their descendants from every output. Output is deterministic and sorted, with no timestamps. The package also ships normative JSON Schema documents for the page, link, and index records (exported as `./schema/*.schema.json`), and the plugin's tests validate generated output against those schemas and the `index.json` record counts, so external consumers can validate the artifacts without depending on any Riebeckite package.
   Packages: `@riebeckite/plugin-dataset`
 
 - Added `@riebeckite/mcp`, an MCP server for the local Riebeckite development Bridge. AI assistants can connect it to `riebeckite dev` (via the bridge token) to read build state, content, and diagnostics and to run mutation validation. It is a read-only adapter: creating or applying mutation plans still requires Riebeckite's explicit mutation capability and human approval.
   Packages: `@riebeckite/mcp`
 
+- Added generated Skills for official Plugin selection, application components, bulk content migrations, and deployment. References and checklists now give task-specific guidance for each workflow, and `riebeckite skills sync` can update existing generated Skills after confirmation.
+  Packages: `create-riebeckite`, `@riebeckite/cli`
+
+- Added the `riebeckite_plugin_catalog` MCP tool, which searches the public npm registry for published `@riebeckite/plugin-*` packages by capability or package name. It is read-only, requires network access, and does not change local site state.
+  Packages: `@riebeckite/mcp`
+
+- Added `riebeckite ai setup`, which installs generated Skills, AI guidance, the MCP dependency, and the `content:lint` script in an existing project. Scaffolds now generate `AGENTS.md` alongside `RIEBECKITE_AI.md`. `riebeckite skills sync` now adds missing Skills and files instead of only updating existing Skills, and preserves the project's content directory, title, and locale.
+  Packages: `create-riebeckite`, `@riebeckite/cli`
+
 - New sites scaffolded with a deployment now register `deploy({ provider: "cloudflare-workers" })` in `riebeckite.config.ts`, so content redirects are emitted as Cloudflare Workers `_redirects` files on every build. The dependency is added to `package.json` automatically. For existing sites, `riebeckite deploy setup` now adds the same plugin entry (and the dependency) when the config does not register it yet, leaving any existing registration untouched.
   Packages: `create-riebeckite`, `@riebeckite/cli`
+
+- Added the `riebeckite_mutation_plan` and `riebeckite_mutation_apply` MCP tools. Mutation remains opt-in through `RIEBECKITE_BRIDGE_MUTATION_TOKEN`; applying a plan still requires a human `riebeckite bridge approve <plan-id>` review.
+  Packages: `@riebeckite/mcp`
+
+- Added `riebeckite ai mcp --mutations`, which generates temporary Bridge mutation and approval tokens for the session. The approval token is stored in the git-ignored `.riebeckite/` directory so `riebeckite bridge approve` works without environment variables.
+  Packages: `@riebeckite/cli`
 
 ### Changed
 
@@ -45,6 +60,12 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 - The search index now builds its headings and excerpts with the shared `createEntryExcerpt` and `extractHtmlHeadings` helpers from `@riebeckite/core` instead of plugin-private copies. Behavior is unchanged and every language is still indexed.
   Packages: `@riebeckite/plugin-search`
+
+- Memoized the shared plain-text projection so repeated consumers within one build reuse one computation per entry. `getEntryPlainText` now caches the derived text on the frozen manifest entry, so plugins that each project the same notes (search, the garden explorer, and the dataset) compute the HTML-to-text conversion once instead of once per consumer. Output is unchanged; manifest entries are immutable, and rebuilds create new entry objects with fresh caches.
+  Packages: `@riebeckite/core`
+
+- Expanded the generated Skill guides and checklists with concrete examples, exact commands, failure symptoms, and reporting templates. Added the missing Plugin `global` cache mode and corrected the upgrade Skill to describe `riebeckite upgrade` as a preflight check rather than an install. `riebeckite skills sync` picks up the expanded content when updates are accepted.
+  Packages: `create-riebeckite`, `@riebeckite/cli`
 
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.1.0...HEAD
 

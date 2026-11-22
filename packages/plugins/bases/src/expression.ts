@@ -77,7 +77,7 @@ class Parser {
   }
   private prefix(): BasesExpression {
     if (this.current.text === "!" || this.current.text === "-") {
-      const operator = this.current.text as "!" | "-";
+      const operator = this.current.text;
       this.next();
       return { kind: "unary", operator, value: this.expression(8) };
     }

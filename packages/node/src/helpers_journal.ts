@@ -24,18 +24,15 @@ export async function readJournalSnapshot(
       return undefined;
     const changes: { path: string; afterFingerprint: string | null }[] = [];
     for (const change of value.changes) {
-      if (
-        !isRecord(change) ||
-        typeof change.path !== "string" ||
-        !(
-          change.afterFingerprint === null ||
-          typeof change.afterFingerprint === "string"
-        )
-      )
+      if (!isRecord(change) || typeof change.path !== "string")
+        return undefined;
+      const afterFingerprint = change.afterFingerprint;
+      if (afterFingerprint !== null && typeof afterFingerprint !== "string")
         return undefined;
       changes.push({
         path: change.path,
-        afterFingerprint: change.afterFingerprint as string | null,
+        afterFingerprint:
+          typeof afterFingerprint === "string" ? afterFingerprint : null,
       });
     }
     return { state: value.state, changes };

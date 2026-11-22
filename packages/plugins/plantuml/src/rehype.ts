@@ -1,3 +1,4 @@
+import { reportVFileDiagnostic } from "@riebeckite/core";
 import {
   element,
   getStringProperty,
@@ -209,15 +210,11 @@ function reportPlantumlDiagnostic(
   message: string,
   kind: PlantumlErrorKind,
 ) {
-  const reporter = (file as { message?: (reason: string) => unknown })?.message;
-  if (typeof reporter !== "function") return;
-  const diagnostic = reporter.call(file, message);
-  if (diagnostic && typeof diagnostic === "object") {
-    Object.assign(diagnostic, {
-      source: "@riebeckite/plugin-plantuml",
-      ruleId: kind,
-    });
-  }
+  reportVFileDiagnostic(file, {
+    source: "@riebeckite/plugin-plantuml",
+    ruleId: kind,
+    message,
+  });
 }
 
 function formatError(error: unknown): string {

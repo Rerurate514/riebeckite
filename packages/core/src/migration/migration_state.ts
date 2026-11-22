@@ -371,7 +371,7 @@ export function listContentMigrationEntries(
       const sorted = versions.toSorted(
         (left, right) => right.version - left.version,
       );
-      const latest = sorted[0] as ContentMigration;
+      const latest = sorted[0];
       const records = state.migrations.filter((entry) => entry.id === id);
       const applied = records
         .filter((entry) => entry.status === "applied")

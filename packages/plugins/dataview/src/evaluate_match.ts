@@ -45,7 +45,7 @@ export function executeCommand(
         values.set(key, value);
       }
       return [...groups.entries()].map(([key, bucket]) => ({
-        entry: bucket[0]?.entry as ContentManifestEntry,
+        entry: bucket[0]?.entry,
         fields: { [command.label ?? command.field]: values.get(key) },
         group: { key, rows: bucket },
       }));

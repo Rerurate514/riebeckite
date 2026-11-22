@@ -267,4 +267,6 @@ export {
   htmlToPlainText,
   stripHtml,
 } from "./src/utils/text.js";
+export type { VFileDiagnostic } from "./src/utils/vfile.js";
+export { reportVFileDiagnostic } from "./src/utils/vfile.js";
 export { parseYaml } from "./src/utils/yaml.js";

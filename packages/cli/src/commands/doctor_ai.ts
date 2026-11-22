@@ -1,11 +1,9 @@
 import fs from "node:fs/promises";
-import { createRequire } from "node:module";
 import path from "node:path";
 import type { DevelopmentDiagnostic } from "@riebeckite/diagnostics";
 import type { RiebeckiteProject } from "../application_root.js";
+import { cliVersion } from "../version.js";
 
-const require = createRequire(import.meta.url);
-const cliVersion = require("@riebeckite/cli/package.json").version as string;
 const versionPattern = /^riebeckiteVersion:\s*["']?([^"'\n]+)["']?/m;
 
 type SkillVersion = {

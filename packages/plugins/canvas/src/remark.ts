@@ -1,4 +1,8 @@
-import { type ContentSource, readContentSourceEntry } from "@riebeckite/core";
+import {
+  type ContentSource,
+  readContentSourceEntry,
+  reportVFileDiagnostic,
+} from "@riebeckite/core";
 import { parseCanvas } from "./parse.js";
 import { renderCanvas } from "./render.js";
 import { createCanvasResolver, lookupContentIndex } from "./resolve.js";
@@ -108,12 +112,10 @@ async function readEmbed(
 }
 
 function reportCanvasDiagnostic(file: unknown, message: string) {
-  const reporter = (file as { message?: (reason: string) => unknown })?.message;
-  if (typeof reporter !== "function") return;
-  const diagnostic = reporter.call(file, message);
-  if (diagnostic && typeof diagnostic === "object") {
-    Object.assign(diagnostic, { source: "@riebeckite/plugin-canvas" });
-  }
+  reportVFileDiagnostic(file, {
+    source: "@riebeckite/plugin-canvas",
+    message,
+  });
 }
 
 function walk(

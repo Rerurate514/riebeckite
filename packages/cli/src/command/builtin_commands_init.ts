@@ -73,8 +73,8 @@ export function initCommand(): CliCommandDefinition {
         }
         const { runInit } = await import("../commands/init.js");
         await runInit({
-          directory: input.arguments.directory as string,
-          force: input.options.force as boolean,
+          directory: input.arguments.directory,
+          force: input.options.force,
           preset:
             (presetName as
               | import("create-riebeckite/scaffold").ScaffoldPresetName

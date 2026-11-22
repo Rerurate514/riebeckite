@@ -70,10 +70,7 @@ export function completionCommand(): CliCommandDefinition {
           ? await registryFor(context)
           : context.registry;
       context.output.writeLine(
-        generateCompletion(
-          registry,
-          input.arguments.shell as "bash" | "zsh" | "powershell",
-        ),
+        generateCompletion(registry, input.arguments.shell),
       );
     },
   });

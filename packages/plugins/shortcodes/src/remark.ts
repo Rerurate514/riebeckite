@@ -253,7 +253,7 @@ function transformDirective(
     index,
     1,
     createHtml(before),
-    ...(children as Content[]),
+    ...children,
     createHtml(after),
   );
 }
@@ -277,9 +277,9 @@ function extractLabel(node: DirectiveNode): {
   if (node.type === "containerDirective") {
     const [firstChild, ...rest] = node.children;
     if (isDirectiveLabel(firstChild)) {
-      return { label: textContent(firstChild), children: rest as Content[] };
+      return { label: textContent(firstChild), children: rest };
     }
-    return { label: "", children: node.children as Content[] };
+    return { label: "", children: node.children };
   }
 
   return { label: textContent(node), children: [] };

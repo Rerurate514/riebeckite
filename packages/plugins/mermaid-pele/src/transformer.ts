@@ -1,3 +1,4 @@
+import { reportVFileDiagnostic } from "@riebeckite/core";
 import { renderPeleSvg } from "./renderer.js";
 import type { HastNode, MermaidPeleOptions } from "./types.js";
 
@@ -133,18 +134,11 @@ function visit(
 }
 
 function reportDiagnostic(file: unknown, message: string): void {
-  const reporter = (file as { message?: (reason: string) => unknown })?.message;
-  if (typeof reporter !== "function") return;
-  const diagnostic = reporter.call(
-    file,
-    `Pele could not render diagram: ${message}`,
-  );
-  if (diagnostic && typeof diagnostic === "object") {
-    Object.assign(diagnostic, {
-      source: "@riebeckite/plugin-mermaid-pele",
-      ruleId: "invalid-diagram",
-    });
-  }
+  reportVFileDiagnostic(file, {
+    source: "@riebeckite/plugin-mermaid-pele",
+    ruleId: "invalid-diagram",
+    message: `Pele could not render diagram: ${message}`,
+  });
 }
 
 function hash(value: string): string {

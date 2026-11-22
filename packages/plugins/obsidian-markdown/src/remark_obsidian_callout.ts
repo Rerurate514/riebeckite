@@ -3,9 +3,7 @@ import type {
   Blockquote,
   Data,
   DefinitionContent,
-  Paragraph,
   Root,
-  Text,
 } from "mdast";
 import type { Parent } from "unist";
 import { visit } from "unist-util-visit";
@@ -156,10 +154,10 @@ function extractMarker(node: Blockquote): Marker | null {
   const first = node.children[0];
   if (first?.type !== "paragraph") return null;
 
-  const firstChild = (first as Paragraph).children[0];
+  const firstChild = first.children[0];
   if (firstChild?.type !== "text") return null;
 
-  const text = firstChild as Text;
+  const text = firstChild;
   const lines = text.value.split("\n");
   const match = lines[0].match(CALLOUT_RE);
   if (!match) return null;
@@ -173,10 +171,10 @@ function extractMarker(node: Blockquote): Marker | null {
   if (rest.length > 0) {
     text.value = rest;
   } else {
-    (first as Paragraph).children.shift();
+    first.children.shift();
   }
 
-  const consumedParagraph = (first as Paragraph).children.length === 0;
+  const consumedParagraph = first.children.length === 0;
 
   return { type, fold, title, consumedParagraph };
 }

@@ -11,6 +11,7 @@ import puppeteer, { type Browser, type Page } from "puppeteer";
 declare global {
   var RbDrawer: typeof import("../../packages/ui/drawer-client.ts");
   var RbSidebarNavigation: typeof import("../../packages/plugins/navigation/client.ts");
+  var drawerFixture: Element;
 }
 
 (globalThis as { React?: unknown }).React = { createElement, Fragment };
@@ -196,17 +197,14 @@ for (const theme of ["light", "dark"] as const) {
       await page.evaluate(() => {
         const drawer = document.querySelector("[data-rb-drawer]");
         if (!drawer) throw new Error("Missing drawer");
-        (window as unknown as { drawerFixture: Element }).drawerFixture =
-          drawer;
+        window.drawerFixture = drawer;
         drawer.remove();
       });
       await page.waitForFunction(
         () => document.documentElement.style.overflow === "",
       );
       await page.evaluate(() => {
-        document.body.append(
-          (window as unknown as { drawerFixture: Element }).drawerFixture,
-        );
+        document.body.appendChild(window.drawerFixture);
       });
       await page.click("#drawer-trigger");
       assert.equal(

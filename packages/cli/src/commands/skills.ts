@@ -1,9 +1,7 @@
 import fs from "node:fs/promises";
-import { createRequire } from "node:module";
 import path from "node:path";
 import { aiSkillFiles } from "@riebeckite/ai";
-
-const require = createRequire(import.meta.url);
+import { cliVersion } from "../version.js";
 
 export type SkillSyncOptions = {
   contentDirectory?: string;
@@ -28,7 +26,6 @@ export async function syncSkills(
   mode: "review" | "reset",
   options: SkillSyncOptions = {},
 ): Promise<void> {
-  const version = require("@riebeckite/cli/package.json").version as string;
   const directory = path.join(root, ".agents", "skills");
   const existingSiteSkill = await fs
     .readFile(path.join(directory, "riebeckite-site", "SKILL.md"), "utf8")
@@ -47,7 +44,7 @@ export async function syncSkills(
       externalContent,
     },
     { contentDirectory },
-    version,
+    cliVersion,
   ).filter(
     (file): file is SkillFile =>
       file.path.startsWith(".agents/skills/") &&
@@ -57,7 +54,7 @@ export async function syncSkills(
   for (const [name, group] of groupBySkill(files)) {
     const target = path.join(directory, name, "SKILL.md");
     const before = await fs.readFile(target, "utf8").catch(() => undefined);
-    const outdated = !before || versionOf(before) !== version;
+    const outdated = !before || versionOf(before) !== cliVersion;
     const filesToWrite = outdated ? group : await missingFiles(root, group);
     if (filesToWrite.length === 0) continue;
     updates.push({

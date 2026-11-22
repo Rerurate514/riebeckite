@@ -1,3 +1,4 @@
+import { reportVFileDiagnostic } from "@riebeckite/core";
 import {
   element,
   getStringProperty,
@@ -182,20 +183,14 @@ function reportGraphvizDiagnostic(
   message: string,
   kind: GraphvizBuildRenderErrorKind,
 ) {
-  const reporter = (file as { message?: (reason: string) => unknown })?.message;
-  if (typeof reporter !== "function") return;
-  const diagnostic = reporter.call(
-    file,
-    kind === "invalid-diagram"
-      ? `Invalid Graphviz diagram: ${message}`
-      : `Graphviz renderer failed: ${message}`,
-  );
-  if (diagnostic && typeof diagnostic === "object") {
-    Object.assign(diagnostic, {
-      source: "@riebeckite/plugin-graphviz",
-      ruleId: kind,
-    });
-  }
+  reportVFileDiagnostic(file, {
+    source: "@riebeckite/plugin-graphviz",
+    ruleId: kind,
+    message:
+      kind === "invalid-diagram"
+        ? `Invalid Graphviz diagram: ${message}`
+        : `Graphviz renderer failed: ${message}`,
+  });
 }
 
 function isGraphvizCodeBlock(node: ElementNode): boolean {

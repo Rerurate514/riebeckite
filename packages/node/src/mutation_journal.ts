@@ -1,7 +1,9 @@
 import type {
   ContentMutationFileChange,
+  ContentMutationIssue,
   ContentMutationOperation,
   ContentMutationPlan,
+  ContentMutationPrecondition,
 } from "@riebeckite/core";
 
 export type MutationJournal = {
@@ -48,22 +50,43 @@ export function markApplied(journal: MutationJournal, filePath: string): void {
 }
 
 export function parseJournal(value: string): MutationJournal {
-  const journal = JSON.parse(value) as Partial<MutationJournal>;
+  const journal: unknown = JSON.parse(value);
   if (
+    !isRecord(journal) ||
     journal.version !== 1 ||
     typeof journal.id !== "string" ||
     !Array.isArray(journal.changes) ||
-    ![
-      "prepared",
-      "applying",
-      "failed",
-      "complete",
-      "recovered",
-      "rolled-back",
-    ].includes(journal.state ?? "")
+    !isJournalState(journal.state)
   )
     throw new Error("Journal is missing or corrupt.");
-  return journal as MutationJournal;
+  const changes = journal.changes.filter(isJournalChange);
+  if (changes.length !== journal.changes.length)
+    throw new Error("Journal is missing or corrupt.");
+  return { version: 1, id: journal.id, state: journal.state, changes };
+}
+
+function isJournalState(value: unknown): value is MutationJournal["state"] {
+  return (
+    value === "prepared" ||
+    value === "applying" ||
+    value === "failed" ||
+    value === "complete" ||
+    value === "recovered" ||
+    value === "rolled-back"
+  );
+}
+
+function isJournalChange(value: unknown): value is JournalChange {
+  return (
+    isRecord(value) &&
+    typeof value.path === "string" &&
+    (value.beforeFingerprint === null ||
+      typeof value.beforeFingerprint === "string") &&
+    (value.afterFingerprint === null ||
+      typeof value.afterFingerprint === "string") &&
+    (value.backupPath === undefined || typeof value.backupPath === "string") &&
+    (value.status === "pending" || value.status === "applied")
+  );
 }
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
@@ -117,9 +140,9 @@ export function parsePlan(value: string): ContentMutationPlan {
     if (serializedContent !== null && typeof serializedContent !== "string")
       throw new Error("Mutation plan is missing or corrupt.");
     const content =
-      serializedContent === null
-        ? null
-        : new Uint8Array(Buffer.from(serializedContent as string, "base64"));
+      typeof serializedContent === "string"
+        ? new Uint8Array(Buffer.from(serializedContent, "base64"))
+        : null;
     if ((content === null) !== (change.afterFingerprint === null))
       throw new Error("Mutation plan is missing or corrupt.");
     return {
@@ -129,15 +152,44 @@ export function parsePlan(value: string): ContentMutationPlan {
       content,
     };
   });
+  const preconditions = parsed.preconditions.filter(isMutationPrecondition);
+  if (preconditions.length !== parsed.preconditions.length)
+    throw new Error("Mutation plan is missing or corrupt.");
+  const warnings = parsed.warnings.filter(isMutationIssue);
+  if (warnings.length !== parsed.warnings.length)
+    throw new Error("Mutation plan is missing or corrupt.");
+  const conflicts = parsed.conflicts.filter(isMutationIssue);
+  if (conflicts.length !== parsed.conflicts.length)
+    throw new Error("Mutation plan is missing or corrupt.");
   return {
     schemaVersion: 1,
     id: parsed.id,
     operations: parseOperations(parsed.operations),
     changes,
-    preconditions: parsed.preconditions as ContentMutationPlan["preconditions"],
-    warnings: parsed.warnings as ContentMutationPlan["warnings"],
-    conflicts: parsed.conflicts as ContentMutationPlan["conflicts"],
+    preconditions,
+    warnings,
+    conflicts,
   };
+}
+
+function isMutationPrecondition(
+  value: unknown,
+): value is ContentMutationPrecondition {
+  return (
+    isRecord(value) &&
+    typeof value.path === "string" &&
+    (value.fingerprint === null || typeof value.fingerprint === "string")
+  );
+}
+
+function isMutationIssue(value: unknown): value is ContentMutationIssue {
+  return (
+    isRecord(value) &&
+    (value.severity === "warning" || value.severity === "error") &&
+    typeof value.code === "string" &&
+    typeof value.message === "string" &&
+    (value.path === undefined || typeof value.path === "string")
+  );
 }
 
 export function samePlan(

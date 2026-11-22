@@ -10,6 +10,10 @@ import {
 import { groupCommand } from "./builtin_commands_help.js";
 import { project } from "./builtin_commands_shared.js";
 
+function isAiClient(value: string): value is AiClient {
+  return AI_CLIENTS.some((client) => client === value);
+}
+
 export function devCommand(): CliCommandDefinition {
   return defineCliCommand({
     id: "dev",
@@ -138,11 +142,7 @@ export function doctorCommand(): CliCommandDefinition {
         explain: input.options.explain,
         fix: input.options.fix,
         dryRun: input.options.dryRun,
-        failOn: input.options.failOn as
-          | "error"
-          | "warning"
-          | "info"
-          | undefined,
+        failOn: input.options.failOn,
         codes: (input.options.code as readonly string[] | undefined) ?? [],
       });
     },
@@ -181,8 +181,8 @@ export function upgradeCommand(): CliCommandDefinition {
     handler: async (context, input) => {
       const { runUpgradeCheck } = await import("../commands/upgrade.js");
       return runUpgradeCheck(await project(context), {
-        to: input.options.to as string,
-        json: input.options.json as boolean,
+        to: input.options.to,
+        json: input.options.json,
       });
     },
   });
@@ -243,7 +243,7 @@ export function aiSetupCommand(): CliCommandDefinition {
         valueName: "client",
         repeatable: true,
         validate: (value: string) =>
-          AI_CLIENTS.includes(value as AiClient)
+          isAiClient(value)
             ? undefined
             : `Expected one of: ${AI_CLIENTS.join(", ")}.`,
       }),
@@ -252,7 +252,7 @@ export function aiSetupCommand(): CliCommandDefinition {
       const { createSetupPrompts } = await import("../prompts.js");
       const { runAiSetup } = await import("../commands/ai_setup.js");
       await runAiSetup(await project(context), createSetupPrompts().confirm, {
-        clients: (input.options.client ?? []) as readonly AiClient[],
+        clients: (input.options.client ?? []).filter(isAiClient),
       });
     },
   });

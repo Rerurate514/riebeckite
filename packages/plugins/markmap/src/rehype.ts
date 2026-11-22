@@ -1,3 +1,4 @@
+import { reportVFileDiagnostic } from "@riebeckite/core";
 import {
   element,
   getStringProperty,
@@ -158,13 +159,9 @@ function findDirectChild(
 }
 
 function reportDiagnostic(file: unknown, message: string) {
-  const reporter = (file as { message?: (reason: string) => unknown })?.message;
-  if (typeof reporter !== "function") return;
-  const diagnostic = reporter.call(file, `Invalid Markmap source: ${message}`);
-  if (diagnostic && typeof diagnostic === "object") {
-    Object.assign(diagnostic, {
-      source: DIAGNOSTIC_SOURCE,
-      ruleId: "invalid-source",
-    });
-  }
+  reportVFileDiagnostic(file, {
+    source: DIAGNOSTIC_SOURCE,
+    ruleId: "invalid-source",
+    message: `Invalid Markmap source: ${message}`,
+  });
 }

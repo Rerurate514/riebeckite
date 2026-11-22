@@ -82,7 +82,9 @@ type ArgumentValue<A extends CliArgumentDefinition> = A extends {
   readonly variadic: true;
 }
   ? readonly string[]
-  : string;
+  : A extends { readonly values: readonly (infer V extends string)[] }
+    ? V
+    : string;
 
 type ArgumentField<A extends CliArgumentDefinition> = A extends {
   readonly default: unknown;
@@ -154,10 +156,15 @@ export type CliBooleanOptions = {
   readonly hidden?: boolean;
 };
 
-export function cliBoolean<const O extends CliBooleanOptions = EmptyOptions>(
-  name: string,
+export function cliBoolean<
+  const N extends string,
+  const O extends CliBooleanOptions = EmptyOptions,
+>(
+  name: N,
   options: O = {} as O,
-): CliOptionDefinition & { readonly type: "boolean" } & O {
+): CliOptionDefinition & { readonly type: "boolean" } & O & {
+    readonly name: N;
+  } {
   return {
     name,
     type: "boolean",
@@ -175,10 +182,15 @@ export type CliStringOptions = {
   readonly validate?: (value: string) => string | undefined;
 };
 
-export function cliString<const O extends CliStringOptions = EmptyOptions>(
-  name: string,
+export function cliString<
+  const N extends string,
+  const O extends CliStringOptions = EmptyOptions,
+>(
+  name: N,
   options: O = {} as O,
-): CliOptionDefinition & { readonly type: "string" } & O {
+): CliOptionDefinition & { readonly type: "string" } & O & {
+    readonly name: N;
+  } {
   return {
     name,
     type: "string",
@@ -186,11 +198,13 @@ export function cliString<const O extends CliStringOptions = EmptyOptions>(
   };
 }
 
-export function cliStringWithDefault(
-  name: string,
+export function cliStringWithDefault<const N extends string>(
+  name: N,
   defaultValue: string,
   options: CliStringOptions = {},
-): CliOptionDefinition & { readonly default: string } {
+): CliOptionDefinition & { readonly default: string } & {
+  readonly name: N;
+} {
   return {
     name,
     type: "string",
@@ -212,10 +226,15 @@ export type CliNumberOptions = {
   readonly validate?: (value: string) => string | undefined;
 };
 
-export function cliNumber<const O extends CliNumberOptions = EmptyOptions>(
-  name: string,
+export function cliNumber<
+  const N extends string,
+  const O extends CliNumberOptions = EmptyOptions,
+>(
+  name: N,
   options: O = {} as O,
-): CliOptionDefinition & { readonly type: "number" } & O {
+): CliOptionDefinition & { readonly type: "number" } & O & {
+    readonly name: N;
+  } {
   return {
     name,
     type: "number",
@@ -233,15 +252,17 @@ export type CliEnumOptions = {
 };
 
 export function cliEnum<
+  const N extends string,
   const V extends string,
   const O extends CliEnumOptions = EmptyOptions,
 >(
-  name: string,
+  name: N,
   values: readonly V[],
   options: O = {} as O,
 ): CliOptionDefinition & {
   readonly type: "enum";
   readonly values: readonly V[];
+  readonly name: N;
 } & O {
   return {
     name,
@@ -260,10 +281,13 @@ export type CliArgumentOptions = {
   readonly validate?: (value: string) => string | undefined;
 };
 
-export function cliArgument<const O extends CliArgumentOptions = EmptyOptions>(
-  name: string,
+export function cliArgument<
+  const N extends string,
+  const O extends CliArgumentOptions = EmptyOptions,
+>(
+  name: N,
   options: O = {} as O,
-): CliArgumentDefinition & O {
+): CliArgumentDefinition & O & { readonly name: N } {
   return {
     name,
     ...options,
@@ -271,11 +295,16 @@ export function cliArgument<const O extends CliArgumentOptions = EmptyOptions>(
 }
 
 export function cliVariadicArgument<
+  const N extends string,
   const O extends CliArgumentOptions = EmptyOptions,
 >(
-  name: string,
+  name: N,
   options: O = {} as O,
-): CliArgumentDefinition & O & { readonly variadic: true } {
+): CliArgumentDefinition &
+  O & {
+    readonly variadic: true;
+    readonly name: N;
+  } {
   return {
     name,
     ...options,

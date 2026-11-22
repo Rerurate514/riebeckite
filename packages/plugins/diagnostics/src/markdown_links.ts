@@ -1,4 +1,3 @@
-import type { Root } from "mdast";
 import remarkParse from "remark-parse";
 import { unified } from "unified";
 import { visit } from "unist-util-visit";
@@ -13,7 +12,7 @@ type MarkdownReference = {
 export function extractMarkdownReferences(
   markdown: string,
 ): MarkdownReference[] {
-  const tree = unified().use(remarkParse).parse(markdown) as Root;
+  const tree = unified().use(remarkParse).parse(markdown);
   const references: MarkdownReference[] = [];
 
   visit(tree, (node) => {

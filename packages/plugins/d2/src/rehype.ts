@@ -1,3 +1,4 @@
+import { reportVFileDiagnostic } from "@riebeckite/core";
 import {
   element,
   getStringProperty,
@@ -176,20 +177,14 @@ function reportD2Diagnostic(
   message: string,
   kind: D2BuildRenderErrorKind,
 ) {
-  const reporter = (file as { message?: (reason: string) => unknown })?.message;
-  if (typeof reporter !== "function") return;
-  const diagnostic = reporter.call(
-    file,
-    kind === "invalid-diagram"
-      ? `Invalid D2 diagram: ${message}`
-      : `D2 renderer failed: ${message}`,
-  );
-  if (diagnostic && typeof diagnostic === "object") {
-    Object.assign(diagnostic, {
-      source: "@riebeckite/plugin-d2",
-      ruleId: kind,
-    });
-  }
+  reportVFileDiagnostic(file, {
+    source: "@riebeckite/plugin-d2",
+    ruleId: kind,
+    message:
+      kind === "invalid-diagram"
+        ? `Invalid D2 diagram: ${message}`
+        : `D2 renderer failed: ${message}`,
+  });
 }
 
 function isD2CodeBlock(node: ElementNode): boolean {

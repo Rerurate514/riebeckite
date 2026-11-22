@@ -52,7 +52,7 @@ export function layoutExcaliBrain(
   for (const role of ROLE_ORDER) groups.set(role, []);
   for (const node of graph.nodes) {
     if (node.role === "center") continue;
-    groups.get(node.role as ExcaliBrainRole)?.push(node);
+    groups.get(node.role)?.push(node);
   }
 
   const maxPerRegion = Math.max(0, Math.trunc(resolved.maxPerRegion));

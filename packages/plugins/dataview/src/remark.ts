@@ -1,3 +1,4 @@
+import { reportVFileDiagnostic } from "@riebeckite/core";
 import type { Html, Root } from "mdast";
 import { visit } from "unist-util-visit";
 import { parseDataview } from "./parse.js";
@@ -43,10 +44,5 @@ export function remarkDataview(options: RemarkDataviewOptions = {}) {
 }
 
 function reportDataviewMessage(file: unknown, message: string): void {
-  const reporter = (file as { message?: (reason: string) => unknown })?.message;
-  if (typeof reporter !== "function") return;
-  const diagnostic = reporter.call(file, message);
-  if (diagnostic && typeof diagnostic === "object") {
-    Object.assign(diagnostic, { source: DATAVIEW_SOURCE });
-  }
+  reportVFileDiagnostic(file, { source: DATAVIEW_SOURCE, message });
 }

@@ -1,5 +1,4 @@
 import fs from "node:fs/promises";
-import { createRequire } from "node:module";
 import path from "node:path";
 import {
   type AiClient,
@@ -9,13 +8,12 @@ import {
   mergeAiClientConfig,
 } from "@riebeckite/ai";
 import type { RiebeckiteProject } from "../application_root.js";
+import { cliVersion } from "../version.js";
 import { syncSkills } from "./skills.js";
 import { detectPackageManager } from "./upgrade_install.js";
 
 const MCP_PACKAGE = "@riebeckite/mcp";
 const AI_PACKAGE = "@riebeckite/ai";
-const require = createRequire(import.meta.url);
-const version = require("@riebeckite/cli/package.json").version as string;
 const versionPattern = /^riebeckiteVersion:\s*["']?([^"'\n]+)["']?/m;
 
 export async function runAiSetup(
@@ -39,7 +37,7 @@ export async function runAiSetup(
       lint: true,
       packageManager,
     },
-    version,
+    cliVersion,
   );
   for (const file of rules) {
     const target = path.join(project.projectRoot, file.path);
@@ -52,9 +50,9 @@ export async function runAiSetup(
         const currentVersion = versionPattern.exec(
           await fs.readFile(target, "utf8"),
         )?.[1];
-        if (currentVersion !== version) {
+        if (currentVersion !== cliVersion) {
           console.log(
-            `  RIEBECKITE_AI.md was generated for ${currentVersion ?? "an unknown version"}; review it for ${version}.`,
+            `  RIEBECKITE_AI.md was generated for ${currentVersion ?? "an unknown version"}; review it for ${cliVersion}.`,
           );
         }
       }
@@ -136,7 +134,7 @@ async function updatePackageJson(
       typeof devDependencies[packageName] === "string"
     )
       continue;
-    devDependencies[packageName] = `^${version}`;
+    devDependencies[packageName] = `^${cliVersion}`;
     manifest.devDependencies = devDependencies;
     changed = true;
     console.log(`✓ Added ${packageName} to devDependencies`);

@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { BridgeClient, searchOfficialPlugins } from "../src/server.js";
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
+import {
+  BridgeClient,
+  createServer,
+  searchOfficialPlugins,
+} from "../src/server.js";
 
 test("uses the authenticated bootstrap origin for Bridge requests", async () => {
   const originalFetch = globalThis.fetch;
@@ -162,6 +168,70 @@ test("searches the npm registry for official plugins", async () => {
       "https://registry.npmjs.org/-/v1/search?text=%40riebeckite%2Fplugin-search&size=10",
     );
   } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("registers and dispatches the Bridge MCP tools", async () => {
+  const originalFetch = globalThis.fetch;
+  const requests: string[] = [];
+  globalThis.fetch = async (input) => {
+    const url = input.toString();
+    requests.push(url);
+    return url.endsWith("/bootstrap")
+      ? Response.json({ origin: "http://127.0.0.1:61345" })
+      : Response.json({ ok: true });
+  };
+  const [clientTransport, serverTransport] =
+    InMemoryTransport.createLinkedPair();
+  const server = createServer(
+    new BridgeClient({
+      origin: "http://127.0.0.1:5173",
+      token: "a".repeat(32),
+      mutationToken: "m".repeat(32),
+    }),
+  );
+  const client = new Client({ name: "test", version: "1.0.0" });
+  try {
+    await server.connect(serverTransport);
+    await client.connect(clientTransport);
+    const tools = await client.listTools();
+    assert.equal(tools.tools.length, 14);
+    await client.callTool({ name: "riebeckite_status", arguments: {} });
+    await client.callTool({
+      name: "riebeckite_context",
+      arguments: { path: "notes/hello.md" },
+    });
+    await client.callTool({
+      name: "riebeckite_validate_mutation",
+      arguments: { operations: [{ op: "update" }] },
+    });
+    await client.callTool({
+      name: "riebeckite_mutation_plan",
+      arguments: { operations: [{ op: "update" }] },
+    });
+    await client.callTool({
+      name: "riebeckite_mutation_apply",
+      arguments: { planId: "plan-1" },
+    });
+    await client.callTool({
+      name: "riebeckite_mutation_inspect",
+      arguments: { planId: "00000000-0000-4000-8000-000000000001" },
+    });
+    assert.deepEqual(
+      requests.filter((url) => !url.endsWith("/bootstrap")),
+      [
+        "http://127.0.0.1:61345/__riebeckite/bridge/v1",
+        "http://127.0.0.1:61345/__riebeckite/bridge/v1/context?path=notes%2Fhello.md",
+        "http://127.0.0.1:61345/__riebeckite/bridge/v1/mutations/validate",
+        "http://127.0.0.1:61345/__riebeckite/bridge/v1/mutations/plan",
+        "http://127.0.0.1:61345/__riebeckite/bridge/v1/mutations/plan-1/apply",
+        "http://127.0.0.1:61345/__riebeckite/bridge/v1/mutations/00000000-0000-4000-8000-000000000001",
+      ],
+    );
+  } finally {
+    await client.close();
+    await server.close();
     globalThis.fetch = originalFetch;
   }
 });

@@ -272,7 +272,17 @@ export function bridgeSchema(): Record<string, unknown> {
         method: "POST",
         body: { operations: "ContentMutationOperation[]" },
       },
+      "mutations/plan": {
+        method: "POST",
+        authentication: "mutation",
+        body: { operations: "ContentMutationOperation[]" },
+      },
       "mutations/{planId}": { method: "GET", authentication: "mutation" },
+      "mutations/{planId}/apply": {
+        method: "POST",
+        authentication: "mutation",
+        body: {},
+      },
     },
   };
 }

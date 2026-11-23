@@ -1,3 +1,4 @@
+import { createRequire } from "node:module";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
@@ -5,6 +6,10 @@ import { z } from "zod";
 const protocolHeader = { "x-riebeckite-bridge-protocol": "1" };
 const mutationTokenHeader = "x-riebeckite-bridge-mutation-token";
 const pluginPackagePrefix = "@riebeckite/plugin-";
+const requestTimeout = 15_000;
+const mcpVersion = (
+  createRequire(import.meta.url)("../package.json") as { version: string }
+).version;
 
 type PluginCatalogPackage = {
   name: string;
@@ -90,6 +95,7 @@ export class BridgeClient {
     const url = new URL("/__riebeckite/bridge/bootstrap", this.options.origin);
     const response = await fetch(url, {
       headers: { "x-riebeckite-bridge-token": this.options.token },
+      signal: AbortSignal.timeout(requestTimeout),
     });
     if (!response.ok)
       throw new Error(`Bridge bootstrap failed (${response.status}).`);
@@ -107,6 +113,7 @@ export class BridgeClient {
         "x-riebeckite-bridge-token": this.options.token,
         ...init?.headers,
       },
+      signal: AbortSignal.timeout(requestTimeout),
     });
     const body = await response.text();
     if (!response.ok)
@@ -127,7 +134,9 @@ export async function searchOfficialPlugins(
   const url = new URL("https://registry.npmjs.org/-/v1/search");
   url.searchParams.set("text", search);
   url.searchParams.set("size", `${Math.min(Math.max(limit, 1), 100)}`);
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    signal: AbortSignal.timeout(requestTimeout),
+  });
   if (!response.ok)
     throw new Error(`Plugin catalog request failed (${response.status}).`);
   const body = (await response.json()) as {
@@ -146,7 +155,7 @@ export async function searchOfficialPlugins(
 }
 
 export function createServer(client: BridgeClient): McpServer {
-  const server = new McpServer({ name: "riebeckite", version: "0.1.0" });
+  const server = new McpServer({ name: "riebeckite", version: mcpVersion });
   const path = { path: z.string().min(1) };
   const result = (value: unknown) => ({
     content: [{ type: "text" as const, text: JSON.stringify(value, null, 2) }],
@@ -158,7 +167,7 @@ export function createServer(client: BridgeClient): McpServer {
     "riebeckite_status",
     "Read Bridge status and capabilities.",
     {},
-    () => get("")({}),
+    async () => result(await client.get("/__riebeckite/bridge/v1")),
   );
   server.tool(
     "riebeckite_schema",

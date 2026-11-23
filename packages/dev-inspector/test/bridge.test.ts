@@ -596,7 +596,33 @@ test("serves discovery, inventory, aggregate diagnostics, links, and guarded con
       "/__riebeckite/bridge/v1/content?path=notes%2Fhello.md",
     ),
   ]);
-  assert.equal((await schema.json()).protocolVersion, 1);
+  const schemaBody = await schema.json();
+  assert.equal(schemaBody.protocolVersion, 1);
+  assert.deepEqual(schemaBody.endpoints, {
+    inventory: {
+      query: { offset: "integer", limit: "integer", query: "string" },
+    },
+    diagnostics: { query: { path: "string", since: "revision" } },
+    links: { query: { path: "string" } },
+    content: { query: { path: "string" } },
+    project: { method: "GET" },
+    impact: { query: { path: "string" } },
+    "mutations/validate": {
+      method: "POST",
+      body: { operations: "ContentMutationOperation[]" },
+    },
+    "mutations/plan": {
+      method: "POST",
+      authentication: "mutation",
+      body: { operations: "ContentMutationOperation[]" },
+    },
+    "mutations/{planId}": { method: "GET", authentication: "mutation" },
+    "mutations/{planId}/apply": {
+      method: "POST",
+      authentication: "mutation",
+      body: {},
+    },
+  });
   assert.equal((await inventory.json()).page.total, 3);
   assert.equal((await diagnostics.json()).delta, "unchanged");
   assert.deepEqual((await links.json()).links, []);

@@ -14,6 +14,10 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 
 ## Unreleased
 
+No user-facing changes recorded.
+
+## 0.2.0 - 2026-11-23
+
 > **Breaking changes are included.** Read the migration notes before upgrading.
 
 ### Added
@@ -106,6 +110,8 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 
 - The sandboxed iframe runtime's guest bridge script lost its sandbox handshake: the bridge document was generated with `export function send` inside a plain script, so the script failed with a syntax error, the guest never answered the init handshake, and every `createIframeRuntime` mount stalled until its start timeout. The bridge is now emitted with a plain function declaration again, so iframe runtimes become ready and respond to invocations.
   Packages: `@riebeckite/runtime`
+
+[比較](https://github.com/Rerurate514/riebeckite/compare/v0.1.0...v0.2.0)
 
 ## 0.1.0 - 2026-11-19
 

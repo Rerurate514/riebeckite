@@ -65,6 +65,10 @@ npm exec riebeckite dev
 
 It starts the site through the Riebeckite integration's development workflow. The actual development server and how build state is handled depend on the integration in use. For an ordinary HonoX site, use this command to preview pages while developing.
 
+While the site becomes reachable, the command shows a progress indicator with the elapsed time for each startup phase: loading the config, starting the Vite dev server, and preparing the first page. The `Ready` line appears once the development server answers its first request, so the browser opens against an already-warm site.
+
+The same startup behavior is built into the Vite plugin, so sites started with plain `vite` or a package script get it too: the first page is warmed after the server listens, `riebeckite:` progress lines appear while it is being prepared, and the Vite URL banner is held back until the site actually responds. Pass `warmContent: false` to `riebeckiteVite()` to disable it.
+
 On Windows, save related edits together and wait for the server to finish restarting before reloading. Saving several files in quick succession can restart the Vite server repeatedly and briefly show `transport was disconnected`; reload after the restart to clear it.
 
 ## `check`
@@ -113,7 +117,7 @@ npm exec -- riebeckite doctor --fail-on warning --code CONTENT_UNAVAILABLE
 
 `--explain` includes the stable fingerprint, cause, details, and suggested remediation. `--json` writes only the serializable report for tooling; its additive summary includes unavailable, skipped, category, and code counts. Repeat `--code` to select diagnostic codes. `--fail-on` selects the lowest severity that fails the command (default: `error`). `--fix` is limited to safe automatic fixes; no safe automatic fix is currently available, so `--dry-run` confirms that without modifying files.
 
-It checks environment, configuration, plugins, content, output planning, and theme references where the observation is available. Unavailable observations are reported explicitly rather than inferred.
+It checks environment, configuration, plugins, content, output planning, theme references, and AI setup where the observation is available. Unavailable observations are reported explicitly rather than inferred.
 
 ```mermaid
 flowchart LR
@@ -123,6 +127,7 @@ flowchart LR
     Content["Content"]
     Output["Output"]
     Theme["Theme"]
+    AI["AI setup"]
 
     Environment --> Doctor["doctor"]
     Config --> Doctor
@@ -130,6 +135,7 @@ flowchart LR
     Content --> Doctor
     Output --> Doctor
     Theme --> Doctor
+    AI --> Doctor
 
     Doctor --> Diagnostics["Diagnostics"]
 ```

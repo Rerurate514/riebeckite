@@ -169,6 +169,7 @@ export default defineConfig({
 | [Frontmatter Transformer](./frontmatter-transformer.ja.md) | マイグレーション基盤を使う安全なフロントマター一括変換 |
 | [Vault Heatmap](./vault-heatmap.ja.md) | 日付付き Vault アクティビティのカレンダーヒートマップ |
 | [Docs](./docs.ja.md) | Docs のサイドバーと previous/next |
+| [Dataset](./dataset.ja.md) | 公開コンテンツグラフのバージョン付き NDJSON エクスポート |
 | [Calculator](./calculator.ja.md) | 静的なフォールバック付きの対話的な計算コードブロック |
 | [Canvas](./canvas.ja.md) | Obsidian Canvas の描画 |
 | [Discord Embed](./discord-embed.ja.md) | Discord のリンクプレビューメタデータ |

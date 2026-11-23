@@ -48,6 +48,14 @@ export function parseContentMigrationPlan(
   if (parsedMigrations.length !== migrations.length) return undefined;
   const parsedChanges = changes.filter(isPlanFile);
   if (parsedChanges.length !== changes.length) return undefined;
+  const parsedDiagnostics = diagnostics.filter(isMigrationDiagnostic);
+  if (parsedDiagnostics.length !== diagnostics.length) return undefined;
+  const parsedConflicts = conflicts.filter(isMigrationDiagnostic);
+  if (parsedConflicts.length !== conflicts.length) return undefined;
+  const parsedSelections = selections.filter(isMigrationSelection);
+  if (parsedSelections.length !== selections.length) return undefined;
+  const parsedSkipped = skipped.filter(isMigrationSkip);
+  if (parsedSkipped.length !== skipped.length) return undefined;
   return {
     schemaVersion: 1,
     id,
@@ -59,10 +67,10 @@ export function parseContentMigrationPlan(
     planFingerprint,
     operations: operations as ContentMigrationPlan["operations"],
     changes: parsedChanges,
-    diagnostics: diagnostics as ContentMigrationPlan["diagnostics"],
-    conflicts: conflicts as ContentMigrationPlan["conflicts"],
-    selections: selections as ContentMigrationPlan["selections"],
-    skipped: skipped as ContentMigrationPlan["skipped"],
+    diagnostics: parsedDiagnostics,
+    conflicts: parsedConflicts,
+    selections: parsedSelections,
+    skipped: parsedSkipped,
     impact,
     verification,
   };
@@ -89,6 +97,43 @@ function isPlanFile(
       typeof value.beforeFingerprint === "string") &&
     (value.afterFingerprint === null ||
       typeof value.afterFingerprint === "string")
+  );
+}
+
+function isMigrationDiagnostic(
+  value: unknown,
+): value is ContentMigrationPlan["diagnostics"][number] {
+  return (
+    isRecord(value) &&
+    (value.severity === "error" ||
+      value.severity === "warning" ||
+      value.severity === "info") &&
+    typeof value.code === "string" &&
+    typeof value.message === "string" &&
+    (value.path === undefined || typeof value.path === "string")
+  );
+}
+
+function isMigrationSelection(
+  value: unknown,
+): value is ContentMigrationPlan["selections"][number] {
+  return (
+    isRecord(value) &&
+    typeof value.migrationId === "string" &&
+    typeof value.version === "number" &&
+    Array.isArray(value.paths) &&
+    value.paths.every((path) => typeof path === "string")
+  );
+}
+
+function isMigrationSkip(
+  value: unknown,
+): value is ContentMigrationPlan["skipped"][number] {
+  return (
+    isRecord(value) &&
+    typeof value.migrationId === "string" &&
+    typeof value.version === "number" &&
+    (value.reason === "no-selection" || value.reason === "no-change")
   );
 }
 

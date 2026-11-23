@@ -1,0 +1,25 @@
+{
+  "name": "riebeckite-promo",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Promotional video for Riebeckite, rendered with Remotion",
+  "scripts": {
+    "capture": "node scripts/capture.mjs",
+    "studio": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts RiebeckitePromo riebeckite-demo.mp4 --codec=h264 --crf=18 --pixel-format=yuv420p",
+    "still": "remotion still src/index.ts RiebeckitePromo",
+    "thumb": "remotion still src/index.ts RiebeckiteThumbnail thumbnail.png",
+    "preview-site": "node scripts/serve-site.mjs ../website/dist 4321",
+    "verify": "node scripts/verify.mjs"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.545",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remotion": "4.0.545"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.2",
+    "typescript": "5.9.3"
+  }
+}

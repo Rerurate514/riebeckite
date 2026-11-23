@@ -1,3 +1,4 @@
+import { reportVFileDiagnostic } from "@riebeckite/core";
 import type { Code, Html, Root } from "mdast";
 import { visit } from "unist-util-visit";
 import { parseFlashcards } from "./parse.js";
@@ -33,17 +34,9 @@ export function remarkFlashcards(options: RemarkFlashcardsOptions = {}) {
 }
 
 function reportInvalidBlock(file: unknown, reason: string) {
-  const reporter = (file as { message?: (reason: string) => unknown })?.message;
-  if (typeof reporter !== "function") return;
-
-  const diagnostic = reporter.call(
-    file,
-    `Invalid flashcards block: ${reason}.`,
-  );
-  if (diagnostic && typeof diagnostic === "object") {
-    Object.assign(diagnostic, {
-      source: FLASHCARDS_DIAGNOSTIC_SOURCE,
-      ruleId: "invalid-flashcards",
-    });
-  }
+  reportVFileDiagnostic(file, {
+    source: FLASHCARDS_DIAGNOSTIC_SOURCE,
+    ruleId: "invalid-flashcards",
+    message: `Invalid flashcards block: ${reason}.`,
+  });
 }

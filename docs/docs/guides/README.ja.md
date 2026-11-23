@@ -67,6 +67,12 @@ Riebeckite のサイトに Analytics を導入する方法を説明します。
 
 ヘッダーやフッターを残したままページの内容だけを切り替える方法、対象になるリンク、ページを描画する側の要件を説明します。
 
+### インタラクティブな UI をマウントする
+
+[インタラクティブなルート](./interactive-roots.ja.md)
+
+`hydrateRoot` と `createRoot` のどちらでインタラクティブなコンポーネントをマウントするか、page と app のスコープの使い分けを説明します。
+
 ### ローカルプラグインを開発する
 
 [ローカルプラグインの開発](./local-plugin-development.ja.md)
@@ -78,6 +84,12 @@ Riebeckite のサイトに Analytics を導入する方法を説明します。
 [エディタ連携](./editor-integration.ja.md)
 
 エディタ拡張などのローカルツールを、読み取り専用の開発用 Bridge に接続する方法を説明します。
+
+### AI ツールを安全に連携する
+
+[AI 連携](./ai/README.ja.md)
+
+MCP と生成される AI 向けガイダンスを使う方法を説明します。
 
 ### アイコンやロゴを差し替える
 
@@ -140,9 +152,11 @@ Riebeckite のパッケージを新しいバージョンへ更新する手順と
 | コンテンツの変更と移行 | [コンテンツ変更](../framework/content-mutation.ja.md) / [コンテンツ移行](../framework/content-migration.ja.md) |
 | Obsidian Vault を公開する | [Obsidian のノートをサイトにする](./obsidian.ja.md) |
 | SPA ナビゲーションを有効にする | [SPAナビゲーション](./spa-navigation.ja.md) |
+| インタラクティブな UI のマウント方法を選ぶ | [インタラクティブなルート](./interactive-roots.ja.md) |
 | コンテンツとサイトを別リポジトリにする | [コンテンツとサイトを分ける](./deployment/separate-content-repository.ja.md) |
 | 多言語サイトにする | [多言語サイト](./localization.ja.md) |
 | ローカルのエディタツールを連携する | [エディタ連携](./editor-integration.ja.md) |
+| AI ツールを安全に連携する | [AI 連携](./ai/README.ja.md) |
 | Analytics を導入する | [アクセス解析](./analytics.ja.md) |
 | サイトのアイコンやロゴを差し替える | [サイトのアイコンとロゴ](./branding.ja.md) |
 | サイトの UI をカスタマイズする | [サイトのカスタマイズ](./customizing-your-site.ja.md) |

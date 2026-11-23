@@ -80,7 +80,7 @@ export function createContentMigrationRegistry(
   }
 
   const selected = [...byId.values()].map(
-    (versions) => versions[versions.length - 1] as ContentMigration,
+    (versions) => versions[versions.length - 1],
   );
   const order = topologicalOrder(selected, byId);
 

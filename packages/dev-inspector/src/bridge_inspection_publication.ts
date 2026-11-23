@@ -112,6 +112,72 @@ export function inspectBridgeDiagnostics(
   return { ...resolved, diagnostics, revision: options.revision };
 }
 
+export function inspectBridgeSiteDiagnostics(
+  snapshot: CompletedContentBuildSnapshot | undefined,
+  options: BridgeInspectionOptions,
+  since: string | null,
+): Record<string, unknown> {
+  const diagnostics = snapshot
+    ? [...snapshot.manifest.diagnostics, ...snapshot.finalHtmlDiagnostics].map(
+        (diagnostic) => ({
+          code: diagnostic.code,
+          severity: diagnostic.severity,
+          message: diagnostic.message,
+          category: "content",
+          source:
+            diagnostic.filePath || diagnostic.slug
+              ? {
+                  path: diagnostic.filePath,
+                  slug: diagnostic.slug,
+                  line: diagnostic.line,
+                  column: diagnostic.column,
+                }
+              : undefined,
+          related: diagnostic.target
+            ? [{ target: diagnostic.target }]
+            : undefined,
+          fix: diagnostic.suggestion
+            ? { kind: "manual", description: diagnostic.suggestion }
+            : undefined,
+        }),
+      )
+    : [];
+  return {
+    status: snapshot ? "available" : "unavailable",
+    revision: options.revision,
+    diagnostics: since === `${options.revision}` ? [] : diagnostics,
+    delta: since
+      ? since === `${options.revision}`
+        ? "unchanged"
+        : "full"
+      : undefined,
+  };
+}
+
+export function inspectBridgeLinks(
+  snapshot: CompletedContentBuildSnapshot | undefined,
+  input: string | null,
+  options: BridgeInspectionOptions,
+): Record<string, unknown> {
+  const resolved = resolveBridgeSource(snapshot, input, options);
+  if (resolved.status !== "resolved" || !snapshot) return resolved;
+  const slug = (resolved.entry as { slug: string }).slug;
+  const entry = snapshot.manifest.bySlug.get(slug);
+  if (!entry) return unavailable(options.revision);
+  return {
+    ...resolved,
+    links: entry.links.map((link) => ({
+      raw: link.raw,
+      slug: link.slug,
+      kind: link.kind,
+      embed: link.embed,
+    })),
+    backlinks: (snapshot.manifest.incomingLinks.get(slug) ?? []).map(
+      (incoming) => ({ slug: incoming }),
+    ),
+  };
+}
+
 export function inspectBridgeImpact(
   snapshot: CompletedContentBuildSnapshot | undefined,
   input: string | null,
@@ -143,6 +209,34 @@ export function inspectBridgeImpact(
       removedOutputs: changes.removed.filter(relevant).map(serialize),
       fullRegenerationRequired: changes.fullRegenerationRequired,
     },
+  };
+}
+
+export function inspectBridgeContext(
+  snapshot: CompletedContentBuildSnapshot | undefined,
+  input: string | null,
+  options: BridgeInspectionOptions,
+): Record<string, unknown> {
+  const source = resolveBridgeSource(snapshot, input, options);
+  if (source.status !== "resolved" || !snapshot) return source;
+  const publication = inspectBridgePublication(
+    snapshot,
+    input,
+    options,
+  ).publication;
+  const preview = inspectBridgePreview(snapshot, input, options).preview;
+  const diagnostics = inspectBridgeDiagnostics(
+    snapshot,
+    input,
+    options,
+  ).diagnostics;
+  const impact = inspectBridgeImpact(snapshot, input, options).impact;
+  return {
+    ...source,
+    publication,
+    preview,
+    diagnostics,
+    impact,
   };
 }
 

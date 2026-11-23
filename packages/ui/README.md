@@ -25,7 +25,6 @@ Each primitive is a subpath so sites load only what they use.
 | `@riebeckite/ui/drawer` | `Drawer` and `DrawerTrigger` markup |
 | `@riebeckite/ui/drawer/client` | Focus, Escape, outside-click, scroll-lock, and SPA cleanup behavior |
 | `@riebeckite/ui/dialog` | Controller around a native `<dialog>` |
-| `@riebeckite/ui/tabs` | WAI-ARIA tab selection and keyboard behavior |
 | `@riebeckite/ui/copy` | Clipboard text copy with a fallback |
 | `@riebeckite/ui/behaviors` | Focus, dismiss, and scroll-lock utilities |
 | `@riebeckite/ui/loading` | Loading, ready, and error state for a DOM region |
@@ -41,8 +40,17 @@ import "@riebeckite/ui/styles/drawer.css";
 ```
 
 ```ts
-import "@riebeckite/ui/drawer/client";
+import { initDrawers } from "@riebeckite/ui/drawer/client";
+
+// inside the page client initializer
+const cleanup = initDrawers({ signal });
 ```
+
+`initDrawers` is idempotent and returns a cleanup function. Pass the page
+lifecycle `signal` to tear the behavior down with the page, or ignore the return
+value where it should persist for the document. It closes open drawers whose
+markup is removed, including an SPA navigation that replaces
+`main#main-content`.
 
 The Drawer keeps Escape and outside-click dismissal, focus trap and restore, initial focus, reference-counted scroll lock, trigger ARIA state, SPA cleanup, and duplicate-init protection. Without JavaScript, the trigger remains a fragment link and CSS `:target` reveals the panel. That fallback cannot provide dialog semantics, focus containment or restoration, Escape and outside-click dismissal, scroll lock, or a reliable close affordance.
 

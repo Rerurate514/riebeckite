@@ -123,18 +123,14 @@ export function createPluginCommand(): CliCommandDefinition {
       }
       const { runCreatePlugin } = await import("../commands/create_plugin.js");
       const name = input.arguments.name;
-      const featureValue =
-        (input.options.template as string | undefined) ??
-        (input.options.features as string | undefined);
+      const featureValue = input.options.template ?? input.options.features;
       await runCreatePlugin({
         name,
-        directory:
-          (input.options.directory as string | undefined) ??
-          `extensions/${name}`,
+        directory: input.options.directory ?? `extensions/${name}`,
         features: parsePluginFeatures(featureValue ?? ""),
-        tests: input.options.tests as boolean,
-        documentation: input.options.docs as boolean,
-        register: input.options.register as boolean,
+        tests: input.options.tests,
+        documentation: input.options.docs,
+        register: input.options.register,
       });
     },
   });

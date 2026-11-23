@@ -21,11 +21,6 @@ export type SpaNavigationOptions = SpaOptions & {
   onPageCommit?: SpaPageCommit;
 };
 
-export function spa(options: SpaOptions = {}): Readonly<SpaOptions> {
-  validateSpaOptions(options);
-  return Object.freeze({ ...options });
-}
-
 export function validateSpaOptions(options: SpaOptions): void {
   if (
     options.prefetch !== undefined &&

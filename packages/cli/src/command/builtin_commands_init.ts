@@ -23,10 +23,6 @@ export function initCommand(): CliCommandDefinition {
         description: "Starter preset.",
         valueName: "name",
       }),
-      cliString("features", {
-        description: "Comma-separated scaffold feature names.",
-        valueName: "names",
-      }),
       cliString("utilities", {
         description: "Comma-separated utility file names.",
         valueName: "names",
@@ -77,19 +73,12 @@ export function initCommand(): CliCommandDefinition {
         }
         const { runInit } = await import("../commands/init.js");
         await runInit({
-          directory: input.arguments.directory as string,
-          force: input.options.force as boolean,
+          directory: input.arguments.directory,
+          force: input.options.force,
           preset:
             (presetName as
               | import("create-riebeckite/scaffold").ScaffoldPresetName
               | undefined) ?? scaffold.SCAFFOLD_DEFAULT_PRESET,
-          ...(typeof input.options.features === "string"
-            ? {
-                features: scaffold.parseScaffoldFeatures(
-                  input.options.features,
-                ),
-              }
-            : {}),
           utilities:
             typeof input.options.utilities === "string"
               ? scaffold.parseScaffoldUtilities(input.options.utilities)

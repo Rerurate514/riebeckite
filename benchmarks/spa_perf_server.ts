@@ -2,6 +2,8 @@ import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
 import puppeteer from "puppeteer";
+import type { Mode, Sample } from "./spa_perf_types.js";
+import { contentType } from "./spa_perf_util.js";
 
 export function requestedPage(
   requests: readonly { path: string; bytes: number }[],
@@ -63,6 +65,7 @@ export async function serve(directory: string): Promise<{
 export async function measureBrowser(
   url: string,
   mode: Mode,
+  samples: number,
 ): Promise<{ samples: Sample[]; memoryBytes: Record<string, number> }> {
   const server = await serve(url);
   const browser = await puppeteer.launch({

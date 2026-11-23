@@ -10,7 +10,9 @@ import {
   ArticleLayout,
   Article as ArticlePrimitive,
 } from "@riebeckite/honox/ui";
-import ArticleMetadata from "@riebeckite/plugin-article-metadata/components";
+import ArticleMetadata, {
+  type ArticleMetadataProps,
+} from "@riebeckite/plugin-article-metadata/components";
 import { resolveWebLocale } from "../../lib/locale";
 import { PoweredByRiebeckite } from "./powered-by-riebeckite";
 
@@ -30,6 +32,8 @@ type Props = {
   beforeContent?: unknown;
   afterContent?: unknown;
   footerContent?: unknown;
+  /** Locale-specific labels for the default reading metadata row. */
+  metadataLabels?: ArticleMetadataProps["labels"];
 };
 
 export default function Article(props: Props) {
@@ -58,6 +62,7 @@ export default function Article(props: Props) {
                 ? "ja-JP"
                 : "en-US"
             }
+            labels={props.metadataLabels}
           />
           {props.beforeContent}
           <ArticleBody html={articleHtml.rest} />

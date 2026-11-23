@@ -34,7 +34,7 @@ import {
   verifyPreconditions,
 } from "./mutation_state.js";
 
-export class FileSystemContentMutation {
+export class FileSystemContentMutation implements MutationContext {
   readonly isContentPath: (path: string) => boolean;
 
   constructor(
@@ -48,19 +48,19 @@ export class FileSystemContentMutation {
   async plan(
     operations: readonly ContentMutationOperation[],
   ): Promise<ContentMutationPlan> {
-    return await plan(this as MutationContext, operations);
+    return await plan(this, operations);
   }
 
   async apply(plan: ContentMutationPlan): Promise<ContentMutationResult> {
-    return await apply(this as MutationContext, plan);
+    return await apply(this, plan);
   }
 
   async recover(journalPath: string): Promise<ContentMutationRecoveryResult> {
-    return await recover(this as MutationContext, journalPath);
+    return await recover(this, journalPath);
   }
 
   async rollback(journalPath: string): Promise<ContentMutationRollbackResult> {
-    return await rollback(this as MutationContext, journalPath);
+    return await rollback(this, journalPath);
   }
 
   async restoreChange(
@@ -71,7 +71,7 @@ export class FileSystemContentMutation {
     assertOwned: () => Promise<void>,
   ): Promise<ContentMutationIssue | null> {
     return await restoreChange(
-      this as MutationContext,
+      this,
       root,
       journalDirectory,
       change,
@@ -84,17 +84,17 @@ export class FileSystemContentMutation {
     plan: ContentMutationPlan,
     planPath?: string,
   ): Promise<string> {
-    return await savePlan(this as MutationContext, plan, planPath);
+    return await savePlan(this, plan, planPath);
   }
 
   async loadPlan(planPath: string): Promise<ContentMutationPlan> {
-    return await loadPlan(this as MutationContext, planPath);
+    return await loadPlan(this, planPath);
   }
 
   async revalidatePlan(
     plan: ContentMutationPlan,
   ): Promise<ContentMutationIssue[]> {
-    return await revalidatePlan(this as MutationContext, plan);
+    return await revalidatePlan(this, plan);
   }
 
   async planPath(
@@ -102,11 +102,11 @@ export class FileSystemContentMutation {
     id: string | undefined,
     requested: string | undefined,
   ): Promise<string> {
-    return await planPath(this as MutationContext, root, id, requested);
+    return await planPath(this, root, id, requested);
   }
 
   async root(): Promise<string> {
-    return await root(this as MutationContext);
+    return await root(this);
   }
 
   async loadFiles(
@@ -114,14 +114,14 @@ export class FileSystemContentMutation {
     relative: string,
     files: Map<string, FileState>,
   ): Promise<void> {
-    return await loadFiles(this as MutationContext, root, relative, files);
+    return await loadFiles(this, root, relative, files);
   }
 
   async verifyPreconditions(
     root: string,
     changes: readonly ContentMutationFileChange[],
   ): Promise<ContentMutationIssue[]> {
-    return await verifyPreconditions(this as MutationContext, root, changes);
+    return await verifyPreconditions(this, root, changes);
   }
 
   async backup(
@@ -129,15 +129,10 @@ export class FileSystemContentMutation {
     journalDirectory: string,
     change: ContentMutationFileChange,
   ): Promise<JournalChange> {
-    return await backup(
-      this as MutationContext,
-      root,
-      journalDirectory,
-      change,
-    );
+    return await backup(this, root, journalDirectory, change);
   }
 
   async acquireLock(root: string): Promise<ContentLock> {
-    return await acquireLock(this as MutationContext, root);
+    return await acquireLock(this, root);
   }
 }

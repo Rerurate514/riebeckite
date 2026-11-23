@@ -32,6 +32,7 @@ import {
   parseNameWithOwner,
   parseSecretNames,
 } from "./deploy_setup_parse.js";
+import { ensureDeployPlugin } from "./deploy_setup_plugin.js";
 import { registerSecret, registerVariable } from "./deploy_setup_secrets.js";
 
 export async function runDeploySetup(
@@ -67,6 +68,8 @@ export async function runDeploySetup(
       "Run this command from the repository that contains riebeckite.config.ts at its root.",
     );
   }
+
+  await ensureDeployPlugin(projectRoot, writeLine);
 
   const repository = await detectGitHubRepository(runner, prompts, repoRoot);
 

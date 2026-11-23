@@ -1,3 +1,4 @@
+import { reportVFileDiagnostic } from "@riebeckite/core";
 import { qrElementClassName } from "./options.js";
 import type {
   ElementNode,
@@ -295,10 +296,5 @@ function getChildren(node: HastNode): HastNode[] {
 }
 
 function reportDiagnostic(file: unknown, message: string, ruleId: string) {
-  const reporter = (file as { message?: (reason: string) => unknown })?.message;
-  if (typeof reporter !== "function") return;
-  const diagnostic = reporter.call(file, message);
-  if (diagnostic && typeof diagnostic === "object") {
-    Object.assign(diagnostic, { source: PLUGIN_SOURCE, ruleId });
-  }
+  reportVFileDiagnostic(file, { source: PLUGIN_SOURCE, ruleId, message });
 }

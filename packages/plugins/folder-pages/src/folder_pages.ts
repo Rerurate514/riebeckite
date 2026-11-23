@@ -7,6 +7,7 @@ import type {
 } from "@riebeckite/core";
 import {
   escapeRegExp,
+  isExcludedSlugPath,
   resolveEntryCalendarDate,
   resolveGeneratedFolderLocation,
 } from "@riebeckite/core";
@@ -70,7 +71,7 @@ export function buildFolderPages(
   const routablePermalinks = new Set<string>();
 
   for (const entry of manifest.publicEntries) {
-    if (isExcludedEntry(entry, excludedSlugs)) continue;
+    if (isExcludedSlugPath(entry.slug, excludedSlugs)) continue;
     routableBySlug.set(entry.slug, entry);
     routablePermalinks.add(stripTrailingSlash(entry.permalink));
   }
@@ -120,7 +121,7 @@ export function buildFolderPages(
   };
 
   for (const entry of manifest.discoverableEntries) {
-    if (isExcludedEntry(entry, excludedSlugs)) continue;
+    if (isExcludedSlugPath(entry.slug, excludedSlugs)) continue;
     const language = entry.publicLocation.language;
     const folder = parentFolder(entry.slug);
     allFolders.add(folder);
@@ -137,7 +138,7 @@ export function buildFolderPages(
 
   const owners = new Map<string, ContentManifestEntry>();
   for (const entry of manifest.publicEntries) {
-    if (isExcludedEntry(entry, excludedSlugs)) continue;
+    if (isExcludedSlugPath(entry.slug, excludedSlugs)) continue;
     const language = entry.publicLocation.language;
     const basename = entryBaseSegment(entry.slug, language);
     if (!isEntryBasename(basename)) continue;
@@ -277,16 +278,6 @@ export function buildFolderPages(
 
 function languageKey(folder: string, language: Language): string {
   return `${folder}\u0000${language ?? ""}`;
-}
-
-function isExcludedEntry(
-  entry: ContentManifestEntry,
-  excludedSlugs: readonly string[],
-): boolean {
-  const slug = entry.slug;
-  return excludedSlugs.some(
-    (excluded) => slug === excluded || slug.startsWith(`${excluded}/`),
-  );
 }
 
 function entryBaseSegment(slug: string, language: Language): string {

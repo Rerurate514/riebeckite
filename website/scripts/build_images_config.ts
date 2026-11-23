@@ -49,4 +49,5 @@ export type BuildImagesOptions = {
   contentDir?: string;
   assetsRoot?: string;
   exclude?: readonly string[];
+  statePath?: string;
 };

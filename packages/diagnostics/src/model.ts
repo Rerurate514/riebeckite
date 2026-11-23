@@ -7,6 +7,7 @@ export type DevelopmentDiagnosticCategory =
   | "output"
   | "theme"
   | "environment"
+  | "ai"
   | "api";
 
 export type DevelopmentDiagnosticStatus =
@@ -31,6 +32,7 @@ export type DevelopmentDiagnosticSubject = {
     | "output"
     | "theme"
     | "environment"
+    | "ai"
     | "api";
   readonly value?: string;
 };

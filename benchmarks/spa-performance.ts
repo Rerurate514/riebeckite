@@ -58,7 +58,11 @@ async function main(): Promise<void> {
       );
       configure(siteDir, mode);
       const buildMs = Array.from({ length: samples }, () => coldBuild(siteDir));
-      const browser = await measureBrowser(path.join(siteDir, "dist"), mode);
+      const browser = await measureBrowser(
+        path.join(siteDir, "dist"),
+        mode,
+        samples,
+      );
       const trials = browser.samples;
       modes[mode] = {
         buildMs,

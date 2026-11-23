@@ -1,4 +1,5 @@
 import path from "node:path";
+import { createMutationPathPolicy, resolveAiIntegration } from "@riebeckite/ai";
 import type { ResolvedRiebeckiteConfig } from "@riebeckite/core";
 import {
   invalidateDevelopmentInspector,
@@ -6,7 +7,12 @@ import {
   riebeckiteBridge,
   riebeckiteDevelopmentInspector,
 } from "@riebeckite/dev-inspector";
-import { mergeConfig, type Plugin, type UserConfig } from "vite";
+import {
+  mergeConfig,
+  type Plugin,
+  type UserConfig,
+  type ViteDevServer,
+} from "vite";
 import { writeRiebeckiteAssetEntries } from "./asset_entries.js";
 import { riebeckiteClientModule } from "./client_module.js";
 import { riebeckiteConfigTemporaryDirectory } from "./config_loader.js";
@@ -159,7 +165,7 @@ export function riebeckite(
       () => requireApplication(application),
       ensureApplication,
     ),
-    riebeckiteContentWarmup(options.warmContent ?? false, ensureApplication),
+    riebeckiteContentWarmup(options.warmContent ?? true, ensureApplication),
     riebeckiteContentAssets({
       appRoot: async () => (await ensureApplication()).appRoot,
       contentRoot: async () => (await ensureApplication()).contentRoot,
@@ -195,6 +201,16 @@ export function riebeckite(
         return contentFormatRegistryFactory(getConfig().plugins);
       },
       publicOrigin: () => getConfig().site.baseUrl || undefined,
+      isMutationPathAllowed: () =>
+        createMutationPathPolicy(
+          resolveAiIntegration(getConfig().integrations?.ai).mutationPolicy,
+        ),
+      project: () => ({
+        contentDirectory: getConfig().content.directory,
+        locale: getConfig().site.locale,
+        mutationPolicy: resolveAiIntegration(getConfig().integrations?.ai)
+          .mutationPolicy,
+      }),
       async getSnapshot(server) {
         const { appRoot } = requireApplication(application);
         if (!isContentModuleLoaded(server, appRoot)) return undefined;
@@ -216,19 +232,88 @@ export function riebeckiteContentWarmup(
     configureServer(server) {
       if (!enabled || !server.httpServer) return;
       server.httpServer.once("listening", () => {
-        void (async () => {
-          const { appRoot } = await getApplication();
-          await loadContentModule(server, appRoot).then(
-            async (module) => await module.content?.getManifest?.(),
-          );
-        })().catch((error: unknown) => {
-          server.config.logger.error("Riebeckite content warmup failed.", {
-            error: error instanceof Error ? error : new Error(String(error)),
-          });
-        });
+        const origin = server.resolvedUrls?.local?.[0];
+        if (origin) warmFirstPage(server, origin);
+        else warmContentManifest(server, getApplication);
       });
     },
   };
+}
+
+function warmContentManifest(
+  server: ViteDevServer,
+  getApplication: () => Promise<ResolvedHonoxApplication>,
+): void {
+  void (async () => {
+    const { appRoot } = await getApplication();
+    const module = await loadContentModule(server, appRoot);
+    await module.content?.getManifest?.();
+  })().catch((error: unknown) => {
+    server.config.logger.error("Riebeckite content warmup failed.", {
+      error: error instanceof Error ? error : new Error(String(error)),
+    });
+  });
+}
+
+function warmFirstPage(server: ViteDevServer, origin: string): void {
+  const logger = server.config.logger;
+  const originalInfo = logger.info.bind(logger);
+  let banner: (() => void) | undefined;
+  logger.info = (message, options) => {
+    const plain = message
+      .split(`${String.fromCharCode(27)}[`)
+      .map((part) => part.replace(/^[0-9;]*m/, ""))
+      .join("");
+    if (plain.includes("VITE v") && plain.includes("ready in")) {
+      banner = () => originalInfo(message, options);
+      return;
+    }
+    originalInfo(message, options);
+  };
+  const printUrls = server.printUrls.bind(server);
+  server.printUrls = () => {};
+  const quiet =
+    process.env.RIEBECKITE_DEV_INDICATOR === "1" ||
+    process.env.RIEBECKITE_MANAGED_DEV_CONTROL_FD !== undefined;
+  const startedAt = performance.now();
+  const elapsed = () =>
+    `${((performance.now() - startedAt) / 1000).toFixed(1)}s`;
+  const progress = (message: string) => logger.info(message, { clear: true });
+  if (!quiet) progress(`riebeckite: preparing the first page (${elapsed()})`);
+  const ticker = quiet
+    ? undefined
+    : setInterval(() => {
+        progress(`riebeckite: preparing the first page (${elapsed()})`);
+      }, 5000);
+  ticker?.unref();
+  void waitForDevWarmup(origin).then((status) => {
+    if (ticker) clearInterval(ticker);
+    banner?.();
+    printUrls();
+    if (status === undefined) {
+      logger.error(`riebeckite: dev server did not respond (${elapsed()})`);
+      return;
+    }
+    const suffix = status >= 400 ? ` (HTTP ${status})` : "";
+    if (!quiet)
+      progress(`riebeckite: ready at ${origin}${suffix} (${elapsed()})`);
+  });
+}
+
+async function waitForDevWarmup(
+  origin: string,
+  timeoutMs = 300_000,
+): Promise<number | undefined> {
+  const deadline = performance.now() + timeoutMs;
+  while (performance.now() < deadline) {
+    try {
+      return (await fetch(origin, { redirect: "manual" })).status;
+    } catch {}
+    await new Promise((resolve) => {
+      setTimeout(resolve, 100).unref();
+    });
+  }
+  return undefined;
 }
 
 function contentBareImportResolver(

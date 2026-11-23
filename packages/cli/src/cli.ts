@@ -1,10 +1,10 @@
-import { createRequire } from "node:module";
 import { runCli } from "./command/runner.js";
-
-const require = createRequire(import.meta.url);
-const { version } = require("../package.json") as { version: string };
+import { cliVersion } from "./version.js";
 
 export async function main(arguments_: readonly string[]): Promise<void> {
-  const exitCode = await runCli({ argv: arguments_, version });
+  const exitCode = await runCli({
+    argv: arguments_,
+    version: cliVersion,
+  });
   if (exitCode !== 0) process.exitCode = exitCode;
 }

@@ -19,6 +19,12 @@
     padding: var(--rb-space-5);
     border-top: 1px solid var(--rb-color-border-strong);
   }
+  .rb-home__brand {
+    margin-block: 0;
+  }
+  .rb-home__install {
+    margin-top: var(--rb-space-4);
+  }
   .rb-home__project-tree {
     max-width: 34rem;
   }

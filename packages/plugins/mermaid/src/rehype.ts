@@ -1,3 +1,4 @@
+import { reportVFileDiagnostic } from "@riebeckite/core";
 import {
   element,
   getStringProperty,
@@ -193,20 +194,14 @@ function reportMermaidDiagnostic(
   message: string,
   kind: MermaidBuildRenderErrorKind,
 ) {
-  const reporter = (file as { message?: (reason: string) => unknown })?.message;
-  if (typeof reporter !== "function") return;
-  const diagnostic = reporter.call(
-    file,
-    kind === "invalid-diagram"
-      ? `Invalid Mermaid diagram: ${message}`
-      : `Mermaid renderer failed: ${message}`,
-  );
-  if (diagnostic && typeof diagnostic === "object") {
-    Object.assign(diagnostic, {
-      source: "@riebeckite/plugin-mermaid",
-      ruleId: kind,
-    });
-  }
+  reportVFileDiagnostic(file, {
+    source: "@riebeckite/plugin-mermaid",
+    ruleId: kind,
+    message:
+      kind === "invalid-diagram"
+        ? `Invalid Mermaid diagram: ${message}`
+        : `Mermaid renderer failed: ${message}`,
+  });
 }
 
 function isMermaidCodeBlock(node: ElementNode): boolean {

@@ -26,7 +26,6 @@
       "@riebeckite/ui/drawer": ["packages/ui/drawer.tsx"],
       "@riebeckite/ui/drawer/client": ["packages/ui/drawer-client.ts"],
       "@riebeckite/ui/dialog": ["packages/ui/dialog.ts"],
-      "@riebeckite/ui/tabs": ["packages/ui/tabs.ts"],
       "@riebeckite/ui/copy": ["packages/ui/copy.ts"],
       "@riebeckite/ui/behaviors": ["packages/ui/behaviors.ts"],
       "@riebeckite/plugin-*": ["packages/plugins/*/index.ts"],

@@ -8,7 +8,9 @@
     "build": "riebeckite build",
     "check": "riebeckite check",
     "doctor": "riebeckite doctor",
-    "inspect": "riebeckite inspect"
+    "inspect": "riebeckite inspect",
+    "lint": "biome lint .",
+    "format": "biome format --write ."
   },
   "dependencies": {
     "@riebeckite/core": "^0.1.0",
@@ -20,6 +22,7 @@
     "hono": "^4.12.25",
     "honox": "0.1.62",
     "@riebeckite/plugin-obsidian-markdown": "^0.1.0",
+    "@riebeckite/plugin-deploy": "^0.1.0",
     "@riebeckite/theme-minimal": "^0.1.0"
   },
   "devDependencies": {

@@ -1,24 +1,31 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { localizeDocsHref } from "../app/lib/navigation-link";
+import { localizeSiteHref } from "../app/lib/navigation-link";
 import {
   getShowcaseFixtures,
   getShowcaseThemes,
   getThemeDocsHref,
 } from "../app/lib/theme-showcase";
 
-test("localizeDocsHref prefixes docs links on localized pages", () => {
-  assert.equal(localizeDocsHref("/docs/", "/ja/docs/reference/"), "/ja/docs/");
+test("localizeSiteHref prefixes docs and blog links on localized pages", () => {
+  assert.equal(localizeSiteHref("/docs/", "/ja/docs/reference/"), "/ja/docs/");
   assert.equal(
-    localizeDocsHref("/docs/themes/", "/ja/docs/reference/"),
+    localizeSiteHref("/docs/themes/", "/ja/docs/reference/"),
     "/ja/docs/themes/",
+  );
+  assert.equal(localizeSiteHref("/blog", "/ja/blog"), "/ja/blog");
+  assert.equal(
+    localizeSiteHref("/blog/from-obsidian-vault/", "/ja/blog/some-post/"),
+    "/ja/blog/from-obsidian-vault/",
   );
 });
 
-test("localizeDocsHref keeps default and external links unchanged", () => {
-  assert.equal(localizeDocsHref("/docs/", "/docs/reference/"), "/docs/");
+test("localizeSiteHref keeps default and external links unchanged", () => {
+  assert.equal(localizeSiteHref("/docs/", "/docs/reference/"), "/docs/");
+  assert.equal(localizeSiteHref("/blog", "/blog"), "/blog");
+  assert.equal(localizeSiteHref("/blogging/x", "/ja/blog"), "/blogging/x");
   assert.equal(
-    localizeDocsHref("https://github.com/Rerurate514/riebeckite", "/ja/docs/"),
+    localizeSiteHref("https://github.com/Rerurate514/riebeckite", "/ja/docs/"),
     "https://github.com/Rerurate514/riebeckite",
   );
 });

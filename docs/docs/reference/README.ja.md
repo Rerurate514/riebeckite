@@ -6,7 +6,7 @@ sidebar.order: 60
 ---
 # リファレンス
 
-リファレンスは、事実を調べるための章です。設定値、CLI コマンド、公開エクスポート、プラグイン API、テーマ API、テーマのカスタマイズ、内部構造を扱います。手順を知りたい場合は [ガイド](../guides/README.ja.md) を参照してください。
+リファレンスは、事実を調べるための章です。設定値、CLI コマンド、公開エクスポート、プラグイン API、テーマ API、テーマのカスタマイズ、プレビュー API、ブリッジ API、内部構造を扱います。手順を知りたい場合は [ガイド](../guides/README.ja.md) を参照してください。
 
 ```mermaid id="h2qw1n"
 flowchart TD
@@ -25,6 +25,7 @@ flowchart TD
 - [Core API](./core-api.ja.md)
 - [API ライフサイクル](./api-lifecycle.ja.md)
 - [プレビュー API](./preview.ja.md)
+- [ブリッジ API](./bridge.ja.md)
 
 ## 調べたいことからページを選ぶ
 
@@ -37,6 +38,7 @@ flowchart TD
 | 型付きコマンド定義、プラグインのCLIコマンド、JSONとエラーの取り決め、補完 | [CLI拡張API](./cli-extension.ja.md) |
 | `definePlugin`、ライフサイクルフック、アセット、エンドポイント、診断 | [Plugin API](./plugin-api.ja.md) |
 | プレビューの実行、フィクスチャ、埋め込み | [プレビュー API](./preview.ja.md) |
+| AI やツールのためのループバック HTTP インターフェース（ステータス、検査、コンテンツ変更） | [ブリッジ API](./bridge.ja.md) |
 | `defineTheme`、CSS の取り決め、トークン、カラーモード、パッケージの形 | [Theme API](./theme-api.ja.md) |
 | Riebeckite の内部構造 | [Framework](../framework/README.ja.md) |
 | テーマの作り方 | [テーマ](../themes/README.ja.md) |

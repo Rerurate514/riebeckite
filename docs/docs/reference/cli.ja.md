@@ -20,7 +20,7 @@ npm exec riebeckite <command>
 ## コマンド一覧
 
 ```text id="7uw50m"
-riebeckite init [directory] [--preset <name>] [--features <names>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>]
+riebeckite init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>]
 riebeckite create site [create-riebeckite options]
 riebeckite create plugin [name] [options]
 riebeckite create theme [name] [options]
@@ -30,6 +30,9 @@ riebeckite theme preview <name> [--port <port>] [--no-open]
 riebeckite plugin dev <path> [--port <port>] [--no-open]
 riebeckite plugin verify <path> [--level basic | integration | full] [--json]
 riebeckite bridge approve <plan>
+riebeckite ai setup [--client <claude | cursor | vscode | opencode> ...]
+riebeckite ai mcp
+riebeckite skills sync
 riebeckite dev
 riebeckite check
 riebeckite doctor [--explain | --json | --fix [--dry-run]] [--fail-on <error|warning|info>] [--code <code> ...]
@@ -67,7 +70,7 @@ riebeckite completion <bash | zsh | powershell> [--project]
 | `plugin verify` | サイトに追加する前に、配布可能なプラグインのパッケージ境界を検査する | いいえ |
 | `dev` | 統合が提供する開発ワークフローを開始する | 統合による |
 | `check` | アプリの設定、コンテンツルートの可用性、[[glossary/plugin-options|プラグインオプション]]、[[glossary/capability|ケイパビリティ]]の解決を検証する | いいえ |
-| `doctor` | 実行環境、設定、プラグイン、コンテンツ、出力、テーマに関する共通の診断を報告する | いいえ |
+| `doctor` | 実行環境、設定、プラグイン、コンテンツ、出力、テーマ、AI 設定に関する共通の診断を報告する | いいえ |
 | `upgrade` | Riebeckite パッケージを更新する前に、隔離した baseline ビルドと候補版のビルドを比較する | いいえ |
 | `build` | ビルドを実行する。`--full` はインクリメンタルな再利用を回避する | 書き込む。出力描画前にコミットするため、その後の失敗で新しい状態が残ることがある |
 | `clean` | Riebeckite が管理する状態を削除する（`--all` はビルド出力も削除し、`--output` はビルド出力だけを削除する） | いいえ |
@@ -77,6 +80,9 @@ riebeckite completion <bash | zsh | powershell> [--project]
 | `migrate` | バージョン付きのコンテンツ移行を計画・適用し、状態確認、ロールバック、リカバリーを行う | いいえ |
 | `profile` | トレースに基づくパフォーマンスレポートを実行する。`--full` はフルパスを使う | ビルドによる |
 | `inspect` | 解決済みの実際の状態を表示する | いいえ |
+| `ai setup` | MCP、`content:lint` スクリプト、`AGENTS.md`、`CLAUDE.md`、`.github/copilot-instructions.md`、`RIEBECKITE_AI.md`、不足している生成 Skill、任意の `--client` 設定を追加する | 確認後にプロジェクトファイルを書き換える |
+| `ai mcp` | 一時的な Bridge トークンで開発サーバーとローカル stdio MCP アダプターを起動する。`--mutations` で一時的な変更トークンを追加する | いいえ |
+| `skills sync` | 不足している生成 Skill とファイルを追加し、古いものを更新する | 確認後に Skill ガイダンスを書き換える |
 
 ## 目的別のコマンドの選び方
 

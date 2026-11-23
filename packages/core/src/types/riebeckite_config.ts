@@ -24,6 +24,10 @@ export type UiConfig = {
   labels?: Readonly<Record<string, Readonly<Record<string, string>>>>;
 };
 
+export interface RiebeckiteIntegrations {
+  readonly [integration: string]: unknown;
+}
+
 export interface RiebeckiteConfig {
   site: SiteConfig;
   content?: {
@@ -44,6 +48,7 @@ export interface RiebeckiteConfig {
     enabled?: boolean;
   };
   publication?: PublicationConfig;
+  integrations?: RiebeckiteIntegrations;
   spa?: boolean | SpaConfig;
   ui?: UiConfig;
 }

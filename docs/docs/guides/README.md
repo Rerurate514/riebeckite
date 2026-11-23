@@ -29,12 +29,14 @@ Guides only. For the full documentation map, see [Documentation](../README.md).
 | Change many notes or frontmatter fields safely | [Content mutation](../framework/content-mutation.md) and [Content migration](../framework/content-migration.md) |
 | Customize the site UI with HonoX | [Customizing your site](./customizing-your-site.md) |
 | Keep the shell while navigating between pages | [SPA Navigation](./spa-navigation.md) |
+| Choose how client code mounts interactive UI | [Interactive Roots](./interactive-roots.md) |
 | Build a homepage and browse routes | [Discovery recipes](./discovery-recipes.md) |
 | Publish an Obsidian vault | [Obsidian](./obsidian.md) |
 | Keep content and the site in separate repositories | [Content repositories](./deployment/separate-content-repository.md) |
 | Build a multilingual site | [Localization](./localization.md) |
 | Develop a local Plugin | [Local Plugin Development](./local-plugin-development.md) |
 | Connect a local editor tool | [Editor integration](./editor-integration.md) |
+| Connect AI tools safely | [AI integration](./ai/README.md) |
 | Collect page views | [Analytics](./analytics.md) |
 | Replace the icon, logo, or link preview image | [Branding your site](./branding.md) |
 | Deploy | [Deployment](./deployment/README.md) |
@@ -50,10 +52,12 @@ Bulk content changes have two entry points. Use [Content mutation](../framework/
 - [Localization](./localization.md) — multiple languages, URLs, and language switching.
 - [Local Plugin Development](./local-plugin-development.md) — previewing a local Plugin with the real HonoX/Vite development server.
 - [Editor integration](./editor-integration.md) — connecting a local editor tool to the read-only development Bridge.
+- [AI integration](./ai/README.md) — connecting MCP and managing generated AI guidance.
 - [Analytics](./analytics.md) — adding analytics to a Riebeckite site.
 - [Branding your site](./branding.md) — replacing the site favicon, header logo, and link preview image.
 - [Customizing your site](./customizing-your-site.md) — editing routes, components, islands, and CSS in `app/` as a normal HonoX application.
 - [SPA Navigation](./spa-navigation.md) — enabling client-side page transitions, supported links, and the renderer contract.
+- [Interactive Roots](./interactive-roots.md) — choosing between `hydrateRoot` and `createRoot` for interactive components, and the page and app mount scopes.
 - [Discovery recipes](./discovery-recipes.md) — building a homepage and browse routes.
 - [Upgrading](./upgrading.md) — updating Riebeckite packages and reviewing changes.
 

@@ -31,7 +31,7 @@ async function replaceHastTransforms(
   if (!parent.children) return;
 
   for (const [index, child] of parent.children.entries()) {
-    const hastChild = child as PluginHastNode;
+    const hastChild = child;
     const transform = transforms.find((candidate) =>
       candidate.match(hastChild),
     );

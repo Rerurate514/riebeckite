@@ -35,6 +35,13 @@ HonoX の開発連携がコンテンツルートを提供する場合、次の�
 | `/__riebeckite/bridge/v1/publication` | `path` | visibility、routing、公開、redirect の状態を返します。 |
 | `/__riebeckite/bridge/v1/diagnostics` | `path` | ソースに関連する既存のコンテンツ診断を返します。 |
 | `/__riebeckite/bridge/v1/impact` | `path` | 最後に完了したビルドから関連する出力を返します。 |
+| `/__riebeckite/bridge/v1/context` | `path` | 解決済みソース、公開状態、Preview、診断、最後のビルド影響範囲を同じ revision で返します。 |
+| `/__riebeckite/bridge/v1/project` | なし | サイト情報とコンテンツ変更の境界を返します。 |
+| `/__riebeckite/bridge/v1/schema` | なし | プロトコルのエンドポイントと入力形式の発見情報を返します。 |
+| `/__riebeckite/bridge/v1/inventory` | `offset`, `limit`, `query` | ページ分割と任意の絞り込みに対応したコンテンツ一覧を返します。 |
+| `/__riebeckite/bridge/v1/diagnostics` | `path`, `since` | `path` を省略すると全ビルド診断を返します。 |
+| `/__riebeckite/bridge/v1/links` | `path` | 未解決リンクを含む発リンクと被リンクを返します。 |
+| `/__riebeckite/bridge/v1/content` | `path` | コンテンツルート内かつ 1 MiB 以下の Markdown 本文を返します。 |
 | `/__riebeckite/bridge/v1/events` | なし | 認証済み Server-Sent Events ストリームを開きます。 |
 | `/__riebeckite/bridge/v1/page` | `source` | 1 ページ分の要約を返す Protocol v1 互換エイリアスです。 |
 
@@ -43,6 +50,26 @@ HonoX の開発連携がコンテンツルートを提供する場合、次の�
 `path` は設定済みコンテンツルート配下の Markdown ソースを指定します。絶対パスはそのルート配下に解決される場合だけ受け付けます。応答は常にルート相対パスを使い、絶対ファイルシステムパスは返しません。解決処理はすべてのエンドポイントで共通です。パス、`.md` を除いたパス、Manifest の alias、content ID、permalink、`hello.md` のような一意な末尾一致を照合します。複数候補に一致した場合は `AMBIGUOUS_SOURCE` を伴う `unsupported` を返し、探索順で勝手に確定しません。
 
 Source の状態は `resolved`、`not-found`、不正または曖昧なパスの `unsupported`、完了済みビルドがない場合の `unavailable` です。Manifest が未取得であることは、ページが存在しないことと同じではありません。
+
+`GET /__riebeckite/bridge/v1/context?path=<content-source>` は、解決済みソースに `/publication`、`/preview`、`/diagnostics`、`/impact` の結果をまとめます。ソースファイル本文の読み取りや、将来のビルド影響範囲の予測は行いません。クライアントは `/events` を購読する前の一貫したコンテキスト取得に使えます。
+
+`/inventory` は slug 順です。`offset` の既定値は 0、`limit` の既定値は
+100、上限は 500 です。`counts` は一覧全体、`page.total` は絞り込み後の
+件数を表します。Bridge は過去の診断を保存しないため、現在の revision と
+異なる `since` には `delta: "full"` と現在の診断を、同じ revision には
+`delta: "unchanged"` と空の一覧を返します。
+
+`/content` は通常の Bridge トークンを使います。manifest とファイルシステムの
+パスを解決し、シンボリックリンクによるルート外への参照を拒否します。安全に
+読めない場合は `{ "available": false }` だけを返し、絶対パスやルート外の
+ファイルは公開しません。
+
+イベント以外の応答には `revision` と `evidence` が含まれます。`revision` は応答に
+使った Bridge の状態を示します。`evidence` は空の配列、または応答を直接裏付ける
+ルート相対ソースパスの一覧です。
+
+`/project` は設定済みのコンテンツディレクトリ、サイトロケール、変更ポリシー、安定した
+サイト識別子を返します。絶対ファイルシステムパスや任意の設定は返しません。
 
 `GET /__riebeckite/bridge/v1/page?source=<Vaultからの相対Markdownパス>` は Obsidian クライアントが使う Protocol v1 互換エンドポイントです。`/source` と同じ解決処理を使い、フラットな要約を返します。
 
@@ -86,6 +113,33 @@ Publication 応答では、`entry` と `publication` の両方に `publishAt` �
 プライベートリスナーは `127.0.0.1` だけに bind し、非 loopback の Host・接続、`Origin`、転送ヘッダーを拒否します。CORS は有効にしません。トークン不正は 403、Protocol 非互換は `INCOMPATIBLE_PROTOCOL` と対応 Version を含む 426 です。トークンを API 応答に含めることもありません。
 
 変更 API は、開発サーバーの起動前に32文字以上で互いに異なる `RIEBECKITE_BRIDGE_MUTATION_TOKEN` と `RIEBECKITE_BRIDGE_MUTATION_APPROVAL_TOKEN` を環境変数として設定した場合だけ有効です。コマンドライン引数に秘密情報を渡さないため、プロセス引数に露出しません。Mutation Token はPlanの作成と、承認済み Plan の適用ができますが、承認はできません。`POST /__riebeckite/bridge/v1/mutations/plan` は既存の Content Mutation Operation を受け取り、元の `ContentMutationPlan` を返します。人間は対話端末で `riebeckite bridge approve <plan-id>` を実行し、永続化された Plan を確認してから承認します。サーバーは承認トークンで署名された Plan ID と内容ハッシュ、5分の期限、一回限りの使用状態を検証してから `POST /mutations/<plan-id>/apply` を実行します。承認トークンと Bearer 型の承認 ID は HTTP、URL、API 応答に渡しません。Apply は既存の fingerprint、lock、journal、backup、パス検証を利用します。承認または fingerprint の検証で Apply が拒否された場合は、`applied: false` と既存の `conflicts` 形式、HTTP 409 を返します。承認による拒否は次のコードで区別します。
+
+`GET /__riebeckite/bridge/v1/mutations/<plan-id>` は Mutation Token を必要とし、
+永続化された Plan のファイル要約、競合、警告、承認状態、決定的なリスク分類
+（`safe`、`review`、`destructive`、`blocked`）を返します。操作内容や変更後の本文は返しません。
+
+変更できる範囲は `@riebeckite/ai` を使って `riebeckite.config.ts` で設定します。
+
+```ts
+import { defineAiIntegration } from "@riebeckite/ai";
+
+integrations: {
+  ai: defineAiIntegration({
+    mutationPolicy: {
+      writable: ["**"],
+      protected: ["glossary.yml"],
+    },
+  }),
+},
+```
+
+パターンはコンテンツルートからの相対パスです。既定値は `writable: ["**"]` と
+`protected: []` です。`protected` のパターンは常に `writable` より優先されます。
+Bridge は検証、Plan の永続化、適用直前にこのポリシーを検証します。
+
+`POST /__riebeckite/bridge/v1/mutations/validate` は通常の Bridge トークンで
+同じ操作を受け取り、永続化も適用もできないプランを返します。承認可能な
+プランの作成には、引き続き mutation 機能が必要です。
 
 | コード | 条件 | 復旧手順 |
 | --- | --- | --- |

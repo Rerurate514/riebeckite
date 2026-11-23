@@ -2,7 +2,7 @@ import { resolveSiteNavigation, SiteNav } from "@riebeckite/plugin-navigation";
 import { useSiteContext } from "@riebeckite/ui";
 import type { Child } from "hono/jsx";
 import { resolveWebLocale } from "../lib/locale";
-import { localizeDocsHref } from "../lib/navigation-link";
+import { localizeSiteHref } from "../lib/navigation-link";
 import { resolveUiLabels } from "../lib/ui-labels";
 
 export function SiteHeader(props: { readonly children?: Child }) {
@@ -30,7 +30,7 @@ export function SiteHeader(props: { readonly children?: Child }) {
           <SiteNav
             placement="primary"
             omitHome
-            localizeHref={(href) => localizeDocsHref(href, path)}
+            localizeHref={(href) => localizeSiteHref(href, path)}
           />
         ) : null}
       </nav>
@@ -48,12 +48,12 @@ export function SiteDrawerNavigation() {
       <SiteNav
         placement="primary"
         omitHome
-        localizeHref={(href) => localizeDocsHref(href, path)}
+        localizeHref={(href) => localizeSiteHref(href, path)}
       />
       <SiteNav
         placement="secondary"
         label={resolveUiLabels(site?.language).secondaryNavigation}
-        localizeHref={(href) => localizeDocsHref(href, path)}
+        localizeHref={(href) => localizeSiteHref(href, path)}
       />
     </>
   );
@@ -95,7 +95,7 @@ export function SiteFooter() {
           placement="secondary"
           label={resolveUiLabels(site?.language).footerNavigation}
           class="site-footer__navigation"
-          localizeHref={(href) => localizeDocsHref(href, path)}
+          localizeHref={(href) => localizeSiteHref(href, path)}
         />
       </div>
       <div class="site-footer__meta">

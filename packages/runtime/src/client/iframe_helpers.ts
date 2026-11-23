@@ -64,7 +64,7 @@ export function buildDocument(options: {
 export function bridgeScript(sessionId: string): string {
   return `(function(){
 var session=${JSON.stringify(sessionId)};
-export function send(message,transfer){
+function send(message,transfer){
 message.protocol="riebeckite:iframe";message.version=1;message.sessionId=session;
 if(transfer&&transfer.length){window.parent.postMessage(message,"*",transfer);}
 else{window.parent.postMessage(message,"*");}

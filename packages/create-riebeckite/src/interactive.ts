@@ -7,11 +7,10 @@ import {
   text,
 } from "@clack/prompts";
 import type { CreateRiebeckiteOptions } from "./arguments.js";
-import {
-  SCAFFOLD_FEATURE_PACKS,
-  type ScaffoldFeatureName,
-} from "./scaffold/features.js";
-import type { ScaffoldDeployment } from "./scaffold/options.js";
+import type {
+  ScaffoldAiOptions,
+  ScaffoldDeployment,
+} from "./scaffold/options.js";
 import {
   SCAFFOLD_PRESETS,
   type ScaffoldPresetName,
@@ -33,21 +32,21 @@ type InteractiveAnswers =
   | {
       readonly directory: string;
       readonly preset: ScaffoldPresetName;
-      readonly features?: readonly ScaffoldFeatureName[];
       readonly utilities: readonly ScaffoldUtilityName[];
       readonly contentSource: "local" | "directory";
       readonly contentDirectory?: string;
       readonly deployment: InteractiveDeployment;
+      readonly ai?: ScaffoldAiOptions;
     }
   | {
       readonly directory: string;
       readonly preset: ScaffoldPresetName;
-      readonly features?: readonly ScaffoldFeatureName[];
       readonly utilities: readonly ScaffoldUtilityName[];
       readonly contentSource: "external";
       readonly contentRepository: string;
       readonly siteRepository: string;
       readonly cloneContent?: boolean;
+      readonly ai?: ScaffoldAiOptions;
     };
 
 type InteractiveSetupAnswers = {
@@ -62,7 +61,6 @@ export function interactiveAnswersToOptions(
     directory: answers.directory,
     force: false,
     preset: answers.preset,
-    ...(answers.features ? { features: answers.features } : {}),
     utilities: answers.utilities,
     listPresets: false,
     ...(answers.contentSource === "directory" &&
@@ -72,6 +70,7 @@ export function interactiveAnswersToOptions(
     ...(answers.contentSource === "external" && answers.cloneContent === true
       ? { cloneContent: true }
       : {}),
+    ...(answers.ai === undefined ? {} : { ai: answers.ai }),
     deployment: deploymentFromAnswers(answers),
   };
 }
@@ -123,24 +122,6 @@ export async function promptInteractiveAnswers(): Promise<InteractiveSetupAnswer
   });
   if (isCancel(preset)) return null;
 
-  const addFeatures = await confirm({
-    message: "Add optional feature packs?",
-    initialValue: false,
-  });
-  if (isCancel(addFeatures)) return null;
-  const features = addFeatures
-    ? await multiselect<ScaffoldFeatureName>({
-        message: "Feature packs",
-        options: SCAFFOLD_FEATURE_PACKS.map(({ name, description }) => ({
-          value: name,
-          label: name,
-          hint: description,
-        })),
-        required: false,
-      })
-    : [];
-  if (isCancel(features)) return null;
-
   const customize = await confirm({
     message: "Customize extra project files?",
     initialValue: false,
@@ -159,6 +140,14 @@ export async function promptInteractiveAnswers(): Promise<InteractiveSetupAnswer
       })
     : SCAFFOLD_DEFAULT_UTILITIES;
   if (isCancel(utilities)) return null;
+
+  const addAiSupport = await confirm({
+    message: "Add AI development support?",
+    initialValue: false,
+  });
+  if (isCancel(addAiSupport)) return null;
+  const ai = addAiSupport ? await promptAiOptions() : undefined;
+  if (ai === null) return null;
 
   const contentSource = await select<InteractiveContentSource>({
     message: "Where will you write content?",
@@ -209,12 +198,12 @@ export async function promptInteractiveAnswers(): Promise<InteractiveSetupAnswer
     answers = {
       directory,
       preset,
-      features,
       utilities,
       contentSource,
       contentRepository: contentRepository.trim(),
       siteRepository: siteRepository.trim(),
       cloneContent,
+      ...(ai === undefined ? {} : { ai }),
     };
   } else {
     const deployment = await select<InteractiveDeployment>({
@@ -238,11 +227,11 @@ export async function promptInteractiveAnswers(): Promise<InteractiveSetupAnswer
     answers = {
       directory,
       preset,
-      features,
       utilities,
       contentSource,
       ...(contentDirectory === undefined ? {} : { contentDirectory }),
       deployment,
+      ...(ai === undefined ? {} : { ai }),
     };
   }
 
@@ -253,6 +242,31 @@ export async function promptInteractiveAnswers(): Promise<InteractiveSetupAnswer
   });
   if (isCancel(installDependencies)) return null;
   return { answers, installDependencies };
+}
+
+async function promptAiOptions(): Promise<ScaffoldAiOptions | null> {
+  const mcp = await confirm({
+    message: "Add the Riebeckite MCP server?",
+    initialValue: true,
+  });
+  if (isCancel(mcp)) return null;
+  const lint = await confirm({
+    message: "Add a content lint script?",
+    initialValue: true,
+  });
+  if (isCancel(lint)) return null;
+  const rules = await confirm({
+    message: "Generate AI site rules?",
+    initialValue: true,
+  });
+  if (isCancel(rules)) return null;
+  const skills = await confirm({
+    message:
+      "Add Riebeckite development Skills to .agents/skills/ for OpenCode?",
+    initialValue: true,
+  });
+  if (isCancel(skills)) return null;
+  return { mcp, lint, rules, skills };
 }
 
 export async function promptDeployNow(): Promise<boolean> {

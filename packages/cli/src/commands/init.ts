@@ -2,7 +2,6 @@ import path from "node:path";
 import {
   formatScaffoldNextSteps,
   type ScaffoldDeployment,
-  type ScaffoldFeatureName,
   type ScaffoldPresetName,
   type ScaffoldUtilityName,
   scaffoldRiebeckiteSite,
@@ -12,7 +11,6 @@ type InitOptions = {
   readonly directory: string;
   readonly force: boolean;
   readonly preset: ScaffoldPresetName;
-  readonly features?: readonly ScaffoldFeatureName[];
   readonly utilities: readonly ScaffoldUtilityName[];
   readonly deployment: ScaffoldDeployment;
 };
@@ -23,7 +21,6 @@ export async function runInit(options: InitOptions): Promise<void> {
     targetDirectory,
     overwrite: options.force,
     preset: options.preset,
-    features: options.features,
     utilities: options.utilities,
     deployment: options.deployment,
   });

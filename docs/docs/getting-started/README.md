@@ -6,6 +6,8 @@ sidebar.order: 20
 ---
 # Getting Started
 
+For MCP, project rules, and generated Skills for AI-assisted development, see [AI integration](../guides/ai/README.md).
+
 This section is the beginner path for publishing your first Riebeckite site. Follow it in order; layout variations, plugin development, and deployment details are linked only when you need them.
 
 ```text
@@ -54,7 +56,7 @@ To publish and automate deploys, continue with [Deployment](../guides/deployment
 npx create-riebeckite
 ```
 
-The CLI asks for the project name, preset, optional feature packs, extra project files, content source, deployment, and whether to install dependencies. The default project folder is `my-riebeckite-site`. Keep `Starter site` (the `starter` preset), no optional feature packs, no extra project file changes, `This project`, `Not now`, and the default install answer (`Yes`) to start locally, then:
+The CLI asks for the project name, preset, extra project files, content source, deployment, and whether to install dependencies. The default project folder is `my-riebeckite-site`. Keep `Starter site` (the `starter` preset), no extra project file changes, `This project`, `Not now`, and the default install answer (`Yes`) to start locally, then:
 
 ```sh
 cd my-riebeckite-site

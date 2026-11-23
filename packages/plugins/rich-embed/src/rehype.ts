@@ -1,3 +1,4 @@
+import { reportVFileDiagnostic } from "@riebeckite/core";
 import {
   element,
   getTextContent,
@@ -112,18 +113,11 @@ function buildFigure(
 }
 
 function reportDiagnostic(file: unknown, target: string, message: string) {
-  const reporter = (file as { message?: (reason: string) => unknown })?.message;
-  if (typeof reporter !== "function") return;
-  const diagnostic = reporter.call(
-    file,
-    `Rich embed kept as a code block: ${message} (${target})`,
-  );
-  if (diagnostic && typeof diagnostic === "object") {
-    Object.assign(diagnostic, {
-      source: DIAGNOSTIC_SOURCE,
-      ruleId: "unsupported-embed",
-    });
-  }
+  reportVFileDiagnostic(file, {
+    source: DIAGNOSTIC_SOURCE,
+    ruleId: "unsupported-embed",
+    message: `Rich embed kept as a code block: ${message} (${target})`,
+  });
 }
 
 function isEmbedCodeBlock(node: ElementNode): boolean {

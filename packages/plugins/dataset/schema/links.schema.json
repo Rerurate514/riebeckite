@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:riebeckite:dataset:links:v1",
+  "title": "Riebeckite dataset link record",
+  "description": "One record per line of links.ndjson, emitted by @riebeckite/plugin-dataset. Both ends are pages that appear in pages.ndjson.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sourceSlug",
+    "sourcePermalink",
+    "targetSlug",
+    "targetPermalink",
+    "raw",
+    "embed"
+  ],
+  "properties": {
+    "sourceSlug": {
+      "type": "string",
+      "description": "Internal slug of the linking page."
+    },
+    "sourcePermalink": {
+      "type": "string",
+      "description": "Published URL path of the linking page."
+    },
+    "targetSlug": {
+      "type": "string",
+      "description": "Internal slug of the linked page."
+    },
+    "targetPermalink": {
+      "type": "string",
+      "description": "Published URL path of the linked page."
+    },
+    "raw": {
+      "type": "string",
+      "description": "Original wiki link text, for example [[note]] or ![[note]]."
+    },
+    "embed": {
+      "type": "boolean",
+      "description": "True when the link is an embed (![[...]])."
+    }
+  }
+}

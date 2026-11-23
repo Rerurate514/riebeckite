@@ -22,3 +22,5 @@ Build editor UI only from advertised capabilities. Treat `unavailable` as a miss
 The Bridge is read-only by default. It never exposes absolute source paths, does not provide private previews for non-routable content, and does not infer production URLs. Mutation requires separate `RIEBECKITE_BRIDGE_MUTATION_TOKEN` and `RIEBECKITE_BRIDGE_MUTATION_APPROVAL_TOKEN` environment variables, each at least 32 characters and with different values. A client with the mutation token can create a plan and apply it only after an interactive `riebeckite bridge approve <plan-id>` review. Keep both secrets out of persisted editor settings, URLs, logs, and process arguments. Approval stays server-side, expires after five minutes, and can be used once; an editor must never implement approval, recovery, or rollback.
 
 For the request and response contract, see the [Bridge Protocol v1](https://github.com/Rerurate514/riebeckite/blob/main/packages/dev-inspector/BRIDGE.md).
+
+For AI clients, use the [AI integration guide](./ai/README.md). Its MCP launcher manages the temporary Bridge token instead of placing it in client settings.

@@ -86,7 +86,7 @@ body:has(.rb-home) main {
 }
 .rb-home__install {
   max-width: 30rem;
-  margin-top: var(--rb-space-4);
+  margin-top: 0;
 }
 .rb-home__install > p,
 .rb-home__label {
@@ -108,10 +108,11 @@ body:has(.rb-home) main {
 }
 
 .rb-home__hero-aside {
+  --rb-home-aside-space: clamp(1.5rem, 4vw, 3rem);
   display: grid;
   grid-template-rows: minmax(0, 1fr) auto;
-  gap: clamp(2rem, 5vw, 4rem);
-  padding: clamp(1.5rem, 4vw, 3rem);
+  gap: var(--rb-home-aside-space);
+  padding: var(--rb-home-aside-space);
   background: var(--rb-color-code-background);
   color: var(--rb-color-code-ink);
 }
@@ -123,7 +124,7 @@ body:has(.rb-home) main {
   align-self: center;
   width: 100%;
   gap: 0.7rem;
-  margin: 0;
+  margin-block: calc(var(--rb-home-aside-space) / 2);
   color: var(--rb-color-code-ink);
   font-family: var(--rb-font-heading);
   font-size: clamp(1.8rem, 2.5vw, 2.5rem);

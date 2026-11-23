@@ -43,12 +43,17 @@ import {
   migrateGroupCommand,
 } from "./builtin_commands_migrate.js";
 import {
+  aiGroupCommand,
+  aiMcpCommand,
+  aiSetupCommand,
   buildCommand,
   checkCommand,
   cleanCommand,
   devCommand,
   doctorCommand,
   profileCommand,
+  skillsGroupCommand,
+  skillsSyncCommand,
   upgradeCommand,
 } from "./builtin_commands_ops.js";
 import {
@@ -74,12 +79,17 @@ export function createBuiltinRegistry(): CliCommandRegistry {
 function definitions(): readonly CliCommandDefinition[] {
   return [
     devCommand(),
+    aiGroupCommand(),
+    aiMcpCommand(),
+    aiSetupCommand(),
     buildCommand(),
     cleanCommand(),
     checkCommand(),
     doctorCommand(),
     profileCommand(),
     upgradeCommand(),
+    skillsGroupCommand(),
+    skillsSyncCommand(),
     initCommand(),
     inspectCommand(),
     inspectConfigCommand(),

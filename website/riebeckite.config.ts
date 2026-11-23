@@ -251,7 +251,7 @@ export default defineConfig({
     responsiveImage(),
     localGraph(),
     l10n({ defaultLang: "en", languages: ["en", "ja"] }),
-    folderPages(),
+    folderPages({ exclude: ["blog"] }),
     navigation({
       items: [
         {
@@ -265,6 +265,10 @@ export default defineConfig({
         {
           label: "Themes",
           href: "/docs/themes/",
+        },
+        {
+          label: "Blog",
+          href: "/blog",
         },
       ],
       secondary: [

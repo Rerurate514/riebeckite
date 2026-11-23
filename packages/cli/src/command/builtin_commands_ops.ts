@@ -1,3 +1,4 @@
+import { AI_CLIENTS, type AiClient } from "@riebeckite/ai";
 import {
   type CliCommandDefinition,
   cliBoolean,
@@ -6,7 +7,12 @@ import {
   cliString,
   defineCliCommand,
 } from "@riebeckite/core";
+import { groupCommand } from "./builtin_commands_help.js";
 import { project } from "./builtin_commands_shared.js";
+
+function isAiClient(value: string): value is AiClient {
+  return AI_CLIENTS.some((client) => client === value);
+}
 
 export function devCommand(): CliCommandDefinition {
   return defineCliCommand({
@@ -16,7 +22,7 @@ export function devCommand(): CliCommandDefinition {
     examples: [cliExample("riebeckite dev")],
     async handler(context, _input) {
       const { runDev } = await import("../commands/dev.js");
-      await runDev(await project(context));
+      await runDev(await project(context), undefined, { indicator: true });
     },
   });
 }
@@ -136,11 +142,7 @@ export function doctorCommand(): CliCommandDefinition {
         explain: input.options.explain,
         fix: input.options.fix,
         dryRun: input.options.dryRun,
-        failOn: input.options.failOn as
-          | "error"
-          | "warning"
-          | "info"
-          | undefined,
+        failOn: input.options.failOn,
         codes: (input.options.code as readonly string[] | undefined) ?? [],
       });
     },
@@ -179,8 +181,98 @@ export function upgradeCommand(): CliCommandDefinition {
     handler: async (context, input) => {
       const { runUpgradeCheck } = await import("../commands/upgrade.js");
       return runUpgradeCheck(await project(context), {
-        to: input.options.to as string,
-        json: input.options.json as boolean,
+        to: input.options.to,
+        json: input.options.json,
+      });
+    },
+  });
+}
+
+export function skillsSyncCommand(): CliCommandDefinition {
+  return defineCliCommand({
+    id: "skills sync",
+    summary: "Add and update generated Riebeckite Skills.",
+    requiresProject: true,
+    async handler(context) {
+      const { createSetupPrompts } = await import("../prompts.js");
+      const { syncSkills } = await import("../commands/skills.js");
+      const prompts = createSetupPrompts();
+      const mode = await prompts.select(
+        "How should Skills be added or updated?",
+        [
+          {
+            value: "review" as const,
+            label: "Review each Skill before applying",
+          },
+          { value: "reset" as const, label: "Apply all Skill updates" },
+          { value: "skip" as const, label: "Do not change Skills" },
+        ],
+      );
+      if (mode !== "skip") {
+        const resolved = await project(context);
+        await syncSkills(resolved.projectRoot, prompts.confirm, mode, {
+          contentDirectory: resolved.config.content.directory,
+          title: resolved.config.site.title,
+          locale: resolved.config.site.locale,
+        });
+      }
+    },
+  });
+}
+
+export function skillsGroupCommand(): CliCommandDefinition {
+  return groupCommand("skills", "Manage generated Riebeckite Skills.");
+}
+
+export function aiGroupCommand(): CliCommandDefinition {
+  return groupCommand(
+    "ai",
+    "Connect AI tools to local Riebeckite development.",
+  );
+}
+
+export function aiSetupCommand(): CliCommandDefinition {
+  return defineCliCommand({
+    id: "ai setup",
+    summary: "Add Riebeckite AI guidance, Skills, and MCP configuration.",
+    requiresProject: true,
+    options: [
+      cliString("client", {
+        description:
+          "Write project-local MCP configuration for a client. Repeat for multiple clients.",
+        valueName: "client",
+        repeatable: true,
+        validate: (value: string) =>
+          isAiClient(value)
+            ? undefined
+            : `Expected one of: ${AI_CLIENTS.join(", ")}.`,
+      }),
+    ],
+    async handler(context, input) {
+      const { createSetupPrompts } = await import("../prompts.js");
+      const { runAiSetup } = await import("../commands/ai_setup.js");
+      await runAiSetup(await project(context), createSetupPrompts().confirm, {
+        clients: (input.options.client ?? []).filter(isAiClient),
+      });
+    },
+  });
+}
+
+export function aiMcpCommand(): CliCommandDefinition {
+  return defineCliCommand({
+    id: "ai mcp",
+    summary: "Start local development and the Riebeckite MCP server.",
+    requiresProject: true,
+    options: [
+      cliBoolean("mutations", {
+        description:
+          "Generate temporary mutation tokens and allow plan review for this session.",
+      }),
+    ],
+    async handler(context, input) {
+      const { runAiMcp } = await import("../commands/ai_mcp.js");
+      await runAiMcp(await project(context), {
+        mutations: input.options.mutations === true,
       });
     },
   });

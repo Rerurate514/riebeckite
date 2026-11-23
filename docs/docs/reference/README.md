@@ -6,7 +6,7 @@ sidebar.order: 60
 ---
 # Reference
 
-Reference is for factual lookup: configuration keys, CLI commands, public exports, Plugin API, Theme API, Theme customization, and internal architecture. Use [Guides](../guides/README.md) when you want a task-oriented walkthrough.
+Reference is for factual lookup: configuration keys, CLI commands, public exports, Plugin API, Theme API, Theme customization, Preview API, Bridge API, and internal architecture. Use [Guides](../guides/README.md) when you want a task-oriented walkthrough.
 
 ```mermaid
 flowchart TD
@@ -25,6 +25,7 @@ You do not have to read Reference from start to finish. When you want to check a
 - [Core API](./core-api.md)
 - [API lifecycle](./api-lifecycle.md)
 - [Preview API](./preview.md)
+- [Bridge API](./bridge.md)
 
 ## Reference pages
 
@@ -37,6 +38,7 @@ You do not have to read Reference from start to finish. When you want to check a
 | [CLI Extension API](./cli-extension.md) | Typed command definitions, Plugin CLI commands, JSON and error contracts, completion |
 | [Plugin API](./plugin-api.md) | `definePlugin`, lifecycle hooks, assets, endpoints, diagnostics |
 | [Preview API](./preview.md) | Preview runtime, fixtures, embedding |
+| [Bridge API](./bridge.md) | Loopback HTTP interface for AI and tooling: status, inspection, content mutations |
 | [Theme API](./theme-api.md) | `defineTheme`, CSS contract, tokens, color mode, package shape |
 | [Framework](../framework/README.md) | Riebeckite's internal structure |
 | [Themes](../themes/README.md) | How to build a theme |

@@ -43,8 +43,8 @@ export function themePreviewCommand(): CliCommandDefinition {
       const { runThemePreview } = await import("../commands/theme_preview.js");
       await runThemePreview({
         name: input.arguments.name,
-        port: input.options.port as number | undefined,
-        open: input.options.open as boolean,
+        port: input.options.port,
+        open: input.options.open,
       });
     },
   });
@@ -83,8 +83,8 @@ export function pluginDevCommand(): CliCommandDefinition {
       const { runPluginDev } = await import("../commands/plugin_dev.js");
       await runPluginDev({
         pluginPath: input.arguments.path,
-        port: input.options.port as number | undefined,
-        open: input.options.open as boolean,
+        port: input.options.port,
+        open: input.options.open,
       });
     },
   });
@@ -111,8 +111,8 @@ export function pluginVerifyCommand(): CliCommandDefinition {
       const { runPluginVerify } = await import("../commands/plugin_verify.js");
       return runPluginVerify({
         pluginPath: input.arguments.path,
-        level: input.options.level as "basic" | "integration" | "full",
-        json: input.options.json as boolean,
+        level: input.options.level,
+        json: input.options.json,
       });
     },
   });

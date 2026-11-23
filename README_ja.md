@@ -56,7 +56,7 @@ Obsidian 形式の Markdown が、ページ、ナビゲーション、検索、�
 npx create-riebeckite
 ```
 
-初めて試すなら、`Starter site`（`starter` プリセット）、機能パックなし、追加のプロジェクトファイルの変更なし、`This project`、`Not now`、依存関係のインストールで `Yes` の既定のまま進めてください。既定のフォルダ名は `my-riebeckite-site` です。続けて:
+初めて試すなら、`Starter site`（`starter` プリセット）、追加のプロジェクトファイルの変更なし、`This project`、`Not now`、依存関係のインストールで `Yes` の既定のまま進めてください。既定のフォルダ名は `my-riebeckite-site` です。続けて:
 
 ```bash
 cd my-riebeckite-site

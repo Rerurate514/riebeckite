@@ -219,7 +219,7 @@ function buildIndex(
   }
   const index = new Map<string, string>();
   for (const [key, values] of candidates) {
-    if (values.size === 1) index.set(key, [...values][0] as string);
+    if (values.size === 1) index.set(key, [...values][0]);
   }
   return index;
 }

@@ -53,15 +53,20 @@ import "@riebeckite/ui/styles/drawer.css";
 <Drawer id="site-menu" label="Navigation">{navigation}</Drawer>
 ```
 
-フォーカス制御、Escape、外側クリック、SPA 遷移時の後始末には、[[glossary/client-entry|クライアントエントリ]]を一度読み込みます。
+フォーカス制御、Escape、外側クリック、SPA 遷移時の後始末は、ページのクライアント初期化処理で有効にします。
 
 ```ts
-import "@riebeckite/ui/drawer/client";
+import { initDrawers } from "@riebeckite/ui/drawer/client";
+
+// ページの初期化処理の中
+const cleanup = initDrawers({ signal });
 ```
+
+`initDrawers` は冪等で、後始末用の関数を返します。ページのライフサイクルの `signal` を渡すとページとともに破棄され、ドキュメント全体で動かし続けたい場合は戻り値を無視してかまいません。マークアップが削除された Drawer は、`main#main-content` を置き換える SPA 遷移を含めて閉じられます。
 
 コンポーネントは `data-rb-drawer`、`data-rb-drawer-backdrop`、`data-rb-drawer-panel`、`data-rb-drawer-trigger`、`data-rb-drawer-target` を出力します。配置は `--rb-drawer-inset-block-start`、`--rb-drawer-width`、`--rb-drawer-padding`、`--rb-drawer-background` で調整できます。
 
-JavaScript がない場合、トリガーはフラグメントリンクとして動作し、`:target` でパネルを開けます。ただしこのフォールバックには、ダイアログのセマンティクス、フォーカストラップとフォーカス復元、Escape と外側クリックによる閉じる操作、スクロールロック、確実な閉じる導線がありません。JavaScript なしの利用を想定する場合は、パネル内に閉じるリンクを置いてください。完全なダイアログ動作が必要ならクライアントエントリを使います。
+JavaScript がない場合、トリガーはフラグメントリンクとして動作し、`:target` でパネルを開けます。ただしこのフォールバックには、ダイアログのセマンティクス、フォーカストラップとフォーカス復元、Escape と外側クリックによる閉じる操作、スクロールロック、確実な閉じる導線がありません。JavaScript なしの利用を想定する場合は、パネル内に閉じるリンクを置いてください。完全なダイアログ動作が必要なら `initDrawers` を呼びます。
 
 ## Dialog
 
@@ -79,22 +84,6 @@ const controller = createDialogController(dialog, {
 ```
 
 コントローラは `aria-expanded` を同期し、背景クリックで閉じ、閉じたときにフォーカスを復元し、スクロールロックを参照カウントで管理します。ページライフサイクルの `AbortSignal` を `signal` に渡すと、abort 時にコントローラを破棄してスクロールロックを解放するため、SPA 遷移時の後始末を別の `destroy()` 呼び出しに依存しません。開いている間はフォーカスを閉じ込め、Escape も処理し、閉じたときにフォーカスを復元します。
-
-## Tabs
-
-WAI-ARIA の tabs パターンに沿って、ネイティブの button を使います。`createTabs()` は選択状態、矢印キー、Home/End、フォーカス、`aria-selected`、`tabindex`、パネルの表示を管理します。
-
-```ts
-import { createTabs } from "@riebeckite/ui/tabs";
-
-const tabs = createTabs(tablist, {
-  onSelect: ({ index }) => {
-    /* 機能ごとの副作用 */
-  },
-});
-```
-
-タブグループが DOM から削除されるときは `tabs.destroy()` を呼びます。プリミティブはタブのマークアップや機能固有の意味を持ちません。Code Tabs などのプラグインは、Markdown 変換と同期ルールを引き続き所有します。
 
 ## Clipboard
 

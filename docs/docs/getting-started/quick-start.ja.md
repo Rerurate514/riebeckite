@@ -24,7 +24,6 @@ npx create-riebeckite
 
 - **Project name**：既定値の `my-riebeckite-site` のまま Enter を押します
 - **What would you like to build?**（[[glossary/preset|プリセット]]）：迷ったら `Starter site`（`starter` プリセット）のまま。記事、タグ、シリーズを公開するなら `Blog` を選びます。[Presets](./presets.ja.md) を参照
-- **Add optional feature packs?**：追加したい機能パックがなければ、`No` のまま Enter を押します
 - **Customize extra project files?**：変更する必要がなければ `No` のまま Enter を押します。既定のプロジェクトファイルは生成されます
 - **Where will you write content?**：`This project` ならサイト内の `content/`、`Separate directory in this repository` ならサイトの隣の Vault（例：`../vault`）、`Separate GitHub repository` なら別リポジトリにコンテンツを置きます
 - **Set up deployment?**：まず手元で試すなら、既定値の `Not now` のまま Enter を押します。すぐに公開準備まで進めたい場合だけ `Cloudflare Workers` を選びます。依存関係のインストール後に `Deploy now?` と聞かれ、`Yes` でそのまま初回公開、`Later` で後回しにできます。`main` への push ごとの自動公開は `GitHub Actions`。[Deployment](../guides/deployment/README.ja.md) を参照

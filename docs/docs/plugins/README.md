@@ -170,6 +170,7 @@ Each page links to the Plugin reference. Install any Plugin with
 | [Frontmatter Transformer](./frontmatter-transformer.md) | Safe bulk frontmatter transforms through the migration engine |
 | [Vault Heatmap](./vault-heatmap.md) | Calendar heatmap of dated vault activity |
 | [Docs](./docs.md) | Docs sidebar and previous/next navigation |
+| [Dataset](./dataset.md) | Versioned NDJSON exports of the published content graph |
 | [Calculator](./calculator.md) | Interactive arithmetic code blocks with a static fallback |
 | [Canvas](./canvas.md) | Obsidian Canvas diagram rendering |
 | [Discord Embed](./discord-embed.md) | Discord link preview metadata |

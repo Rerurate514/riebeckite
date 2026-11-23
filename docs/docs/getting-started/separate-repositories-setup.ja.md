@@ -57,7 +57,7 @@ npm install
 | Site repository | `OWNER/my-site` |
 | Install dependencies now? | 好みで `Yes` |
 
-ほかにテンプレートや追加機能を聞かれます。希望がなければ既定のままで進めてください。
+ほかにテンプレートを聞かれます。希望がなければ既定のままで進めてください。
 
 コンテンツを別リポジトリにすると、`Set up deployment?` は聞かれません。GitHub Actions 用のデプロイ設定が自動で入ります。
 

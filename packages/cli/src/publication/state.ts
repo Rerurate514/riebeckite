@@ -205,16 +205,18 @@ export async function acquirePublicationLock(
     } catch (error) {
       if (!isAlreadyExists(error)) throw error;
     }
-    const existing = (await readJson(file)) as
-      | Partial<PublicationLock>
-      | undefined;
+    const existing = await readJson(file);
     if (existing === undefined) {
       await fs.rm(file, { force: true });
       continue;
     }
     if (isLockLive(existing)) {
+      const startedAt =
+        isRecord(existing) && typeof existing.startedAt === "string"
+          ? existing.startedAt
+          : "an unknown time";
       throw new PublicationStateError(
-        `Another publication run has held the lock since ${existing.startedAt}. Retry after it finishes.`,
+        `Another publication run has held the lock since ${startedAt}. Retry after it finishes.`,
       );
     }
     await fs.rm(file, { force: true });
@@ -231,10 +233,8 @@ export async function releasePublicationLock(
   releasedLocks.add(lock.id);
   clearHeartbeat(lock.id);
   const file = resolvePublicationLockPath(project);
-  const existing = (await readJson(file)) as
-    | Partial<PublicationLock>
-    | undefined;
-  if (existing?.id !== lock.id) return;
+  const existing = await readJson(file);
+  if (!isRecord(existing) || existing.id !== lock.id) return;
   await fs.rm(file, { force: true });
 }
 
@@ -242,17 +242,15 @@ export async function readPublicationLock(
   project: RiebeckiteProject,
 ): Promise<PublicationLock | undefined> {
   const parsed = await readJson(resolvePublicationLockPath(project));
-  return parsed as PublicationLock | undefined;
+  return isPublicationLock(parsed) ? parsed : undefined;
 }
 
 export async function readLivePublicationLock(
   project: RiebeckiteProject,
 ): Promise<PublicationLock | undefined> {
-  const lock = (await readJson(resolvePublicationLockPath(project))) as
-    | Partial<PublicationLock>
-    | undefined;
-  if (lock === undefined || !isLockLive(lock)) return undefined;
-  return lock as PublicationLock;
+  const lock = await readJson(resolvePublicationLockPath(project));
+  if (!isPublicationLock(lock) || !isLockLive(lock)) return undefined;
+  return lock;
 }
 
 async function readJson(
@@ -310,7 +308,24 @@ function isAlreadyExists(error: unknown): boolean {
   );
 }
 
-function isLockLive(lock: Partial<PublicationLock>): boolean {
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isPublicationLock(value: unknown): value is PublicationLock {
+  return (
+    isRecord(value) &&
+    typeof value.id === "string" &&
+    typeof value.pid === "number" &&
+    typeof value.hostname === "string" &&
+    typeof value.startedAt === "string" &&
+    typeof value.heartbeatAt === "string" &&
+    typeof value.planFingerprint === "string"
+  );
+}
+
+function isLockLive(lock: unknown): boolean {
+  if (!isRecord(lock)) return false;
   const heartbeat =
     typeof lock.heartbeatAt === "string"
       ? Date.parse(lock.heartbeatAt)
@@ -348,10 +363,8 @@ async function touchPublicationLock(
 ): Promise<void> {
   if (releasedLocks.has(lock.id)) return;
   const file = resolvePublicationLockPath(project);
-  const existing = (await readJson(file)) as
-    | Partial<PublicationLock>
-    | undefined;
-  if (existing?.id !== lock.id) {
+  const existing = await readJson(file);
+  if (!isRecord(existing) || existing.id !== lock.id) {
     clearHeartbeat(lock.id);
     return;
   }

@@ -332,11 +332,13 @@ manifest for static hosts); `options` are never copied to the client. Register
 only deliberately public values—never tokens, credentials, or private service
 URLs. An initializer without public config continues to receive no arguments.
 
-Client-owned UI should be written in Hono JSX and mounted into its host with
-`createRoot()` from `hono/jsx/dom/client`. Keep browser-only work such as focus,
-measurement, pointer capture, and media playback in the initializer. When an
-entry is needed only on pages that contain a marker, set `presenceSelector` so
-the chunk is not loaded on other pages.
+Client-owned UI should be written in Hono JSX. Whether it mounts with
+`hydrateRoot` or `createRoot` from `hono/jsx/dom/client` depends on whether the
+server already rendered the component's own output; see
+[Interactive Roots](../../guides/interactive-roots.md) for the decision rule.
+Keep browser-only work such as focus, measurement, pointer capture, and media
+playback in the initializer. When an entry is needed only on pages that contain
+a marker, set `presenceSelector` so the chunk is not loaded on other pages.
 
 The selector is evaluated against the whole current DOM, so the marker must be
 in the SSR HTML or added before the SPA commit; client-created content cannot

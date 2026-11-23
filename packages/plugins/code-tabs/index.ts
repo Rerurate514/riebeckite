@@ -9,16 +9,15 @@ import { remarkCodeMeta } from "./src/remark.js";
 import type { CodeTabsOptions } from "./src/types.js";
 
 export { codeTabsTransform } from "./src/hast_transform.js";
-export { initCodeTabs } from "./src/init.js";
 export { rehypeCodeTabs } from "./src/rehype.js";
 export { remarkCodeMeta } from "./src/remark.js";
-export type { CodeTabsClientOptions, CodeTabsOptions } from "./src/types.js";
+export type { CodeTabsOptions } from "./src/types.js";
 
 export function codeTabs(options: CodeTabsOptions = {}) {
   return definePlugin({
     name: "code-tabs",
     processedContentCache: {
-      version: "code-tabs-v2",
+      version: "code-tabs-v3",
       dependencyMode: "none",
     },
     options,

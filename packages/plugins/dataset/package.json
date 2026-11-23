@@ -1,0 +1,61 @@
+{
+  "name": "@riebeckite/plugin-dataset",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "source": "./index.ts",
+      "default": "./dist/index.js"
+    },
+    "./schema/pages.schema.json": "./schema/pages.schema.json",
+    "./schema/links.schema.json": "./schema/links.schema.json",
+    "./schema/index.schema.json": "./schema/index.schema.json"
+  },
+  "peerDependencies": {
+    "@riebeckite/core": "workspace:^"
+  },
+  "devDependencies": {
+    "@riebeckite/core": "workspace:*",
+    "tsx": "^4.22.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "README_ja.md",
+    "schema",
+    "dist"
+  ],
+  "scripts": {
+    "build": "node ../../../scripts/build_package.mjs",
+    "test": "node --import tsx --test \"test/*.test.ts\"",
+    "prepack": "pnpm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rerurate514/riebeckite.git",
+    "directory": "packages/plugins/dataset"
+  },
+  "homepage": "https://github.com/Rerurate514/riebeckite#readme",
+  "bugs": {
+    "url": "https://github.com/Rerurate514/riebeckite/issues"
+  },
+  "description": "Versioned NDJSON dataset exports of the published Riebeckite content graph.",
+  "keywords": [
+    "riebeckite",
+    "plugin",
+    "dataset",
+    "ndjson"
+  ],
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "sideEffects": false
+}

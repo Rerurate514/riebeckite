@@ -14,7 +14,7 @@ import { CONTENT_PROCESSING_CONCURRENCY } from "./content_manager_shared.js";
 import type { ContentSourceEntry } from "./content_source.js";
 import { ManifestBuilder } from "./manifest_builder.js";
 
-const VERSION = 1;
+const VERSION = 2;
 const MAX_BYTES = 64 * 1024 * 1024;
 
 type State = {
@@ -54,15 +54,13 @@ export async function loadDevelopmentRouteCache(
     }
   | undefined
 > {
+  const snapshots = pluginRuntime.getDevelopmentRouteCacheSnapshots();
   const state = await readState(statePath);
   try {
     if (
       !state ||
       state.pipelineFingerprint !== pipelineFingerprint ||
-      !sameSnapshots(
-        pluginRuntime.getDevelopmentRouteCacheSnapshots(),
-        state.plugins,
-      ) ||
+      !sameSnapshots(snapshots, state.plugins) ||
       !(await sameEntries(entries, read, state.entries))
     ) {
       return undefined;
@@ -177,6 +175,16 @@ async function fingerprint(
   entry: ContentSourceEntry,
   read: (entry: ContentSourceEntry) => Promise<string>,
 ): Promise<string> {
+  const modifiedAt = entry.metadata?.modifiedAt;
+  const size = entry.metadata?.size;
+  if (
+    modifiedAt !== undefined &&
+    size !== undefined &&
+    Number.isFinite(modifiedAt) &&
+    Number.isFinite(size)
+  ) {
+    return `stat:${modifiedAt}:${size}`;
+  }
   return crypto
     .createHash("sha256")
     .update(await read(entry))

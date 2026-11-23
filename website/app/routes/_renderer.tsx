@@ -165,9 +165,29 @@ export default jsxRenderer(async ({ children }, c) => {
                   <DocsSidebar />
                 </div>
               </Drawer>
-              <main id="main-content" tabindex={-1}>
-                {children}
-              </main>
+              {shell === "blog" ? (
+                <div class="site-layout site-layout--blog">
+                  <main id="main-content" tabindex={-1} class="site-main">
+                    <div class="site-content">{children}</div>
+                  </main>
+                  <aside
+                    class="site-aside"
+                    aria-label={uiLabels.tableOfContents}
+                  >
+                    <div data-spa-region="toc">
+                      <TableOfContents
+                        borders={{ blockStart: false, blockEnd: false }}
+                        className="rr-table-of-contents--desktop"
+                        items={tocItems}
+                      />
+                    </div>
+                  </aside>
+                </div>
+              ) : (
+                <main id="main-content" tabindex={-1}>
+                  {children}
+                </main>
+              )}
               <div data-spa-region="site-footer">
                 <SiteFooter />
               </div>

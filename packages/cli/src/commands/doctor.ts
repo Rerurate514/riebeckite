@@ -15,6 +15,7 @@ import {
 } from "@riebeckite/diagnostics";
 import type { RiebeckiteProject } from "../application_root.js";
 import { resolveProjectContentSource } from "../content_source.js";
+import { collectAiDiagnostics } from "./doctor_ai.js";
 import { renderDoctorReport } from "./doctor_renderer.js";
 
 export async function runDoctorCommand(
@@ -159,6 +160,7 @@ function meetsSeverityThreshold(
 async function collectDoctorReport(
   project: RiebeckiteProject,
 ): Promise<DevelopmentDiagnosticReport> {
+  const ai = await collectAiDiagnostics(project).catch(() => []);
   try {
     const source = resolveProjectContentSource(project.config, project);
     const content = new ContentManager(source, project.config.content.exclude, {
@@ -176,7 +178,7 @@ async function collectDoctorReport(
     try {
       manifest = await content.getManifest();
     } catch {
-      return report;
+      return mergeDoctorDiagnostics(report, ai);
     }
     let assets: ContentAssetInspection;
     try {
@@ -192,9 +194,12 @@ async function collectDoctorReport(
         "Asset inspection failed.",
         error,
       );
-      return mergeDoctorDiagnostics(report, [diagnostic]);
+      return mergeDoctorDiagnostics(report, [...ai, diagnostic]);
     }
-    return mergeDoctorDiagnostics(report, assetDiagnostics(report, assets));
+    return mergeDoctorDiagnostics(report, [
+      ...ai,
+      ...assetDiagnostics(report, assets),
+    ]);
   } catch (error) {
     const diagnostic = createDiagnosticFromError(
       "configuration",
@@ -202,11 +207,14 @@ async function collectDoctorReport(
       "Doctor could not prepare project diagnostics.",
       error,
     );
-    return {
-      version: 1,
-      revision: 0,
-      diagnostics: [diagnostic],
-      summary: { errors: 1, warnings: 0, info: 0 },
-    };
+    return mergeDoctorDiagnostics(
+      {
+        version: 1,
+        revision: 0,
+        diagnostics: [diagnostic],
+        summary: { errors: 1, warnings: 0, info: 0 },
+      },
+      ai,
+    );
   }
 }

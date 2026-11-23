@@ -9,7 +9,10 @@ import {
   bridgeTokenHeader,
   invalidators,
 } from "./bridge_consts.js";
-import { createBridgeMutationStore } from "./bridge_mutation.js";
+import {
+  createBridgeMutationStore,
+  inspectBridgeMutationPlan,
+} from "./bridge_mutation.js";
 import { bridgeMutationResponse, bridgeResponse } from "./bridge_response.js";
 import { matchesToken } from "./bridge_tokens.js";
 import type {
@@ -45,6 +48,9 @@ export function rejectBridgeRequest(
   }
   if (
     request.method === "POST" &&
+    ![`${bridgePath}/mutations/validate`, `${bridgePath}/mutations/plan`].some(
+      (pathname) => requestUrl.pathname === pathname,
+    ) &&
     !requestUrl.pathname.startsWith(`${bridgePath}/mutations/`)
   ) {
     response.statusCode = 405;
@@ -75,6 +81,10 @@ export async function handleBridgeRequest(
   try {
     const snapshot = await context.options.getSnapshot(context.server);
     if (request.method === "POST") {
+      if (requestUrl.pathname === `${bridgePath}/mutations/validate`) {
+        await handleMutationValidationPost(request, response, context);
+        return;
+      }
       await handleMutationPost(request, response, requestUrl, context);
       return;
     }
@@ -82,19 +92,26 @@ export async function handleBridgeRequest(
       handleEventsRequest(request, response, context, snapshot);
       return;
     }
+    if (requestUrl.pathname.startsWith(`${bridgePath}/mutations/`)) {
+      await handleMutationInspection(request, response, requestUrl, context);
+      return;
+    }
     response.setHeader("content-type", "application/json; charset=utf-8");
     response.setHeader("cache-control", "no-store");
     response.setHeader("x-content-type-options", "nosniff");
     response.end(
       JSON.stringify(
-        bridgeResponse({
-          requestUrl,
-          snapshot,
-          server: context.server,
-          options: context.options,
-          revision: context.state.revision,
-          serverId: context.state.serverId,
-        }),
+        withBridgeEvidence(
+          await bridgeResponse({
+            requestUrl,
+            snapshot,
+            server: context.server,
+            options: context.options,
+            revision: context.state.revision,
+            serverId: context.state.serverId,
+          }),
+          context.state.revision,
+        ),
       ),
     );
   } catch {
@@ -104,6 +121,43 @@ export async function handleBridgeRequest(
   }
 }
 
+async function handleMutationValidationPost(
+  request: http.IncomingMessage,
+  response: http.ServerResponse,
+  context: BridgeRequestContext,
+): Promise<void> {
+  const { isMutationOperations, validateBridgeMutation } = await import(
+    "./bridge_mutation.js"
+  );
+  const { readJson } = await import("./bridge_response.js");
+  const body = await readJson(request);
+  const contentRoot =
+    typeof context.options.contentRoot === "function"
+      ? context.options.contentRoot()
+      : context.options.contentRoot;
+  if (!body || !isMutationOperations(body.operations)) {
+    response.statusCode = 400;
+    response.end(JSON.stringify({ code: "INVALID_OPERATIONS" }));
+    return;
+  }
+  if (!contentRoot) {
+    response.statusCode = 503;
+    response.end(JSON.stringify({ code: "BRIDGE_STATUS_UNAVAILABLE" }));
+    return;
+  }
+  response.setHeader("content-type", "application/json; charset=utf-8");
+  response.end(
+    JSON.stringify(
+      await validateBridgeMutation(
+        contentRoot,
+        body.operations,
+        context.options.contentFormats?.(),
+        mutationPathAllowed(context),
+      ),
+    ),
+  );
+}
+
 export async function handleMutationPost(
   request: http.IncomingMessage,
   response: http.ServerResponse,
@@ -111,12 +165,10 @@ export async function handleMutationPost(
   context: BridgeRequestContext,
 ): Promise<void> {
   const { options, state } = context;
+  const { mutationToken, mutationApprovalToken } = options;
   if (
-    !options.mutationToken ||
-    options.mutationToken.length < 32 ||
-    !options.mutationApprovalToken ||
-    options.mutationApprovalToken.length < 32 ||
-    options.mutationToken === options.mutationApprovalToken
+    !mutationEnabled(mutationToken, mutationApprovalToken) ||
+    !mutationApprovalToken
   ) {
     response.statusCode = 404;
     response.end();
@@ -133,15 +185,107 @@ export async function handleMutationPost(
   }
   state.mutations ??= await createBridgeMutationStore(
     contentRoot,
-    options.mutationApprovalToken,
+    mutationApprovalToken,
     options.contentFormats?.(),
+    mutationPathAllowed(context),
   );
   await bridgeMutationResponse(
     request,
     response,
     requestUrl,
     state.mutations,
-    options.mutationToken,
+    mutationToken,
+  );
+}
+
+async function handleMutationInspection(
+  request: http.IncomingMessage,
+  response: http.ServerResponse,
+  requestUrl: URL,
+  context: BridgeRequestContext,
+): Promise<void> {
+  const { options } = context;
+  const { mutationToken, mutationApprovalToken } = options;
+  const match =
+    /^\/__riebeckite\/bridge\/v1\/mutations\/([0-9a-f-]{36})$/i.exec(
+      requestUrl.pathname,
+    );
+  if (!match || !mutationEnabled(mutationToken, mutationApprovalToken)) {
+    response.statusCode = 404;
+    response.end();
+    return;
+  }
+  if (
+    !matchesToken(
+      request.headers["x-riebeckite-bridge-mutation-token"],
+      mutationToken,
+    )
+  ) {
+    response.statusCode = 403;
+    response.end();
+    return;
+  }
+  const contentRoot =
+    typeof options.contentRoot === "function"
+      ? options.contentRoot()
+      : options.contentRoot;
+  if (!contentRoot) {
+    response.statusCode = 503;
+    response.end(JSON.stringify({ code: "BRIDGE_STATUS_UNAVAILABLE" }));
+    return;
+  }
+  const inspection = await inspectBridgeMutationPlan(contentRoot, match[1]);
+  if (!inspection) {
+    response.statusCode = 404;
+    response.end();
+    return;
+  }
+  response.setHeader("content-type", "application/json; charset=utf-8");
+  response.end(
+    JSON.stringify({
+      ...inspection,
+      revision: context.state.revision,
+      evidence: [],
+    }),
+  );
+}
+
+function mutationPathAllowed(context: BridgeRequestContext) {
+  return context.options.isMutationPathAllowed?.();
+}
+
+function withBridgeEvidence(
+  value: Record<string, unknown>,
+  revision: number,
+): Record<string, unknown> {
+  const entry = value.entry;
+  const source =
+    typeof entry === "object" &&
+    entry !== null &&
+    "source" in entry &&
+    typeof entry.source === "object" &&
+    entry.source !== null &&
+    "path" in entry.source &&
+    typeof entry.source.path === "string"
+      ? { kind: "source", path: entry.source.path }
+      : undefined;
+  return {
+    ...value,
+    ...(value.revision === undefined ? { revision } : {}),
+    evidence: source ? [source] : [],
+  };
+}
+
+function mutationEnabled(
+  mutationToken: string | undefined,
+  approvalToken: string | undefined,
+): mutationToken is string {
+  return Boolean(
+    mutationToken &&
+      mutationToken.length >= 32 &&
+      approvalToken &&
+      approvalToken.length >= 32 &&
+      mutationToken !== approvalToken,
   );
 }
 
@@ -236,6 +380,12 @@ export function isBridgePath(pathname: string): boolean {
       "publication",
       "diagnostics",
       "impact",
+      "context",
+      "project",
+      "schema",
+      "inventory",
+      "links",
+      "content",
       "events",
     ].some((name) => pathname === `${bridgePath}/${name}`)
   );

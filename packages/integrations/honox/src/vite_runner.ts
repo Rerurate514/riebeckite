@@ -22,7 +22,7 @@ export async function resolveHonoxApplicationRoot(
   startDirectory?: string,
 ): Promise<string> {
   const roots = await findViteApplicationRoots(configRoot, startDirectory);
-  if (roots.length === 1) return roots[0] as string;
+  if (roots.length === 1) return roots[0];
   if (roots.length === 0) {
     throw new HonoxApplicationRootError(
       `Could not find a Vite application under ${configRoot}.`,

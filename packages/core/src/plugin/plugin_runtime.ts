@@ -1,26 +1,104 @@
 import type { ManifestHookCacheEntry } from "../content/content_build_state.js";
+import type { OutputDescriptor } from "../content/output_dependency.js";
 import type {
   DerivedViewExecution,
   DerivedViewRegistry,
 } from "../derived/derived_view.js";
+import type { Observability } from "../observability.js";
 import type { PipelineOptions } from "../pipeline.js";
 import type {
   ContentLocationInput,
   ContentManifest,
   ContentManifestEntry,
   ContentPublicLocation,
+  PluginPageRoute,
 } from "../types/content_manifest.js";
+import type { Diagnostic } from "../types/diagnostic.js";
+import type {
+  ExternalDependencyFailure,
+  ExternalDependencySnapshot,
+} from "../types/external_dependency.js";
+import type {
+  GeneratedOutput,
+  GeneratedOutputContent,
+  GeneratedOutputSink,
+} from "../types/generated_output.js";
 import type { JsonValue } from "../types/json_value.js";
-import type { RiebeckitePlugin } from "../types/plugin.js";
+import type {
+  AssetTransformOutput,
+  ContentOutputDependencyResolver,
+  ResolvedPluginMetadata,
+  RiebeckitePlugin,
+} from "../types/plugin.js";
 import { resolvePlugins } from "../types/plugin.js";
+import type { PluginClientEntry } from "../types/plugin_asset.js";
+import type { InspectorTabSnapshot } from "../types/plugin_inspector.js";
+import type { ResolvedPluginPage } from "../types/plugin_page.js";
 import type { PostContent } from "../types/post_content.js";
-import type { ManifestHookRunner } from "./manifest_hooks.js";
+import type {
+  ManifestHookMetrics,
+  ManifestHookRunner,
+} from "./manifest_hooks.js";
+import type { PluginCache } from "./plugin_cache.js";
 import { runDispose, runPluginHook } from "./plugin_lifecycle.js";
 import { collectPageTypeOwners } from "./plugin_pages.js";
+import {
+  collectClientEntriesImpl,
+  collectGeneratedOutputsImpl,
+  collectInspectorTabsImpl,
+  emitCoreAssetImpl,
+  enableBuildTimeImpl,
+  getContentOutputDependenciesImpl,
+  getDerivedViewInspectionImpl,
+  getDerivedViewsImpl,
+  getDiagnosticsImpl,
+  getManifestHookCacheImpl,
+  getManifestHookMetricsImpl,
+  getNoChangeFastPathBlockReasonImpl,
+  getPluginHookExecutionsImpl,
+  getPluginInventoryImpl,
+  getPluginMetadataImpl,
+  setPageMarkdownRendererImpl,
+} from "./plugin_runtime_accessors.js";
 import type {
   PluginContextBase,
   PluginContextWithCache,
 } from "./plugin_runtime_context.js";
+import {
+  generatedOutputSinkForImpl,
+  refreshDerivedFilesImpl,
+  runGeneratedOutputPlansImpl,
+} from "./plugin_runtime_generated_outputs.js";
+import {
+  canUseDevelopmentRouteManifestImpl,
+  resolveContentLocationsImpl,
+  resolveExternalDependenciesImpl,
+  runDevelopmentRouteGraphHookImpl,
+  runDevelopmentRouteManifestHookImpl,
+  startBuildImpl,
+} from "./plugin_runtime_lifecycle.js";
+import {
+  cacheForImpl,
+  createContextImpl,
+  createPluginContextImpl,
+  derivedCacheImpl,
+  registerAssetTransformsImpl,
+  runAssetTransformsImpl,
+} from "./plugin_runtime_outputs.js";
+import {
+  collectDiagnosticsImpl,
+  getPageOutputsImpl,
+  getPagePathsImpl,
+  getPageRoutesImpl,
+  observabilityImpl,
+  observeHookImpl,
+  resolveContentLocalizationImpl,
+  resolvePageImpl,
+  resolveRouteImpl,
+} from "./plugin_runtime_pages.js";
+import { assertUniqueDerivedViewIds } from "./plugin_runtime_shared.js";
+import { initializePluginRuntime } from "./plugin_runtime_state.js";
+import { asPluginRuntimeContext } from "./plugin_runtime_state_types.js";
 
 export type {
   ManifestHookMetrics,
@@ -45,12 +123,7 @@ export type DevelopmentRouteCacheSnapshot = {
   readonly state?: JsonValue;
 };
 
-import { PluginRuntimeMethodsE } from "./plugin_runtime_methods_e.js";
-import { assertUniqueDerivedViewIds } from "./plugin_runtime_shared.js";
-import { initializePluginRuntime } from "./plugin_runtime_state.js";
-import { asPluginRuntimeContext } from "./plugin_runtime_state_types.js";
-
-export class PluginRuntime extends PluginRuntimeMethodsE {
+export class PluginRuntime {
   private pipelineOptions!: PipelineOptions;
   private buildLifecycle!: Promise<void> | null;
   private disposed!: boolean;
@@ -61,17 +134,235 @@ export class PluginRuntime extends PluginRuntimeMethodsE {
   private hookExecutions!: PluginHookExecution[];
 
   constructor(pipelineOptions: PipelineOptions = {}) {
-    super();
     initializePluginRuntime(asPluginRuntimeContext(this), pipelineOptions);
   }
 
-  getMarkdownComponents() {
-    return this.plugins().flatMap((plugin) => plugin.markdownComponents ?? []);
-  }
+  getDiagnostics = (): Diagnostic[] =>
+    getDiagnosticsImpl(asPluginRuntimeContext(this));
 
-  getHastTransforms() {
-    return this.plugins().flatMap((plugin) => plugin.hastTransforms ?? []);
-  }
+  getDerivedViews = (): DerivedViewRegistry =>
+    getDerivedViewsImpl(asPluginRuntimeContext(this));
+
+  getDerivedViewInspection = (): readonly DerivedViewInspection[] =>
+    getDerivedViewInspectionImpl(asPluginRuntimeContext(this));
+
+  setPageMarkdownRenderer = (
+    renderer: (markdown: string) => Promise<string>,
+  ): void =>
+    setPageMarkdownRendererImpl(asPluginRuntimeContext(this), renderer);
+
+  getManifestHookMetrics = (): ManifestHookMetrics =>
+    getManifestHookMetricsImpl(asPluginRuntimeContext(this));
+
+  getPluginMetadata = (): readonly ResolvedPluginMetadata[] =>
+    getPluginMetadataImpl(asPluginRuntimeContext(this));
+
+  getPluginInventory = (): readonly ResolvedPluginMetadata[] =>
+    getPluginInventoryImpl(asPluginRuntimeContext(this));
+
+  getPluginHookExecutions = (): readonly PluginHookExecution[] =>
+    getPluginHookExecutionsImpl(asPluginRuntimeContext(this));
+
+  collectInspectorTabs = async (): Promise<readonly InspectorTabSnapshot[]> =>
+    await collectInspectorTabsImpl(asPluginRuntimeContext(this));
+
+  getNoChangeFastPathBlockReason = (
+    previousCache: readonly ManifestHookCacheEntry[],
+    pipelineFingerprint: string | undefined,
+  ): string | undefined =>
+    getNoChangeFastPathBlockReasonImpl(
+      asPluginRuntimeContext(this),
+      previousCache,
+      pipelineFingerprint,
+    );
+
+  getManifestHookCache = (): readonly ManifestHookCacheEntry[] =>
+    getManifestHookCacheImpl(asPluginRuntimeContext(this));
+
+  enableBuildTime = (): void =>
+    enableBuildTimeImpl(asPluginRuntimeContext(this));
+
+  collectClientEntries = (): PluginClientEntry[] =>
+    collectClientEntriesImpl(asPluginRuntimeContext(this));
+
+  collectGeneratedOutputs = (): GeneratedOutput[] =>
+    collectGeneratedOutputsImpl(asPluginRuntimeContext(this));
+
+  emitCoreAsset = (path: string, content: GeneratedOutputContent): void =>
+    emitCoreAssetImpl(asPluginRuntimeContext(this), path, content);
+
+  getContentOutputDependencies = (): ContentOutputDependencyResolver =>
+    getContentOutputDependenciesImpl(asPluginRuntimeContext(this));
+
+  startBuild = (contentIndex: Map<string, string>): Promise<void> =>
+    startBuildImpl(asPluginRuntimeContext(this), contentIndex);
+
+  resolveExternalDependencies = async (
+    contentIndex: Map<string, string>,
+  ): Promise<{
+    readonly snapshots: readonly ExternalDependencySnapshot[];
+    readonly failures: readonly ExternalDependencyFailure[];
+  }> =>
+    await resolveExternalDependenciesImpl(
+      asPluginRuntimeContext(this),
+      contentIndex,
+    );
+
+  resolveContentLocations = async (
+    entries: readonly ContentLocationInput[],
+    contentIndex: Map<string, string>,
+  ): Promise<readonly ContentPublicLocation[]> =>
+    await resolveContentLocationsImpl(
+      asPluginRuntimeContext(this),
+      entries,
+      contentIndex,
+    );
+
+  canUseDevelopmentRouteManifest = (): boolean =>
+    canUseDevelopmentRouteManifestImpl(asPluginRuntimeContext(this));
+
+  runDevelopmentRouteGraphHook = async (
+    entries: ContentManifestEntry[],
+    contentIndex: Map<string, string>,
+  ): Promise<void> =>
+    await runDevelopmentRouteGraphHookImpl(
+      asPluginRuntimeContext(this),
+      entries,
+      contentIndex,
+    );
+
+  runDevelopmentRouteManifestHook = async (
+    manifest: ContentManifest,
+    contentIndex: Map<string, string>,
+  ): Promise<void> =>
+    await runDevelopmentRouteManifestHookImpl(
+      asPluginRuntimeContext(this),
+      manifest,
+      contentIndex,
+    );
+
+  runAssetTransforms = async (manifest: ContentManifest): Promise<void> =>
+    await runAssetTransformsImpl(asPluginRuntimeContext(this), manifest);
+
+  registerAssetTransforms = (
+    plugin: RiebeckitePlugin,
+    outputs: readonly AssetTransformOutput[],
+    referencedBy: ReadonlyMap<string, readonly ContentManifestEntry[]>,
+  ): void =>
+    registerAssetTransformsImpl(
+      asPluginRuntimeContext(this),
+      plugin,
+      outputs,
+      referencedBy,
+    );
+
+  derivedCache = (): PluginCache =>
+    derivedCacheImpl(asPluginRuntimeContext(this));
+
+  cacheFor = (plugin: RiebeckitePlugin): PluginCache =>
+    cacheForImpl(asPluginRuntimeContext(this), plugin);
+
+  createContext = (contentIndex: Map<string, string>): PluginContextBase =>
+    createContextImpl(asPluginRuntimeContext(this), contentIndex);
+
+  createPluginContext = <TContext extends PluginContextBase>(
+    plugin: RiebeckitePlugin,
+    context: TContext,
+  ): PluginContextWithCache<TContext> =>
+    createPluginContextImpl(asPluginRuntimeContext(this), plugin, context);
+
+  runGeneratedOutputPlans = async (manifest: ContentManifest): Promise<void> =>
+    await runGeneratedOutputPlansImpl(asPluginRuntimeContext(this), manifest);
+
+  generatedOutputSinkFor = (plugin: RiebeckitePlugin): GeneratedOutputSink =>
+    generatedOutputSinkForImpl(asPluginRuntimeContext(this), plugin);
+
+  refreshDerivedFiles = async (): Promise<void> =>
+    await refreshDerivedFilesImpl(asPluginRuntimeContext(this));
+
+  resolvePage = async (
+    pathname: string,
+    manifest: ContentManifest,
+    contentIndex: Map<string, string>,
+  ): Promise<ResolvedPluginPage | null> =>
+    await resolvePageImpl(
+      asPluginRuntimeContext(this),
+      pathname,
+      manifest,
+      contentIndex,
+    );
+
+  resolveRoute = async (
+    pathname: string,
+    manifest: ContentManifest,
+    contentIndex: Map<string, string>,
+  ): Promise<ResolvedPluginPage | null | undefined> =>
+    await resolveRouteImpl(
+      asPluginRuntimeContext(this),
+      pathname,
+      manifest,
+      contentIndex,
+    );
+
+  getPagePaths = async (
+    manifest: ContentManifest,
+    contentIndex: Map<string, string>,
+  ): Promise<readonly string[]> =>
+    await getPagePathsImpl(
+      asPluginRuntimeContext(this),
+      manifest,
+      contentIndex,
+    );
+
+  resolveContentLocalization = async (
+    manifest: ContentManifest,
+    contentIndex: Map<string, string>,
+  ): Promise<ContentManifest["localization"] | undefined> =>
+    await resolveContentLocalizationImpl(
+      asPluginRuntimeContext(this),
+      manifest,
+      contentIndex,
+    );
+
+  getPageRoutes = async (
+    manifest: ContentManifest,
+    contentIndex: Map<string, string>,
+  ): Promise<readonly PluginPageRoute[]> =>
+    await getPageRoutesImpl(
+      asPluginRuntimeContext(this),
+      manifest,
+      contentIndex,
+    );
+
+  getPageOutputs = async (
+    manifest: ContentManifest,
+    contentIndex: Map<string, string>,
+  ): Promise<readonly OutputDescriptor[]> =>
+    await getPageOutputsImpl(
+      asPluginRuntimeContext(this),
+      manifest,
+      contentIndex,
+    );
+
+  collectDiagnostics = async (
+    contentIndex: Map<string, string>,
+  ): Promise<Diagnostic[]> =>
+    await collectDiagnosticsImpl(asPluginRuntimeContext(this), contentIndex);
+
+  observeHook = async <T>(
+    plugin: RiebeckitePlugin,
+    hook: string,
+    operation: () => Promise<T>,
+  ): Promise<T> =>
+    await observeHookImpl(
+      asPluginRuntimeContext(this),
+      plugin,
+      hook,
+      operation,
+    );
+
+  observability = (): Observability =>
+    observabilityImpl(asPluginRuntimeContext(this));
 
   async runContentLoaded(
     slug: string,
@@ -102,7 +393,11 @@ export class PluginRuntime extends PluginRuntimeMethodsE {
         continue;
       }
       const cache = plugin.developmentRouteCache;
-      if (!cache) return undefined;
+      if (!cache) {
+        throw new Error(
+          `Plugin "${plugin.name}" participates in development route caching (content locations, localization, or route manifest) but does not declare developmentRouteCache. Add a developmentRouteCache descriptor with a version string.`,
+        );
+      }
       snapshots.push({
         name: plugin.name,
         version: cache.version,
@@ -136,6 +431,28 @@ export class PluginRuntime extends PluginRuntimeMethodsE {
     return true;
   }
 
+  getMarkdownComponents() {
+    return this.plugins().flatMap((plugin) => plugin.markdownComponents ?? []);
+  }
+
+  getHastTransforms() {
+    return this.plugins().flatMap((plugin) => plugin.hastTransforms ?? []);
+  }
+
+  async runGraphHook(
+    entries: ContentManifestEntry[],
+    contentIndex: Map<string, string>,
+  ) {
+    await this.runHook(
+      "extendContentGraph",
+      (plugin) => plugin.extendContentGraph,
+      {
+        ...this.createContext(contentIndex),
+        entries,
+      },
+    );
+  }
+
   async extendContentLocations(
     entries: readonly ContentLocationInput[],
     locations: Map<string, ContentPublicLocation>,
@@ -165,20 +482,6 @@ export class PluginRuntime extends PluginRuntimeMethodsE {
       markdown,
       content,
     });
-  }
-
-  async runGraphHook(
-    entries: ContentManifestEntry[],
-    contentIndex: Map<string, string>,
-  ) {
-    await this.runHook(
-      "extendContentGraph",
-      (plugin) => plugin.extendContentGraph,
-      {
-        ...this.createContext(contentIndex),
-        entries,
-      },
-    );
   }
 
   async runManifestCreated(

@@ -143,7 +143,7 @@ function parseInline(value: string): MdastNode[] {
 }
 
 function parseMarkdown(value: string): MdastNode[] {
-  return ((parser.parse(value) as MdastNode).children ?? []) as MdastNode[];
+  return (parser.parse(value).children ?? []) as MdastNode[];
 }
 
 function parseOptions(source: string): {

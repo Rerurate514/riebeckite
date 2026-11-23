@@ -4,7 +4,7 @@ import { defineHastTransform, type PluginHastNode } from "@riebeckite/core";
 import { renderToString } from "hono/jsx/dom/server";
 import rehypeStringify from "rehype-stringify";
 import { unified } from "unified";
-import { CodeTabsGroup } from "./tabs.js";
+import { CodeTabsGroup, type CodeTabsGroupProps } from "./tabs.js";
 
 const serializer = unified().use(rehypeStringify);
 
@@ -18,7 +18,7 @@ export const codeTabsTransform = defineHastTransform({
     );
   },
   render({ node, html }) {
-    const groupId = getString(node, "data-code-tabs-id");
+    const groupId = getString(node, "dataCodeTabsId");
     const tablist = childElements(node).find(
       (child) => getString(child, "role") === "tablist",
     );
@@ -28,23 +28,35 @@ export const codeTabsTransform = defineHastTransform({
     if (!groupId || !tablist || panels.length === 0) return html;
 
     const buttons = childElements(tablist);
-    const tabs = panels.map((panel, index) => ({
-      label:
-        getString(buttons[index] ?? panel, "data-code-tabs-label") ??
-        getString(panel, "data-code-tabs-label") ??
-        `Tab ${index + 1}`,
-      html: serializer.stringify({
-        type: "root",
-        children: panel.children ?? [],
-      } as never),
-    }));
+    const props: CodeTabsGroupProps = {
+      groupId,
+      sync: getString(node, "dataCodeTabsSync") === "true",
+      tabs: panels.map((panel, index) => ({
+        label:
+          getString(buttons[index] ?? panel, "dataCodeTabsLabel") ??
+          getString(panel, "dataCodeTabsLabel") ??
+          `Tab ${index + 1}`,
+        html: serializer.stringify({
+          type: "root",
+          children: panel.children ?? [],
+        } as never),
+      })),
+    };
+    const island = {
+      groupId: props.groupId,
+      sync: props.sync,
+      labels: props.tabs.map((tab) => tab.label),
+    };
 
     return renderToString(
-      <CodeTabsGroup
-        groupId={groupId}
-        sync={getString(node, "data-code-tabs-sync") === "true"}
-        tabs={tabs}
-      />,
+      <div
+        class="rr-code-tabs"
+        data-code-tabs="true"
+        data-code-tabs-sync={props.sync ? "true" : undefined}
+        data-code-tabs-props={JSON.stringify(island)}
+      >
+        <CodeTabsGroup {...props} />
+      </div>,
     );
   },
 });

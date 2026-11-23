@@ -73,8 +73,8 @@ export function inspectContentCommand(): CliCommandDefinition {
       const { runInspect } = await import("../commands/inspect.js");
       await runInspect(await project(context), {
         target: "content",
-        list: input.options.list as boolean,
-        path: input.options.path as string | undefined,
+        list: input.options.list,
+        path: input.options.path,
         json: false,
       });
     },
@@ -95,8 +95,8 @@ export function inspectAssetsCommand(): CliCommandDefinition {
       const { runInspect } = await import("../commands/inspect.js");
       await runInspect(await project(context), {
         target: "assets",
-        list: input.options.list as boolean,
-        json: input.options.json as boolean,
+        list: input.options.list,
+        json: input.options.json,
       });
     },
   });
@@ -128,10 +128,10 @@ export function inspectProvenanceCommand(): CliCommandDefinition {
       await runInspect(await project(context), {
         target: "provenance",
         list: false,
-        json: input.options.json as boolean,
-        source: input.options.source as string | undefined,
-        output: input.options.output as string | undefined,
-        compare: input.options.compare as string | undefined,
+        json: input.options.json,
+        source: input.options.source,
+        output: input.options.output,
+        compare: input.options.compare,
       });
     },
   });
@@ -154,8 +154,8 @@ export function inspectApiCommand(): CliCommandDefinition {
       await runInspect(await project(context), {
         target: "api",
         list: false,
-        json: input.options.json as boolean,
-        deprecatedOnly: input.options.deprecated as boolean,
+        json: input.options.json,
+        deprecatedOnly: input.options.deprecated,
       });
     },
   });

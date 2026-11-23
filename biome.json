@@ -26,6 +26,16 @@
   },
   "overrides": [
     {
+      "includes": ["promo/**"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noArrayIndexKey": "off"
+          }
+        }
+      }
+    },
+    {
       "includes": ["packages/core/src/cli/types.ts"],
       "linter": {
         "rules": {

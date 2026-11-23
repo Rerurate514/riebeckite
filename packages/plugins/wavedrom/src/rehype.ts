@@ -1,3 +1,4 @@
+import { reportVFileDiagnostic } from "@riebeckite/core";
 import {
   element,
   getStringProperty,
@@ -218,15 +219,11 @@ function findDirectChild(
 }
 
 function reportDiagnostic(file: unknown, message: string) {
-  const reporter = (file as { message?: (reason: string) => unknown })?.message;
-  if (typeof reporter !== "function") return;
-  const diagnostic = reporter.call(file, `Invalid WaveDrom config: ${message}`);
-  if (diagnostic && typeof diagnostic === "object") {
-    Object.assign(diagnostic, {
-      source: "@riebeckite/plugin-wavedrom",
-      ruleId: "invalid-config",
-    });
-  }
+  reportVFileDiagnostic(file, {
+    source: "@riebeckite/plugin-wavedrom",
+    ruleId: "invalid-config",
+    message: `Invalid WaveDrom config: ${message}`,
+  });
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

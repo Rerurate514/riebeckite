@@ -1,3 +1,4 @@
+import { reportVFileDiagnostic } from "@riebeckite/core";
 import { scopeMarpCss } from "./css.js";
 import {
   element,
@@ -257,13 +258,9 @@ function reportDiagnostic(
   message: string,
   ruleId: string,
 ): void {
-  const reporter = (file as { message?: (reason: string) => unknown })?.message;
-  if (typeof reporter !== "function") return;
-  const diagnostic = reporter.call(file, message);
-  if (diagnostic && typeof diagnostic === "object") {
-    Object.assign(diagnostic, {
-      source: "@riebeckite/plugin-marp",
-      ruleId,
-    });
-  }
+  reportVFileDiagnostic(file, {
+    source: "@riebeckite/plugin-marp",
+    ruleId,
+    message,
+  });
 }

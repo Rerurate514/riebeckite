@@ -52,6 +52,7 @@ They are historical evidence, not active decisions. New decisions belong here.
 
 | ADR | Status | Decision |
 | --- | ------ | -------- |
+| [20261122-101500-dataset-schema-versioning-9d3f2a](./20261122-101500-dataset-schema-versioning-9d3f2a.md) | Accepted | Publish JSON Schema documents for the dataset artifacts and version breaking record-shape changes. |
 | [20261111-110000-discovery-projection-exclude-a7c91e](./20261111-110000-discovery-projection-exclude-a7c91e.md) | Accepted | Exclude configured slug paths and their descendants from selected derived discovery projections. |
 | [20261111-100000-navigation-exclude-73be42](./20261111-100000-navigation-exclude-73be42.md) | Accepted | Exclude configured slug paths and their descendants from derived navigation. |
 | [20261103-tsx-og-layouts](./20261103-tsx-og-layouts.md) | Accepted | Render custom OG layouts with Satori and bundle Noto Sans JP. |

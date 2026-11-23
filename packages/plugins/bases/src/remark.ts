@@ -1,3 +1,4 @@
+import { reportVFileDiagnostic } from "@riebeckite/core";
 import type { Html, Root } from "mdast";
 import { visit } from "unist-util-visit";
 import { parseBases } from "./parse.js";
@@ -47,11 +48,9 @@ export function remarkBases(options: RemarkBasesOptions = {}) {
 }
 
 function reportDiagnostic(file: unknown, message: string, node: unknown): void {
-  const reporter = (file as { message?: (...args: unknown[]) => unknown })
-    ?.message;
-  if (typeof reporter !== "function") return;
-  const diagnostic = reporter.call(file, message, node);
-  if (diagnostic && typeof diagnostic === "object") {
-    Object.assign(diagnostic, { source: "@riebeckite/plugin-bases" });
-  }
+  reportVFileDiagnostic(file, {
+    source: "@riebeckite/plugin-bases",
+    message,
+    position: node,
+  });
 }

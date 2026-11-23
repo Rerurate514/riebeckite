@@ -240,6 +240,109 @@ test("development route cache bounds fingerprint reads", async () => {
   }
 });
 
+test("development route cache reuses source metadata instead of rereading entries", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-route-cache-"),
+  );
+  let metadata = { modifiedAt: 1, size: 32 };
+  let reads = 0;
+  const content: ContentSource = {
+    async scan() {
+      return [{ path: "index.md", metadata }];
+    },
+    async read() {
+      reads += 1;
+      return "---\npublish: true\n---\n# Home";
+    },
+  };
+  const options = () => ({
+    config: resolveConfig({
+      content: { directory },
+      site: { title: "Test" },
+      plugins: [
+        definePlugin({
+          name: "route-cache-stat",
+          developmentRouteCache: { version: "v1" },
+        }),
+      ],
+    }),
+    isDevelopment: true,
+  });
+  try {
+    const first = new ContentManager(content, [], options());
+    assert.equal((await first.getRequestManifest()).entries[0]?.slug, "index");
+    await first.dispose();
+    await waitForRouteState(directory, "stat:1:32");
+    reads = 0;
+    metadata = { modifiedAt: 2, size: 32 };
+
+    assert.equal(
+      (await new ContentManager(content, [], options()).getRequestManifest())
+        .entries[0]?.slug,
+      "index",
+    );
+    assert.ok(reads > 0);
+
+    await waitForRouteState(directory, "stat:2:32");
+    reads = 0;
+    const third = new ContentManager(content, [], options());
+    assert.equal((await third.getRequestManifest()).entries[0]?.slug, "index");
+    assert.equal(reads, 0);
+    await third.dispose();
+  } finally {
+    await fs.rm(directory, { recursive: true, force: true });
+  }
+});
+
+async function waitForRouteState(directory: string, expected: string) {
+  const statePath = path.join(
+    directory,
+    ".riebeckite",
+    "development-route-state.json",
+  );
+  for (let attempt = 0; attempt < 100; attempt++) {
+    try {
+      if ((await fs.readFile(statePath, "utf8")).includes(expected)) return;
+    } catch {}
+    await new Promise((resolve) => setTimeout(resolve, 20));
+  }
+  assert.fail("development route state was not written");
+}
+
+test("development route cache rejects plugins that omit their cache descriptor", async () => {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "riebeckite-route-cache-"),
+  );
+  const content: ContentSource = {
+    async scan() {
+      return [{ path: "index.md" }];
+    },
+    async read() {
+      return "---\npublish: true\n---\n# Home";
+    },
+  };
+  try {
+    await assert.rejects(
+      new ContentManager(content, [], {
+        config: resolveConfig({
+          content: { directory },
+          site: { title: "Test" },
+          plugins: [
+            definePlugin({
+              name: "route-cache-missing-descriptor",
+              extendContentLocations: () => undefined,
+            }),
+          ],
+        }),
+        isDevelopment: true,
+      }).getRequestManifest(),
+      /route-cache-missing-descriptor[\s\S]*developmentRouteCache/,
+    );
+  } finally {
+    await fs.rm(directory, { recursive: true, force: true });
+  }
+});
+
 test("corrupted development route cache falls back to route resolution", async () => {
   const directory = await fs.mkdtemp(
     path.join(os.tmpdir(), "riebeckite-route-cache-"),
@@ -304,6 +407,7 @@ test("development routing falls back to the full manifest for unopted page types
 test("development route manifests run opted manifest hooks without article HTML", async () => {
   const plugin = definePlugin({
     name: "route-metadata",
+    developmentRouteCache: { version: "route-metadata-route-v1" },
     developmentRouteManifest: true,
     onManifestCreated: ({ manifest }) => {
       const entry = manifest.entries[0];
@@ -388,6 +492,7 @@ test("development routing defers unrelated manifest hooks for route-aware pages"
 test("development route manifests retain localization", async () => {
   const plugin = definePlugin({
     name: "localization",
+    developmentRouteCache: { version: "localization-route-v1" },
     resolveContentLocalization: () => ({
       defaultLocale: "en",
       locales: ["en", "ja"],
@@ -407,6 +512,7 @@ test("development route manifests retain localization", async () => {
 test("development route manifests share parsed frontmatter with location hooks", async () => {
   const plugin = definePlugin({
     name: "location-frontmatter",
+    developmentRouteCache: { version: "location-frontmatter-route-v1" },
     extendContentLocations: ({ entries }) => {
       if (entries[0]) entries[0].frontmatter = { title: "Shared" };
     },

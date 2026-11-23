@@ -8,7 +8,7 @@ CLI ツールです。
 ## 使い方
 
 対話モード（推奨）: 引数なしで実行すると、プロジェクト名・preset・
-機能パック・プロジェクトファイル・コンテンツの格納場所・デプロイ・
+プロジェクトファイル・コンテンツの格納場所・デプロイ・
 依存関係のインストールについて順に確認します。
 
 ```sh
@@ -32,7 +32,6 @@ npm exec riebeckite build
 | --- | --- | --- |
 | Project name | 作るフォルダ名（空なら既定の名前） | 任意。例: `my-site` |
 | What would you like to build? | `Starter site`、`Digital garden`、`Blog`、`Writer`、`Documentation`、`Portfolio`、`Minimal site`、`Empty application` | 大半のサイトは `Starter site`（`starter`） |
-| Add optional feature packs? | `Yes` または `No`。`Yes` なら機能パックを選択 | `No` |
 | Customize extra project files? | `Yes` または `No`。`Yes` ならプロジェクトファイルを選択 | `No` で推奨セットを使用 |
 | Where will you write content? | `This project`、`Separate directory in this repository`、`Separate GitHub repository` | 最初は `This project` |
 | Set up deployment? | `Cloudflare Workers`、`GitHub Actions`、`Not now` | 手元で試すなら `Not now` |
@@ -52,7 +51,6 @@ npm exec riebeckite build
 | `--list-presets` | 利用可能な preset と説明を一覧表示して終了する |
 | `--github-actions` | Cloudflare へのデプロイ workflow を生成する |
 | `--cloudflare-workers` | Cloudflare Workers デプロイ設定を生成する |
-| `--features <names>` | 追加のプラグインを追加するカンマ区切りの feature pack 名 |
 | `--content-directory <path>` | 書き込むコンテンツディレクトリの相対パス（例: `../vault`）。絶対パスは拒否される |
 | `--domain <hostname>` | 生成する Cloudflare Worker のルートに設定するカスタムドメイン（例: `docs.example.com`） |
 | `--content-repository <owner/repository>` | このリポジトリをデプロイ時の content source にする。`--github-actions` と `--site-repository` が必要で、`github/notify-site.yml` も生成する。 |

@@ -103,18 +103,19 @@ the enhanced code block output.
 ## Accessibility
 
 The generated HTML uses `role="tablist"`, `role="tab"`, and `role="tabpanel"`.
-The client supports click, `ArrowLeft`, `ArrowRight`, `Home`, `End`, `Enter`, and
-`Space`, and keeps `aria-selected` and `tabindex` in sync. Without JavaScript,
-all panels remain visible so every code block can still be read.
+The server renders the complete tab markup, so the first panel is readable
+without JavaScript. The client hydrates that markup and supports click,
+`ArrowLeft`, `ArrowRight`, `Home`, `End`, `Enter`, and `Space`, keeping
+`aria-selected` and `tabindex` in sync.
 
 ## Exports
 
 - `codeTabs(options?)` — plugin factory
 - `rehypeCodeTabs(options?)` — rehype transform
 - `codeTabsTransform` — HAST transform
-- `initCodeTabs(options?)` — client initializer
+- `initCodeTabs()` — client initializer from `@riebeckite/plugin-code-tabs/client`
 - `remarkCodeMeta` — remark plugin
-- Types: `CodeTabsOptions`, `CodeTabsClientOptions`
+- Types: `CodeTabsOptions`
 
 ## See also
 

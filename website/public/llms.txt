@@ -1,0 +1,20 @@
+# Riebeckite
+
+> Riebeckite is an open-source framework (Apache-2.0) that turns Obsidian notes and other Markdown into a website you own. The site is a plain HonoX + TypeScript application — Markdown is an input, not the architecture — and the Obsidian side (wikilinks, embeds, callouts, Dataview queries, search, backlinks, graph, English/Japanese publishing) installs from roughly seventy npm plugins.
+
+Docs: https://riebeckite.dev/docs/
+Blog: https://riebeckite.dev/blog/
+Blog (日本語): https://riebeckite.dev/ja/blog/
+GitHub: https://github.com/Rerurate514/riebeckite
+
+## Publishing guides (blog)
+
+- [How to Publish Obsidian Notes for Free](https://riebeckite.dev/blog/publish-obsidian-notes-for-free/): The free routes — Digital Garden, Quartz, Flowershow, Perlite, Webpage Export — with the real limits of free hosting and what breaks between vault and web. 日本語: https://riebeckite.dev/ja/blog/publish-obsidian-notes-for-free/
+- [Obsidian Publish Alternatives, Compared Honestly](https://riebeckite.dev/blog/obsidian-publish-alternatives/): Eight tools with maintenance status, licenses, selective-publishing mechanics, and the dormancy risk nobody prices in. 日本語: https://riebeckite.dev/ja/blog/obsidian-publish-alternatives/
+- [Quartz vs. Riebeckite](https://riebeckite.dev/blog/quartz-vs-riebeckite/): Configuration-driven generator vs. application framework, written by the framework's authors with the bias marked. 日本語: https://riebeckite.dev/ja/blog/quartz-vs-riebeckite/
+- [Obsidian as a Digital Garden: Why the Tool Fits the Practice](https://riebeckite.dev/blog/obsidian-digital-garden/): What a digital garden is (Appleton's history and ethos), why Obsidian fits it, and how each publishing tool handles selective publishing. 日本語: https://riebeckite.dev/ja/blog/obsidian-digital-garden/
+- [How to Publish Obsidian Notes to Cloudflare](https://riebeckite.dev/blog/obsidian-cloudflare/): Cloudflare Pages and Workers for a notes site — the official November 2026 guidance, real free-tier numbers, and the GitHub Pages comparison. 日本語: https://riebeckite.dev/ja/blog/obsidian-cloudflare/
+
+## Blog
+
+- [How this blog is built](https://riebeckite.dev/blog/how-this-blog-is-built/): The Riebeckite setup behind this blog.

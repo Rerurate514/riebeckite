@@ -62,14 +62,6 @@ Run `--list-presets` to see the available presets and their descriptions.
 npm exec -- riebeckite init --list-presets
 ```
 
-### Adding feature packs
-
-Use `--features <names>` for a comma-separated set of optional packs: `knowledge`, `diagrams`, `media`, and `i18n`. `none` adds no pack. A pack that duplicates a plugin already selected by the preset is ignored/skipped.
-
-```sh
-npm exec -- riebeckite init my-site --preset portfolio --features diagrams,i18n
-```
-
 ### Choosing project files
 
 Project files are selected separately from the preset with `--utilities <names>`, a comma-separated list of `gitignore`, `editorconfig`, `gitattributes`, `biome`, `npmrc`, and `vscode`.
@@ -83,7 +75,7 @@ npm exec -- riebeckite init my-site --utilities editorconfig,npmrc,vscode
 | `gitignore` | `.gitignore` |
 | `editorconfig` | `.editorconfig` |
 | `gitattributes` | `.gitattributes` |
-| `biome` | `biome.json` |
+| `biome` | `biome.json`, plus `npm run lint` and `npm run format` scripts |
 | `npmrc` | `.npmrc` |
 | `vscode` | `.vscode/settings.json` |
 
@@ -101,7 +93,7 @@ Because `--force` affects existing files, review their contents before using it.
 
 ### `create-riebeckite`
 
-The `create-riebeckite` package runs the same generator through `npx create-riebeckite` and accepts the same `--preset`, `--features`, and `--list-presets` flags.
+The `create-riebeckite` package runs the same generator through `npx create-riebeckite` and accepts the same `--preset` and `--list-presets` flags.
 
 ```sh
 npx create-riebeckite

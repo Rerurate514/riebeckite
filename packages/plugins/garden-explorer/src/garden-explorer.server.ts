@@ -4,7 +4,10 @@ import type {
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import {
-  htmlToPlainText,
+  createEntryExcerpt,
+  extractHtmlHeadings,
+  getEntryPlainText,
+  isExcludedSlugPath,
   resolveEntryDate,
   selectLocalizedEntries,
 } from "@riebeckite/core";
@@ -40,7 +43,9 @@ export function getGardenExplorerData(args: {
         ? { fallbackLocale: args.manifest.localization.fallbackLocale }
         : {}),
     },
-  ).filter((entry) => !isExcludedEntry(entry, args.options?.exclude ?? []));
+  ).filter(
+    (entry) => !isExcludedSlugPath(entry.slug, args.options?.exclude ?? []),
+  );
   const publishedSlugs = new Set(publishedEntries.map((entry) => entry.slug));
 
   const notes = publishedEntries
@@ -105,9 +110,9 @@ function toGardenNote(
     slug: entry.slug,
     permalink: entry.permalink,
     title: resolveTitle(entry.slug, entry.frontmatter.title),
-    headings: extractHeadings(entry.html),
-    body: htmlToPlainText(entry.html).slice(0, MAX_BODY_LENGTH),
-    excerpt: createExcerpt(entry),
+    headings: extractHtmlHeadings(entry.html),
+    body: getEntryPlainText(entry).slice(0, MAX_BODY_LENGTH),
+    excerpt: createEntryExcerpt(entry),
     tags: entry.tags,
     date: resolveEntryDate(entry.frontmatter),
     folder: getFolder(entry.slug),
@@ -141,38 +146,6 @@ function getFolder(slug: string): string {
   const segments = slug.split("/");
   if (segments.length <= 1) return "Root";
   return segments.slice(0, -1).join("/");
-}
-
-function isExcludedEntry(
-  entry: ContentManifestEntry,
-  excludedSlugs: readonly string[],
-): boolean {
-  const slug = entry.slug;
-  return excludedSlugs.some(
-    (excluded) => slug === excluded || slug.startsWith(`${excluded}/`),
-  );
-}
-
-function createExcerpt(entry: ContentManifestEntry): string {
-  const description = entry.frontmatter.description;
-  const text =
-    typeof description === "string" && description.trim()
-      ? description.trim()
-      : htmlToPlainText(entry.html);
-
-  return text.slice(0, 180);
-}
-
-function extractHeadings(html: string): string[] {
-  const headings: string[] = [];
-  const headingPattern = /<h([1-4])\b[^>]*>([\s\S]*?)<\/h\1>/g;
-
-  for (const match of html.matchAll(headingPattern)) {
-    const heading = htmlToPlainText(match[2] ?? "");
-    if (heading) headings.push(heading);
-  }
-
-  return headings;
 }
 
 function clampInteger(value: number, min: number, max: number): number {

@@ -2,6 +2,7 @@
 @import "@riebeckite/ui/styles/drawer.css";
 @import "./components/style.css";
 @import "./components/home/style.css";
+@import "./components/blog/style.css";
 @import "./styles/page.css";
 @import "./styles/site-header.css";
 @import "./styles/site-layout.css";

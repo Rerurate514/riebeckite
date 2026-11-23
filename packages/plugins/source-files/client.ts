@@ -27,10 +27,8 @@ export function initSourceFiles() {
   };
 
   window.addEventListener("hashchange", updateLineTarget);
-  document.addEventListener("spa:navigation", updateLineTarget);
   updateLineTarget();
   return () => {
     window.removeEventListener("hashchange", updateLineTarget);
-    document.removeEventListener("spa:navigation", updateLineTarget);
   };
 }

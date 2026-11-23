@@ -1,6 +1,7 @@
 import {
   type ConfigValidationIssue,
   type ContentManifestEntry,
+  isExcludedSlugPath,
   type ResolvedRiebeckiteConfig,
   resolvePlugins,
 } from "@riebeckite/core";
@@ -155,8 +156,5 @@ export function isExcludedEntry(
   entry: ContentManifestEntry,
   excludedSlugs: readonly string[],
 ): boolean {
-  const slug = entry.slug;
-  return excludedSlugs.some(
-    (excluded) => slug === excluded || slug.startsWith(`${excluded}/`),
-  );
+  return isExcludedSlugPath(entry.slug, excludedSlugs);
 }

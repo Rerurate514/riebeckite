@@ -25,7 +25,7 @@ pnpm のプロジェクトでは `pnpm exec riebeckite` で実行します。
 ## 使い方
 
 ```text
-riebeckite init [directory] [--preset <name>] [--features <names>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>]
+riebeckite init [directory] [--preset <name>] [--utilities <names>] [--force] [--list-presets] [--github-actions | --cloudflare-workers] [--content-repository <owner/repo>] [--site-repository <owner/repo>]
 riebeckite create site [create-riebeckite options]
 riebeckite create plugin [name] [options]
 riebeckite create theme [name] [options]
@@ -35,6 +35,9 @@ riebeckite theme preview <name> [--port <port>] [--no-open]
 riebeckite plugin dev <path> [--port <port>] [--no-open]
 riebeckite plugin verify <path> [--level basic | integration | full] [--json]
 riebeckite bridge approve <plan>
+riebeckite ai setup
+riebeckite ai mcp
+riebeckite skills sync
 riebeckite dev
 riebeckite check
 riebeckite doctor [--explain | --json | --fix [--dry-run]] [--fail-on <error|warning|info>] [--code <code> ...]
@@ -76,6 +79,9 @@ riebeckite completion <bash | zsh | powershell> [--project]
 | `migrate` | バージョン付きのコンテンツ移行を計画・適用し、状態確認、ロールバック、リカバリーを行う | いいえ |
 | `profile` | トレースに基づく性能レポートを実行する。`--full` は全体を対象にする | ビルドの実行による |
 | `inspect` | 解決済みの状態を事実として表示する（`config`、`plugins`、`content`、`graph`、`build`、`assets`、`provenance`、`api`） | いいえ |
+| `ai setup` | MCP、`content:lint`、`AGENTS.md`、`RIEBECKITE_AI.md`、不足している Skill を追加する | 確認後にプロジェクトファイル |
+| `ai mcp` | 開発サーバーとローカル MCP アダプターを起動する。`--mutations` で一時的な変更トークンを生成する | いいえ |
+| `skills sync` | 不足している生成 Skill とファイルを追加し、古いものを更新する | 確認後 |
 
 `doctor` は独立したチェックを可能な限り続行し、ヘルスチェックに失敗すると非ゼロで終了します。`inspect` は読み取り専用で、ビルドの実行や状態の書き込みは行いません。出力の読み方は [Diagnostics](../../docs/docs/framework/diagnostics.ja.md) と [Framework Inspector](../../docs/docs/framework/inspector.ja.md) を参照してください。
 

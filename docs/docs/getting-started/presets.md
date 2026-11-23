@@ -120,23 +120,6 @@ sidebar:
 ---
 ```
 
-## Optional feature packs
-
-Feature packs add explicit plugins to a selected preset. Use `--features <names>` with a comma-separated list, or choose them from the interactive prompt.
-
-```sh
-npx create-riebeckite my-site --preset portfolio --features diagrams,i18n
-```
-
-| Pack | Adds |
-| --- | --- |
-| `knowledge` | Link previews and a local graph |
-| `diagrams` | Mermaid and Graphviz Markdown diagrams |
-| `media` | Embedded audio/video, responsive images, and lightbox |
-| `i18n` | English and Japanese localization support for content you add |
-
-Packs that repeat a preset's plugin are silently ignored, not rejected. Use `none` to make `--features` explicit without adding a pack.
-
 ## Editing generated UI
 
 Generated application files use normal TypeScript, JSX, and HonoX routes. Edit `app/routes/` to add pages or API routes, `app/components/article.tsx` to arrange article [[glossary/ui|UI]], `app/components/site-header.tsx` to change the header and footer, and `app/style.css` and `app/styles/` for site CSS. Every preset includes a site footer; the `empty` preset defines it directly in `app/routes/_renderer.tsx`, and the other presets define it in `app/components/site-header.tsx`. `SiteNav` and other plugin UI components resolve their configured data themselves; place them where needed instead of resolving manifests in site components.

@@ -94,16 +94,13 @@ export function createThemeCommand(): CliCommandDefinition {
       const name = input.arguments.name;
       await runCreateTheme({
         name,
-        directory:
-          (input.options.directory as string | undefined) ?? `themes/${name}`,
-        template: parseThemeTemplate(input.options.template as string),
-        features: parseThemeFeatures(
-          (input.options.features as string | undefined) ?? "",
-        ),
-        darkMode: input.options.darkMode as boolean,
-        tests: input.options.tests as boolean,
-        documentation: input.options.docs as boolean,
-        register: input.options.register as boolean,
+        directory: input.options.directory ?? `themes/${name}`,
+        template: parseThemeTemplate(input.options.template),
+        features: parseThemeFeatures(input.options.features ?? ""),
+        darkMode: input.options.darkMode,
+        tests: input.options.tests,
+        documentation: input.options.docs,
+        register: input.options.register,
       });
     },
   });
@@ -155,10 +152,10 @@ export function createPageTypeCommand(): CliCommandDefinition {
       const name = input.arguments.name;
       await runCreatePageType({
         name,
-        plugin: input.options.plugin as string | undefined,
-        path: (input.options.path as string | undefined) ?? `/${name}/`,
-        tests: input.options.withTests as boolean,
-        register: input.options.register as boolean,
+        plugin: input.options.plugin,
+        path: input.options.path ?? `/${name}/`,
+        tests: input.options.withTests,
+        register: input.options.register,
       });
     },
   });
@@ -218,11 +215,11 @@ export function createComponentCommand(): CliCommandDefinition {
       );
       await runCreateComponent({
         name: input.arguments.name,
-        target: input.options.target as "site" | "plugin" | "theme",
-        plugin: input.options.plugin as string | undefined,
-        theme: input.options.theme as string | undefined,
-        tests: input.options.withTests as boolean,
-        styles: input.options.withStyles as boolean,
+        target: input.options.target,
+        plugin: input.options.plugin,
+        theme: input.options.theme,
+        tests: input.options.withTests,
+        styles: input.options.withStyles,
       });
     },
   });

@@ -1,4 +1,3 @@
-import type { ScaffoldFeatureName } from "./features.js";
 import type { ScaffoldPresetName } from "./presets.js";
 import type { ScaffoldUtilityName } from "./utilities.js";
 
@@ -25,17 +24,24 @@ export type ScaffoldDeployment =
       readonly content: ScaffoldContentSource;
     };
 
+export type ScaffoldAiOptions = {
+  readonly mcp?: boolean;
+  readonly lint?: boolean;
+  readonly rules?: boolean;
+  readonly skills?: boolean;
+};
+
 export type ScaffoldSiteOptions = {
   readonly targetDirectory: string;
   readonly name?: string;
   readonly site?: ScaffoldSiteMetadata;
   readonly preset?: ScaffoldPresetName;
-  readonly features?: readonly ScaffoldFeatureName[];
   readonly utilities?: readonly ScaffoldUtilityName[];
   readonly deployment?: ScaffoldDeployment;
   readonly contentDirectory?: string;
   readonly customDomain?: string;
   readonly overwrite?: boolean;
+  readonly ai?: ScaffoldAiOptions;
 };
 
 export type ScaffoldSiteResult = {

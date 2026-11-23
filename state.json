@@ -1,10 +1,98 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "fa1b2690-0079-4425-a919-4ac81b2596b9",
-    "publishedAt": "2026-11-19T13:06:43.649Z",
-    "publicationFingerprint": "dbcc35e4b155cc622128df7033fc3e69182bc0145edbc9d954fd305e2989bfd8",
+    "runId": "3ff57768-17c0-4c6e-b612-38445c9bf21d",
+    "publishedAt": "2026-11-23T22:05:27.950Z",
+    "publicationFingerprint": "31237cfe49606b37905043b822f1299022bb40aefd4caaacdcb3d191c59196bc",
     "entries": [
+      {
+        "slug": "blog/how-this-blog-is-built",
+        "permalink": "/blog/how-this-blog-is-built",
+        "title": "How This Blog Is Built with Plain Riebeckite",
+        "visibility": "public",
+        "fingerprint": "1af3efbc18a83010befab13695aaf21a1eb1c14423e43138fc5d55c52b51fc52",
+        "contentFingerprint": "a07f150bb0ce5599538b7b7ca1b657ad3f5dc86d920b443bf5761d11528f79ce"
+      },
+      {
+        "slug": "blog/obsidian-cloudflare",
+        "permalink": "/blog/obsidian-cloudflare",
+        "title": "How to Publish Obsidian Notes to Cloudflare",
+        "visibility": "public",
+        "fingerprint": "2aeef3c6a9ca513a3e962aba43d6a7ee4c1820d494cee96e4df74c0e92a7b94b",
+        "contentFingerprint": "90445ff3d6d5a429b68c11e4d8c1e58c709bea7b464cee68b12ce6c9aa9296c4"
+      },
+      {
+        "slug": "blog/obsidian-cloudflare.ja",
+        "permalink": "/ja/blog/obsidian-cloudflare",
+        "title": "Obsidian のノートを Cloudflare に公開する方法",
+        "visibility": "public",
+        "fingerprint": "baa25c8b52ec5706b552cec8d04b30537fa0acae81c182b217a08fc5465ae0ef",
+        "contentFingerprint": "d923ea8a5882c7c3a561ea015b6c2bea4bee852b9c91e5471912c9cc24cad5c0"
+      },
+      {
+        "slug": "blog/obsidian-digital-garden",
+        "permalink": "/blog/obsidian-digital-garden",
+        "title": "Obsidian as a Digital Garden: Why the Tool Fits the Practice",
+        "visibility": "public",
+        "fingerprint": "cb734556b2d9fcc53465feff7912031d8b44c34a3dcd4ced744c23264d8b7499",
+        "contentFingerprint": "e10e67f9e66dba2bc71d50ed2a7375fe093fa2cc0d0a067a1782b357926e8fc8"
+      },
+      {
+        "slug": "blog/obsidian-digital-garden.ja",
+        "permalink": "/ja/blog/obsidian-digital-garden",
+        "title": "Obsidian でデジタルガーデンを作って公開する方法",
+        "visibility": "public",
+        "fingerprint": "e611d8a99d9488153fe9d2bf2ae0287e2f4bf2c68c92379c429bee420b23d256",
+        "contentFingerprint": "28f3eedf04004bf9dd65d21c1b188d41fd640bf95a390ef92adc0d2ad4aeb82e"
+      },
+      {
+        "slug": "blog/obsidian-publish-alternatives",
+        "permalink": "/blog/obsidian-publish-alternatives",
+        "title": "Obsidian Publish Alternatives, Compared Honestly",
+        "visibility": "public",
+        "fingerprint": "76aa5e11ea2063e184202a77221093083c2d63dc394d986a0871b4521c6391d1",
+        "contentFingerprint": "a9632417b92cb75ba454298541ab0ea5e8d4023329faf30622ba47770e25196a"
+      },
+      {
+        "slug": "blog/obsidian-publish-alternatives.ja",
+        "permalink": "/ja/blog/obsidian-publish-alternatives",
+        "title": "Obsidian Publish の代替ツールを整理して比較する",
+        "visibility": "public",
+        "fingerprint": "ab4807ae2577f23b0f4dbfc9d84dc4620c6220e728bb88f4df028c69b0fae4bb",
+        "contentFingerprint": "1c2cc8f822455641e4793ea26a39c4cb35baac6e0934f361590d0e1314aaa08e"
+      },
+      {
+        "slug": "blog/publish-obsidian-notes-for-free",
+        "permalink": "/blog/publish-obsidian-notes-for-free",
+        "title": "How to Publish Obsidian Notes for Free",
+        "visibility": "public",
+        "fingerprint": "9e6135bbf0bc2859db0031075d5461aa5aaad2ff89bf832cd8255384fa1ebf11",
+        "contentFingerprint": "02c9cf88ed4e8fc6452f66076803f066faac5851423d619c310b587976c51071"
+      },
+      {
+        "slug": "blog/publish-obsidian-notes-for-free.ja",
+        "permalink": "/ja/blog/publish-obsidian-notes-for-free",
+        "title": "Obsidian のノートを無料で Web 公開する方法",
+        "visibility": "public",
+        "fingerprint": "7987863b9a8140a6f4ea39edb7d509a7ab496f45345a97f965596257564fe050",
+        "contentFingerprint": "0fff48ac9659249f304163a6dda217acddf053b84716830d6cac0f6acaeb24df"
+      },
+      {
+        "slug": "blog/quartz-vs-riebeckite",
+        "permalink": "/blog/quartz-vs-riebeckite",
+        "title": "Quartz vs. Riebeckite",
+        "visibility": "public",
+        "fingerprint": "e02f56698d68c6ffb03bc31e632b96cb2679662ee75813033c47294be80a9231",
+        "contentFingerprint": "ee56fb9796e42fe6f2c3575d827d993f069c88cabca86afc06349de6f6b2dda0"
+      },
+      {
+        "slug": "blog/quartz-vs-riebeckite.ja",
+        "permalink": "/ja/blog/quartz-vs-riebeckite",
+        "title": "Quartz と Riebeckite の違い",
+        "visibility": "public",
+        "fingerprint": "617e8317c84d6efd6b30ef6daa5de5728803e66f3907159312f1fe961742a9cc",
+        "contentFingerprint": "c393aba2d96a0ccd66c2e5dd6133ace104d6141593267792010b25204efca0ec"
+      },
       {
         "slug": "docs/accessibility",
         "permalink": "/docs/accessibility",
@@ -826,16 +914,16 @@
         "permalink": "/docs/framework/testing/running",
         "title": "Running",
         "visibility": "public",
-        "fingerprint": "0402131654d7e9ce3cd4160f62644af70d77e1d2488a7ffdacf5eb9884f1ef41",
-        "contentFingerprint": "7bd64906193f73672f23027a761fbdce1f1865edd1d6c1c2e4ac271f2c27eb4d"
+        "fingerprint": "2027dbc66a628b137763541b8c303484ef6c514291a197546372f117e5a8114f",
+        "contentFingerprint": "56d371cce2f80e3c2401b4eb0326f62429dc9b6eb4273d0c710c6e5405513cea"
       },
       {
         "slug": "docs/framework/testing/running.ja",
         "permalink": "/ja/docs/framework/testing/running",
         "title": "実行",
         "visibility": "public",
-        "fingerprint": "03bea2ea9e0276ef18da74c61784bddb6351fd2262fdc38b63c8570075c442c3",
-        "contentFingerprint": "e6a04d55901d30446eff81f3fb7530d4c94135920282d39c87c1caf4885dc27f"
+        "fingerprint": "040cce2d2cb74f606d376bf87c29da644dd8817aeb7dac68721577287b888a84",
+        "contentFingerprint": "7434b9fe089861f2889155ab487fed3becfc5daad75722a4aa7b9d6e887facf4"
       },
       {
         "slug": "docs/framework/theme-system",
@@ -954,16 +1042,16 @@
         "permalink": "/docs/framework/ui",
         "title": "UI",
         "visibility": "public",
-        "fingerprint": "dabf490eb861f476b5273758afba488df2fc445fe796eb98ec56952fdba1d66b",
-        "contentFingerprint": "d58b98d9a6fa979658e625948a6119d6b932a6fd18de792d521b968abe794cf3"
+        "fingerprint": "ade7deccd52f319ef8be576c3d20c651f815048cff3ff16bde2362a2a86377c1",
+        "contentFingerprint": "40463b2cadfb694307c8a8aae877137a5c31ca10b9414929f290a7a78035f1e9"
       },
       {
         "slug": "docs/framework/ui.ja",
         "permalink": "/ja/docs/framework/ui",
         "title": "UI",
         "visibility": "public",
-        "fingerprint": "d3c5afa9184a52df04db2097d20518ffdaaa943b3f1a8c887b11adc279767c58",
-        "contentFingerprint": "cbab0eb416abfc57661a227750136924cdcba581eedbba6c92cff13b174bc48a"
+        "fingerprint": "f43952a12f5bedd4a4d33bb020310145544f50efbe0ce6ca163feaff57b88db5",
+        "contentFingerprint": "23a1375cae193c71879519de5522598f003137ba2db0c27d7070755d6c7647d1"
       },
       {
         "slug": "docs/getting-started/first-content",
@@ -1018,16 +1106,16 @@
         "permalink": "/docs/getting-started/installation",
         "title": "Installation",
         "visibility": "public",
-        "fingerprint": "229260ef7e70b6783298f2721fbeaafa6b86bd71e0434f1bc688c13c9a221142",
-        "contentFingerprint": "58e01f7da0e8f00e5816a1a7a4c32ec2477784f2ad79989ce0c5b21571758ff8"
+        "fingerprint": "dc75922cd89bed487eee671c05dfbc1938cb0b0213a4dd3f4ea9ad711c221fcc",
+        "contentFingerprint": "38011a1a31119fe90ec3ecaea802d5e4bcb22f3cbd193f2098a7ec4a27d75465"
       },
       {
         "slug": "docs/getting-started/installation.ja",
         "permalink": "/ja/docs/getting-started/installation",
         "title": "インストール",
         "visibility": "public",
-        "fingerprint": "1221c9ac241e33da4b35a99dd2205fd399c31118719dafbb1a0cd3352397f9f6",
-        "contentFingerprint": "6b85bd00924f61fcc1139f89446a916069333f447b734fafe279b5a937aeee0e"
+        "fingerprint": "5fda75f2f6456cbcef1e6055b740c913804f76799282c963585d6e63a0ee9c84",
+        "contentFingerprint": "f18399641e508cf12ae50d93f85bfab8b11ee6ede60bc1f55bb9302d6cf2f2f1"
       },
       {
         "slug": "docs/getting-started/integrated-setup",
@@ -1066,16 +1154,16 @@
         "permalink": "/docs/getting-started/presets",
         "title": "Presets",
         "visibility": "public",
-        "fingerprint": "26e1d248ef385329da89157e7531e084ac472f1dcd36096e27adb33a4d7e79e7",
-        "contentFingerprint": "4c77988543111cf88b4b350dad36acca1d42d9c881f40ac24bb6697e529913d6"
+        "fingerprint": "03daa4fd24348496095dc9f03df82546f4005170d1dee70313d62de490bce944",
+        "contentFingerprint": "db7f768f635b5231afd72ab75a9210b0db5bb83df9f3537a5a7c25a57df38464"
       },
       {
         "slug": "docs/getting-started/presets.ja",
         "permalink": "/ja/docs/getting-started/presets",
         "title": "プリセット",
         "visibility": "public",
-        "fingerprint": "57dd3470e2b6d32661db3e2c46cf3aa952e923dbd5a6259d235ce72a497686eb",
-        "contentFingerprint": "14ef49ce9ea98a006f6af8bf121cb6b22084be3a6b76ef526e1a53b3f64357db"
+        "fingerprint": "85c470ae633e6f9958b0c4cdde7494a0c4b5cb44dadab92f9da436678277dbff",
+        "contentFingerprint": "4f70e814b1746ca1be14ddb3b383943226b9b314e8b2dbe5d9e15f97e05b124f"
       },
       {
         "slug": "docs/getting-started/project-structure",
@@ -1098,32 +1186,32 @@
         "permalink": "/docs/getting-started/quick-start",
         "title": "Quick Start",
         "visibility": "public",
-        "fingerprint": "91c21ebc2641bf7ffed5d5d9f60ff81f4b80e1421163a48e9d60e410216a647c",
-        "contentFingerprint": "ff530407663c0d4eb55641c2616e4a4f0654bbc6bad5eca450b496ec116c7ad8"
+        "fingerprint": "6c95c89e5c688bb135574a175a29049b13b3d64c088a6b0d9464a287839c7a64",
+        "contentFingerprint": "a233d4cd1af90deb4583bcc98c6eb99110f88668e7bac00892a637f9c6069655"
       },
       {
         "slug": "docs/getting-started/quick-start.ja",
         "permalink": "/ja/docs/getting-started/quick-start",
         "title": "クイックスタート",
         "visibility": "public",
-        "fingerprint": "4e78b69b7420f36b154827eb8050e0c5ca2ffa46873dafddde0f9b31fa2efc59",
-        "contentFingerprint": "13f5832a15fbb58a116d58800984b1d5bce1fef8bf68ec2c55035f75855a14d7"
+        "fingerprint": "8886cfe36156fc3f8e617ecbda8cbebf5f7d3c0ae51dcef1b4af75e6c3572cf6",
+        "contentFingerprint": "3e8d9df341786fe312401fb5ba83e8e9febd369f5300a4c79cb31c945b43cd36"
       },
       {
         "slug": "docs/getting-started/README",
         "permalink": "/docs/getting-started/",
         "title": "Getting Started",
         "visibility": "public",
-        "fingerprint": "bedcfb0f1d3d495c5f41813d907cb3c0f6d0f37288c1c19ce3e38ec62598f537",
-        "contentFingerprint": "7f714bede098ba94e54aecfea67b2b7d3d1877c2a2de6bcc75b2a6ab6e10b3a3"
+        "fingerprint": "36dc08fcf695823c093db9c6bf6349ba54bde9c6a59c22311ab0f4771d283f5b",
+        "contentFingerprint": "22afbf74272e3e10e017c015a5403ff73996449260af691059269ee196d81c92"
       },
       {
         "slug": "docs/getting-started/README.ja",
         "permalink": "/ja/docs/getting-started/",
         "title": "はじめに",
         "visibility": "public",
-        "fingerprint": "254b3078d3b283e1cb7f64440315b413946ce1061519407e96a2a02c7ecbbaad",
-        "contentFingerprint": "970b220cd72077edbc13a318400a8e9a74e0a53b04f47f07ba850065dd0d5a17"
+        "fingerprint": "0bdf2c4f29a2f4c33480d092bed90a7414b0f1dae5c22852da7526b2eef1f49e",
+        "contentFingerprint": "42f5c01164d8f4bbad930fd4a64ab72b5ea48cee88daae74abca595954afb311"
       },
       {
         "slug": "docs/getting-started/separate-directories-setup",
@@ -1146,16 +1234,16 @@
         "permalink": "/docs/getting-started/separate-repositories-setup",
         "title": "Separate Repositories Setup",
         "visibility": "public",
-        "fingerprint": "fb5e04f8dec38442744e270eb5637da2930f65b14eb6a825b16395d7f2d5e034",
-        "contentFingerprint": "838a12d406edbe8e06349c26edec5e4d5b89bf55597af82bbfdc97c8d7fa3a68"
+        "fingerprint": "d6795e089c31b6d289420e51c53a2dbb93f79cadec6c0ae06b765091a1e39430",
+        "contentFingerprint": "5c115f71509095cece6afaec1d633162d3240680c2e9e60c9354fba3f20876d4"
       },
       {
         "slug": "docs/getting-started/separate-repositories-setup.ja",
         "permalink": "/ja/docs/getting-started/separate-repositories-setup",
         "title": "リポジトリ分離型セットアップ",
         "visibility": "public",
-        "fingerprint": "380543ee44b01a41361d5987b3a8a6b48c6047bdce982a7cec9b513c893f5f76",
-        "contentFingerprint": "e615618e8226416d1184d4fc70c95ba72be31095c9a8fa192669b405e2a197eb"
+        "fingerprint": "51fa5ecd392e2bf7fc5c987352d555e21e00b0a91136e146b503668fe4daaad5",
+        "contentFingerprint": "3a703c17d948e5d3e0a8014d95557ca3a8b061701b46536dd872ec5e067f29c3"
       },
       {
         "slug": "docs/glossary/alias",
@@ -2998,6 +3086,70 @@
         "contentFingerprint": "46b9d5e466d1ff7bd1602c7b509eeea54adee96a6077167fa1224c72a76b7c74"
       },
       {
+        "slug": "docs/guides/ai/boundaries",
+        "permalink": "/docs/guides/ai/boundaries",
+        "title": "AI capability boundaries",
+        "visibility": "public",
+        "fingerprint": "3384a89130dd1a9d82bb6f453705d13f94d0573e0f95c0609f6dde07b1c1e558",
+        "contentFingerprint": "4509a27c458ca71f2739dc4188314ca70947d62c48b48d620dfffe41f8615469"
+      },
+      {
+        "slug": "docs/guides/ai/boundaries.ja",
+        "permalink": "/ja/docs/guides/ai/boundaries",
+        "title": "AI 連携の境界",
+        "visibility": "public",
+        "fingerprint": "92bbb90da8607062de03927f43e78a16c0606195dc2707713e0cb47898b5de1a",
+        "contentFingerprint": "058359791a24d71e376bd31c4a90f35a30bd84b12ebf522b5a11cc58d6038ce6"
+      },
+      {
+        "slug": "docs/guides/ai/mcp",
+        "permalink": "/docs/guides/ai/mcp",
+        "title": "Connect MCP",
+        "visibility": "public",
+        "fingerprint": "88db98ec8324cd5f4d195240138b873b8f1de03e87713dc68a7adf59e576eaaf",
+        "contentFingerprint": "c474ba051cd9b8cd95d1b081dd6a114d862e3cbe3f2ac232f67ef3ce4c0c211a"
+      },
+      {
+        "slug": "docs/guides/ai/mcp.ja",
+        "permalink": "/ja/docs/guides/ai/mcp",
+        "title": "MCP を接続する",
+        "visibility": "public",
+        "fingerprint": "1ac9aa14721f3d88c7384305bd9fa2bc95348a0d2145b9585647e308ea59da17",
+        "contentFingerprint": "45349bbb783a20923951670c6100dcc67d9bdaf4f9075a5993b89637175050ca"
+      },
+      {
+        "slug": "docs/guides/ai/project-guidance",
+        "permalink": "/docs/guides/ai/project-guidance",
+        "title": "Project guidance for AI",
+        "visibility": "public",
+        "fingerprint": "74dfb3f4611eb1d28f07d3b2da5e07899a574b9ec5e9f014bca1c2424e8c45c5",
+        "contentFingerprint": "c544f4dcb3915b53a610dbbb80e6c6c7274128319b134a8793e9cc3ab7187f35"
+      },
+      {
+        "slug": "docs/guides/ai/project-guidance.ja",
+        "permalink": "/ja/docs/guides/ai/project-guidance",
+        "title": "AI 向けのプロジェクト設定",
+        "visibility": "public",
+        "fingerprint": "1ceff2f4d0af320e5bb0fa276078dce4525a5586c5c7b2a96070390cadfea2b6",
+        "contentFingerprint": "99548f0e82217b2c20806ce3e72e29310241624299e36090a34f6e1dd3054600"
+      },
+      {
+        "slug": "docs/guides/ai/README",
+        "permalink": "/docs/guides/ai/",
+        "title": "AI integration",
+        "visibility": "public",
+        "fingerprint": "2d4c23a5d92c4ff40fc09fb38c1ffc6bc39b814bfbc066a65a3b26490648b9a2",
+        "contentFingerprint": "76cc8e91f6f1afdc3aa92a6513bc98fd3a337d6b2e862c5daf80230b5a33e84c"
+      },
+      {
+        "slug": "docs/guides/ai/README.ja",
+        "permalink": "/ja/docs/guides/ai/",
+        "title": "AI 連携",
+        "visibility": "public",
+        "fingerprint": "3f0cb83c5fecb1a0581c75c5513e25acc05c3e81d152b84d9f7fa61e63baa825",
+        "contentFingerprint": "a573e81fcc138ee41a64caea4366a23d712cd44ff1e50f77e96f933d9ec6ab79"
+      },
+      {
         "slug": "docs/guides/analytics",
         "permalink": "/docs/guides/analytics",
         "title": "Analytics",
@@ -3418,16 +3570,32 @@
         "permalink": "/docs/guides/editor-integration",
         "title": "Editor integration",
         "visibility": "public",
-        "fingerprint": "9273217a8c20dbe21347e37f321798194800610ca6247559788f500af94ba81e",
-        "contentFingerprint": "ef7bd07d0330dae08f680040126243fdee8ca252194b50f2911f567a7a5da0b9"
+        "fingerprint": "90b23f0de348b30adff099b7dd049cc1c72febb604fe315d9d35fd56d0e5bb76",
+        "contentFingerprint": "271c5b43dc293c9ff6eb08baa62565a26cc3f76b47a6276cda69e8c8dba320b7"
       },
       {
         "slug": "docs/guides/editor-integration.ja",
         "permalink": "/ja/docs/guides/editor-integration",
         "title": "エディタ連携",
         "visibility": "public",
-        "fingerprint": "1d08eaa10a017f6f44e6e2eac1be2aea879a74e69d221a90c24de8cbb8c83297",
-        "contentFingerprint": "87eee803b8e0274972f53858ab31cfe026a762c740f61f17f5f8cbef362f7ff2"
+        "fingerprint": "c1db92e8a57d223e8019d8516fab51194b5cefa6d215be4e10f368da15858cb0",
+        "contentFingerprint": "99ca2f21d0d59c1714ed8748317106839bf6f7baf16b7cb917ddcdb1c202b3a2"
+      },
+      {
+        "slug": "docs/guides/interactive-roots",
+        "permalink": "/docs/guides/interactive-roots",
+        "title": "Interactive Roots",
+        "visibility": "public",
+        "fingerprint": "58bb9ae0e5271fc3276639ce985129f4f5089276cf86dccc5e4915c373ed0870",
+        "contentFingerprint": "8d904b53bbdcaccce3f84e284e158f850b4bc70298847ed317c22600ef9c0e17"
+      },
+      {
+        "slug": "docs/guides/interactive-roots.ja",
+        "permalink": "/ja/docs/guides/interactive-roots",
+        "title": "インタラクティブなルート",
+        "visibility": "public",
+        "fingerprint": "505b75a360e539b9888ca9e36425f068aeb855989dd5eabb6c5ae647878116a0",
+        "contentFingerprint": "143a5156a60934dad2a94d15c4a5b8a6845bbdd7ba64274768b6987c79e0a7e9"
       },
       {
         "slug": "docs/guides/local-plugin-development",
@@ -3578,32 +3746,32 @@
         "permalink": "/docs/guides/",
         "title": "Guides",
         "visibility": "public",
-        "fingerprint": "bfb8c71a0d929b4384166c16a9ff683ad9e5180402f32cf1ebb50935870201d3",
-        "contentFingerprint": "709d6bfa2b0dc4f0f790cb2677def477098a8e42ef594b7e8cba1ae46ce634dd"
+        "fingerprint": "29dcd42a738329284577f8e06dc05f84cd774599aa005828b03e6da980dc54fb",
+        "contentFingerprint": "87d01ab8ae96b0647d68ed6e21bcd44834982388066375a6ab5f2e81aba11afd"
       },
       {
         "slug": "docs/guides/README.ja",
         "permalink": "/ja/docs/guides/",
         "title": "ガイド",
         "visibility": "public",
-        "fingerprint": "d6d107e9e3f16283289c0508dfc06c9449191bc9e20a28227f890b5a19e7821e",
-        "contentFingerprint": "a42527ad68780c12b0ca10f8edc2a9778562d0774feeff89c5168f9effae0997"
+        "fingerprint": "087c8900b36a00e1199dde5611a1535f58b8d9ca94ebefb3d7ccab1658f3d945",
+        "contentFingerprint": "0f5a511878707a7528515163f89848a0de434b5ed28f2942d8ef0b948d8a868a"
       },
       {
         "slug": "docs/guides/spa-navigation",
         "permalink": "/docs/guides/spa-navigation",
         "title": "SPA Navigation",
         "visibility": "public",
-        "fingerprint": "fe76dcde42104eefc192eb8f53bac56ca9ff78d0c99e16b36c492905fbccc506",
-        "contentFingerprint": "ca8376f959647ef85facf4a8ee581905f8e76ac75200295c27bd21dfbdb61440"
+        "fingerprint": "f244fcedbefb1dc9c156dd91eb0b009aebf3b7dd8c2d14d4ad15b867f10ca224",
+        "contentFingerprint": "d2bca4fab53d328e40f085260732073cb8fb8ffae3c0415b501d94e3304937ee"
       },
       {
         "slug": "docs/guides/spa-navigation.ja",
         "permalink": "/ja/docs/guides/spa-navigation",
         "title": "SPAナビゲーション",
         "visibility": "public",
-        "fingerprint": "8909c87f76945b8685c26b865bf04ecafbcbd075961201bda2bb72a64f4a6220",
-        "contentFingerprint": "130a7dbecbc9ae990b9742599c80ff684d40169e92ac3c2acec75762448b5408"
+        "fingerprint": "93deb779951a6152539060f88d2b2167b41c0f2ee5e21b894dd5b231574073f9",
+        "contentFingerprint": "ac736015557ad80bb8c9418b73782bfbacd45d65f6b1dacc03b27db969d57148"
       },
       {
         "slug": "docs/guides/upgrading",
@@ -3818,16 +3986,16 @@
         "permalink": "/docs/plugins/bases",
         "title": "Bases",
         "visibility": "public",
-        "fingerprint": "0de58ad8ebb83bcd015e06dc96a88c51d136ba70fe381e2cd80326cc170322b7",
-        "contentFingerprint": "f9c4b2afa65dda95d699a162e5ad7c01a2f96e74d1450ac6bfe6a3631849646d"
+        "fingerprint": "07db9574c19f41ea651363a3c966a83ee198d04371ec72689cf75d1905573e7d",
+        "contentFingerprint": "c73c80a4d1068185f21b417cd3ba137dd2cb0593b7c43b7d536e4a2d001ce42f"
       },
       {
         "slug": "docs/plugins/bases.ja",
         "permalink": "/ja/docs/plugins/bases",
         "title": "Bases",
         "visibility": "public",
-        "fingerprint": "ec7f5c962be42f2c42d01f21be5088db69d9413a87c931a7dac0579b642e3855",
-        "contentFingerprint": "b1d4f4a2a4a01b813460f6c48278568f6fcca59dded3ca2687b93abeb5fa2b2f"
+        "fingerprint": "50cf5a478257d4192ef99966d3e9e32e23257a4625382f9e6213f863dce33b11",
+        "contentFingerprint": "c9caf5af1bf9a20a807c1fd4089f250348ed723826c2d723776b8fe1c3249d12"
       },
       {
         "slug": "docs/plugins/breadcrumbs",
@@ -3962,16 +4130,16 @@
         "permalink": "/docs/plugins/code-tabs",
         "title": "Code Tabs",
         "visibility": "public",
-        "fingerprint": "129c2df60345f2fc7b992107da08072ed3706a120efcadb23b8b9e144695affd",
-        "contentFingerprint": "71a0a4e8b44952d825fb21eb73ce667aedd3e08d2e2aa07a121b836217bc30bc"
+        "fingerprint": "ae2059a938a3c24bcc3209fe43015edc8170edf05afe8270cd44bc8fb7b47826",
+        "contentFingerprint": "5375508ccd96937fa423618f29fbd547c43629015e4c7985f5819077298edc88"
       },
       {
         "slug": "docs/plugins/code-tabs.ja",
         "permalink": "/ja/docs/plugins/code-tabs",
         "title": "Code Tabs",
         "visibility": "public",
-        "fingerprint": "8d052cdf5f6bc24749fff47d1317f2277214c38ac95dcc07631c4b82d57b1153",
-        "contentFingerprint": "114c9fa915738e170dc79f7d5e2552e5193714e2042970ac4802d8a08e310ddf"
+        "fingerprint": "54086b1b4ae9d864a9ba20af3f6577b608eef23b3b2a4ee6953117fd2311bb3b",
+        "contentFingerprint": "ff4e9a6f2120213098f0abe3df034f9d58517f07ea735126e10662527bd26a2b"
       },
       {
         "slug": "docs/plugins/color-mode",
@@ -4036,6 +4204,22 @@
         "visibility": "public",
         "fingerprint": "15366b36e90a18a468768b35f306f75c3ce8c09891995a560735af7e782736ef",
         "contentFingerprint": "f4c3c968219bfb32fbf2ab31563a37096ed64eee3ad7add184bbae131c7241dc"
+      },
+      {
+        "slug": "docs/plugins/dataset",
+        "permalink": "/docs/plugins/dataset",
+        "title": "Dataset",
+        "visibility": "public",
+        "fingerprint": "58193ae58d4bb75ae70b2fa210877d780817bba2ab692fa2da0e164864a74b6f",
+        "contentFingerprint": "27b5e24df909c7902091475668f411b4751323a7b2172baaaa022a02366a0e06"
+      },
+      {
+        "slug": "docs/plugins/dataset.ja",
+        "permalink": "/ja/docs/plugins/dataset",
+        "title": "Dataset",
+        "visibility": "public",
+        "fingerprint": "182cf29c08a2431ba1474d2b6c93e9cf0f508450a9168173f58ebd7b189a9929",
+        "contentFingerprint": "222ea7ca49256fd75b85e908e5f0cc92200fa28419f5c1f8b41fa6b941fddf49"
       },
       {
         "slug": "docs/plugins/dataview",
@@ -4746,32 +4930,32 @@
         "permalink": "/docs/plugins/query",
         "title": "Query",
         "visibility": "public",
-        "fingerprint": "e129aeadd3c63d4c752efaebf841b835885233daabc23f2ad9899681150a7e45",
-        "contentFingerprint": "ba9b5b29212c0451357edd8081107b362f38357baa1013482fae0b5822b72275"
+        "fingerprint": "1f42a26b089d28d582bc45274b7779b485327a9bc22eca40fabc0133018df4a9",
+        "contentFingerprint": "c6d9c91b7b6d05f8e455a9e9dc75cf41a39c0f548e639bcd31c70f83d6231d41"
       },
       {
         "slug": "docs/plugins/query.ja",
         "permalink": "/ja/docs/plugins/query",
         "title": "Query",
         "visibility": "public",
-        "fingerprint": "400f181b51d0e00392a4e7bfecf4ed423ae3bc9c23e37f8cc08f99f50f9870bc",
-        "contentFingerprint": "5832b57bbdd587fd5c61236f124e0da19ca5b7b91832781b60fda5d899da9ab4"
+        "fingerprint": "99d2feb008f8f64757bf2a5acb57b41a024e097997bccec500850426f155d41c",
+        "contentFingerprint": "412504341b06182750eabc5f31dbe056862dac9a90a6f08c429f040c63685848"
       },
       {
         "slug": "docs/plugins/README",
         "permalink": "/docs/plugins/",
         "title": "Plugins",
         "visibility": "public",
-        "fingerprint": "33976fc1a268ddbd0c8641889515ad70a1c445c40213b6106253b70311619725",
-        "contentFingerprint": "b0f5030ac858a2e77af2d253fd4430e9ecc9a8d15df1ec94011887a53e317e11"
+        "fingerprint": "6cc2bcdc8d46f9fb00f9c1d68690c409ee0854a59c9a4d634d7b7cfa25da0256",
+        "contentFingerprint": "7e1e249882024f440fadca5d8f370557351f39f52c4bc8e8cc891ab51787e6ae"
       },
       {
         "slug": "docs/plugins/README.ja",
         "permalink": "/ja/docs/plugins/",
         "title": "プラグイン",
         "visibility": "public",
-        "fingerprint": "c49c83a2dc44eea583c6d9a012c6c904a6cf747e590dc90edb813800a6b1c434",
-        "contentFingerprint": "dc19086d80e89b4db818bcff445b1c91102a7225fa773f702072fa5db4acc4ac"
+        "fingerprint": "9d7f0b4b7c80ab5921445c9cac3bde1695b0ce4ccc130595978af72907cd12d5",
+        "contentFingerprint": "61f2918347c7f852360edd02b70666995d8b48ae5bb48034fab16fc12171f6de"
       },
       {
         "slug": "docs/plugins/recent-posts",
@@ -5226,16 +5410,16 @@
         "permalink": "/docs/plugins/showcase/code",
         "title": "Code",
         "visibility": "public",
-        "fingerprint": "94c4ce06d80b04df1713a6e9fd2245e2e5bec6443097ac963a61878873875e89",
-        "contentFingerprint": "69d86c329e55fe0854cb6a7f1bf510d0f85208561c2f7a2cf9c265b885f7e743"
+        "fingerprint": "a11a31511bac01385e34b60b48192a556420f3ba6d8cd430fc4f8d62cf974858",
+        "contentFingerprint": "ca8ddee68539ec286e2a61c520e75f82e45830f7311c6c0117099e88497a389a"
       },
       {
         "slug": "docs/plugins/showcase/code.ja",
         "permalink": "/ja/docs/plugins/showcase/code",
         "title": "Code",
         "visibility": "public",
-        "fingerprint": "8830930dadaf4968b8cc19d9c80663306d4f52679d6f903aeea4d8f93d66b875",
-        "contentFingerprint": "8ac1567af0a5ead3d5f6eee1f407420bb6687d73a17ed372677bba4ce82a3b3f"
+        "fingerprint": "987fbbb52d130ed0c19f6a9f2bed4eef81a05caaa42fa95843fc2a17963e6a86",
+        "contentFingerprint": "10fa9d5d46452ffd5bfaf4c334b8283ed3418db5130b038617cdaaa359ead091"
       },
       {
         "slug": "docs/plugins/showcase/developer-tools",
@@ -5306,16 +5490,16 @@
         "permalink": "/docs/plugins/showcase/knowledge-and-data",
         "title": "Knowledge and Data",
         "visibility": "public",
-        "fingerprint": "7c80cc1f62423c85843d3daea8ee515783018dc84e8ba501c14ec877316bab64",
-        "contentFingerprint": "d21111f531ca4beaf2f622d57e98a2d3eac5a6e5363aff8c7615abc860da08e9"
+        "fingerprint": "718d9fa2a66a6de1bf1e680c597279fe9c8ad63b5a7c577530ade33345a1585a",
+        "contentFingerprint": "e285d94aa7d506fc9d6dc8784bc3e260c56fe67e9a448208740368502c9d437e"
       },
       {
         "slug": "docs/plugins/showcase/knowledge-and-data.ja",
         "permalink": "/ja/docs/plugins/showcase/knowledge-and-data",
         "title": "ナレッジとデータ",
         "visibility": "public",
-        "fingerprint": "22c6141223d3b0c6ccaafa0e3bec768fc8c0db1e4e3ca65b71565bac0a4a95af",
-        "contentFingerprint": "0d5a912f220e39a4fa65c7aecd70a8ee0d79aa596c72f59cec045f815dd2b82d"
+        "fingerprint": "7d3bbae81a5d4fc4f61197be8772cea6f7fbc1ec958b2f3a2831a54d83996703",
+        "contentFingerprint": "e1e171e4926e1c8a3fdd6d14fd25012119dcc2081f51deeaa69e395aba7067db"
       },
       {
         "slug": "docs/plugins/showcase/media",
@@ -5498,16 +5682,16 @@
         "permalink": "/docs/plugins/vault-heatmap",
         "title": "Vault Heatmap",
         "visibility": "public",
-        "fingerprint": "21d7dd4b573bc7a029d9f04480f5b3dd22ec143fb06e68c9d481ecd0856b0069",
-        "contentFingerprint": "e27b37266f9184b63fdf41d43e61a298573ac8e1574a7364fb705eaa42669efc"
+        "fingerprint": "4c07b0326d949999d3403fb737c938e23cd45df09c2717ce6095b064be068905",
+        "contentFingerprint": "078d9d9b5da873457e33b26054a794168773d3986a0a8898ee126c43c65f1779"
       },
       {
         "slug": "docs/plugins/vault-heatmap.ja",
         "permalink": "/ja/docs/plugins/vault-heatmap",
         "title": "Vault Heatmap",
         "visibility": "public",
-        "fingerprint": "751e92248dfa72298a0740a05fafed7bd55a2ad2f1e0747daae0144611a5587a",
-        "contentFingerprint": "9fa1e881211c2c47aeaf4b64e3e63660612026aa2f6e1a6e80ba8a762b1a4bac"
+        "fingerprint": "3ed69a58ccd268a51a6a38148f0d2d5db990e124ba2a67f967fd74e6fbf8ef5e",
+        "contentFingerprint": "116972ae785ba7f37e3b8a8f1ac357df27e513492807dbaf563b87c879f1aebe"
       },
       {
         "slug": "docs/plugins/vega-lite",
@@ -5606,12 +5790,28 @@
         "contentFingerprint": "04b1372ef5f293b4123e254fcd40a2ddc87c32051e7a6929ec2c68bca37185bf"
       },
       {
+        "slug": "docs/reference/bridge",
+        "permalink": "/docs/reference/bridge",
+        "title": "Bridge API",
+        "visibility": "public",
+        "fingerprint": "4878bbe182b2cfcd441212adfee0c2a9e1fdeef9b83aab37bf3e4e2c92ddc07a",
+        "contentFingerprint": "5fa82b1e21afaea1d613e63b2f68f7287245d1f34a9407caa0d2926b9c7e2978"
+      },
+      {
+        "slug": "docs/reference/bridge.ja",
+        "permalink": "/ja/docs/reference/bridge",
+        "title": "ブリッジ API",
+        "visibility": "public",
+        "fingerprint": "63f11ac920745ddef21d91cd75197cb7e5548609c4acce1af966d5295c66409e",
+        "contentFingerprint": "6581761468909dfdce1303f0c0457e4eb96e6eb48215d3e0049a392b3edf10dc"
+      },
+      {
         "slug": "docs/reference/cli",
         "permalink": "/docs/reference/cli",
         "title": "CLI Reference",
         "visibility": "public",
-        "fingerprint": "3435361f984748de95c435ef1b443023fe258cedd664b837dd70a8eaddda216a",
-        "contentFingerprint": "ae898e4c8a609f4be26f1ddd9fb550839ccd1c25e857d607f3aa35993b8d8ad9"
+        "fingerprint": "d4fa52a9cc8b72b987f85daff57bb788eedfa35a8f0632fe7319b780b25c07b0",
+        "contentFingerprint": "5952bf77875e4405ea0bd26891f612c3a8c5c33430b37ec03d47734606826f74"
       },
       {
         "slug": "docs/reference/cli-extension",
@@ -5634,8 +5834,8 @@
         "permalink": "/ja/docs/reference/cli",
         "title": "CLI リファレンス",
         "visibility": "public",
-        "fingerprint": "1b95a548d9e08ecea6fb2319c41160f3ddaa64987860b9d6a0ec35a41de1454b",
-        "contentFingerprint": "115964ed4788902a1beba9988c0f8e24c690f6f009c9532c528e5c186fe8c131"
+        "fingerprint": "8e1cad6996cd1ff8915b33bd0bc777e167b678a9449f53934ef14951bae37225",
+        "contentFingerprint": "397c2e9d59ade710e87afe51016bfc04368e9b6b9b694c241537c2a7d0babbba"
       },
       {
         "slug": "docs/reference/cli/build-and-inspect",
@@ -5658,16 +5858,16 @@
         "permalink": "/docs/reference/cli/development",
         "title": "Development and checks",
         "visibility": "public",
-        "fingerprint": "45262e9e6dd39528daed332e78ae72a60557b94b0ed29cf4431d7ca6114f4adc",
-        "contentFingerprint": "467d35a0e9a5975b4ea9c8b47315c0f552816568536734c8a46256d35d601a08"
+        "fingerprint": "3c52c7bbcc4edec650a919c970f51c101992e5c5fdb1629ca04077893fd0486e",
+        "contentFingerprint": "2d439725526a2c032bf2416e17f3bef5f1bbe769b552eb8ec9a4edbfe97f7f3b"
       },
       {
         "slug": "docs/reference/cli/development.ja",
         "permalink": "/ja/docs/reference/cli/development",
         "title": "開発と検証",
         "visibility": "public",
-        "fingerprint": "7aac6fe5bb9802098af33c7350bddecd239bb02750638fbc5a6ad8991b1c0485",
-        "contentFingerprint": "0b4d68c1b39b57eece7179cd3c418c1900b33daeb5c7ed1dad30e1ea222a4405"
+        "fingerprint": "5943bb8bd32fc7ac0591d74999c19afa345af78ddaf9ddbeaaf882530e8fb399",
+        "contentFingerprint": "972b5aacc99128ebbea82e4c1a3dcf1bc1402e7eea0871d4accfa3b95213594e"
       },
       {
         "slug": "docs/reference/cli/publish",
@@ -5690,16 +5890,16 @@
         "permalink": "/docs/reference/cli/setup",
         "title": "Setup and creation",
         "visibility": "public",
-        "fingerprint": "07ad912626615e0a329a0174d354157e4c60c4cc5f9da56f986344e86052794e",
-        "contentFingerprint": "123f71665ab33cc44b552a39b529ac74368090f36f601fa736d1f0e066dbe30b"
+        "fingerprint": "2e07b3d9661cadb34ed146bd208c9f0b5ae91cc23108a2726fff15abc71398e9",
+        "contentFingerprint": "303b55a7a1bbf1fe999d68fa2f8e94e76576ecc8bd463db0901942eef6e61755"
       },
       {
         "slug": "docs/reference/cli/setup.ja",
         "permalink": "/ja/docs/reference/cli/setup",
         "title": "セットアップと作成",
         "visibility": "public",
-        "fingerprint": "b1d9f1d9c139510cfcc31c20bcb5b5428c8ef203e78cd1d222481a33c2699d5b",
-        "contentFingerprint": "2e45fadbca3489ecd268870e5a750d7f10e39dc9b296a0b4a2398ce3eea99bec"
+        "fingerprint": "6b0dcb1f297c466017a6afe9514ac6288b1b776df67e7f10637198fe56e0209b",
+        "contentFingerprint": "b068bcb8284a770ebe2034ef52145c2128e5910076d28aa9a0319b37fda47926"
       },
       {
         "slug": "docs/reference/configuration",
@@ -5962,32 +6162,32 @@
         "permalink": "/docs/reference/plugin-api/basics",
         "title": "The basic contract",
         "visibility": "public",
-        "fingerprint": "6f75577ce40c5441216c9a999c609b39e80b64cd02e538eb17391be6fbdd6d60",
-        "contentFingerprint": "9a51d04e03b4159aaf40ba67be085b23f229b15ab59e28ffb76eb3d9ddaa66ee"
+        "fingerprint": "53f4a2aecbddccf3c1648192e8e76995b8908ad3caf48f39b8c795d88412d66c",
+        "contentFingerprint": "7d6facc09065a65f6a660fe545ee58a745866d7d3c3c2ccfa7e481d84ab64b4d"
       },
       {
         "slug": "docs/reference/plugin-api/basics.ja",
         "permalink": "/ja/docs/reference/plugin-api/basics",
         "title": "基本の契約",
         "visibility": "public",
-        "fingerprint": "d83c73184fefc4aea98b009f06e700f0764cc16de93095fc0717ac757b6a93fd",
-        "contentFingerprint": "577dd303805ee451095677a0d9456a0f9d4e547445262230e7f6c6e229a92342"
+        "fingerprint": "12a350c26e9f9a5b4d7d717f2f03ea1edbeadd2d54040788335bba1cd8716d1c",
+        "contentFingerprint": "104aa67738bb1465133380430b712b19f5d7804346af2d59d8efe1e8cf651391"
       },
       {
         "slug": "docs/reference/plugin-api/content-processing",
         "permalink": "/docs/reference/plugin-api/content-processing",
         "title": "Content processing",
         "visibility": "public",
-        "fingerprint": "afa7fbef64592a9bce6bc00fd50a4788f42876a629df6bb67f6ceb744db8563b",
-        "contentFingerprint": "d5d62852b5753e9b65537273ee6893a4f1be6d6ccddc132cc80cb887fc22a66e"
+        "fingerprint": "75df08528b8b278a49704394803f3dadabb8c510edb2d5243a42dc82e5594d78",
+        "contentFingerprint": "51c611ac32c73a54173cd2071a5545db9495dc1c00de93f932c7cc93e30186fc"
       },
       {
         "slug": "docs/reference/plugin-api/content-processing.ja",
         "permalink": "/ja/docs/reference/plugin-api/content-processing",
         "title": "コンテンツ処理",
         "visibility": "public",
-        "fingerprint": "536852e7bcdcde1fea94c835248a2b21a8a5c1bffc588d4864b1527b1aa2b08d",
-        "contentFingerprint": "11a6c4519391bcedb8f0da8f3a436e2c2fdd411dc91777d65dfd7169ad70cbb8"
+        "fingerprint": "f4f910ce4cca1c27ca2a1ceebe0608e55670b6483837b8768628c0d88a989b25",
+        "contentFingerprint": "be36e1de771435c2a4f26ca1e1547933c4133a56723cb8758470f67e26e38ca7"
       },
       {
         "slug": "docs/reference/plugin-api/distribution",
@@ -6010,16 +6210,16 @@
         "permalink": "/docs/reference/plugin-api/ui-and-assets",
         "title": "UI, assets, and runtime",
         "visibility": "public",
-        "fingerprint": "6e0c215c9e1293e01b931d0a1e3a8a05a67b61e12594c014584011ba4de83155",
-        "contentFingerprint": "0bfe2129c4a3e85b005dfabef41b675977822ac2b57ab111e430211eab1cbe8c"
+        "fingerprint": "72bd6981f919ce257e862398c5a093b0f34be4ead79302d32cd90d873926579c",
+        "contentFingerprint": "52d942910a1c620bbf096c1793f9c0cf3792cf92c646d99a1e3d9d0ee2e94040"
       },
       {
         "slug": "docs/reference/plugin-api/ui-and-assets.ja",
         "permalink": "/ja/docs/reference/plugin-api/ui-and-assets",
         "title": "UI・アセット・実行時連携",
         "visibility": "public",
-        "fingerprint": "feba807d910d619cdf3ada7c2e884faa37bbc2100ce690ea9e9372c56d846f7b",
-        "contentFingerprint": "46fa346568fa1af135f3523891b308e7d3dcb87da10bdd39be7f38a6c00a6a1e"
+        "fingerprint": "f28df9b69e7891a4e1693f71f8eddee8392e08e00ae799e5fee6160baa8e0360",
+        "contentFingerprint": "70a70a6901c164c085fda97beccb5dad7f3a222c11376792d201e9382da3daed"
       },
       {
         "slug": "docs/reference/preview",
@@ -6042,16 +6242,16 @@
         "permalink": "/docs/reference/",
         "title": "Reference",
         "visibility": "public",
-        "fingerprint": "1e702efc1ce0a53dae0e91c476511d923f39ff4cb3173ddf84859e07dbc59a63",
-        "contentFingerprint": "6a561d8d7b36e21ddd0ac3f238ba31f4ab6cc762f6e596ec8d6d59d81b748223"
+        "fingerprint": "b6d7a8348dedb8c25a5554be354c0aad15d49512a3d11f5c63aef8e0c6fe1bbe",
+        "contentFingerprint": "3cb70e4e05ad8f0ccc857c60a60a2c4ec45edcd77c854cebd3a2fb28c3b12e1a"
       },
       {
         "slug": "docs/reference/README.ja",
         "permalink": "/ja/docs/reference/",
         "title": "リファレンス",
         "visibility": "public",
-        "fingerprint": "f64c8a6c8c17b79a94f7037c35cca33645aadcdfb6c618571e3561013175d581",
-        "contentFingerprint": "bf897a064d22df9f69e41b018b1139fe72b4e41096473bbc9e6b8f6287f9fa52"
+        "fingerprint": "70068d0a9fafd131a5786d7d1d5a1ea2ea6cd36e3da979735405a100421ae5b0",
+        "contentFingerprint": "572a6ad327d7e4a7896e4d4a2305bae06fc8ee87f66e19158fac55f4d7877230"
       },
       {
         "slug": "docs/reference/theme-api",
@@ -6074,16 +6274,16 @@
         "permalink": "/docs/releases",
         "title": "Release Notes",
         "visibility": "public",
-        "fingerprint": "36684a8080cade30d20483141ad561c928f03e5f25242b506672108664aef2d5",
-        "contentFingerprint": "5da0362140bc3b4dd0a7bceeacdbc78a9a65edac93e232cb7083afb310b6549b"
+        "fingerprint": "81538b58ff46aece6a05f562b1c220fb69a66ebb5784e5c3981daf1bdfbb7a2a",
+        "contentFingerprint": "0cb54a5becd5b06742a46070c0a6da4d64c2027a227beff2241e0c332d53db63"
       },
       {
         "slug": "docs/releases.ja",
         "permalink": "/ja/docs/releases",
         "title": "リリースノート",
         "visibility": "public",
-        "fingerprint": "5641b1ca65d677b3e7db1d5f2032b6683bbad85dd1de58a05d56c13aab4bbaa7",
-        "contentFingerprint": "d99e6887adf494ddd1a7ff6d7b517856cb537681d153bd9e75c0a35c96fdb593"
+        "fingerprint": "95f03eb52595bd4a5b50ee026464f0abaa28fe6f4e199450b46f940b94d7e114",
+        "contentFingerprint": "0ac14bdf48bc35b3e5ac99928fec310b091430c3225a763967f297dac527bfa7"
       },
       {
         "slug": "docs/security",
@@ -6433,6 +6633,11 @@
         "status": 301
       },
       {
+        "from": "/docs/guides/ai/README",
+        "to": "/docs/guides/ai/",
+        "status": 301
+      },
+      {
         "from": "/docs/guides/content-repositories",
         "to": "/docs/guides/deployment/separate-content-repository",
         "status": 301
@@ -6528,6 +6733,11 @@
         "status": 301
       },
       {
+        "from": "/ja/docs/guides/ai/README",
+        "to": "/ja/docs/guides/ai/",
+        "status": 301
+      },
+      {
         "from": "/ja/docs/guides/content-repositories",
         "to": "/ja/docs/guides/deployment/separate-content-repository",
         "status": 301
@@ -6598,7 +6808,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "3474cbe7a789e3ce9643dff04644e200ecf13803e992ffea63fc7cd245321025",
+    "artifactFingerprint": "acd508acf6c1568ad330258ae3f1d02125d1f4e14a733e49847905776db4e3bb",
     "provider": "cloudflare-workers"
   }
 }

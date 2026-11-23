@@ -1,8 +1,6 @@
-import { createRequire } from "node:module";
+import packageJson from "../package.json";
 
-const require = createRequire(import.meta.url);
-
-export const cliVersion = readVersion(require("../package.json"));
+export const cliVersion = readVersion(packageJson);
 
 function readVersion(value: unknown): string {
   if (

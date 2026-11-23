@@ -63,7 +63,7 @@ export function createDevIndicator(): DevIndicator {
       },
       fail: (message) => {
         if (!stop()) return;
-        progress.stop(`${message} (${elapsed()})`, 1);
+        progress.stop(`${message} (${elapsed()})`);
       },
     };
   }

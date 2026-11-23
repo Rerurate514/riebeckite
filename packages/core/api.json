@@ -2701,6 +2701,11 @@
       "type": false
     },
     {
+      "name": "reportVFileDiagnostic",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "resolveApiLifecycle",
       "value": true,
       "type": false
@@ -2892,6 +2897,11 @@
     },
     {
       "name": "RiebeckiteConfig",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "RiebeckiteIntegrations",
       "value": false,
       "type": true
     },
@@ -3114,6 +3124,11 @@
       "name": "validateThemeSettings",
       "value": true,
       "type": false
+    },
+    {
+      "name": "VFileDiagnostic",
+      "value": false,
+      "type": true
     },
     {
       "name": "VisibilityRule",

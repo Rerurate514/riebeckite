@@ -1,6 +1,18 @@
 import { publishingMetadata } from "./package_metadata_publishing.mjs";
 
 export function expectedFixedPackageMetadata(directory) {
+  if (directory === "packages/ai") {
+    return {
+      ...publishingMetadata(directory, false),
+      files: ["LICENSE", "README.md", "README_ja.md", "assets", "dist"],
+      scripts: {
+        build: "node ../../scripts/build_package.mjs",
+        test: 'node --import tsx --test "test/*.test.ts"',
+        prepack: "pnpm run build",
+      },
+    };
+  }
+
   if (directory === "packages/cli") {
     return {
       ...publishingMetadata(directory, false),

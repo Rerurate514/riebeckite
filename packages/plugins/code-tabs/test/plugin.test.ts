@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { ContentManager, resolveConfig } from "@riebeckite/core";
-import { codeTabs, remarkCodeMeta, type CodeTabsOptions } from "../index.js";
+import { type CodeTabsOptions, codeTabs, remarkCodeMeta } from "../index.js";
 
 const PANEL_TAG = /<div class="rr-code-tabs__panel"[^>]*>/g;
 const PROPS_ATTRIBUTE = /data-code-tabs-props="([^"]*)"/;

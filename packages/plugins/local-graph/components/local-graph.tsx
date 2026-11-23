@@ -33,9 +33,7 @@ const LocalGraph = (async (props: Readonly<LocalGraphProps>) => {
         id="riebeckite-local-graph-data"
         type="application/json"
         dangerouslySetInnerHTML={{
-          __html: escapeScriptJson(
-            JSON.stringify({ graph, showExplorerLink }),
-          ),
+          __html: escapeScriptJson(JSON.stringify({ graph, showExplorerLink })),
         }}
       />
     </>

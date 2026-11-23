@@ -149,7 +149,7 @@ test("keyboard navigation wraps and stays in sync", async (t) => {
     { key: "ArrowLeft", index: 2 },
     { key: "Home", index: 0 },
     { key: "End", index: 2 },
-  ];
+  ] as const;
   for (const step of steps) {
     await page.keyboard.press(step.key);
     assert.deepEqual(

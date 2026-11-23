@@ -93,6 +93,9 @@ The Unreleased section lists changes that are merged but not yet published to np
   Packages: `@riebeckite/ui`, `@riebeckite/plugin-code-tabs`, `@riebeckite/plugin-source-files`, `@riebeckite/plugin-local-graph`, `create-riebeckite`
   Migration: Replace `import \"@riebeckite/ui/drawer/client\"` with an explicit `initDrawers({ signal })` call inside the page initializer. Migrate code-tabs off `CodeTabsClientOptions` to the new `initCodeTabs()` client export (cache key becomes `code-tabs-v3`). Users importing `@riebeckite/ui/tabs` must move to the code-tabs island or their own implementation.
 
+- Content migration plans now reject malformed diagnostics, conflicts, selections, and skipped records instead of accepting them through type casts. Diagram and embed plugins also validate their incoming options with shared guards rather than unchecked casts. Core also exports the RiebeckiteIntegrations type and new VFile diagnostic helpers for plugin authors.
+  Packages: `@riebeckite/core`, `@riebeckite/node`, `@riebeckite/diagram`, `@riebeckite/plugin-bases`, `@riebeckite/plugin-canvas`, `@riebeckite/plugin-d2`, `@riebeckite/plugin-dataview`, `@riebeckite/plugin-flashcards`, `@riebeckite/plugin-frontmatter-transformer`, `@riebeckite/plugin-graphviz`, `@riebeckite/plugin-map`, `@riebeckite/plugin-markmap`, `@riebeckite/plugin-marp`, `@riebeckite/plugin-mermaid`, `@riebeckite/plugin-mermaid-pele`, `@riebeckite/plugin-plantuml`, `@riebeckite/plugin-qr-code`, `@riebeckite/plugin-rich-embed`, `@riebeckite/plugin-vega-lite`, `@riebeckite/plugin-wavedrom`
+
 ### Removed
 
 - **Breaking:** Removed the unused `spa()` helper from `@riebeckite/spa`. SPA navigation is configured through the `spa` key in `riebeckite.config.ts`, and the helper never affected the runtime, so existing sites behave the same.

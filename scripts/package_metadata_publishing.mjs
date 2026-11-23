@@ -1,6 +1,11 @@
 import { supportedNodeEngines } from "./package_metadata_base.mjs";
 
 const packagePublishingMetadata = {
+  "packages/ai": {
+    description:
+      "AI integration configuration and mutation policy for Riebeckite.",
+    keywords: ["riebeckite", "ai", "mcp"],
+  },
   "packages/cli": {
     description:
       "Command-line tooling for building and validating Riebeckite sites.",

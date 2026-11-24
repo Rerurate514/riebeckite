@@ -60,14 +60,16 @@ table.
 
 ### ui
 
-`ui.locale` pins the language of the strings the framework and its plugins render, independently of the content language. `ui.labels` maps a language code to a label dictionary; codes match case-insensitively and a missing key or language falls back to the built-in English labels. The core keys are `contents`, `contentsHeading`, `filter`, `filterNavigation`, `collapse`, `expand`, `searchNotes`, `searchPlaceholder`, `searchNotesPlaceholder`, `nearbyNotes`, `seriesNavigation`, and `language`. Plugin chrome adds `sidebarNavigation`, `localGraph`, `openInExplorer`, `localGraphTruncated`, `localGraphTruncatedExplorer`, `explorer`, `explorerPanels`, `clearFilters`, `tags`, `folders`, `notes`, `showingNotes`, `noteGraph`, `localGraphMode`, `globalGraphMode`, `localMode`, `globalMode`, `selectNoteHint`, `history`, `historyChanges`, `historyToggle`, `commitHistory`, `untitledChange`, `search`, `closeSearch`, `searchQuery`, `searchFilterHint`, `searchResults`, and `seriesPosition`; the garden explorer detail panel adds `selectedNote`, `outgoingLinks`, `backlinks`, `relatedNotes`, and `noNotes`. `showingNotes`, `globalGraphMode`, `historyChanges`, and `seriesPosition` keep their `{...}` placeholders in a translation. Plugin components read them through `useUiLabels()`.
+`ui.locale` pins the language of the strings that framework plugins render, independently of the content language. Plugins ship their own English and Japanese labels, so the UI follows the content language by default. `ui.labels` overrides individual strings under a plugin namespace, language, and key, for example `ui.labels.toc.ja.contentsHeading`. Language codes match case-insensitively, and a missing key falls back to the plugin's dictionary for that language, then to English. The namespaces and keys are listed in [UI strings](../guides/localization/setup.md#ui-strings).
 
 ```ts
 export default defineConfig({
   ui: {
     locale: "ja",
     labels: {
-      ja: { contents: "目次" },
+      toc: {
+        ja: { contentsHeading: "目次" },
+      },
     },
   },
 });

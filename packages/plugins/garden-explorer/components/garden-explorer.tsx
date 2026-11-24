@@ -6,6 +6,7 @@ import type {
   GardenExplorerData,
   GardenExplorerGraphMode,
 } from "../src/garden-explorer.js";
+import { gardenExplorerLabels } from "../src/labels.js";
 import { searchGardenExplorerNotes } from "../src/search-notes.js";
 import { FilterList, NoteDetails, NoteList } from "./explorer-panels.js";
 import {
@@ -20,7 +21,7 @@ type Props = {
 };
 
 export default function GardenExplorer(props: Props) {
-  const labels = useUiLabels();
+  const labels = useUiLabels(gardenExplorerLabels);
   const noteBySlug = useMemo(
     () => new Map(props.data.notes.map((note) => [note.slug, note])),
     [props.data.notes],

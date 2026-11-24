@@ -1,4 +1,5 @@
 import { useSiteContext, useUiLabels } from "@riebeckite/ui";
+import { navigationLabels } from "../src/labels.js";
 import type { NavigationItem } from "../src/types.js";
 
 export type SidebarNavigationProps = {
@@ -17,7 +18,7 @@ export type SidebarNavigationProps = {
 
 export function SidebarNavigation(props: SidebarNavigationProps) {
   const site = useSiteContext();
-  const labels = useUiLabels();
+  const labels = useUiLabels(navigationLabels);
   const path = props.path ?? site?.path ?? "/";
   const language = props.language ?? site?.language;
   const searchable = props.searchable ?? false;
@@ -92,7 +93,7 @@ function SidebarItem(
   props: Omit<SidebarItemsProps, "items"> & { readonly item: NavigationItem },
 ) {
   const children = props.item.children ?? [];
-  const labels = useUiLabels();
+  const labels = useUiLabels(navigationLabels);
   const active = props.item.href
     ? isActive(props.item.href, props.path, props.language)
     : false;

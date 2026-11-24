@@ -109,22 +109,44 @@ A layout that separates languages by directory (`en/note.md`, `ja/note.md`) is *
 
 ## UI strings
 
-The l10n plugin localizes content URLs, in-body links, and head tags; it does not translate the UI strings that the framework and its plugins render. Supply those with `ui`:
+The l10n plugin localizes content URLs, in-body links, and head tags; it does not translate the UI strings that the framework and its plugins render. Each plugin ships its own English and Japanese labels next to the component that uses them, so the UI follows the content language without configuration. Use `ui.locale` to pin the UI language:
+
+```ts
+export default defineConfig({
+  ui: { locale: "ja" },
+});
+```
+
+To change individual words, override them per plugin namespace, language, and key:
 
 ```ts
 export default defineConfig({
   ui: {
-    locale: "ja",
     labels: {
-      ja: {
-        contents: "目次",
-        searchPlaceholder: "ノートを検索 (tag:, lang:, path: ...)",
+      search: {
+        ja: { searchPlaceholder: "ノートを検索" },
+      },
+      toc: {
+        ja: { contentsHeading: "目次" },
       },
     },
   },
 });
 ```
 
-`ui.locale` pins the UI language independently of the content language, so a Japanese site can keep English UI strings. `ui.labels` maps a language code to a dictionary, and codes match case-insensitively. A missing key, or a language without a dictionary, falls back to the built-in English labels. The core keys are `contents`, `contentsHeading`, `filter`, `filterNavigation`, `collapse`, `expand`, `searchNotes`, `searchPlaceholder`, `searchNotesPlaceholder`, `nearbyNotes`, `seriesNavigation`, and `language`. Plugin chrome adds `sidebarNavigation`, `localGraph`, `openInExplorer`, `localGraphTruncated`, `localGraphTruncatedExplorer`, `explorer`, `explorerPanels`, `clearFilters`, `tags`, `folders`, `notes`, `showingNotes`, `noteGraph`, `localGraphMode`, `globalGraphMode`, `localMode`, `globalMode`, `selectNoteHint`, `history`, `historyChanges`, `historyToggle`, `commitHistory`, `untitledChange`, `search`, `closeSearch`, `searchQuery`, `searchFilterHint`, `searchResults`, and `seriesPosition`. The garden explorer detail panel adds `selectedNote`, `outgoingLinks`, `backlinks`, `relatedNotes`, and `noNotes`. `showingNotes`, `globalGraphMode`, `historyChanges`, and `seriesPosition` are templates: keep their `{...}` placeholders in a translation. Plugin components pick these up through `useUiLabels()`, so no plugin code changes.
+`ui.labels` maps a plugin namespace to language codes and label keys. A plugin's namespace is its package name without `@riebeckite/plugin-`, for example `search`, `local-graph`, or `garden-explorer`. Language codes match case-insensitively; namespaces and keys are exact. A missing key falls back to the plugin's dictionary for that language, then to English.
 
-A dictionary can also carry keys for your own shell code. This site reads `documentation`, `tableOfContents`, `menu`, `navigation`, `primaryNavigation`, `secondaryNavigation`, and `footerNavigation` from `config.ui.labels` in `website/app/lib/ui-labels.ts`, because those labels belong to the shell rather than the framework contract. `<html lang>` and the article date locale still follow the content language and are set in `website/app/components/article/article.tsx`.
+The keys by namespace are:
+
+- `toc`: `contents`, `contentsHeading`
+- `navigation`: `filter`, `filterNavigation`, `collapse`, `expand`, `sidebarNavigation`
+- `search`: `search`, `searchNotes`, `closeSearch`, `searchQuery`, `searchPlaceholder`, `searchFilterHint`, `searchResults`
+- `series`: `seriesNavigation`, `seriesPosition`
+- `l10n`: `language`
+- `local-graph`: `localGraph`, `nearbyNotes`, `openInExplorer`, `localGraphTruncated`, `localGraphTruncatedExplorer`
+- `diff`: `history`, `historyChanges`, `collapse`, `expand`, `historyToggle`, `commitHistory`, `untitledChange`
+- `garden-explorer`: `explorer`, `explorerPanels`, `searchNotes`, `searchNotesPlaceholder`, `clearFilters`, `tags`, `folders`, `notes`, `showingNotes`, `noteGraph`, `localGraphMode`, `globalGraphMode`, `localMode`, `globalMode`, `selectNoteHint`, `selectedNote`, `outgoingLinks`, `backlinks`, `relatedNotes`, `noNotes`
+
+`showingNotes`, `globalGraphMode`, `historyChanges`, and `seriesPosition` are templates: keep their `{...}` placeholders in an override.
+
+Plugins declare their strings with `defineUiLabels(namespace, { en, ja })` and read them through `useUiLabels(definition)`, so translations live beside the feature that renders them. Your own shell can use the same pair: this site declares `site` labels in `website/labels.ts` and resolves them with `resolveUiLabels(siteLabels, language, config.ui?.labels)`, so overrides still go under `ui.labels.site`. `<html lang>` and the article date locale follow the content language and are set in `website/app/components/article/article.tsx`.

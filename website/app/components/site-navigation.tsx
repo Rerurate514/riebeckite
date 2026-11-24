@@ -3,7 +3,7 @@ import { useSiteContext } from "@riebeckite/ui";
 import type { Child } from "hono/jsx";
 import { resolveWebLocale } from "../lib/locale";
 import { localizeSiteHref } from "../lib/navigation-link";
-import { resolveUiLabels } from "../lib/ui-labels";
+import { resolveShellLabels } from "../lib/ui-labels";
 
 export function SiteHeader(props: { readonly children?: Child }) {
   const site = useSiteContext();
@@ -24,7 +24,7 @@ export function SiteHeader(props: { readonly children?: Child }) {
       </a>
       <nav
         class="site-header__navigation"
-        aria-label={resolveUiLabels(site?.language).primaryNavigation}
+        aria-label={resolveShellLabels(site?.language).primaryNavigation}
       >
         {hasNavigation ? (
           <SiteNav
@@ -52,7 +52,7 @@ export function SiteDrawerNavigation() {
       />
       <SiteNav
         placement="secondary"
-        label={resolveUiLabels(site?.language).secondaryNavigation}
+        label={resolveShellLabels(site?.language).secondaryNavigation}
         localizeHref={(href) => localizeSiteHref(href, path)}
       />
     </>
@@ -93,7 +93,7 @@ export function SiteFooter() {
         </div>
         <SiteNav
           placement="secondary"
-          label={resolveUiLabels(site?.language).footerNavigation}
+          label={resolveShellLabels(site?.language).footerNavigation}
           class="site-footer__navigation"
           localizeHref={(href) => localizeSiteHref(href, path)}
         />

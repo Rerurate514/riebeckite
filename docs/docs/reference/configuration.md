@@ -34,11 +34,12 @@ and options.
 `provenance` controls build provenance recording; see
 [Data Provenance](../framework/build-system/provenance.md).
 
-`ui` sets the language and labels of the strings the framework and its plugins
-render. `ui.locale` pins that language independently of the content language, and
-`ui.labels` maps a language code to a label dictionary; missing keys fall back to
-the built-in English labels. See [Localization setup](../guides/localization/setup.md)
-for the keys and an example.
+`ui` sets the language and overrides for the strings that framework plugins
+render. Plugins ship their own English and Japanese labels, so the UI follows the
+content language by default; `ui.locale` pins it independently, and `ui.labels`
+overrides individual strings per plugin namespace and language. See
+[Localization setup](../guides/localization/setup.md#ui-strings) for the
+namespaces, keys, and an example.
 
 ## How this section is organized
 

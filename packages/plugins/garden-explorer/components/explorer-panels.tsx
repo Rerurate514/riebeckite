@@ -1,5 +1,5 @@
-import type { UiLabels } from "@riebeckite/ui";
 import type { GardenExplorerNote } from "../src/garden-explorer.js";
+import type { GardenExplorerLabels } from "../src/labels.js";
 
 export function FilterList(props: {
   title: string;
@@ -56,7 +56,7 @@ export function NoteDetails(props: {
   noteBySlug: Map<string, GardenExplorerNote>;
   relatedNotes: GardenExplorerNote[];
   onSelect: (slug: string) => void;
-  labels: UiLabels;
+  labels: GardenExplorerLabels;
 }) {
   return (
     <div class="rr-garden-explorer__details">

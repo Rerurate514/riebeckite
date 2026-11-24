@@ -1,11 +1,12 @@
 import { buildGraphDocument } from "@riebeckite/graph";
 import GraphView from "@riebeckite/graph/ui";
 import { useUiLabels } from "@riebeckite/ui";
+import { localGraphLabels } from "../src/labels.js";
 import type { LocalGraphViewProps } from "../src/local-graph.js";
 
 export function LocalGraphView(props: LocalGraphViewProps) {
   const { graph } = props;
-  const labels = useUiLabels();
+  const labels = useUiLabels(localGraphLabels);
   const document =
     graph.document ??
     buildGraphDocument(

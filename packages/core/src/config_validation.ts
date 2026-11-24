@@ -267,20 +267,29 @@ export function validateUi(
     issues.push({ path: "ui.labels", message: "Expected an object." });
     return;
   }
-  for (const [locale, dictionary] of Object.entries(labels)) {
-    if (!isRecord(dictionary)) {
+  for (const [namespace, locales] of Object.entries(labels)) {
+    if (!isRecord(locales)) {
       issues.push({
-        path: `ui.labels.${locale}`,
+        path: `ui.labels.${namespace}`,
         message: "Expected an object.",
       });
       continue;
     }
-    for (const [key, label] of Object.entries(dictionary)) {
-      if (typeof label !== "string") {
+    for (const [locale, dictionary] of Object.entries(locales)) {
+      if (!isRecord(dictionary)) {
         issues.push({
-          path: `ui.labels.${locale}.${key}`,
-          message: "Expected a string.",
+          path: `ui.labels.${namespace}.${locale}`,
+          message: "Expected an object.",
         });
+        continue;
+      }
+      for (const [key, label] of Object.entries(dictionary)) {
+        if (typeof label !== "string") {
+          issues.push({
+            path: `ui.labels.${namespace}.${locale}.${key}`,
+            message: "Expected a string.",
+          });
+        }
       }
     }
   }

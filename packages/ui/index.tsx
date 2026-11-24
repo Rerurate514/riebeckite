@@ -8,10 +8,21 @@ import type {
 } from "@riebeckite/core";
 import type { Child } from "hono/jsx";
 import { createContext, useContext } from "hono/jsx";
-import { resolveUiLabels, type UiLabels } from "./labels.js";
+import {
+  type ResolvedUiLabels,
+  resolveUiLabels,
+  type UiLabelDictionaries,
+  type UiLabelDictionary,
+  type UiLabelsDefinition,
+} from "./labels.js";
 
-export type { UiLabels } from "./labels.js";
-export { DEFAULT_UI_LABELS, resolveUiLabels } from "./labels.js";
+export type {
+  ResolvedUiLabels,
+  UiLabelDictionaries,
+  UiLabelDictionary,
+  UiLabelsDefinition,
+} from "./labels.js";
+export { defineUiLabels, resolveUiLabels } from "./labels.js";
 
 export type SiteContextValue = {
   config: ResolvedRiebeckiteConfig;
@@ -55,10 +66,13 @@ export function useArticleContext(): ArticleContextValue | undefined {
   return useContext(ArticleContext);
 }
 
-export function useUiLabels(): UiLabels {
+export function useUiLabels<
+  D extends { readonly en: UiLabelDictionary } & UiLabelDictionaries,
+>(definition: UiLabelsDefinition<D>): ResolvedUiLabels<UiLabelsDefinition<D>> {
   const context = useContext(SiteContext);
-  if (!context) return resolveUiLabels(undefined);
+  if (!context) return resolveUiLabels(definition, undefined);
   return resolveUiLabels(
+    definition,
     context.config.ui?.locale ?? context.language,
     context.config.ui?.labels,
   );

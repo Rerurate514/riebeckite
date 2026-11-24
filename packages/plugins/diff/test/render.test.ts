@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { assertGolden } from "@riebeckite/test";
-import { DEFAULT_UI_LABELS } from "@riebeckite/ui";
+import { resolveUiLabels } from "@riebeckite/ui";
 import type { DiffRevision, MarkdownRevision, PostDiff } from "../index.ts";
 import {
   createLineDiff,
@@ -10,6 +10,7 @@ import {
   renderDiffPanel,
 } from "../index.ts";
 import { formatDiffDate } from "../src/components/format-date.ts";
+import { diffLabels } from "../src/labels.ts";
 
 function revision(
   hash: string,
@@ -126,7 +127,11 @@ test("renderDiffHistory uses the provided labels over the English defaults", () 
   const html = renderDiffHistory({
     revisions,
     selected,
-    labels: { ...DEFAULT_UI_LABELS, collapse: "折りたたむ", expand: "開く" },
+    labels: {
+      ...resolveUiLabels(diffLabels, "en"),
+      collapse: "折りたたむ",
+      expand: "開く",
+    },
   });
 
   assert.ok(html.includes("折りたたむ"));

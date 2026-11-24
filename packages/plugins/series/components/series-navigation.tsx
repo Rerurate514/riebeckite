@@ -2,6 +2,7 @@ import type { PluginSiteComponent } from "@riebeckite/core";
 import { selectLocalizedEntries } from "@riebeckite/core";
 import { useArticleContext, useSiteContext, useUiLabels } from "@riebeckite/ui";
 import { html } from "hono/html";
+import { seriesLabels } from "../src/labels.js";
 import { collectSeriesIndexes, getSeriesNavigation } from "../src/series.js";
 import type {
   ResolvedSeriesOptions,
@@ -23,7 +24,7 @@ const SeriesNavigation = (async ({
 }: Readonly<SeriesNavigationProps>) => {
   const site = useSiteContext();
   const article = useArticleContext();
-  const labels = useUiLabels();
+  const labels = useUiLabels(seriesLabels);
   const configured = site ? findSeriesOptions(site.config.plugins) : undefined;
   const currentSlug = explicitCurrentSlug ?? article?.entry?.slug;
   const sourceIndex =

@@ -1,4 +1,5 @@
 import { useUiLabels } from "@riebeckite/ui";
+import { searchLabels } from "../src/labels.js";
 
 type SearchBarProps = {
   readonly class?: string;
@@ -6,7 +7,7 @@ type SearchBarProps = {
 };
 
 export default function SearchBar(props: SearchBarProps = {}) {
-  const labels = useUiLabels();
+  const labels = useUiLabels(searchLabels);
   const className = ["rr-search-bar", "rr-search", props.class, props.className]
     .filter(Boolean)
     .join(" ");

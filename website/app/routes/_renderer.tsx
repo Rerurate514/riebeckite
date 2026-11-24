@@ -27,7 +27,7 @@ import {
 } from "../components/site-navigation";
 import { getHreflangAlternates, toOgLocale } from "../lib/locale";
 import { buildWebsiteSeo, getHtmlLanguage } from "../lib/seo";
-import { resolveUiLabels } from "../lib/ui-labels";
+import { resolveShellLabels } from "../lib/ui-labels";
 
 export default jsxRenderer(async ({ children }, c) => {
   const { site } = config;
@@ -51,7 +51,7 @@ export default jsxRenderer(async ({ children }, c) => {
   const themeStyle = getThemeStyle(config.theme);
   const shell = c.get("shell");
   const tocItems = c.get("tocItems");
-  const uiLabels = resolveUiLabels(htmlLanguage);
+  const uiLabels = resolveShellLabels(htmlLanguage);
 
   return (
     <SiteProvider

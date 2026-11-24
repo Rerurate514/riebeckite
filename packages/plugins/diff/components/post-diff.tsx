@@ -1,6 +1,7 @@
 import { type PluginSiteComponent, resolvePlugins } from "@riebeckite/core";
 import { useArticleContext, useSiteContext, useUiLabels } from "@riebeckite/ui";
 import { createPostDiffApi } from "../src/api.js";
+import { diffLabels } from "../src/labels.js";
 import type {
   DiffPluginOptions,
   PostDiff as PostDiffData,
@@ -11,11 +12,12 @@ export type PostDiffProps = {
   readonly title?: string;
 };
 
-const PostDiff = (({ diff, title = "History" }: Readonly<PostDiffProps>) => {
+const PostDiff = (({ diff, title }: Readonly<PostDiffProps>) => {
+  const labels = useUiLabels(diffLabels);
   if (!diff) return null;
   return (
     <section class="rr-diff-history" data-rr-diff-history>
-      <h2 class="rr-diff-history__title">{title}</h2>
+      <h2 class="rr-diff-history__title">{title ?? labels.history}</h2>
       <p class="rr-diff-history__meta">
         {diff.from ? `${diff.from.shortHash} → ` : ""}
         {diff.to.shortHash}
@@ -51,7 +53,7 @@ export async function ArticlePostDiffView(
 ) {
   const site = useSiteContext();
   const article = useArticleContext();
-  const labels = useUiLabels();
+  const labels = useUiLabels(diffLabels);
   if (!site || !article?.entry) return [];
   const options = findDiffOptions(site.config.plugins);
   if (!options || options.ui?.enabled === false) return [];

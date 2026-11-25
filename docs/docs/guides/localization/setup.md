@@ -150,7 +150,7 @@ The keys by namespace are:
 - `autocardlink`: `copyUrl`, `copy`, `copied`
 - `bases`: `tableView`, `cards`, `view`, `baseDefinition`, `matchingNotes`, `noMatchingNotes`, `noMatchingNotesInThisGroup`, `noValue`, `viewsNotAvailableInStaticBuild`
 - `calculator`: `calculating`, `result`
-- `canvas`: `canvas`, `empty`
+- `canvas`: `canvas`, `empty`, `controls-aria`, `zoom-in`, `zoom-out`, `zoom-to-fit`, `zoom-to-selection`, `reset-zoom`
 - `code-enhance`: `copyCode`, `copy`, `copied`, `wrap`, `collapse`, `expand`
 - `flashcards`: `flashcards`
 - `image-compare`: `comparison`, `comparisonPosition`, `before`, `after`
@@ -166,4 +166,4 @@ The keys by namespace are:
 
 `showingNotes`, `globalGraphMode`, `historyChanges`, `seriesPosition`, `bases.view`, `timeline.language`, `search.result`, and `search.results` are templates: keep their `{...}` placeholders in an override.
 
-Plugins declare their strings with `defineUiLabels(namespace, { en, ja })` and read them through `useUiLabels(definition)`, so translations live beside the feature that renders them. Your own shell can use the same pair: this site declares `site` labels in `website/labels.ts` and resolves them with `resolveUiLabels(siteLabels, language, config.ui?.labels)`, so overrides still go under `ui.labels.site`. `<html lang>` and the article date locale follow the content language and are set in `website/app/components/article/article.tsx`. For the plugin-author side of the system, see [UI labels](../../reference/ui-labels.md).
+Plugins declare their strings with `defineUiLabels(namespace, { en, ja })` and read them through `useUiLabels(definition)`, so translations live beside the feature that renders them. Your own shell can use the same pair: this site declares `site` labels in `website/labels.ts` and resolves them with `resolveUiLabels(siteLabels, createUiLabelContext(config, language))`, so overrides still go under `ui.labels.site`. `<html lang>` and the article date locale follow the content language and are set in `website/app/components/article/article.tsx`. For the plugin-author side of the system, see [UI labels](../../reference/ui-labels.md).

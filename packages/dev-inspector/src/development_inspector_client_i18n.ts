@@ -315,6 +315,7 @@ const inspectorClientI18nPart2 = String.raw`  "{size} each · SHA-256 {hash}": "
   "Requested locale": "要求ロケール",
   "Source": "取得元",
   "UI labels": "UI ラベル",
+  "Unused UI label overrides:": "未使用の UI ラベル上書き:",
   "Value": "値",
   "Build duration": "ビルド時間",
   "Manifest hooks": "マニフェストフック",

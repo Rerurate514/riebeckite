@@ -30,7 +30,7 @@ export const searchLabels = defineUiLabels("search", {
 });
 ```
 
-The namespace is the package name without `@riebeckite/plugin-`, for example `search`, `local-graph`, or `image-compare`. Site overrides and the `ui.labels` config use this exact namespace, so keep it stable after release. Keys are identifiers, not English sentences; changing a key breaks site overrides, while changing a value does not.
+The namespace is the package name without `@riebeckite/plugin-`, for example `search`, `local-graph`, or `image-compare`. Site overrides and the `ui.labels` config use this exact namespace, so keep it stable after release. Keys are identifiers, not English sentences; changing a key breaks site overrides, while changing a value does not. `defineUiLabels` also registers the definition process-wide under its namespace — that registration is what makes it appear in the inspector's **UI labels** tab — so a later definition with the same namespace replaces an earlier one.
 
 ## Read labels in a component
 
@@ -52,7 +52,7 @@ export function SearchBar() {
 2. the plugin's dictionary for the active language;
 3. site overrides from `ui.labels[namespace][language][key]`.
 
-The active language is `ui.locale` when set, otherwise the language of the rendered content. Language codes are compared case-insensitively; underscores and hyphens are equivalent, and a full tag such as `ja-JP` or `ja_JP` falls back to its primary subtag (`ja`) when the exact tag is absent. Empty strings and non-string values are ignored. A key that exists only in a non-English dictionary does not appear in the resolved type.
+The active language is `ui.locale` when set, otherwise the language of the rendered content. Language codes are compared case-insensitively; underscores and hyphens are equivalent, and a full tag such as `ja-JP` or `ja_JP` falls back to its primary subtag (`ja`) when the exact tag is absent. Empty strings and non-string values are ignored. A key the English dictionary does not define is ignored, both in the resolved value and in the type.
 
 ## Read labels without a component
 
@@ -137,9 +137,9 @@ export default defineConfig({
 });
 ```
 
-Overrides only need the keys they change. The full key list per namespace is in [Localization setup](../guides/localization/setup.md#ui-strings).
+Overrides only need the keys they change. An override whose value is an empty string is ignored: the label keeps its dictionary value. The full key list per namespace is in [Localization setup](../guides/localization/setup.md#ui-strings).
 
-In development, the inspector's **UI labels** tab shows each loaded namespace, the requested and matched locale, every resolved value, and whether it came from English, a plugin dictionary, or a site override.
+In development, the inspector's **UI labels** tab shows each loaded namespace, the requested and matched locale, every resolved value, and whether it came from English, a plugin dictionary, or a site override. Override keys in `ui.labels` that no loaded definition uses are listed there as unused overrides.
 
 ## Related
 

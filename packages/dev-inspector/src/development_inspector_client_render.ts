@@ -40,9 +40,12 @@ function overviewReport(report) {
     '</dl>' + slowest;
 }
 
-function labelsReport(definitions) {
-  if (!Array.isArray(definitions) || definitions.length === 0) return '<p class="status">' + t("No UI labels are loaded.") + '</p>';
-  return definitions.map((definition) => {
+function labelsReport(definitions, unknownOverrides) {
+  const warning = Array.isArray(unknownOverrides) && unknownOverrides.length > 0
+    ? '<p class="failure">' + t("Unused UI label overrides:") + '</p><ul>' + unknownOverrides.map((entry) => '<li><code>' + escapeHtml(entry) + '</code></li>').join("") + '</ul>'
+    : "";
+  if (!Array.isArray(definitions) || definitions.length === 0) return warning + '<p class="status">' + t("No UI labels are loaded.") + '</p>';
+  return warning + definitions.map((definition) => {
     const rows = Object.entries(definition.labels || {}).map(([key, value]) =>
       '<tr><td>' + escapeHtml(key) + '</td><td>' + escapeHtml(String(value)) + '</td><td>' + escapeHtml(definition.sources?.[key] || "en") + '</td></tr>'
     ).join("");

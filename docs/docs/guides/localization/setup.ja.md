@@ -167,7 +167,7 @@ export default defineConfig({
 - `autocardlink`: `copyUrl`、`copy`、`copied`
 - `bases`: `tableView`、`cards`、`view`、`baseDefinition`、`matchingNotes`、`noMatchingNotes`、`noMatchingNotesInThisGroup`、`noValue`、`viewsNotAvailableInStaticBuild`
 - `calculator`: `calculating`、`result`
-- `canvas`: `canvas`、`empty`
+- `canvas`: `canvas`、`empty`、`controls-aria`、`zoom-in`、`zoom-out`、`zoom-to-fit`、`zoom-to-selection`、`reset-zoom`
 - `code-enhance`: `copyCode`、`copy`、`copied`、`wrap`、`collapse`、`expand`
 - `flashcards`: `flashcards`
 - `image-compare`: `comparison`、`comparisonPosition`、`before`、`after`
@@ -183,4 +183,4 @@ export default defineConfig({
 
 `showingNotes`、`globalGraphMode`、`historyChanges`、`seriesPosition`、`bases.view`、`timeline.language`、`search.result`、`search.results` はテンプレートなので、上書きでも `{...}` のプレースホルダーを残してください。
 
-プラグインは `defineUiLabels(namespace, { en, ja })` で文言を宣言し、`useUiLabels(definition)` で読みます。翻訳は、それを描画する機能の隣に置かれます。サイト独自のシェルも同じ組み合わせを使えます。このサイトでは `website/labels.ts` に `site` のラベルを宣言し、`resolveUiLabels(siteLabels, language, config.ui?.labels)` で解決しているため、上書きは `ui.labels.site` の下に置きます。`<html lang>` と記事の日付のロケールはコンテンツの言語に従い、`website/app/components/article/article.tsx` で設定しています。プラグイン作者向けの API は [UI ラベル](../../reference/ui-labels.ja.md) にあります。
+プラグインは `defineUiLabels(namespace, { en, ja })` で文言を宣言し、`useUiLabels(definition)` で読みます。翻訳は、それを描画する機能の隣に置かれます。サイト独自のシェルも同じ組み合わせを使えます。このサイトでは `website/labels.ts` に `site` のラベルを宣言し、`resolveUiLabels(siteLabels, createUiLabelContext(config, language))` で解決しているため、上書きは `ui.labels.site` の下に置きます。`<html lang>` と記事の日付のロケールはコンテンツの言語に従い、`website/app/components/article/article.tsx` で設定しています。プラグイン作者向けの API は [UI ラベル](../../reference/ui-labels.ja.md) にあります。

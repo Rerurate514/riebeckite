@@ -65,7 +65,7 @@ export function initDevelopmentInspector() {
   const builtInTabs = [
     { id: "overview", label: "Overview", render: () => overviewReport(report) },
     { id: "content", label: "Content", render: () => contentReport(report.content) },
-    { id: "labels", label: "UI labels", render: () => labelsReport(report.labels) },
+    { id: "labels", label: "UI labels", render: () => labelsReport(report.labels, report.unknownLabelOverrides) },
     { id: "diagnostics", label: "Diagnostics", render: () => diagnosticList(report.diagnostics, report) },
     { id: "api", label: "API", render: () => apiLifecycleReport(report.apiLifecycle, report.diagnostics) },
     { id: "dependencies", label: "Dependencies", load: (current) => { if (!graphData) void loadGraph(current); }, render: () => graphReport(graphData) + dependencyReport(report.dependencies) },

@@ -55,6 +55,22 @@ test("ignores empty and non-string overrides", () => {
   assert.equal(resolved.showing, "{total} 件中 {shown} 件を表示");
 });
 
+test("ignores dictionaries and overrides with keys outside English", () => {
+  const extra = defineUiLabels("example-extra", {
+    en: { search: "Search" },
+    ja: { search: "検索", stray: "放り込まれたキー" },
+  });
+  const resolved = resolveUiLabels(labels, {
+    language: "ja",
+    overrides: { example: { ja: { search: "ノート検索", unknown: "無視" } } },
+  });
+  assert.equal(resolved.search, "ノート検索");
+  assert.deepEqual(Object.keys(resolved), Object.keys(labels.dictionaries.en));
+  assert.deepEqual(Object.keys(resolveUiLabels(extra, { language: "ja" })), [
+    "search",
+  ]);
+});
+
 test("keeps template placeholders in plugin dictionaries", () => {
   assert.equal(labels.dictionaries.en.showing, "showing {shown} of {total}");
 });

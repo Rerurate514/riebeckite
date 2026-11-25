@@ -47,6 +47,25 @@ export function createReportMiddlewares(
         )
         .find((value) => value !== undefined);
       const uiLabels = createUiLabelContext(application.config, language);
+      const definitions = getUiLabelDefinitions();
+      const overrideNamespaces = new Set(
+        definitions.map((definition) => definition.namespace),
+      );
+      const overrides = application.config.ui?.labels ?? {};
+      const unknownLabelOverrides = [
+        ...definitions.flatMap((definition) => {
+          const knownKeys = new Set(Object.keys(definition.dictionaries.en));
+          return Object.entries(overrides[definition.namespace] ?? {}).flatMap(
+            ([languageKey, dictionary]) =>
+              Object.keys(dictionary ?? {})
+                .filter((key) => !knownKeys.has(key))
+                .map((key) => `${definition.namespace}.${languageKey}.${key}`),
+          );
+        }),
+        ...Object.keys(overrides)
+          .filter((namespace) => !overrideNamespaces.has(namespace))
+          .map((namespace) => `${namespace}.*`),
+      ];
       response.setHeader("content-type", "application/json; charset=utf-8");
       response.setHeader("cache-control", "no-store");
       response.end(
@@ -55,10 +74,11 @@ export function createReportMiddlewares(
           generatedAt: new Date().toISOString(),
           currentPage,
           currentPageSources,
-          labels: getUiLabelDefinitions().map((definition) => ({
+          labels: definitions.map((definition) => ({
             namespace: definition.namespace,
             ...resolveUiLabelsWithTrace(definition, uiLabels),
           })),
+          unknownLabelOverrides,
           theme: application.config.theme.name,
           themeConfig: inspectThemeConfig(application.config.theme),
           plugins: application.config.plugins.map((plugin, index) => ({

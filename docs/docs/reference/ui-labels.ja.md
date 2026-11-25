@@ -30,7 +30,7 @@ export const searchLabels = defineUiLabels("search", {
 });
 ```
 
-名前空間は `@riebeckite/plugin-` を除いたパッケージ名です。たとえば `search`、`local-graph`、`image-compare` です。サイトの上書きと `ui.labels` 設定はこの名前空間をそのまま使うため、公開後は変えないでください。キーは識別子であり、英語の文ではありません。キーを変えるとサイトの上書きが壊れますが、値を変えても壊れません。
+名前空間は `@riebeckite/plugin-` を除いたパッケージ名です。たとえば `search`、`local-graph`、`image-compare` です。サイトの上書きと `ui.labels` 設定はこの名前空間をそのまま使うため、公開後は変えないでください。キーは識別子であり、英語の文ではありません。キーを変えるとサイトの上書きが壊れますが、値を変えても壊れません。`defineUiLabels` は定義を名前空間でプロセス全体に登録します。この登録によりインスペクターの **UI ラベル** タブに表示されます。同じ名前空間の定義は、後から登録したものが前のものを置き換えます。
 
 ## コンポーネントで読む
 
@@ -52,23 +52,24 @@ export function SearchBar() {
 2. 有効な言語に対応するプラグインの辞書。
 3. `ui.labels[namespace][language][key]` のサイトの上書き。
 
-有効な言語は、`ui.locale` があればその値、なければ描画中のコンテンツの言語です。言語コードは大文字と小文字を区別せず、アンダースコアとハイフンは同じに扱います。`ja-JP` や `ja_JP` のような完全なタグは、完全一致する辞書がなければ主要サブタグ（`ja`）に一致します。空文字列と文字列以外の値は使いません。英語以外の辞書にしかないキーは、解決後の型に現れません。
+有効な言語は、`ui.locale` があればその値、なければ描画中のコンテンツの言語です。言語コードは大文字と小文字を区別せず、アンダースコアとハイフンは同じに扱います。`ja-JP` や `ja_JP` のような完全なタグは、完全一致する辞書がなければ主要サブタグ（`ja`）に一致します。空文字列と文字列以外の値は使いません。英語の辞書に定義のないキーは、解決後の値でも型でも無視されます。
 
 ## コンポーネント以外で読む
 
-サーバーのコードと文字列を組み立てるレンダラーでは `resolveUiLabels` を使います。出力が属する言語と、利用できる場合はサイトの `ui.labels` の値を渡します。
+サーバーのコードと文字列を組み立てるレンダラーでは、`UiLabelContext` を渡して `resolveUiLabels` を使います。Core はプラグインのページ解決と Markdown / HTML パイプラインの拡張に `context.uiLabels` を提供します。`ui.locale` を優先し、次に出力の言語を選び、サイトの上書きを含みます。
 
 ```ts
+import type { UiLabelContext } from "@riebeckite/core";
 import { resolveUiLabels } from "@riebeckite/ui";
 import { seriesLabels } from "./labels.js";
 
-export function renderSeries(index: SeriesIndex, language?: string): string {
-  const labels = resolveUiLabels(seriesLabels, language);
+export function renderSeries(index: SeriesIndex, uiLabels?: UiLabelContext): string {
+  const labels = resolveUiLabels(seriesLabels, uiLabels);
   return `<nav aria-label="${labels.seriesNavigation}">...</nav>`;
 }
 ```
 
-`language` が `undefined` のときは英語の既定値になります。レンダラーがすでに言語を受け取っている場合（ページのロケール、`entry.publicLocation.language`、解決済みの `htmlLanguage`、関数の引数）は、`"en"` を直書きせずにその値を渡してください。
+単体のレンダラーは任意の `UiLabelContext` を受け取ります。渡さなければ英語を解決します。フレームワークのエントリポイントは、ロケールの文字列と `ui.labels` を別々に渡す代わりに、受け取ったコンテキストをそのまま渡してください。
 
 クライアントエントリでは `@riebeckite/ui/labels` の `resolveClientUiLabels` を使います。ページの言語と、フレームワークがクライアントへ渡すサイトの `ui.locale` / `ui.labels` を読むため、ブラウザでも上書きが反映されます。サブパスから読み込むと、JSX のコンポーネントエントリがバンドルに入りません。
 
@@ -106,6 +107,7 @@ export function DiffHistory(props: { labels?: DiffLabels }) {
 | `UiLabelDictionaries` | 言語ごとの辞書。`Readonly<Record<string, UiLabelDictionary>>` |
 | `UiLabelsDefinition<D>` | 名前空間と辞書。`defineUiLabels` の返り値 |
 | `ResolvedUiLabels<T>` | 定義の `en` のキーに対応する、平坦なラベルのオブジェクト |
+| `UiLabelContext` | 有効な言語とサイトの上書き。`@riebeckite/core` から公開 |
 
 `defineUiLabels` と型は `@riebeckite/ui` から公開しています。`resolveUiLabels` は `@riebeckite/ui/labels` からも読み込め、クライアントエントリから安全に使えます。
 
@@ -116,7 +118,7 @@ export function DiffHistory(props: { labels?: DiffLabels }) {
 - 英語の値は移行前に描画していた文字列と同じにしてください。変えると利用者に見える差分になります。
 - 日本語は別のロケールディレクトリではなく同じ `labels.ts` に書いてください。どちらでも辞書はプラグインと一緒に配布されます。
 - 既存のプラグインオプションを重複させないでください。ラベルのオプションがすでにある場合は、オプションを優先し、共有ラベルは既定値として使います。
-- 言語を取得できないレンダラーでは英語を解決し、任意の `language` 引数を受け取るようにしてください。ページの言語を知っている呼び出し元が値を渡せます。このために新しい設定項目を増やさないでください。
+- ラベルのコンテキストを取得できないレンダラーでは英語を解決し、任意の `UiLabelContext` を受け取るようにしてください。プラグイン固有のロケールや上書きの設定項目を増やさないでください。
 - `en` と `ja` の両方について、テンプレートの値を含めて解決する小さなテストを追加してください。プラグインのほかの場所で英語の文字列を直書きして検査しないでください。
 
 ## 上書き
@@ -135,7 +137,9 @@ export default defineConfig({
 });
 ```
 
-上書きには変更するキーだけを書きます。名前空間ごとのキーの一覧は[ローカライズの設定](../guides/localization/setup.ja.md#ui-の文言)にあります。
+上書きには変更するキーだけを書きます。値が空文字列の上書きは無視され、ラベルは辞書の値のままです。名前空間ごとのキーの一覧は[ローカライズの設定](../guides/localization/setup.ja.md#ui-の文言)にあります。
+
+開発中は、インスペクターの **UI ラベル** タブに、読み込まれた名前空間ごとの要求ロケールと一致ロケール、解決済みのすべての値、そして英語・プラグインの辞書・サイトの上書きのどれが使われたかが表示されます。読み込まれたどの定義でも使われない `ui.labels` のキーは、未使用の上書きとして表示されます。
 
 ## 関連
 

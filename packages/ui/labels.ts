@@ -121,7 +121,11 @@ function mergeDictionary(
   if (entry === undefined) return undefined;
   const [locale, dictionary] = entry;
   for (const [key, value] of Object.entries(dictionary)) {
-    if (typeof value === "string" && value !== "") {
+    if (
+      Object.hasOwn(target, key) &&
+      typeof value === "string" &&
+      value !== ""
+    ) {
       target[key] = value;
       sources[key] = source;
     }

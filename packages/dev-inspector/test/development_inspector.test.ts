@@ -749,7 +749,10 @@ test("development inspector reports resolved UI labels", async () => {
         site: { title: "Test", locale: "en" },
         ui: {
           locale: "ja",
-          labels: { "inspector-test": { ja: { title: "上書き" } } },
+          labels: {
+            "inspector-test": { ja: { title: "上書き", unknownKey: "無視" } },
+            "missing-namespace": { ja: { title: "無視" } },
+          },
         },
       }),
       configRoot: directory,
@@ -775,6 +778,10 @@ test("development inspector reports resolved UI labels", async () => {
         sources: { title: "override" },
       },
     );
+    assert.deepEqual(report.unknownLabelOverrides, [
+      "inspector-test.ja.unknownKey",
+      "missing-namespace.*",
+    ]);
   });
 });
 

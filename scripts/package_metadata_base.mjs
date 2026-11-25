@@ -11,6 +11,6 @@ export const sharedPackageMetadata = {
   bugs: { url: "https://github.com/Rerurate514/riebeckite/issues" },
 };
 
-// Match Vite 8, used by the CLI and the HonoX integration. In particular,
-// Node 21 and early Node 22 releases are not in its supported range.
-export const supportedNodeEngines = { node: "^20.19.0 || >=22.12.0" };
+// Vite 8, used by the CLI and the HonoX integration, needs Node 22.12+.
+// Node 22.13 is the baseline so the lint toolchain does not warn.
+export const supportedNodeEngines = { node: "^22.13.0 || ^24.0.0 || ^26.0.0" };

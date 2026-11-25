@@ -6,9 +6,9 @@ import { fileURLToPath } from "node:url";
 /**
  * Dependency-free golden assertion for `node:test`.
  *
- * Node's built-in snapshot assertion (`t.assert.snapshot`) needs Node 22.3+,
- * but Riebeckite supports Node 20.19+, so tests record expected output as
- * committed golden files and compare against them here instead.
+ * Tests record expected output as committed golden files and compare against
+ * them here instead of using the built-in snapshot assertion, so large
+ * expectations can be regenerated and reviewed as explicit diffs.
  *
  * A missing golden file fails the test. Run `pnpm test:update` at the
  * repository root (or set `UPDATE_GOLDEN=1` for a single package) to write the

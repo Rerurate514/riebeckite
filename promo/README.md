@@ -21,7 +21,7 @@ The demo only shows features that were verified against the built site: blog ren
 
 ## Regenerate
 
-Requirements: Node.js 20+, and a local copy of the built Riebeckite site.
+Requirements: Node.js 22.13+, and a local copy of the built Riebeckite site.
 
 ```bash
 cd promo

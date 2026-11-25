@@ -26,9 +26,9 @@ pnpm add -D @riebeckite/test
 ## Unit-test helpers
 
 `assertGolden` and `assertGoldenJson` record expensive output as committed
-golden files instead of asserting it by hand. Node's built-in snapshot
-assertion needs Node 22.3+, but Riebeckite supports Node 20.19+, so this helper
-covers the supported range.
+golden files instead of asserting it by hand. The helper keeps large
+expectations in committed files that can be regenerated and reviewed as
+explicit diffs.
 
 ```ts
 import { assertGolden, assertGoldenJson } from "@riebeckite/test";

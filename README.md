@@ -74,7 +74,7 @@ The static site is written to `dist/`. New notes appear once they have `publish:
 
 To run without prompts, pass a directory and preset, for example `npx create-riebeckite my-site --preset starter`. This mode does not install dependencies; run `npm install` in the folder before `dev`.
 
-Riebeckite needs Node.js `^20.19.0` or `>=22.12.0` and npm (npm ships with Node.js). Local development does not require Git; Git and a GitHub account are needed only for deployment workflows that use GitHub.
+Riebeckite needs Node.js `^22.13.0`, `^24.0.0`, or `^26.0.0` and npm (npm ships with Node.js). Local development does not require Git; Git and a GitHub account are needed only for deployment workflows that use GitHub.
 
 See [Getting Started](https://riebeckite.dev/docs/getting-started/) for requirements, deployment, and the generated project layout.
 

@@ -74,7 +74,7 @@ npm exec riebeckite build
 
 質問を省略する場合は、フォルダ名とプリセットを渡します（例: `npx create-riebeckite my-site --preset starter`）。この方法では依存関係がインストールされないため、`dev` の前にフォルダ内で `npm install` を実行してください。
 
-Riebeckite には Node.js `^20.19.0` または `>=22.12.0` と npm が必要です（npm は Node.js に同梱されています）。ローカルでの開発に Git は不要です。Git と GitHub アカウントは、GitHub を使うデプロイの設定にだけ必要です。
+Riebeckite には Node.js `^22.13.0`、`^24.0.0`、`^26.0.0` のいずれかと npm が必要です（npm は Node.js に同梱されています）。ローカルでの開発に Git は不要です。Git と GitHub アカウントは、GitHub を使うデプロイの設定にだけ必要です。
 
 必要な環境、公開手順、生成されるプロジェクトの構成は [Getting Started](https://riebeckite.dev/ja/docs/getting-started/) を参照してください。
 

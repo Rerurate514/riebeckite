@@ -14,7 +14,7 @@ This page takes you from an empty machine to a running site. It assumes nothing 
 
 | Item | Why | Where |
 | --- | --- | --- |
-| Node.js | Runs the Riebeckite commands. Requires `^20.19.0` or `>=22.12.0` | [nodejs.org](https://nodejs.org/) |
+| Node.js | Runs the Riebeckite commands. Requires `^22.13.0`, `^24.0.0`, or `^26.0.0` | [nodejs.org](https://nodejs.org/) |
 | A terminal | Where you type commands | **PowerShell** on Windows, **Terminal** on macOS |
 | Git | Optional; used for repository history and GitHub deployment | [git-scm.com](https://git-scm.com/) |
 | A GitHub account | Used for automatic deployment with GitHub Actions | [github.com](https://github.com/) |
@@ -29,7 +29,7 @@ node -v
 npm -v
 ```
 
-`node -v` must report a version matching `^20.19.0` or `>=22.12.0`, such as `v20.19.0`, `v22.12.0`, or `v24`. Update Node.js if yours is older or is an unsupported release such as `v21`. If a command is not found, install that tool and reopen the terminal.
+`node -v` must report a version matching `^22.13.0`, `^24.0.0`, or `^26.0.0`, such as `v22.13.0`, `v24`, or `v26`. Update Node.js if yours is older or is an unsupported release such as `v23`. If a command is not found, install that tool and reopen the terminal.
 
 ## Create a site
 

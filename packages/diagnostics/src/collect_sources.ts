@@ -63,7 +63,7 @@ export async function collectOutputDiagnostics(
 
 export function environmentDiagnostics(): readonly DevelopmentDiagnostic[] {
   const [major = 0, minor = 0] = process.versions.node.split(".").map(Number);
-  const supported = major === 20 ? minor >= 19 : major >= 22;
+  const supported = major === 22 ? minor >= 13 : major === 24 || major === 26;
   if (supported) return [];
   return [
     {
@@ -81,7 +81,7 @@ export function environmentDiagnostics(): readonly DevelopmentDiagnostic[] {
       subject: { kind: "environment", value: process.versions.node },
       fix: {
         kind: "manual",
-        description: "Use Node.js ^20.19.0 or >=22.12.0.",
+        description: "Use Node.js ^22.13.0, ^24.0.0, or ^26.0.0.",
       },
     },
   ];

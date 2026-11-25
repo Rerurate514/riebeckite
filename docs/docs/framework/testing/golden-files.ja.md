@@ -123,4 +123,4 @@ Riebeckite では、Node.js 組み込みの Snapshot アサーションを使っ
 --test-update-snapshots
 ```
 
-このフラグは Node.js 22.3 以降を必要とします。Riebeckite は Node.js 20.19 以降も対象としているため、独自の Golden File ヘルパーを用意しています。
+Riebeckite では、期待値を committed なファイルとして管理し、差分を明示的に確認しながら更新できるよう、独自の Golden File ヘルパーを用意しています。

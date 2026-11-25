@@ -55,4 +55,5 @@ Do not treat updating the golden file as the fix itself: confirm why the output
 changed before regenerating it.
 
 Node's built-in snapshot assertion (`--test-update-snapshots`) is intentionally
-not used because it requires Node 22.3+, while Riebeckite supports Node 20.19+.
+not used; the golden helper keeps expected output in committed files that the
+repository can regenerate and review explicitly.

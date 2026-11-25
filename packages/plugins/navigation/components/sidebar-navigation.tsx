@@ -33,6 +33,8 @@ export function SidebarNavigation(props: SidebarNavigationProps) {
       data-sidebar-navigation
       data-sidebar-auto-expand={autoExpandActive ? "true" : "false"}
       data-sidebar-state-key={props.stateKey}
+      data-sidebar-collapse-label={labels.collapse}
+      data-sidebar-expand-label={labels.expand}
     >
       {searchable ? (
         <label class="rb-sidebar-navigation__search">

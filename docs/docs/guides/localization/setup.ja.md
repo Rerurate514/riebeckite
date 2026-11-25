@@ -151,13 +151,13 @@ export default defineConfig({
 });
 ```
 
-`ui.labels` は、プラグインの名前空間から言語コード、ラベルキーへと対応付けます。名前空間はパッケージ名から `@riebeckite/plugin-` を除いたものです（例: `search`、`local-graph`、`garden-explorer`）。言語コードは大文字と小文字を区別しません。名前空間とキーは完全一致です。キーが見つからない場合は、その言語のプラグイン内の辞書、次に英語へフォールバックします。
+`ui.labels` は、プラグインの名前空間から言語コード、ラベルキーへと対応付けます。名前空間はパッケージ名から `@riebeckite/plugin-` を除いたものです（例: `search`、`local-graph`、`garden-explorer`）。言語コードは大文字と小文字を区別せず、アンダースコアとハイフンは同じに扱います。`ja-JP` や `ja_JP` のような完全なタグは、完全一致する辞書がなければ主要サブタグ（`ja`）に一致します。名前空間とキーは完全一致です。キーが見つからない場合は、その言語のプラグイン内の辞書、次に英語へフォールバックします。
 
 名前空間ごとのキーは次のとおりです。
 
 - `toc`: `contents`、`contentsHeading`
-- `navigation`: `filter`、`filterNavigation`、`collapse`、`expand`、`sidebarNavigation`、`siteNavigation`
-- `search`: `search`、`searchNotes`、`closeSearch`、`searchQuery`、`searchPlaceholder`、`searchFilterHint`、`searchResults`、`loading`、`notFound`、`notFoundActions`、`noResults`、`result`、`results`
+- `navigation`: `filter`、`filterNavigation`、`collapse`、`expand`、`sidebarNavigation`、`siteNavigation`、`menu`
+- `search`: `search`、`searchNotes`、`closeSearch`、`searchQuery`、`searchPlaceholder`、`searchFilterHint`、`searchResults`、`loading`、`notFound`、`notFoundActions`、`noResults`、`result`、`results`、`emptyQuery`、`candidatesHeading`、`homeLabel`、`notFoundDescription`、`searchLabel`
 - `series`: `seriesNavigation`、`seriesPosition`
 - `l10n`: `language`
 - `local-graph`: `localGraph`、`nearbyNotes`、`openInExplorer`、`localGraphTruncated`、`localGraphTruncatedExplorer`
@@ -165,18 +165,21 @@ export default defineConfig({
 - `garden-explorer`: `explorer`、`explorerPanels`、`searchNotes`、`searchNotesPlaceholder`、`clearFilters`、`tags`、`folders`、`notes`、`showingNotes`、`noteGraph`、`localGraphMode`、`globalGraphMode`、`localMode`、`globalMode`、`selectNoteHint`、`selectedNote`、`outgoingLinks`、`backlinks`、`relatedNotes`、`noNotes`
 - `article-metadata`: `regionLabel`
 - `autocardlink`: `copyUrl`、`copy`、`copied`
-- `bases`: `tableView`、`cards`、`view`
-- `calculator`: `calculating`
-- `canvas`: `canvas`
-- `code-enhance`: `copyCode`、`copied`、`wrap`、`collapse`、`expand`
+- `bases`: `tableView`、`cards`、`view`、`baseDefinition`、`matchingNotes`、`noMatchingNotes`、`noMatchingNotesInThisGroup`、`noValue`、`viewsNotAvailableInStaticBuild`
+- `calculator`: `calculating`、`result`
+- `canvas`: `canvas`、`empty`
+- `code-enhance`: `copyCode`、`copy`、`copied`、`wrap`、`collapse`、`expand`
 - `flashcards`: `flashcards`
-- `image-compare`: `comparisonPosition`、`before`、`after`
-- `marp`: `previousSlide`、`nextSlide`
+- `image-compare`: `comparison`、`comparisonPosition`、`before`、`after`
+- `marp`: `previousSlide`、`nextSlide`、`fullscreen`、`exitFullscreen`
 - `properties`: `properties`
 - `qr-code`: `qrCode`
 - `sidenotes`: `openLabel`、`ariaLabel`
-- `taxonomy`: `relatedTags`、`feeds`
+- `taxonomy`: `relatedTags`、`feeds`、`foldersTitle`、`tagsTitle`
 - `timeline`: `language`
+- `vault-heatmap`: `summaryFormat`、`noActivity`、`update`、`updates`、`day`、`days`
+- `ux`: `readingProgress`
+- `site`: `documentation`、`tableOfContents`、`menu`、`navigation`、`primaryNavigation`、`secondaryNavigation`、`footerNavigation`
 
 `showingNotes`、`globalGraphMode`、`historyChanges`、`seriesPosition`、`bases.view`、`timeline.language`、`search.result`、`search.results` はテンプレートなので、上書きでも `{...}` のプレースホルダーを残してください。
 

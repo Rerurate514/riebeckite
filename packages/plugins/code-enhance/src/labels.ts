@@ -11,6 +11,7 @@ export const codeEnhanceLabels = defineUiLabels("code-enhance", {
   },
   ja: {
     copyCode: "コピー",
+    copy: "コピー",
     copied: "コピーしました",
     wrap: "折り返し",
     collapse: "折りたたむ",

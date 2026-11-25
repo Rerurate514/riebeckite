@@ -1,13 +1,13 @@
 /** @jsxRuntime automatic */
 /** @jsxImportSource hono/jsx */
 
-import { resolveUiLabels } from "@riebeckite/ui";
+import { resolveClientUiLabels } from "@riebeckite/ui";
 import { useState } from "hono/jsx";
 import { createRoot } from "hono/jsx/dom/client";
 import { flashcardsLabels } from "./labels.js";
 import type { FlashcardsCard } from "./types.js";
 
-const FLASHCARDS_LABELS = resolveUiLabels(flashcardsLabels, undefined);
+const FLASHCARDS_LABELS = resolveClientUiLabels(flashcardsLabels);
 
 export type FlashcardsDeckProps = {
   cards: readonly FlashcardsCard[];

@@ -3,6 +3,7 @@ import {
   escapeHtml,
   escapeHtmlAttribute,
 } from "@riebeckite/core";
+import type { UiLabelDictionaries } from "@riebeckite/ui";
 import { type ResolvedUiLabels, resolveUiLabels } from "@riebeckite/ui/labels";
 import { matchesCondition } from "./evaluate.js";
 import { basesLabels } from "./labels.js";
@@ -26,15 +27,16 @@ import type { BasesOptions, BasesSpec, BasesView } from "./types.js";
 
 type BasesLabels = ResolvedUiLabels<typeof basesLabels>;
 
-/** Renders a compiled Base definition to HTML. */
+/** Renders a compiled labels.baseDefinition to HTML. */
 export function renderBases(
   spec: BasesSpec,
   options: BasesOptions,
   entries: readonly ContentManifestEntry[],
   source: string,
   language?: string,
+  overrides?: Readonly<Record<string, UiLabelDictionaries>>,
 ): string {
-  const labels = resolveUiLabels(basesLabels, language);
+  const labels = resolveUiLabels(basesLabels, language, overrides);
   const className = options.className ?? "rb-bases";
   const views = selectViews(spec, options.view);
   const limit = resolveLimit(options.limit);
@@ -44,7 +46,9 @@ export function renderBases(
     )
     .join("");
   const fallback =
-    options.showFallback === false ? "" : renderFallback(className, source);
+    options.showFallback === false
+      ? ""
+      : renderFallback(className, source, labels);
   const firstType = views[0]?.type ?? "table";
 
   return `<div class="${escapeHtmlAttribute(className)}" data-bases data-bases-view="${firstType}">${sections}${fallback}</div>`;
@@ -73,15 +77,15 @@ function renderView(
   const name = view.name
     ? `<h3 class="${escapeHtmlAttribute(className)}__view-name">${escapeHtml(view.name)}</h3>`
     : "";
-  const count = `<p class="${escapeHtmlAttribute(className)}__count">${selected.length} matching ${selected.length === 1 ? "note" : "notes"}</p>`;
+  const count = `<p class="${escapeHtmlAttribute(className)}__count">${selected.length} matching ${escapeHtml(labels.matchingNotes)}${selected.length !== 1 ? "s" : ""}</p>`;
   const body =
     view.type === "cards"
       ? renderCards(view, groups, spec, className, index, labels)
       : view.type === "list"
-        ? renderList(view, groups, className)
+        ? renderList(view, groups, className, labels)
         : view.type === "table"
           ? renderTable(view, groups, spec, className, labels)
-          : renderUnsupportedView(view, className);
+          : renderUnsupportedView(view, className, labels);
 
   const viewTypeLabel = labels.view
     .replace("{type}", view.type)
@@ -97,7 +101,7 @@ function renderTable(
   labels: BasesLabels,
 ): string {
   const entries = groups.flatMap((group) => group.entries);
-  if (groups.length === 0) return renderEmpty(className);
+  if (groups.length === 0) return renderEmpty(className, labels);
 
   const head = view.columns
     .map(
@@ -109,7 +113,7 @@ function renderTable(
   const rows = groups
     .map((group) => {
       const heading = view.groupBy
-        ? `<tr class="${escapeHtmlAttribute(className)}__group"><th colspan="${view.columns.length}" scope="rowgroup">${escapeHtml(formatValue(group.key) || "No value")} <span class="${escapeHtmlAttribute(className)}__group-count">(${group.entries.length})</span></th></tr>${renderSummaryRow(view, group.entries, spec, className, "group")}`
+        ? `<tr class="${escapeHtmlAttribute(className)}__group"><th colspan="${view.columns.length}" scope="rowgroup">${escapeHtml(formatValue(group.key) || escapeHtml(labels.noValue))} <span class="${escapeHtmlAttribute(className)}__group-count">(${group.entries.length})</span></th></tr>${renderSummaryRow(view, group.entries, spec, className, "group")}`
         : "";
       const values = group.entries
         .map((entry) => {
@@ -124,7 +128,7 @@ function renderTable(
         .join("");
       const empty =
         group.entries.length === 0
-          ? `<tr class="${escapeHtmlAttribute(className)}__empty-row"><td colspan="${view.columns.length}">${escapeHtml("No matching notes in this group.")}</td></tr>`
+          ? `<tr class="${escapeHtmlAttribute(className)}__empty-row"><td colspan="${view.columns.length}">${escapeHtml(labels.noMatchingNotesInThisGroup)}</td></tr>`
           : "";
       return `<tbody>${heading}${values}${empty}</tbody>`;
     })
@@ -133,7 +137,7 @@ function renderTable(
 
   const table = [
     `<table class="${escapeHtmlAttribute(className)}__table">`,
-    `<caption class="${escapeHtmlAttribute(className)}__sr-only">${entries.length} matching ${entries.length === 1 ? "note" : "notes"}</caption>`,
+    `<caption class="${escapeHtmlAttribute(className)}__sr-only">${entries.length} matching ${escapeHtml(labels.matchingNotes)}${entries.length !== 1 ? "s" : ""}</caption>`,
     `<thead><tr>${head}</tr></thead>`,
     rows,
     footer ? `<tfoot>${footer}</tfoot>` : "",
@@ -150,7 +154,7 @@ function renderCards(
   viewIndex: number,
   labels: BasesLabels,
 ): string {
-  if (groups.length === 0) return renderEmpty(className);
+  if (groups.length === 0) return renderEmpty(className, labels);
 
   const titleProperty = view.columns.find((property) =>
     TITLE_PROPERTIES.has(property.toLowerCase()),
@@ -161,7 +165,7 @@ function renderCards(
     .map((group, index) => {
       const groupId = `rb-bases-group-${viewIndex}-${index}`;
       const heading = view.groupBy
-        ? `<h4 class="${escapeHtmlAttribute(className)}__group-title" id="${escapeHtmlAttribute(groupId)}">${escapeHtml(formatValue(group.key) || "No value")} <span class="${escapeHtmlAttribute(className)}__group-count">(${group.entries.length})</span></h4>`
+        ? `<h4 class="${escapeHtmlAttribute(className)}__group-title" id="${escapeHtmlAttribute(groupId)}">${escapeHtml(formatValue(group.key) || escapeHtml(labels.noValue))} <span class="${escapeHtmlAttribute(className)}__group-count">(${group.entries.length})</span></h4>`
         : "";
       const items = group.entries
         .map((entry) => {
@@ -181,7 +185,7 @@ function renderCards(
         .join("");
       const empty =
         group.entries.length === 0
-          ? `<li class="${escapeHtmlAttribute(className)}__card-empty">No matching notes in this group.</li>`
+          ? `<li class="${escapeHtmlAttribute(className)}__card-empty">${escapeHtml(labels.noMatchingNotesInThisGroup)}</li>`
           : "";
       const labelledBy = view.groupBy
         ? ` aria-labelledby="${escapeHtmlAttribute(groupId)}"`
@@ -193,21 +197,26 @@ function renderCards(
   return cards;
 }
 
-function renderUnsupportedView(view: BasesView, className: string): string {
-  return `<p class="${escapeHtmlAttribute(className)}__unsupported">${escapeHtml(`${view.type} views are not available in a static build.`)}</p>`;
+function renderUnsupportedView(
+  view: BasesView,
+  className: string,
+  labels: BasesLabels,
+): string {
+  return `<p class="${escapeHtmlAttribute(className)}__unsupported">${escapeHtml(labels.viewsNotAvailableInStaticBuild.replace("{type}", view.type))}</p>`;
 }
 
 function renderList(
   view: BasesView,
   groups: readonly BasesGroup[],
   className: string,
+  labels: BasesLabels,
 ): string {
-  if (groups.length === 0) return renderEmpty(className);
+  if (groups.length === 0) return renderEmpty(className, labels);
 
   return groups
     .map((group) => {
       const heading = view.groupBy
-        ? `<h4 class="${escapeHtmlAttribute(className)}__group-title">${escapeHtml(formatValue(group.key) || "No value")} <span class="${escapeHtmlAttribute(className)}__group-count">(${group.entries.length})</span></h4>`
+        ? `<h4 class="${escapeHtmlAttribute(className)}__group-title">${escapeHtml(formatValue(group.key) || escapeHtml(labels.noValue))} <span class="${escapeHtmlAttribute(className)}__group-count">(${group.entries.length})</span></h4>`
         : "";
       const items = group.entries
         .map(
@@ -220,12 +229,16 @@ function renderList(
     .join("");
 }
 
-function renderEmpty(className: string): string {
-  return `<p class="${escapeHtmlAttribute(className)}__empty">No matching notes.</p>`;
+function renderEmpty(className: string, labels: BasesLabels): string {
+  return `<p class="${escapeHtmlAttribute(className)}__empty">${escapeHtml(labels.noMatchingNotes)}</p>`;
 }
 
-function renderFallback(className: string, source: string): string {
-  return `<details class="${escapeHtmlAttribute(className)}__fallback rb-source-fallback"><summary>Base definition</summary><pre><code>${escapeHtml(source)}</code></pre></details>`;
+function renderFallback(
+  className: string,
+  source: string,
+  labels: BasesLabels,
+): string {
+  return `<details class="${escapeHtmlAttribute(className)}__fallback rb-source-fallback"><summary>${escapeHtml(labels.baseDefinition)}</summary><pre><code>${escapeHtml(source)}</code></pre></details>`;
 }
 
 function renderCell(

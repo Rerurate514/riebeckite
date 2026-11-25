@@ -5,11 +5,11 @@ import { calculatorLabels } from "./labels.js";
 
 export const DEFAULT_CALCULATOR_CLASS = "rb-calculator";
 export const DEFAULT_CALCULATOR_LANGUAGE = "calc";
-const CALCULATOR_LABELS = resolveUiLabels(calculatorLabels, undefined);
 
 export function renderCalculator(
   expression: string,
   className = DEFAULT_CALCULATOR_CLASS,
+  language?: string,
 ): string {
   const source = expression.trim();
   const result = evaluateExpression(source);
@@ -19,14 +19,15 @@ export function renderCalculator(
     return `<div class="${escapeHtmlAttribute(className)} ${escapeHtmlAttribute(`${className}--invalid`)}" role="status">${expressionHtml}<p class="${escapeHtmlAttribute(className)}__error">Invalid expression: ${escapeHtml(result.reason)}</p></div>`;
   }
 
+  const labels = resolveUiLabels(calculatorLabels, language);
   const value = escapeHtml(formatExpressionValue(result.value));
   return [
     `<div class="${escapeHtmlAttribute(className)}" data-calculator data-calculator-expression="${escapeHtmlAttribute(source)}">`,
     expressionHtml,
     `<div class="${escapeHtmlAttribute(className)}__result" data-runtime-fallback-root>`,
-    `<p class="${escapeHtmlAttribute(className)}__loading" data-runtime-loading hidden>${CALCULATOR_LABELS.calculating}</p>`,
-    `<p class="${escapeHtmlAttribute(className)}__static" data-runtime-fallback>${CALCULATOR_LABELS.result} <output>${value}</output></p>`,
-    `<p class="${escapeHtmlAttribute(className)}__live" data-runtime-live hidden>${CALCULATOR_LABELS.result} <output data-calculator-output aria-live="polite">${value}</output></p>`,
+    `<p class="${escapeHtmlAttribute(className)}__loading" data-runtime-loading hidden>${labels.calculating}</p>`,
+    `<p class="${escapeHtmlAttribute(className)}__static" data-runtime-fallback>${labels.result} <output>${value}</output></p>`,
+    `<p class="${escapeHtmlAttribute(className)}__live" data-runtime-live hidden>${labels.result} <output data-calculator-output aria-live="polite">${value}</output></p>`,
     `<p class="${escapeHtmlAttribute(className)}__error" data-runtime-error role="alert" hidden></p>`,
     "</div>",
     "</div>",

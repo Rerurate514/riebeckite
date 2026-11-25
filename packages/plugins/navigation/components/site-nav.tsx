@@ -68,10 +68,11 @@ export function SiteNav(props: SiteNavProps) {
 }
 
 export function MobileSiteNav(props: MobileSiteNavProps) {
-  const { menuLabel = "Menu", ...siteNavProps } = props;
+  const labels = useUiLabels(navigationLabels);
+  const { menuLabel, ...siteNavProps } = props;
   return (
     <details class="rb-nav__mobile">
-      <summary class="rb-nav__toggle">{menuLabel}</summary>
+      <summary class="rb-nav__toggle">{menuLabel ?? labels.menu}</summary>
       <SiteNav {...siteNavProps} />
     </details>
   );

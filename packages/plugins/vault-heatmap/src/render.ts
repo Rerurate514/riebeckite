@@ -1,4 +1,6 @@
 import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
+import { resolveUiLabels } from "@riebeckite/ui/labels";
+import { vaultHeatmapLabels } from "./labels.ts";
 import type { VaultActivity, VaultHeatmapSpec } from "./types.js";
 
 export const VAULT_HEATMAP_CLASS = "rr-vault-heatmap";
@@ -50,9 +52,19 @@ export function renderVaultHeatmap(
 
   const viewedTotal = cells.reduce((sum, cell) => sum + cell.count, 0);
   const viewedDays = cells.filter((cell) => cell.count > 0).length;
-  const summary = `${viewedTotal} ${
-    viewedTotal === 1 ? "update" : "updates"
-  } on ${viewedDays} ${viewedDays === 1 ? "day" : "days"}`;
+  const labels = resolveUiLabels(vaultHeatmapLabels, undefined);
+  let summary: string;
+  if (viewedTotal === 0) {
+    summary = labels.noActivity;
+  } else {
+    const type = viewedTotal === 1 ? labels.update : labels.updates;
+    const day = viewedDays === 1 ? labels.day : labels.days;
+    summary = labels.summaryFormat
+      .replace("{total}", String(viewedTotal))
+      .replace("{type}", type)
+      .replace("{days}", String(viewedDays))
+      .replace("{day}", day);
+  }
   const range = `${formatDate(gridStart)} to ${formatDate(gridEnd)}`;
 
   return [

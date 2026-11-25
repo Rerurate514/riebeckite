@@ -1,4 +1,6 @@
+import { resolveClientUiLabels } from "@riebeckite/ui";
 import { enableViewer } from "./canvas_init_viewer.js";
+import { canvasLabels } from "./labels.js";
 import { buildCanvasLayout, parseCanvas } from "./parse.js";
 import type { CanvasLayout } from "./types.js";
 
@@ -13,10 +15,12 @@ export function initContainer(container: HTMLElement): void {
   const nodes = limitNodes(document.nodes, container);
   const layout = buildCanvasLayout({ nodes, edges: document.edges });
 
-  stage.replaceChildren(world, buildSelection(), buildControls());
+  const labels = resolveClientUiLabels(canvasLabels);
+
+  stage.replaceChildren(world, buildSelection(), buildControls(labels));
   stage.tabIndex = 0;
   stage.setAttribute("role", "application");
-  stage.setAttribute("aria-label", "Interactive canvas");
+  stage.setAttribute("aria-label", labels.canvas);
   applyLayoutStyles(world, layout);
   applyDynamicStyles(world);
   enableViewer(stage, world, layout);
@@ -36,22 +40,29 @@ function buildSelection(): HTMLElement {
   return selection;
 }
 
-function buildControls(): HTMLElement {
+function buildControls(labels: Record<string, string>): HTMLElement {
   const controls = document.createElement("div");
   controls.className = "rb-canvas__controls";
-  controls.setAttribute("aria-label", "Canvas controls");
-  for (const [action, label, icon] of [
-    ["zoom-in", "Zoom in", "+"],
-    ["zoom-out", "Zoom out", "−"],
-    ["fit", "Zoom to fit", "⊡"],
-    ["selection", "Zoom to selection", "◉"],
-    ["reset", "Reset zoom", "1:1"],
+  controls.setAttribute("aria-label", labels["controls-aria"]);
+  for (const [action, , icon] of [
+    ["zoom-in", "+"],
+    ["zoom-out", "−"],
+    ["fit", "⊡"],
+    ["selection", "◉"],
+    ["reset", "1:1"],
   ]) {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "rb-canvas__control";
     button.dataset.canvasAction = action;
-    button.setAttribute("aria-label", label);
+    const actionLabels: Record<string, string> = {
+      "zoom-in": labels["zoom-in"],
+      "zoom-out": labels["zoom-out"],
+      fit: labels["zoom-to-fit"],
+      selection: labels["zoom-to-selection"],
+      reset: labels["reset-zoom"],
+    };
+    button.setAttribute("aria-label", actionLabels[action]);
     button.textContent = icon;
     controls.append(button);
   }

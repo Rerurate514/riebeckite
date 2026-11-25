@@ -18,13 +18,14 @@ export default function SmartNotFound({
   path,
   homeHref = "/",
   searchHref = "/",
-  title = "Page not found",
-  description = "The page you requested is not available.",
-  candidatesHeading = "Maybe you were looking for",
-  searchLabel = "Search the garden",
-  homeLabel = "Go home",
+  title,
+  description,
+  candidatesHeading,
+  searchLabel,
+  homeLabel,
 }: SmartNotFoundProps) {
   const site = useSiteContext();
+  const labels = useUiLabels(searchLabels);
   const requestPath = path ?? site?.path ?? "/";
   const query = searchQueryFromPath(requestPath);
   const candidates = site
@@ -35,19 +36,21 @@ export default function SmartNotFound({
       )
     : [];
 
-  const { notFoundActions } = useUiLabels(searchLabels);
+  const notFoundActions = labels.notFoundActions;
 
   return (
     <div class="rr-search-not-found">
       <p class="rr-search-not-found__status">404</p>
-      <h1 id="search-not-found-title">{title}</h1>
-      <p>{description}</p>
+      <h1 id="search-not-found-title">{title ?? labels.notFound}</h1>
+      <p>{description ?? labels.notFoundDescription}</p>
       <p>
         <code>{requestPath}</code>
       </p>
       {candidates.length > 0 ? (
         <section aria-labelledby="search-not-found-candidates">
-          <h2 id="search-not-found-candidates">{candidatesHeading}</h2>
+          <h2 id="search-not-found-candidates">
+            {candidatesHeading ?? labels.candidatesHeading}
+          </h2>
           <ul>
             {candidates.map((candidate) => (
               <li key={candidate.permalink}>
@@ -60,9 +63,9 @@ export default function SmartNotFound({
       ) : null}
       <nav class="rr-search-not-found__actions" aria-label={notFoundActions}>
         <a href={`${searchHref}?search=${encodeURIComponent(query)}`}>
-          {searchLabel}
+          {searchLabel ?? labels.searchLabel}
         </a>
-        <a href={homeHref}>{homeLabel}</a>
+        <a href={homeHref}>{homeLabel ?? labels.homeLabel}</a>
       </nav>
     </div>
   );

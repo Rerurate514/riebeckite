@@ -1,5 +1,5 @@
 import { createDialogController } from "@riebeckite/ui/dialog";
-import { resolveUiLabels } from "@riebeckite/ui/labels";
+import { resolveClientUiLabels } from "@riebeckite/ui/labels";
 import { createLoadingController } from "@riebeckite/ui/loading";
 import { searchLabels } from "./labels.js";
 import {
@@ -33,7 +33,7 @@ export function initSearch(context: SearchInitContext = {}): () => void {
 
   if (!root || !modal || !input || !status || !results) return () => {};
 
-  const labels = resolveUiLabels(searchLabels, document.documentElement.lang);
+  const labels = resolveClientUiLabels(searchLabels);
   const loading = createLoadingController(modal);
   const resultsView = mountSearchResults(results);
   let searchItems: SearchItem[] | null = null;

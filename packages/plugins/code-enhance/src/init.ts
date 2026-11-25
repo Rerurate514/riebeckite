@@ -1,5 +1,5 @@
 import { copyText } from "@riebeckite/ui/copy";
-import { resolveUiLabels } from "@riebeckite/ui/labels";
+import { resolveClientUiLabels } from "@riebeckite/ui/labels";
 import { codeEnhanceLabels } from "./labels.js";
 import type { CodeEnhanceClientOptions } from "./types.js";
 
@@ -7,10 +7,7 @@ export const DEFAULT_COPY_LABEL = "Copy";
 export const DEFAULT_COPIED_LABEL = "Copied";
 
 export function initCodeEnhance(options: CodeEnhanceClientOptions = {}) {
-  const labels = resolveUiLabels(
-    codeEnhanceLabels,
-    document.documentElement.lang,
-  );
+  const labels = resolveClientUiLabels(codeEnhanceLabels);
   const copyLabel = options.copyLabel ?? labels.copy;
   const copiedLabel = options.copiedLabel ?? labels.copied;
   const timers = new Set<number>();

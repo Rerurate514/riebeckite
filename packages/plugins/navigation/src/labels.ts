@@ -8,6 +8,7 @@ export const navigationLabels = defineUiLabels("navigation", {
     expand: "Expand",
     sidebarNavigation: "Sidebar navigation",
     siteNavigation: "Site navigation",
+    menu: "Menu",
   },
   ja: {
     filter: "絞り込み",
@@ -16,5 +17,6 @@ export const navigationLabels = defineUiLabels("navigation", {
     expand: "展開する",
     sidebarNavigation: "サイドバーナビゲーション",
     siteNavigation: "サイトナビゲーション",
+    menu: "メニュー",
   },
 });

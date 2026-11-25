@@ -1,5 +1,6 @@
 import type { ContentIcon } from "@riebeckite/core";
 import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
+import type { UiLabelDictionaries } from "@riebeckite/ui";
 import { resolveUiLabels } from "@riebeckite/ui";
 import { buildFeedHeadTags } from "./feeds.js";
 import { taxonomyLabels } from "./labels.js";
@@ -63,16 +64,24 @@ export function renderRelatedTerms(
         )}" data-rr-taxonomy-related-count="${related.count}">${renderIcon(related.icon)}${escapeHtml(related.title)}</a></li>`,
     )
     .join("");
-  return `<nav class="${className}__related" aria-label="${resolvedLabels.relatedTags}" data-rr-taxonomy-related><ul>${items}</ul></nav>`;
+  return `<nav class="${className}__related" aria-label="${escapeHtmlAttribute(resolvedLabels.relatedTags)}" data-rr-taxonomy-related><ul>${items}</ul></nav>`;
 }
 
 export function renderTaxonomyIndexPage(
   kind: TaxonomyKind,
   terms: readonly TaxonomyTerm[],
   options: ResolvedTaxonomyOptions,
+  language?: string,
+  overrides?: Readonly<Record<string, UiLabelDictionaries>>,
 ): TaxonomyPage {
   const className = escapeHtmlAttribute(options.className);
-  const label = kind === "tag" ? "Tags" : "Folders";
+  const resolvedLabels = resolveUiLabels(
+    taxonomyLabels,
+    language ?? "en",
+    overrides,
+  );
+  const label =
+    kind === "tag" ? resolvedLabels.tagsTitle : resolvedLabels.foldersTitle;
   const items = terms
     .map(
       (term) =>
@@ -122,5 +131,5 @@ function renderFeedLinks(
     );
   }
   if (links.length === 0) return "";
-  return `<nav class="${className}__feeds" aria-label="${resolvedLabels.feeds}" data-rr-taxonomy-feeds>${links.join("")}</nav>`;
+  return `<nav class="${className}__feeds" aria-label="${escapeHtmlAttribute(resolvedLabels.feeds)}" data-rr-taxonomy-feeds>${links.join("")}</nav>`;
 }

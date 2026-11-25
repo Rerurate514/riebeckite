@@ -7,6 +7,7 @@ import {
   type PublicContentView,
   selectLocalizedEntries,
 } from "@riebeckite/core";
+import type { UiLabelDictionaries } from "@riebeckite/ui";
 import { resolveUiLabels } from "@riebeckite/ui";
 import { seriesLabels } from "./labels.js";
 import { buildSeriesIndex, collectSeriesIndexes } from "./series_index.js";
@@ -60,6 +61,7 @@ export function renderSeriesNavigation(
   currentSlug: string,
   options: SeriesOptions = {},
   language?: string,
+  overrides?: Readonly<Record<string, UiLabelDictionaries>>,
 ): string {
   const resolved = resolveSeriesOptions(options);
   const cls = resolved.className;
@@ -71,7 +73,11 @@ export function renderSeriesNavigation(
       ? members[position + 1]
       : undefined;
 
-  const resolvedLabels = resolveUiLabels(seriesLabels, language ?? "en");
+  const resolvedLabels = resolveUiLabels(
+    seriesLabels,
+    language ?? "en",
+    overrides,
+  );
 
   const parts: string[] = [
     `<nav class="${escapeHtmlAttribute(cls)}" data-series="${escapeHtmlAttribute(
@@ -209,8 +215,4 @@ export function renderSeriesList(
   return `<section class="${cls} ${cls}--list" data-series-list><h1 class="${cls}__title">${escapeHtml(
     label,
   )}</h1><ol class="${cls}__list">${items}</ol></section>`;
-}
-
-export function formatPosition(position: number, total: number): string {
-  return `Part ${position} of ${total}`;
 }

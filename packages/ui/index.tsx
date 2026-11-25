@@ -17,12 +17,17 @@ import {
 } from "./labels.js";
 
 export type {
+  ClientUiConfig,
   ResolvedUiLabels,
   UiLabelDictionaries,
   UiLabelDictionary,
   UiLabelsDefinition,
 } from "./labels.js";
-export { defineUiLabels, resolveUiLabels } from "./labels.js";
+export {
+  defineUiLabels,
+  resolveClientUiLabels,
+  resolveUiLabels,
+} from "./labels.js";
 
 export type SiteContextValue = {
   config: ResolvedRiebeckiteConfig;

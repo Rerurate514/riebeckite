@@ -52,11 +52,11 @@ export function SearchBar() {
 2. 有効な言語に対応するプラグインの辞書。
 3. `ui.labels[namespace][language][key]` のサイトの上書き。
 
-有効な言語は、`ui.locale` があればその値、なければ描画中のコンテンツの言語です。言語コードは大文字と小文字を区別せずに比較します。空文字列と文字列以外の値は無視します。英語以外の辞書にしかないキーは、解決後の型に現れません。
+有効な言語は、`ui.locale` があればその値、なければ描画中のコンテンツの言語です。言語コードは大文字と小文字を区別せず、アンダースコアとハイフンは同じに扱います。`ja-JP` や `ja_JP` のような完全なタグは、完全一致する辞書がなければ主要サブタグ（`ja`）に一致します。空文字列と文字列以外の値は使いません。英語以外の辞書にしかないキーは、解決後の型に現れません。
 
 ## コンポーネント以外で読む
 
-サーバーのコード、文字列を組み立てるレンダラー、クライアントスクリプトでは `resolveUiLabels` を使います。出力が属する言語と、利用できる場合はサイトの `ui.labels` の値を渡します。
+サーバーのコードと文字列を組み立てるレンダラーでは `resolveUiLabels` を使います。出力が属する言語と、利用できる場合はサイトの `ui.labels` の値を渡します。
 
 ```ts
 import { resolveUiLabels } from "@riebeckite/ui";
@@ -70,19 +70,16 @@ export function renderSeries(index: SeriesIndex, language?: string): string {
 
 `language` が `undefined` のときは英語の既定値になります。レンダラーがすでに言語を受け取っている場合（ページのロケール、`entry.publicLocation.language`、解決済みの `htmlLanguage`、関数の引数）は、`"en"` を直書きせずにその値を渡してください。
 
-クライアントエントリでは `@riebeckite/ui/labels` から読み込んでください。ブラウザのバンドルに JSX のコンポーネントエントリが入るのを避けられます。
+クライアントエントリでは `@riebeckite/ui/labels` の `resolveClientUiLabels` を使います。ページの言語と、フレームワークがクライアントへ渡すサイトの `ui.locale` / `ui.labels` を読むため、ブラウザでも上書きが反映されます。サブパスから読み込むと、JSX のコンポーネントエントリがバンドルに入りません。
 
 ```ts
-import { resolveUiLabels } from "@riebeckite/ui/labels";
+import { resolveClientUiLabels } from "@riebeckite/ui/labels";
 import { codeEnhanceLabels } from "./labels.js";
 
-const labels = resolveUiLabels(
-  codeEnhanceLabels,
-  document.documentElement.lang,
-);
+const labels = resolveClientUiLabels(codeEnhanceLabels);
 ```
 
-サーバーですでに翻訳した文字列をクライアントスクリプトで使う場合は、data 属性か JSON の埋め込みに書いて、初期化時に読みます。クライアントエントリからサーバーの設定を読み込まないでください。
+言語を渡さない場合は `document.documentElement.lang` を使います。サーバーですでに翻訳した文字列をクライアントスクリプトで使う場合は、data 属性か JSON の埋め込みに書いて、初期化時に読みます。クライアントエントリからサーバーの設定を読み込まないでください。
 
 ## コンポーネントの型を付ける
 

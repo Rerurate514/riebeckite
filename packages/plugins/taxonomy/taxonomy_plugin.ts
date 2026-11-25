@@ -133,6 +133,8 @@ export function taxonomy(options: TaxonomyOptions = {}) {
             kind,
             kind === "tag" ? model.index.tags : model.index.folders,
             resolved,
+            model.locale,
+            config?.ui?.labels,
           );
           return {
             type: "taxonomy-index",
@@ -157,6 +159,8 @@ export function taxonomy(options: TaxonomyOptions = {}) {
             kind,
             kind === "tag" ? model.index.tags : model.index.folders,
             resolved,
+            model.locale,
+            config?.ui?.labels,
           );
           return {
             type: "taxonomy-index",

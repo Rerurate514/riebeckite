@@ -1,33 +1,41 @@
+import type { UiLabelDictionaries } from "@riebeckite/ui";
 import { resolveUiLabels } from "@riebeckite/ui";
 import { sidenotesLabels } from "./labels.js";
 import type { ResolvedSidenotesOptions, SidenotesOptions } from "./types.js";
 
-const SIDENOTES_LABELS = resolveUiLabels(sidenotesLabels, undefined);
-const DEFAULT_SIDENOTES_ARIA_LABEL = SIDENOTES_LABELS.ariaLabel;
-const DEFAULT_SIDENOTES_OPEN_LABEL = SIDENOTES_LABELS.openLabel;
-const DEFAULT_SIDENOTES_PLACEMENT = "end";
+/**
+ * Resolves labels for sidenotes optionally using a language/overrides.
+ * When language is provided, labels are resolved per call; otherwise English
+ * defaults are kept.
+ */
+function resolveSidenotesLabels(
+  language?: string,
+  overrides?: Readonly<Record<string, UiLabelDictionaries>>,
+): { ariaLabel: string; openLabel: string } {
+  const resolved = resolveUiLabels(sidenotesLabels, language, overrides);
+  return {
+    ariaLabel: resolved.ariaLabel,
+    openLabel: resolved.openLabel,
+  };
+}
 
 /**
  * Applies defaults to `SidenotesOptions`. Pure and deterministic so the
  * plugin can resolve options once and reuse them for every processed tree.
+ * If language is available from the render input, labels are resolved per call.
  */
 export function resolveSidenotesOptions(
   options: SidenotesOptions = {},
+  language?: string,
+  overrides?: Readonly<Record<string, UiLabelDictionaries>>,
 ): ResolvedSidenotesOptions {
+  const { ariaLabel: resolvedAriaLabel, openLabel: resolvedOpenLabel } =
+    resolveSidenotesLabels(language, overrides);
   return {
     className: normalizeNonEmpty(options.className, ""),
-    ariaLabel: normalizeNonEmpty(
-      options.ariaLabel,
-      DEFAULT_SIDENOTES_ARIA_LABEL,
-    ),
-    openLabel: normalizeNonEmpty(
-      options.openLabel,
-      DEFAULT_SIDENOTES_OPEN_LABEL,
-    ),
-    placement: normalizePlacement(
-      options.placement,
-      DEFAULT_SIDENOTES_PLACEMENT,
-    ),
+    ariaLabel: normalizeNonEmpty(options.ariaLabel, resolvedAriaLabel),
+    openLabel: normalizeNonEmpty(options.openLabel, resolvedOpenLabel),
+    placement: normalizePlacement(options.placement, "end"),
   };
 }
 

@@ -11,8 +11,6 @@ import type {
   TextNode,
 } from "./types.js";
 
-const QR_CODE_LABELS = resolveUiLabels(qrCodeLabels, undefined);
-
 const CAPTION_PATTERN =
   /^[ \t]*#[ \t]*caption[ \t]*:[ \t]*(.+?)[ \t]*(?:\r?\n|$)/i;
 const META_TITLE_PATTERN = /title=(?:"([^"]*)"|'([^']*)'|(\S+))/;
@@ -103,6 +101,7 @@ function buildFigure(
   state: "rendered" | "error",
   canvasChildren: HastNode[],
 ): ElementNode {
+  const labels = resolveUiLabels(qrCodeLabels, options.language);
   const labelId = `${figureId(source, options)}-caption`;
   return element(
     "figure",
@@ -120,7 +119,7 @@ function buildFigure(
           className: qrElementClassName(options.className, "canvas"),
           role: "img",
           ariaLabelledby: caption ? labelId : undefined,
-          ariaLabel: caption ? undefined : QR_CODE_LABELS.qrCode,
+          ariaLabel: caption ? undefined : labels.qrCode,
         },
         canvasChildren,
       ),

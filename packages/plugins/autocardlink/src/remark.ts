@@ -1,6 +1,8 @@
 import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
+import { resolveUiLabels } from "@riebeckite/ui/labels";
 import type { Code, Html, Root } from "mdast";
 import { visit } from "unist-util-visit";
+import { autocardlinkLabels } from "./labels.js";
 import type { AutoCardLink, AutoCardLinkOptions } from "./types.js";
 
 const CARD_CLASS = "rr-cardlink";
@@ -141,12 +143,13 @@ function renderAutoCardLink(
 }
 
 function renderCopyButton(url: string): string {
-  return `<button type="button" class="${CARD_CLASS}__copy" data-rr-cardlink-copy="${escapeHtmlAttribute(url)}" aria-label="Copy URL to clipboard">
+  const labels = resolveUiLabels(autocardlinkLabels, undefined);
+  return `<button type="button" class="${CARD_CLASS}__copy" data-rr-cardlink-copy="${escapeHtmlAttribute(url)}" aria-label="${escapeHtmlAttribute(labels.copyUrl)}">
   <svg class="${CARD_CLASS}__copy-icon" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false">
     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
   </svg>
-  <span class="${CARD_CLASS}__copy-label">Copy URL</span>
+  <span class="${CARD_CLASS}__copy-label">${escapeHtml(labels.copy)}</span>
 </button>`;
 }
 

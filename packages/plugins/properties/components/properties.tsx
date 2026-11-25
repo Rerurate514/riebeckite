@@ -19,6 +19,7 @@ const Properties = (({
 }: Readonly<PropertiesProps>) => {
   const site = useSiteContext();
   const article = useArticleContext();
+  const language = site?.language;
   const data =
     explicitData ??
     (site && article
@@ -37,12 +38,15 @@ const Properties = (({
 
   const extraClass = className?.trim();
   return raw(
-    renderPropertiesData({
-      ...data,
-      className: extraClass
-        ? `${data.className} ${extraClass}`
-        : data.className,
-    }),
+    renderPropertiesData(
+      {
+        ...data,
+        className: extraClass
+          ? `${data.className} ${extraClass}`
+          : data.className,
+      },
+      language,
+    ),
   );
 }) satisfies PluginSiteComponent<PropertiesProps>;
 

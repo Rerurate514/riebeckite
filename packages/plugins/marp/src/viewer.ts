@@ -1,4 +1,7 @@
-import { type ResolvedUiLabels, resolveUiLabels } from "@riebeckite/ui/labels";
+import {
+  type ResolvedUiLabels,
+  resolveClientUiLabels,
+} from "@riebeckite/ui/labels";
 import { marpLabels } from "./labels.js";
 
 const FIGURE_SELECTOR = "figure[data-marp]";
@@ -14,7 +17,7 @@ const COUNTER_SEPARATOR = " / ";
 export function initMarpDecks(): void {
   if (typeof document === "undefined") return;
 
-  const labels = resolveUiLabels(marpLabels, document.documentElement.lang);
+  const labels = resolveClientUiLabels(marpLabels);
 
   for (const figure of document.querySelectorAll<HTMLElement>(
     FIGURE_SELECTOR,

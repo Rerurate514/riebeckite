@@ -15,9 +15,10 @@ import type {
   PropertyValue,
 } from "./types.js";
 
-const PROPERTIES_LABELS = resolveUiLabels(propertiesLabels, undefined);
-
-export function renderPropertiesData(data: PropertiesData): string {
+export function renderPropertiesData(
+  data: PropertiesData,
+  language?: string,
+): string {
   if (data.items.length === 0) return "";
 
   const className = data.className.trim() || DEFAULT_PROPERTIES_CLASS;
@@ -32,7 +33,10 @@ export function renderPropertiesData(data: PropertiesData): string {
   const rootClass = escapeHtmlAttribute(className);
   if (data.collapsed) {
     const summary = title ? escapeHtml(title) : "";
-    const label = title ? "" : ` aria-label="${PROPERTIES_LABELS.properties}"`;
+    const labels = resolveUiLabels(propertiesLabels, language);
+    const label = title
+      ? ""
+      : ` aria-label="${escapeHtmlAttribute(labels.properties)}"`;
     return (
       `<details class="${rootClass}" ${attributes} data-collapsed>` +
       `<summary class="${escapeHtmlAttribute(cls)}__summary"${label}>${summary}</summary>` +
@@ -57,10 +61,12 @@ export function renderPropertiesPanel(
   frontmatter: Readonly<Record<string, unknown>> | null | undefined,
   options: PropertiesOptions = {},
   context: PropertiesRenderContext = {},
+  language?: string,
 ): string {
   const resolved = resolvePropertiesOptions(options);
   return renderPropertiesData(
     buildPropertiesData(frontmatter, resolved, context),
+    language,
   );
 }
 

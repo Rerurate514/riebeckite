@@ -1,5 +1,5 @@
 import { copyText } from "@riebeckite/ui/copy";
-import { resolveUiLabels } from "@riebeckite/ui/labels";
+import { resolveClientUiLabels } from "@riebeckite/ui/labels";
 import { autocardlinkLabels } from "./labels.js";
 
 const CARD_CLASS = "rr-cardlink";
@@ -21,10 +21,7 @@ export function initAutoCardLink(
   const cardClass = options.cardClass ?? CARD_CLASS;
   const imageClass = options.imageClass ?? IMAGE_CLASS;
   const copyClass = options.copyClass ?? COPY_CLASS;
-  const labels = resolveUiLabels(
-    autocardlinkLabels,
-    document.documentElement.lang,
-  );
+  const labels = resolveClientUiLabels(autocardlinkLabels);
   const cards = Array.from(root.querySelectorAll<HTMLElement>(`.${cardClass}`));
   const pending: { image: HTMLImageElement; onError: () => void }[] = [];
   const copyHandlers: {

@@ -18,6 +18,8 @@ packages:
   - "@riebeckite/plugin-sidenotes"
   - "@riebeckite/plugin-taxonomy"
   - "@riebeckite/plugin-timeline"
+  - "@riebeckite/plugin-ux"
+  - "@riebeckite/plugin-vault-heatmap"
 type: changed
 breaking: false
 migration: ""

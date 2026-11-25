@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { defineUiLabels, resolveUiLabels } from "../labels.js";
+import {
+  defineUiLabels,
+  resolveClientUiLabels,
+  resolveUiLabels,
+} from "../labels.js";
 
 const labels = defineUiLabels("example", {
   en: {
@@ -47,4 +51,31 @@ test("ignores empty and non-string overrides", () => {
 
 test("keeps template placeholders in plugin dictionaries", () => {
   assert.equal(labels.dictionaries.en.showing, "showing {shown} of {total}");
+});
+
+test("matches a primary subtag when the full locale differs", () => {
+  assert.equal(resolveUiLabels(labels, "ja-JP").search, "検索");
+  assert.equal(resolveUiLabels(labels, "en_US").search, "Search");
+});
+
+test("prefers an exact locale over the primary subtag", () => {
+  const regional = defineUiLabels("regional", {
+    en: { label: "English" },
+    pt: { label: "Português" },
+    "pt-BR": { label: "Português (BR)" },
+  });
+  assert.equal(resolveUiLabels(regional, "pt-BR").label, "Português (BR)");
+  assert.equal(resolveUiLabels(regional, "pt-PT").label, "Português");
+});
+
+test("client labels use the site locale and overrides", () => {
+  globalThis.__riebeckiteUi = {
+    locale: "ja-JP",
+    labels: { example: { ja: { search: "サイト検索" } } },
+  };
+  try {
+    assert.equal(resolveClientUiLabels(labels).search, "サイト検索");
+  } finally {
+    globalThis.__riebeckiteUi = undefined;
+  }
 });

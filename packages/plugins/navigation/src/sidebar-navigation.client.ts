@@ -49,6 +49,8 @@ function init(navigation: HTMLElement): () => void {
   const items = Array.from(
     navigation.querySelectorAll<HTMLElement>("[data-sidebar-item]"),
   );
+  const collapseLabel = navigation.dataset.sidebarCollapseLabel ?? "Collapse";
+  const expandLabel = navigation.dataset.sidebarExpandLabel ?? "Expand";
   const setExpanded = (item: HTMLElement, expanded: boolean) => {
     item.dataset.sidebarExpanded = String(expanded);
     const button = item.querySelector<HTMLButtonElement>(
@@ -58,7 +60,7 @@ function init(navigation: HTMLElement): () => void {
     if (button) {
       button.setAttribute(
         "aria-label",
-        `${expanded ? "Collapse" : "Expand"} ${item.dataset.sidebarLabel ?? "section"}`,
+        `${expanded ? collapseLabel : expandLabel} ${item.dataset.sidebarLabel ?? "section"}`,
       );
     }
     const detail = item.querySelector<HTMLDetailsElement>(

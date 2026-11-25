@@ -3,25 +3,27 @@ import { resolveUiLabels } from "@riebeckite/ui";
 import { imageCompareLabels } from "./labels.js";
 import type { ResolvedImageCompareSpec } from "./types.js";
 
-const IMAGE_COMPARE_LABELS = resolveUiLabels(imageCompareLabels, undefined);
-
 export const IMAGE_COMPARE_CLASS = "rr-image-compare";
 
-export function renderImageCompare(spec: ResolvedImageCompareSpec): string {
-  const label = spec.label ?? IMAGE_COMPARE_LABELS.comparison;
+export function renderImageCompare(
+  spec: ResolvedImageCompareSpec,
+  language?: string,
+): string {
+  const labels = resolveUiLabels(imageCompareLabels, language);
+  const label = spec.label ?? labels.comparison;
   const before = `<div class="${IMAGE_COMPARE_CLASS}__layer ${IMAGE_COMPARE_CLASS}__layer--before"><img class="${IMAGE_COMPARE_CLASS}__image ${IMAGE_COMPARE_CLASS}__image--before" src="${escapeHtmlAttribute(spec.before)}" alt="${escapeHtmlAttribute(spec.beforeAlt)}" loading="eager" decoding="async"></div>`;
   const after = `<div class="${IMAGE_COMPARE_CLASS}__layer ${IMAGE_COMPARE_CLASS}__layer--after"><img class="${IMAGE_COMPARE_CLASS}__image ${IMAGE_COMPARE_CLASS}__image--after" src="${escapeHtmlAttribute(spec.after)}" alt="${escapeHtmlAttribute(spec.afterAlt)}" loading="eager" decoding="async"></div>`;
 
   return [
     `<figure class="${IMAGE_COMPARE_CLASS}" data-rr-image-compare data-orientation="${spec.orientation}" style="--rr-image-compare-position:50%" aria-label="${escapeHtmlAttribute(label)}">`,
     `<div class="${IMAGE_COMPARE_CLASS}__static">`,
-    `<span class="${IMAGE_COMPARE_CLASS}__static-item"><img src="${escapeHtmlAttribute(spec.before)}" alt="${escapeHtmlAttribute(spec.beforeAlt)}" loading="lazy" decoding="async"><span>${IMAGE_COMPARE_LABELS.before}</span></span>`,
-    `<span class="${IMAGE_COMPARE_CLASS}__static-item"><img src="${escapeHtmlAttribute(spec.after)}" alt="${escapeHtmlAttribute(spec.afterAlt)}" loading="lazy" decoding="async"><span>${IMAGE_COMPARE_LABELS.after}</span></span>`,
+    `<span class="${IMAGE_COMPARE_CLASS}__static-item"><img src="${escapeHtmlAttribute(spec.before)}" alt="${escapeHtmlAttribute(spec.beforeAlt)}" loading="lazy" decoding="async"><span>${labels.before}</span></span>`,
+    `<span class="${IMAGE_COMPARE_CLASS}__static-item"><img src="${escapeHtmlAttribute(spec.after)}" alt="${escapeHtmlAttribute(spec.afterAlt)}" loading="lazy" decoding="async"><span>${labels.after}</span></span>`,
     "</div>",
     `<div class="${IMAGE_COMPARE_CLASS}__stage">`,
     before,
     after,
-    `<input class="${IMAGE_COMPARE_CLASS}__range" type="range" min="0" max="100" value="50" step="1" aria-label="${IMAGE_COMPARE_LABELS.comparisonPosition}" data-image-compare-range>`,
+    `<input class="${IMAGE_COMPARE_CLASS}__range" type="range" min="0" max="100" value="50" step="1" aria-label="${escapeHtmlAttribute(labels.comparisonPosition)}" data-image-compare-range>`,
     `<span class="${IMAGE_COMPARE_CLASS}__divider" aria-hidden="true"></span>`,
     "</div>",
     spec.label

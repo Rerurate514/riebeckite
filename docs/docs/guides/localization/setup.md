@@ -134,13 +134,13 @@ export default defineConfig({
 });
 ```
 
-`ui.labels` maps a plugin namespace to language codes and label keys. A plugin's namespace is its package name without `@riebeckite/plugin-`, for example `search`, `local-graph`, or `garden-explorer`. Language codes match case-insensitively; namespaces and keys are exact. A missing key falls back to the plugin's dictionary for that language, then to English.
+`ui.labels` maps a plugin namespace to language codes and label keys. A plugin's namespace is its package name without `@riebeckite/plugin-`, for example `search`, `local-graph`, or `garden-explorer`. Language codes match case-insensitively; underscores and hyphens are equivalent, and a full tag such as `ja-JP` or `ja_JP` matches its primary subtag (`ja`) when the exact tag is absent. Namespaces and keys are exact. A missing key falls back to the plugin's dictionary for that language, then to English.
 
 The keys by namespace are:
 
 - `toc`: `contents`, `contentsHeading`
-- `navigation`: `filter`, `filterNavigation`, `collapse`, `expand`, `sidebarNavigation`, `siteNavigation`
-- `search`: `search`, `searchNotes`, `closeSearch`, `searchQuery`, `searchPlaceholder`, `searchFilterHint`, `searchResults`, `loading`, `notFound`, `notFoundActions`, `noResults`, `result`, `results`
+- `navigation`: `filter`, `filterNavigation`, `collapse`, `expand`, `sidebarNavigation`, `siteNavigation`, `menu`
+- `search`: `search`, `searchNotes`, `closeSearch`, `searchQuery`, `searchPlaceholder`, `searchFilterHint`, `searchResults`, `loading`, `notFound`, `notFoundActions`, `noResults`, `result`, `results`, `emptyQuery`, `candidatesHeading`, `homeLabel`, `notFoundDescription`, `searchLabel`
 - `series`: `seriesNavigation`, `seriesPosition`
 - `l10n`: `language`
 - `local-graph`: `localGraph`, `nearbyNotes`, `openInExplorer`, `localGraphTruncated`, `localGraphTruncatedExplorer`
@@ -148,18 +148,21 @@ The keys by namespace are:
 - `garden-explorer`: `explorer`, `explorerPanels`, `searchNotes`, `searchNotesPlaceholder`, `clearFilters`, `tags`, `folders`, `notes`, `showingNotes`, `noteGraph`, `localGraphMode`, `globalGraphMode`, `localMode`, `globalMode`, `selectNoteHint`, `selectedNote`, `outgoingLinks`, `backlinks`, `relatedNotes`, `noNotes`
 - `article-metadata`: `regionLabel`
 - `autocardlink`: `copyUrl`, `copy`, `copied`
-- `bases`: `tableView`, `cards`, `view`
-- `calculator`: `calculating`
-- `canvas`: `canvas`
-- `code-enhance`: `copyCode`, `copied`, `wrap`, `collapse`, `expand`
+- `bases`: `tableView`, `cards`, `view`, `baseDefinition`, `matchingNotes`, `noMatchingNotes`, `noMatchingNotesInThisGroup`, `noValue`, `viewsNotAvailableInStaticBuild`
+- `calculator`: `calculating`, `result`
+- `canvas`: `canvas`, `empty`
+- `code-enhance`: `copyCode`, `copy`, `copied`, `wrap`, `collapse`, `expand`
 - `flashcards`: `flashcards`
-- `image-compare`: `comparisonPosition`, `before`, `after`
-- `marp`: `previousSlide`, `nextSlide`
+- `image-compare`: `comparison`, `comparisonPosition`, `before`, `after`
+- `marp`: `previousSlide`, `nextSlide`, `fullscreen`, `exitFullscreen`
 - `properties`: `properties`
 - `qr-code`: `qrCode`
 - `sidenotes`: `openLabel`, `ariaLabel`
-- `taxonomy`: `relatedTags`, `feeds`
+- `taxonomy`: `relatedTags`, `feeds`, `foldersTitle`, `tagsTitle`
 - `timeline`: `language`
+- `vault-heatmap`: `summaryFormat`, `noActivity`, `update`, `updates`, `day`, `days`
+- `ux`: `readingProgress`
+- `site`: `documentation`, `tableOfContents`, `menu`, `navigation`, `primaryNavigation`, `secondaryNavigation`, `footerNavigation`
 
 `showingNotes`, `globalGraphMode`, `historyChanges`, `seriesPosition`, `bases.view`, `timeline.language`, `search.result`, and `search.results` are templates: keep their `{...}` placeholders in an override.
 

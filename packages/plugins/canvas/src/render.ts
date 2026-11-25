@@ -56,7 +56,7 @@ function renderStatic(
   const cards = layout.nodes
     .map((node) => renderNodeCard(node, resolver))
     .join("\n");
-  return `<div class="rb-canvas__static" data-canvas-static><div class="rb-canvas__world" data-canvas-world role="img" aria-label="${labels.canvas}" style="width:${layout.width}px;height:${layout.height}px">${edges}${cards}</div></div>`;
+  return `<div class="rb-canvas__static" data-canvas-static><div class="rb-canvas__world" data-canvas-world role="img" aria-label="${escapeHtmlAttribute(labels.canvas)}" style="width:${layout.width}px;height:${layout.height}px">${edges}${cards}</div></div>`;
 }
 
 function renderEdges(layout: CanvasLayout, source: string): string {

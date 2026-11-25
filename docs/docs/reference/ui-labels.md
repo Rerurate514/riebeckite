@@ -52,7 +52,7 @@ export function SearchBar() {
 2. the plugin's dictionary for the active language;
 3. site overrides from `ui.labels[namespace][language][key]`.
 
-The active language is `ui.locale` when set, otherwise the language of the rendered content. Language codes are compared case-insensitively; empty strings and non-string values are ignored. A key that exists only in a non-English dictionary does not appear in the resolved type.
+The active language is `ui.locale` when set, otherwise the language of the rendered content. Language codes are compared case-insensitively; underscores and hyphens are equivalent, and a full tag such as `ja-JP` or `ja_JP` falls back to its primary subtag (`ja`) when the exact tag is absent. Empty strings and non-string values are ignored. A key that exists only in a non-English dictionary does not appear in the resolved type.
 
 ## Read labels without a component
 
@@ -70,19 +70,16 @@ export function renderSeries(index: SeriesIndex, language?: string): string {
 
 A `language` of `undefined` resolves the English defaults. When a renderer already receives a language (a page locale, `entry.publicLocation.language`, the resolved `htmlLanguage`, or a function argument), pass it rather than hardcoding `"en"`.
 
-Client entries should import from the `@riebeckite/ui/labels` subpath so the browser bundle does not pull in the JSX component entry.
+Client entries use `resolveClientUiLabels` from the `@riebeckite/ui/labels` subpath. It reads the page language and the site's `ui.locale` / `ui.labels` values that the framework publishes to the client, so overrides still apply in the browser. Importing from the subpath also keeps the JSX component entry out of the bundle.
 
 ```ts
-import { resolveUiLabels } from "@riebeckite/ui/labels";
+import { resolveClientUiLabels } from "@riebeckite/ui/labels";
 import { codeEnhanceLabels } from "./labels.js";
 
-const labels = resolveUiLabels(
-  codeEnhanceLabels,
-  document.documentElement.lang,
-);
+const labels = resolveClientUiLabels(codeEnhanceLabels);
 ```
 
-If a client script needs a string that was already localized on the server, write it into a data attribute or JSON island and read it at init. Do not import the server config into the client entry.
+The helper falls back to `document.documentElement.lang` when no language is passed. If a client script needs a string that was already localized on the server, write it into a data attribute or JSON island and read it at init. Do not import the server config into the client entry.
 
 ## Type the labels of a component
 

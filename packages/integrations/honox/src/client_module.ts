@@ -5,8 +5,12 @@ const clientModuleId = "virtual:riebeckite/client";
 
 const resolvedClientModuleId = `\0${clientModuleId}`;
 
+type ClientModuleConfig = Pick<ResolvedRiebeckiteConfig, "plugins" | "spa"> & {
+  ui?: ResolvedRiebeckiteConfig["ui"];
+};
+
 export function riebeckiteClientModule(
-  getConfig: () => Pick<ResolvedRiebeckiteConfig, "plugins" | "spa">,
+  getConfig: () => ClientModuleConfig,
   ensure: () => Promise<unknown> = async () => {},
 ): Plugin {
   let development = false;
@@ -28,7 +32,7 @@ export function riebeckiteClientModule(
 }
 
 async function createClientModule(
-  config: Pick<ResolvedRiebeckiteConfig, "plugins" | "spa">,
+  config: ClientModuleConfig,
   development: boolean,
 ): Promise<string> {
   const { serializePublicClientConfig } = await import("@riebeckite/core");
@@ -198,6 +202,10 @@ function createPluginRuntimeHost(root, ids) {
 
   return `${imports.join("\n")}
 
+globalThis.__riebeckiteUi = ${serializePublicClientConfig({
+    locale: config.ui?.locale,
+    labels: config.ui?.labels,
+  })};
 const lifecycle = new ClientLifecycle();
 ${runtimeSupport}const clientModuleDevelopment = ${development ? "true" : "false"};
 const conditionalInitializerLoads = new Map();

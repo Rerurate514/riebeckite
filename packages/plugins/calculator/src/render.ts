@@ -1,4 +1,8 @@
-import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
+import {
+  escapeHtml,
+  escapeHtmlAttribute,
+  type UiLabelContext,
+} from "@riebeckite/core";
 import { resolveUiLabels } from "@riebeckite/ui";
 import { evaluateExpression, formatExpressionValue } from "./expression.js";
 import { calculatorLabels } from "./labels.js";
@@ -9,7 +13,7 @@ export const DEFAULT_CALCULATOR_LANGUAGE = "calc";
 export function renderCalculator(
   expression: string,
   className = DEFAULT_CALCULATOR_CLASS,
-  language?: string,
+  uiLabels?: UiLabelContext,
 ): string {
   const source = expression.trim();
   const result = evaluateExpression(source);
@@ -19,7 +23,7 @@ export function renderCalculator(
     return `<div class="${escapeHtmlAttribute(className)} ${escapeHtmlAttribute(`${className}--invalid`)}" role="status">${expressionHtml}<p class="${escapeHtmlAttribute(className)}__error">Invalid expression: ${escapeHtml(result.reason)}</p></div>`;
   }
 
-  const labels = resolveUiLabels(calculatorLabels, language);
+  const labels = resolveUiLabels(calculatorLabels, uiLabels);
   const value = escapeHtml(formatExpressionValue(result.value));
   return [
     `<div class="${escapeHtmlAttribute(className)}" data-calculator data-calculator-expression="${escapeHtmlAttribute(source)}">`,

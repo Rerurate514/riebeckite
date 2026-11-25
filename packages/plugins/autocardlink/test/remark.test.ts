@@ -18,7 +18,7 @@ function transform(value: string, options?: AutoCardLinkOptions): Child[] {
       },
     ],
   };
-  remarkAutoCardLink(options)(tree);
+  remarkAutoCardLink({ options })(tree);
   return tree.children;
 }
 

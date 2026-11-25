@@ -1,6 +1,7 @@
 import type { ContentManifest } from "./content_manifest.js";
 import type { Diagnostic } from "./diagnostic.js";
 import type { JsonValue } from "./json_value.js";
+import type { UiLabelContext } from "./ui_labels.js";
 
 export type PluginDataHelper<Input, Model> = (
   input: Readonly<Input>,
@@ -17,6 +18,7 @@ export type PluginMarkdownComponentResolveContext = {
   readonly sourceSlug?: string;
   readonly manifest?: ContentManifest;
   readonly diagnostics?: Diagnostic[];
+  readonly uiLabels?: UiLabelContext;
   resolveAssetUrl(
     input: string,
   ): { readonly path: string; readonly url: string } | null;
@@ -26,7 +28,10 @@ export type PluginMarkdownComponent<
   Props extends Record<string, JsonValue> = Record<string, JsonValue>,
 > = {
   name: string;
-  render(props: Readonly<Props>): string | Promise<string>;
+  render(
+    props: Readonly<Props>,
+    context: PluginMarkdownComponentResolveContext,
+  ): string | Promise<string>;
   parseProps?(props: Record<string, JsonValue>): Props;
   resolveProps?(
     props: Readonly<Props>,

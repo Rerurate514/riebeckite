@@ -1,6 +1,7 @@
 import type { Plugin } from "unified";
 import type { ContentSource } from "../content/content_source.js";
 import type { PluginRenderInput } from "./plugin_context.js";
+import type { UiLabelContext } from "./ui_labels.js";
 
 // biome-ignore lint/suspicious/noExplicitAny: Unified plugins define their own option and tree types; the pipeline accepts heterogeneous remark/rehype plugin factories at the boundary.
 export type PipelinePlugin = Plugin<any[], any, any>;
@@ -29,6 +30,7 @@ export type MarkdownPipelineContext = {
   ) => Promise<string | null>;
   renderContent?: (input: PluginRenderInput) => Promise<string | null>;
   contentSource?: ContentSource;
+  uiLabels: UiLabelContext;
 };
 
 export type MarkdownEmbedFragment = {

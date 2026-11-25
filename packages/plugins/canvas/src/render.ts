@@ -1,4 +1,8 @@
-import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
+import {
+  escapeHtml,
+  escapeHtmlAttribute,
+  type UiLabelContext,
+} from "@riebeckite/core";
 import { resolveUiLabels } from "@riebeckite/ui/labels";
 import { slug } from "github-slugger";
 import { canvasLabels } from "./labels.js";
@@ -22,14 +26,14 @@ import type {
 } from "./types.js";
 
 export function renderCanvas(input: RenderCanvasInput): string {
-  const { document, source, options, resolver } = input;
+  const { document, source, options, resolver, uiLabels } = input;
   const layout = buildCanvasLayout({
     nodes: limitNodes(document.nodes, options.maxNodes),
     edges: document.edges,
   });
 
   const parts: string[] = [];
-  const staticHtml = renderStatic(layout, resolver, source);
+  const staticHtml = renderStatic(layout, resolver, source, uiLabels);
   if (staticHtml) parts.push(staticHtml);
   if (options.render === "client" || options.render === "both") {
     parts.push('<div class="rb-canvas__stage" data-canvas-stage></div>');
@@ -47,8 +51,9 @@ function renderStatic(
   layout: CanvasLayout,
   resolver: CanvasResolver,
   source: string,
+  uiLabels?: UiLabelContext,
 ): string {
-  const labels = resolveUiLabels(canvasLabels, undefined);
+  const labels = resolveUiLabels(canvasLabels, uiLabels);
   if (layout.nodes.length === 0) {
     return `<div class="rb-canvas__static rb-canvas__empty">${labels.empty}</div>`;
   }

@@ -68,6 +68,7 @@ export function canvas(options: CanvasOptions = {}) {
         options: resolved,
         contentIndex: context.contentIndex,
         contentSource: context.contentSource,
+        uiLabels: context.uiLabels,
       });
     },
     renderers: [
@@ -104,6 +105,7 @@ export function canvas(options: CanvasOptions = {}) {
             source: context.path,
             options: resolved,
             resolver: createCanvasResolver(context.contentIndex),
+            uiLabels: context.uiLabels,
           });
         },
       },

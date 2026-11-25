@@ -1,4 +1,4 @@
-import type { ContentIcon } from "@riebeckite/core";
+import type { ContentIcon, UiLabelContext } from "@riebeckite/core";
 import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
 import { resolveUiLabels } from "@riebeckite/ui";
 import { propertiesLabels } from "./labels.js";
@@ -17,7 +17,7 @@ import type {
 
 export function renderPropertiesData(
   data: PropertiesData,
-  language?: string,
+  uiLabels?: UiLabelContext,
 ): string {
   if (data.items.length === 0) return "";
 
@@ -33,7 +33,7 @@ export function renderPropertiesData(
   const rootClass = escapeHtmlAttribute(className);
   if (data.collapsed) {
     const summary = title ? escapeHtml(title) : "";
-    const labels = resolveUiLabels(propertiesLabels, language);
+    const labels = resolveUiLabels(propertiesLabels, uiLabels);
     const label = title
       ? ""
       : ` aria-label="${escapeHtmlAttribute(labels.properties)}"`;
@@ -61,12 +61,12 @@ export function renderPropertiesPanel(
   frontmatter: Readonly<Record<string, unknown>> | null | undefined,
   options: PropertiesOptions = {},
   context: PropertiesRenderContext = {},
-  language?: string,
+  uiLabels?: UiLabelContext,
 ): string {
   const resolved = resolvePropertiesOptions(options);
   return renderPropertiesData(
     buildPropertiesData(frontmatter, resolved, context),
-    language,
+    uiLabels,
   );
 }
 

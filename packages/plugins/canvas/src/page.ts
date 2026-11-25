@@ -4,6 +4,7 @@ import {
   type Diagnostic,
   type PluginPage,
   readContentSourceEntry,
+  type UiLabelContext,
 } from "@riebeckite/core";
 import { parseCanvas } from "./parse.js";
 import { renderCanvas, renderCanvasPage } from "./render.js";
@@ -19,6 +20,7 @@ type CanvasPageSource = {
   contentIndex: Map<string, string>;
   contentSource?: ContentSource;
   diagnostics: Diagnostic[];
+  uiLabels?: UiLabelContext;
 };
 
 export async function listCanvasDocumentPaths(
@@ -80,6 +82,7 @@ export async function resolveCanvasDocument(
     source: slug,
     options,
     resolver: createCanvasResolver(context.contentIndex),
+    uiLabels: context.uiLabels,
   });
   const body = finalizeCanvasNoteLinks(
     renderCanvasPage({ title, canvas }),

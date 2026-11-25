@@ -27,6 +27,7 @@ import type {
   MarkdownEmbedFragment,
   MarkdownPipelineContext,
 } from "./types/plugin_pipeline.js";
+import type { UiLabelContext } from "./types/ui_labels.js";
 
 export function reportContentDependenciesImpl(
   m: PipelineContext,
@@ -198,6 +199,7 @@ export function resolvePluginsImpl(m: PipelineContext): RiebeckitePlugin[] {
 export function createContentRendererImpl(
   m: PipelineContext,
   contentSource: ContentSource | undefined,
+  uiLabels: UiLabelContext,
 ): MarkdownPipelineContext["renderContent"] {
   const renderers = m
     .resolvePlugins()
@@ -227,6 +229,7 @@ export function createContentRendererImpl(
             logger: observability.logger.child({ plugin: plugin.name }),
             tracer: observability.tracer,
             contentSource,
+            uiLabels,
             ...input,
           }),
       );

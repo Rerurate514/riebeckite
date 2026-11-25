@@ -2,8 +2,8 @@ import {
   type ContentManifestEntry,
   escapeHtml,
   escapeHtmlAttribute,
+  type UiLabelContext,
 } from "@riebeckite/core";
-import type { UiLabelDictionaries } from "@riebeckite/ui";
 import { type ResolvedUiLabels, resolveUiLabels } from "@riebeckite/ui/labels";
 import { matchesCondition } from "./evaluate.js";
 import { basesLabels } from "./labels.js";
@@ -33,10 +33,9 @@ export function renderBases(
   options: BasesOptions,
   entries: readonly ContentManifestEntry[],
   source: string,
-  language?: string,
-  overrides?: Readonly<Record<string, UiLabelDictionaries>>,
+  uiLabels?: UiLabelContext,
 ): string {
-  const labels = resolveUiLabels(basesLabels, language, overrides);
+  const labels = resolveUiLabels(basesLabels, uiLabels);
   const className = options.className ?? "rb-bases";
   const views = selectViews(spec, options.view);
   const limit = resolveLimit(options.limit);

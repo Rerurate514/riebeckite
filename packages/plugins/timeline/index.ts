@@ -62,18 +62,14 @@ export function timeline(options: TimelineOptions = {}) {
             (page) => page.pathname,
           ),
         outputDependencies: [{ type: "global" }],
-        resolve: ({ manifest, pathname, contentIndex }) => {
+        resolve: ({ manifest, pathname, contentIndex, uiLabels }) => {
           const page = buildTimelinePages(
             manifest,
             resolved,
             contentIndex,
           ).find((candidate) => candidate.pathname === pathname);
           if (!page) return null;
-          const rendered = renderTimelinePage(
-            page.entries,
-            resolved,
-            page.locale,
-          );
+          const rendered = renderTimelinePage(page.entries, resolved, uiLabels);
           return {
             type: "timeline",
             layout: resolved.layout,
@@ -83,18 +79,14 @@ export function timeline(options: TimelineOptions = {}) {
             ...(page.locale ? { language: page.locale } : {}),
           };
         },
-        resolveRoute: ({ manifest, pathname, contentIndex }) => {
+        resolveRoute: ({ manifest, pathname, contentIndex, uiLabels }) => {
           const page = buildTimelinePages(
             manifest,
             resolved,
             contentIndex,
           ).find((candidate) => candidate.pathname === pathname);
           if (!page) return null;
-          const rendered = renderTimelinePage(
-            page.entries,
-            resolved,
-            page.locale,
-          );
+          const rendered = renderTimelinePage(page.entries, resolved, uiLabels);
           return {
             type: "timeline",
             layout: resolved.layout,

@@ -16,6 +16,7 @@
   "dependencies": {
     "@riebeckite/diagnostics": "workspace:*",
     "@riebeckite/node": "workspace:*",
+    "@riebeckite/ui": "workspace:*",
     "vite": "catalog:"
   },
   "peerDependencies": {

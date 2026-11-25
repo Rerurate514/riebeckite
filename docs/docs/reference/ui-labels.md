@@ -56,19 +56,20 @@ The active language is `ui.locale` when set, otherwise the language of the rende
 
 ## Read labels without a component
 
-Server code, string renderers, and client scripts use `resolveUiLabels` instead. Pass the language the output belongs to and, when available, the site's `ui.labels` value.
+Server code and string renderers use `resolveUiLabels` with a `UiLabelContext`. Core supplies `context.uiLabels` to plugin page resolvers and Markdown/HTML pipeline extensions. It selects `ui.locale` first, then the output language, and includes site overrides.
 
 ```ts
+import type { UiLabelContext } from "@riebeckite/core";
 import { resolveUiLabels } from "@riebeckite/ui";
 import { seriesLabels } from "./labels.js";
 
-export function renderSeries(index: SeriesIndex, language?: string): string {
-  const labels = resolveUiLabels(seriesLabels, language);
+export function renderSeries(index: SeriesIndex, uiLabels?: UiLabelContext): string {
+  const labels = resolveUiLabels(seriesLabels, uiLabels);
   return `<nav aria-label="${labels.seriesNavigation}">...</nav>`;
 }
 ```
 
-A `language` of `undefined` resolves the English defaults. When a renderer already receives a language (a page locale, `entry.publicLocation.language`, the resolved `htmlLanguage`, or a function argument), pass it rather than hardcoding `"en"`.
+Standalone renderers may accept an optional `UiLabelContext`; its absence resolves English. Framework entry points must pass the context they receive instead of passing locale strings and `ui.labels` separately.
 
 Client entries use `resolveClientUiLabels` from the `@riebeckite/ui/labels` subpath. It reads the page language and the site's `ui.locale` / `ui.labels` values that the framework publishes to the client, so overrides still apply in the browser. Importing from the subpath also keeps the JSX component entry out of the bundle.
 
@@ -106,6 +107,7 @@ The same pattern applies to helpers shared by several components. Export the typ
 | `UiLabelDictionaries` | Languages: `Readonly<Record<string, UiLabelDictionary>>` |
 | `UiLabelsDefinition<D>` | A namespace plus its dictionaries, as returned by `defineUiLabels` |
 | `ResolvedUiLabels<T>` | The flat label object for the `en` keys of a definition |
+| `UiLabelContext` | Effective language and site overrides, exported from `@riebeckite/core` |
 
 `defineUiLabels` and the types are exported from `@riebeckite/ui`. `resolveUiLabels` is also available from `@riebeckite/ui/labels`, which is safe to import from client entries.
 
@@ -116,7 +118,7 @@ The same pattern applies to helpers shared by several components. Export the typ
 - Keep the English values identical to the strings that were rendered before the migration. Changing them is a user-visible change.
 - Put Japanese in the same `labels.ts` file instead of a separate locale directory. The dictionary ships with the plugin either way.
 - Do not duplicate an existing plugin option. When a plugin already exposes a label option, use the option first and the shared label as the default.
-- When a renderer has no language source, resolve English and accept an optional `language` argument so a caller that knows the page language can pass it. Do not add a new config field for this.
+- When a renderer has no label context source, resolve English and accept an optional `UiLabelContext`. Do not add a plugin-specific locale or override option.
 - Add a small test that resolves the definition for `en` and `ja`, including a template value. Do not assert against a hardcoded English string elsewhere in the plugin.
 
 ## Overrides
@@ -136,6 +138,8 @@ export default defineConfig({
 ```
 
 Overrides only need the keys they change. The full key list per namespace is in [Localization setup](../guides/localization/setup.md#ui-strings).
+
+In development, the inspector's **UI labels** tab shows each loaded namespace, the requested and matched locale, every resolved value, and whether it came from English, a plugin dictionary, or a site override.
 
 ## Related
 

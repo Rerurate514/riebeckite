@@ -1,6 +1,5 @@
-import type { ContentIcon } from "@riebeckite/core";
+import type { ContentIcon, UiLabelContext } from "@riebeckite/core";
 import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
-import type { UiLabelDictionaries } from "@riebeckite/ui";
 import { resolveUiLabels } from "@riebeckite/ui";
 import { buildFeedHeadTags } from "./feeds.js";
 import { taxonomyLabels } from "./labels.js";
@@ -19,7 +18,7 @@ import type {
 export function renderTaxonomyPage(
   term: TaxonomyTerm,
   options: ResolvedTaxonomyOptions,
-  language?: string,
+  uiLabels?: UiLabelContext,
 ): TaxonomyPage {
   const className = escapeHtmlAttribute(options.className);
   const entries = term.entries
@@ -30,8 +29,8 @@ export function renderTaxonomyPage(
         )}">${renderIcon(entry.icon)}${escapeHtml(entry.title)}</a></li>`,
     )
     .join("");
-  const feeds = renderFeedLinks(term, className, language);
-  const related = renderRelatedTerms(term, options, language);
+  const feeds = renderFeedLinks(term, className, uiLabels);
+  const related = renderRelatedTerms(term, options, uiLabels);
 
   const html = `<section class="${className}" data-rr-taxonomy="${term.kind}" data-rr-taxonomy-value="${escapeHtmlAttribute(
     term.value,
@@ -49,12 +48,12 @@ export function renderTaxonomyPage(
 export function renderRelatedTerms(
   term: TaxonomyTerm,
   options: ResolvedTaxonomyOptions,
-  language?: string,
+  uiLabels?: UiLabelContext,
 ): string {
   if (!options.related || term.kind !== "tag" || term.related.length === 0) {
     return "";
   }
-  const resolvedLabels = resolveUiLabels(taxonomyLabels, language ?? "en");
+  const resolvedLabels = resolveUiLabels(taxonomyLabels, uiLabels);
   const className = escapeHtmlAttribute(options.className);
   const items = term.related
     .map(
@@ -71,15 +70,10 @@ export function renderTaxonomyIndexPage(
   kind: TaxonomyKind,
   terms: readonly TaxonomyTerm[],
   options: ResolvedTaxonomyOptions,
-  language?: string,
-  overrides?: Readonly<Record<string, UiLabelDictionaries>>,
+  uiLabels?: UiLabelContext,
 ): TaxonomyPage {
   const className = escapeHtmlAttribute(options.className);
-  const resolvedLabels = resolveUiLabels(
-    taxonomyLabels,
-    language ?? "en",
-    overrides,
-  );
+  const resolvedLabels = resolveUiLabels(taxonomyLabels, uiLabels);
   const label =
     kind === "tag" ? resolvedLabels.tagsTitle : resolvedLabels.foldersTitle;
   const items = terms
@@ -111,9 +105,9 @@ function renderIcon(icon: ContentIcon | undefined): string {
 function renderFeedLinks(
   term: TaxonomyTerm,
   className: string,
-  language?: string,
+  uiLabels?: UiLabelContext,
 ): string {
-  const resolvedLabels = resolveUiLabels(taxonomyLabels, language ?? "en");
+  const resolvedLabels = resolveUiLabels(taxonomyLabels, uiLabels);
   const links: string[] = [];
   if (term.feeds.rss) {
     links.push(

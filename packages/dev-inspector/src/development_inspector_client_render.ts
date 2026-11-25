@@ -40,6 +40,18 @@ function overviewReport(report) {
     '</dl>' + slowest;
 }
 
+function labelsReport(definitions) {
+  if (!Array.isArray(definitions) || definitions.length === 0) return '<p class="status">' + t("No UI labels are loaded.") + '</p>';
+  return definitions.map((definition) => {
+    const rows = Object.entries(definition.labels || {}).map(([key, value]) =>
+      '<tr><td>' + escapeHtml(key) + '</td><td>' + escapeHtml(String(value)) + '</td><td>' + escapeHtml(definition.sources?.[key] || "en") + '</td></tr>'
+    ).join("");
+    const locale = definition.language || "en";
+    const matched = definition.overrideLocale || definition.builtInLocale || "en";
+    return '<section class="inspector-section"><h3>' + escapeHtml(definition.namespace) + '</h3><p class="more">' + t("Requested locale") + ': ' + escapeHtml(locale) + ' · ' + t("Matched locale") + ': ' + escapeHtml(matched) + '</p><table><thead><tr><th>' + t("Key") + '</th><th>' + t("Value") + '</th><th>' + t("Source") + '</th></tr></thead><tbody>' + rows + '</tbody></table></section>';
+  }).join("");
+}
+
 function contentReport(data) {
   if (!data || data.status === "unavailable") return '<p class="status" aria-live="polite">' + t("Content inventory is unavailable.") + '</p>';
   const counts = data.counts;

@@ -31,8 +31,8 @@ export function qrCode(options: QrCodeOptions = {}) {
     },
     options,
     validateOptions: validateQrCodeOptions,
-    extendHtmlPipeline: (pipeline) => {
-      pipeline.use(rehypeQrCodeLazy, options);
+    extendHtmlPipeline: (pipeline, context) => {
+      pipeline.use(rehypeQrCodeLazy, { options, uiLabels: context.uiLabels });
     },
     assets: [
       createStyleAsset(PLUGIN_NAME, "@riebeckite/plugin-qr-code/style.css"),
@@ -97,11 +97,16 @@ function validateQrCodeOptions(
   return issues;
 }
 
-function rehypeQrCodeLazy(options: QrCodeOptions = {}) {
-  const resolved = resolveQrCodeOptions(options);
+function rehypeQrCodeLazy(
+  input: {
+    readonly options?: QrCodeOptions;
+    readonly uiLabels?: import("@riebeckite/core").UiLabelContext;
+  } = {},
+) {
+  const resolved = resolveQrCodeOptions(input.options ?? {});
   return async (tree: HastNode, file: unknown) => {
     const { rehypeQrCode } = await import("./src/rehype.js");
-    await rehypeQrCode(resolved)(tree, file);
+    await rehypeQrCode(resolved, input.uiLabels)(tree, file);
   };
 }
 

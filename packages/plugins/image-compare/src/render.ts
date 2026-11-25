@@ -1,4 +1,8 @@
-import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
+import {
+  escapeHtml,
+  escapeHtmlAttribute,
+  type UiLabelContext,
+} from "@riebeckite/core";
 import { resolveUiLabels } from "@riebeckite/ui";
 import { imageCompareLabels } from "./labels.js";
 import type { ResolvedImageCompareSpec } from "./types.js";
@@ -7,9 +11,9 @@ export const IMAGE_COMPARE_CLASS = "rr-image-compare";
 
 export function renderImageCompare(
   spec: ResolvedImageCompareSpec,
-  language?: string,
+  uiLabels?: UiLabelContext,
 ): string {
-  const labels = resolveUiLabels(imageCompareLabels, language);
+  const labels = resolveUiLabels(imageCompareLabels, uiLabels);
   const label = spec.label ?? labels.comparison;
   const before = `<div class="${IMAGE_COMPARE_CLASS}__layer ${IMAGE_COMPARE_CLASS}__layer--before"><img class="${IMAGE_COMPARE_CLASS}__image ${IMAGE_COMPARE_CLASS}__image--before" src="${escapeHtmlAttribute(spec.before)}" alt="${escapeHtmlAttribute(spec.beforeAlt)}" loading="eager" decoding="async"></div>`;
   const after = `<div class="${IMAGE_COMPARE_CLASS}__layer ${IMAGE_COMPARE_CLASS}__layer--after"><img class="${IMAGE_COMPARE_CLASS}__image ${IMAGE_COMPARE_CLASS}__image--after" src="${escapeHtmlAttribute(spec.after)}" alt="${escapeHtmlAttribute(spec.afterAlt)}" loading="eager" decoding="async"></div>`;

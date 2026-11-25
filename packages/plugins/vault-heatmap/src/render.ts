@@ -1,4 +1,8 @@
-import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
+import {
+  escapeHtml,
+  escapeHtmlAttribute,
+  type UiLabelContext,
+} from "@riebeckite/core";
 import { resolveUiLabels } from "@riebeckite/ui/labels";
 import { vaultHeatmapLabels } from "./labels.js";
 import type { VaultActivity, VaultHeatmapSpec } from "./types.js";
@@ -15,6 +19,7 @@ type Cell = {
 export function renderVaultHeatmap(
   spec: VaultHeatmapSpec,
   activity: VaultActivity,
+  uiLabels?: UiLabelContext,
 ): string {
   const end = spec.end ?? activity.latest;
   if (!end) return renderEmpty(spec.title);
@@ -52,7 +57,7 @@ export function renderVaultHeatmap(
 
   const viewedTotal = cells.reduce((sum, cell) => sum + cell.count, 0);
   const viewedDays = cells.filter((cell) => cell.count > 0).length;
-  const labels = resolveUiLabels(vaultHeatmapLabels, undefined);
+  const labels = resolveUiLabels(vaultHeatmapLabels, uiLabels);
   let summary: string;
   if (viewedTotal === 0) {
     summary = labels.noActivity;

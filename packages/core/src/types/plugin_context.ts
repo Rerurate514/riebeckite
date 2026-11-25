@@ -13,6 +13,7 @@ import type { ExternalDependencySnapshot } from "./external_dependency.js";
 import type { GeneratedOutputSink } from "./generated_output.js";
 import type { PostContent } from "./post_content.js";
 import type { ResolvedRiebeckiteConfig } from "./resolved_riebeckite_config.js";
+import type { UiLabelContext } from "./ui_labels.js";
 
 export type PluginContext = {
   config?: ResolvedRiebeckiteConfig;
@@ -91,7 +92,10 @@ export type PluginRenderTarget = {
   fragment?: string;
 };
 
-export type PluginRenderContext = PluginContext & PluginRenderTarget;
+export type PluginRenderContext = PluginContext &
+  PluginRenderTarget & {
+    uiLabels?: UiLabelContext;
+  };
 
 export type PluginContentRenderer = {
   name?: string;

@@ -26,14 +26,27 @@ export function createReportMiddlewares(
     response: import("node:http").ServerResponse,
   ) => {
     try {
-      const { inspectThemeConfig, resolveApiLifecycle } = await import(
-        "@riebeckite/core"
+      const { createUiLabelContext, inspectThemeConfig, resolveApiLifecycle } =
+        await import("@riebeckite/core");
+      const { getUiLabelDefinitions, resolveUiLabelsWithTrace } = await import(
+        "@riebeckite/ui"
       );
       const application = state.getApplication();
       const entry = state.inspect(application, state.getRevision(), server);
       const report = await entry.report;
       const currentPage = currentPageFromRequest(request.url);
       const snapshot = await entry.snapshot;
+      const currentPageSources = currentPageSourceSlugs(
+        snapshot?.manifest,
+        currentPage,
+      );
+      const language = currentPageSources
+        .map(
+          (slug) =>
+            snapshot?.manifest.bySlug.get(slug)?.publicLocation.language,
+        )
+        .find((value) => value !== undefined);
+      const uiLabels = createUiLabelContext(application.config, language);
       response.setHeader("content-type", "application/json; charset=utf-8");
       response.setHeader("cache-control", "no-store");
       response.end(
@@ -41,10 +54,11 @@ export function createReportMiddlewares(
           ...report,
           generatedAt: new Date().toISOString(),
           currentPage,
-          currentPageSources: currentPageSourceSlugs(
-            snapshot?.manifest,
-            currentPage,
-          ),
+          currentPageSources,
+          labels: getUiLabelDefinitions().map((definition) => ({
+            namespace: definition.namespace,
+            ...resolveUiLabelsWithTrace(definition, uiLabels),
+          })),
           theme: application.config.theme.name,
           themeConfig: inspectThemeConfig(application.config.theme),
           plugins: application.config.plugins.map((plugin, index) => ({

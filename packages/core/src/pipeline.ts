@@ -33,12 +33,14 @@ import type {
   MarkdownPipelineContext,
 } from "./types/plugin_pipeline.js";
 import type { PostContent } from "./types/post_content.js";
+import type { UiLabelContext } from "./types/ui_labels.js";
 
 export type { PipelineOptions } from "./pipeline_types.js";
 
 export class Pipeline {
   contentIndex!: Map<string, string>;
   permalinks!: ReadonlyMap<string, string>;
+  uiLabelsBySlug!: ReadonlyMap<string, UiLabelContext>;
   getMarkdownBySlug?: (slug: string) => Promise<string>;
   options!: PipelineOptions;
   isBuildTime!: boolean;
@@ -54,6 +56,7 @@ export class Pipeline {
     getMarkdownBySlug?: (slug: string) => Promise<string>,
     options: PipelineOptions = {},
     isBuildTime = false,
+    uiLabelsBySlug: ReadonlyMap<string, UiLabelContext> = new Map(),
   ) {
     initializePipeline(
       asPipelineContext(this),
@@ -62,6 +65,7 @@ export class Pipeline {
       getMarkdownBySlug,
       options,
       isBuildTime,
+      uiLabelsBySlug,
     );
   }
 
@@ -160,8 +164,9 @@ export class Pipeline {
 
   createContentRenderer = (
     contentSource: ContentSource | undefined,
+    uiLabels: UiLabelContext,
   ): MarkdownPipelineContext["renderContent"] =>
-    createContentRendererImpl(asPipelineContext(this), contentSource);
+    createContentRendererImpl(asPipelineContext(this), contentSource, uiLabels);
 
   cacheFor = (
     plugin: RiebeckitePlugin,

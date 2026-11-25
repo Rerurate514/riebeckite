@@ -128,7 +128,7 @@ test("renderDiffHistory uses the provided labels over the English defaults", () 
     revisions,
     selected,
     labels: {
-      ...resolveUiLabels(diffLabels, "en"),
+      ...resolveUiLabels(diffLabels, { language: "en" }),
       collapse: "折りたたむ",
       expand: "開く",
     },

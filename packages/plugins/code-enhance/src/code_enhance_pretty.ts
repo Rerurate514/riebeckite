@@ -1,3 +1,4 @@
+import type { UiLabelContext } from "@riebeckite/core";
 import { resolveUiLabels } from "@riebeckite/ui/labels";
 import {
   findDirectChild,
@@ -20,8 +21,9 @@ import type { CodeEnhanceOptions, ElementNode, HastNode } from "./types.js";
 export function enhancePrettyCodeFigures(
   tree: HastNode,
   options: CodeEnhanceOptions,
+  uiLabels: UiLabelContext = { language: options.locale },
 ) {
-  const labels = resolveUiLabels(codeEnhanceLabels, options.locale);
+  const labels = resolveUiLabels(codeEnhanceLabels, uiLabels);
   visitElements(tree, (node) => {
     if (!isPrettyCodeFigure(node)) return;
 

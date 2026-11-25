@@ -1,4 +1,7 @@
-import type { PluginSiteComponent } from "@riebeckite/core";
+import {
+  createUiLabelContext,
+  type PluginSiteComponent,
+} from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 import { html, raw } from "hono/html";
 import { getProperties } from "../src/component-data.js";
@@ -19,7 +22,6 @@ const Properties = (({
 }: Readonly<PropertiesProps>) => {
   const site = useSiteContext();
   const article = useArticleContext();
-  const language = site?.language;
   const data =
     explicitData ??
     (site && article
@@ -45,7 +47,7 @@ const Properties = (({
           ? `${data.className} ${extraClass}`
           : data.className,
       },
-      language,
+      createUiLabelContext(site?.config, site?.language),
     ),
   );
 }) satisfies PluginSiteComponent<PropertiesProps>;

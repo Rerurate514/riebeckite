@@ -30,7 +30,6 @@ export const SIDENOTES_PLUGIN_NAME = "sidenotes";
  * markup into an inline reference plus a margin note.
  */
 export function sidenotes(options: SidenotesOptions = {}) {
-  const resolved = resolveSidenotesOptions(options);
   return definePlugin({
     name: SIDENOTES_PLUGIN_NAME,
     processedContentCache: {
@@ -39,7 +38,12 @@ export function sidenotes(options: SidenotesOptions = {}) {
     },
     options,
     validateOptions: validateSidenotesOptions,
-    rehypePlugins: [() => rehypeSidenotes(resolved)],
+    extendHtmlPipeline: (pipeline, context) => {
+      pipeline.use(
+        rehypeSidenotes,
+        resolveSidenotesOptions(options, context.uiLabels),
+      );
+    },
     assets: [
       createStyleAsset(
         SIDENOTES_PLUGIN_NAME,

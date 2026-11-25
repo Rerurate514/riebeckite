@@ -6,6 +6,7 @@ import type {
   PublicContentView,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
+import { createUiLabelContext } from "@riebeckite/core";
 import type { Child } from "hono/jsx";
 import { createContext, useContext } from "hono/jsx";
 import {
@@ -21,12 +22,15 @@ export type {
   ResolvedUiLabels,
   UiLabelDictionaries,
   UiLabelDictionary,
+  UiLabelResolution,
   UiLabelsDefinition,
 } from "./labels.js";
 export {
   defineUiLabels,
+  getUiLabelDefinitions,
   resolveClientUiLabels,
   resolveUiLabels,
+  resolveUiLabelsWithTrace,
 } from "./labels.js";
 
 export type SiteContextValue = {
@@ -75,10 +79,8 @@ export function useUiLabels<
   D extends { readonly en: UiLabelDictionary } & UiLabelDictionaries,
 >(definition: UiLabelsDefinition<D>): ResolvedUiLabels<UiLabelsDefinition<D>> {
   const context = useContext(SiteContext);
-  if (!context) return resolveUiLabels(definition, undefined);
   return resolveUiLabels(
     definition,
-    context.config.ui?.locale ?? context.language,
-    context.config.ui?.labels,
+    createUiLabelContext(context?.config, context?.language),
   );
 }

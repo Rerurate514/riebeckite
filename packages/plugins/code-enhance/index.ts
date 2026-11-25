@@ -33,8 +33,8 @@ export function codeEnhance(options: CodeEnhanceOptions = {}) {
     },
     options,
     remarkPlugins: [remarkCodeMeta],
-    extendHtmlPipeline: (pipeline) => {
-      pipeline.use(rehypeCodeEnhance, options);
+    extendHtmlPipeline: (pipeline, context) => {
+      pipeline.use(rehypeCodeEnhance, { options, uiLabels: context.uiLabels });
     },
     markdownComponents: [
       defineMarkdownComponent({

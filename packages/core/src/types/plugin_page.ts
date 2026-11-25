@@ -2,6 +2,7 @@ import type { ContentManifest } from "./content_manifest.js";
 import type { OutputDependency } from "./output_dependency.js";
 import type { PluginContext } from "./plugin_context.js";
 import type { PluginHeadTag } from "./plugin_head.js";
+import type { UiLabelContext } from "./ui_labels.js";
 
 export type PluginPageLayout = "article" | "wide";
 
@@ -34,6 +35,7 @@ export type PluginPageContext = PluginContext & {
   pathname: string;
   /** Resolved page locale, or undefined when the site does not localize. */
   locale?: string;
+  uiLabels: UiLabelContext;
   renderMarkdown(markdown: string): Promise<string>;
 };
 

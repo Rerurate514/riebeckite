@@ -1,18 +1,15 @@
-import type { UiLabelDictionaries } from "@riebeckite/ui";
+import type { UiLabelContext } from "@riebeckite/core";
 import { resolveUiLabels } from "@riebeckite/ui";
 import { sidenotesLabels } from "./labels.js";
 import type { ResolvedSidenotesOptions, SidenotesOptions } from "./types.js";
 
 /**
- * Resolves labels for sidenotes optionally using a language/overrides.
- * When language is provided, labels are resolved per call; otherwise English
- * defaults are kept.
  */
-function resolveSidenotesLabels(
-  language?: string,
-  overrides?: Readonly<Record<string, UiLabelDictionaries>>,
-): { ariaLabel: string; openLabel: string } {
-  const resolved = resolveUiLabels(sidenotesLabels, language, overrides);
+function resolveSidenotesLabels(uiLabels?: UiLabelContext): {
+  ariaLabel: string;
+  openLabel: string;
+} {
+  const resolved = resolveUiLabels(sidenotesLabels, uiLabels);
   return {
     ariaLabel: resolved.ariaLabel,
     openLabel: resolved.openLabel,
@@ -22,15 +19,13 @@ function resolveSidenotesLabels(
 /**
  * Applies defaults to `SidenotesOptions`. Pure and deterministic so the
  * plugin can resolve options once and reuse them for every processed tree.
- * If language is available from the render input, labels are resolved per call.
  */
 export function resolveSidenotesOptions(
   options: SidenotesOptions = {},
-  language?: string,
-  overrides?: Readonly<Record<string, UiLabelDictionaries>>,
+  uiLabels?: UiLabelContext,
 ): ResolvedSidenotesOptions {
   const { ariaLabel: resolvedAriaLabel, openLabel: resolvedOpenLabel } =
-    resolveSidenotesLabels(language, overrides);
+    resolveSidenotesLabels(uiLabels);
   return {
     className: normalizeNonEmpty(options.className, ""),
     ariaLabel: normalizeNonEmpty(options.ariaLabel, resolvedAriaLabel),

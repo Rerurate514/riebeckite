@@ -19,8 +19,8 @@ export function autoCardLink(options: AutoCardLinkOptions = {}) {
       dependencyMode: "none",
     },
     options,
-    extendMarkdownPipeline: (pipeline) => {
-      pipeline.use(remarkAutoCardLink, options);
+    extendMarkdownPipeline: (pipeline, context) => {
+      pipeline.use(remarkAutoCardLink, { options, uiLabels: context.uiLabels });
     },
     assets: [
       createStyleAsset(

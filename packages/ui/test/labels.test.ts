@@ -1,9 +1,11 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { createUiLabelContext } from "@riebeckite/core";
 import {
   defineUiLabels,
   resolveClientUiLabels,
   resolveUiLabels,
+  resolveUiLabelsWithTrace,
 } from "../labels.js";
 
 const labels = defineUiLabels("example", {
@@ -25,25 +27,29 @@ test("returns English without a language", () => {
 });
 
 test("uses the matching dictionary case-insensitively", () => {
-  assert.equal(resolveUiLabels(labels, "JA").search, "検索");
+  assert.equal(resolveUiLabels(labels, { language: "JA" }).search, "検索");
 });
 
 test("falls back to English for unknown languages", () => {
-  assert.equal(resolveUiLabels(labels, "fr").search, "Search");
+  assert.equal(resolveUiLabels(labels, { language: "fr" }).search, "Search");
 });
 
 test("applies overrides only for the matching namespace and language", () => {
-  const resolved = resolveUiLabels(labels, "ja", {
-    example: { ja: { search: "ノート検索" } },
-    other: { ja: { search: "ignored" } },
+  const resolved = resolveUiLabels(labels, {
+    language: "ja",
+    overrides: {
+      example: { ja: { search: "ノート検索" } },
+      other: { ja: { search: "ignored" } },
+    },
   });
   assert.equal(resolved.search, "ノート検索");
   assert.equal(resolved.showing, "{total} 件中 {shown} 件を表示");
 });
 
 test("ignores empty and non-string overrides", () => {
-  const resolved = resolveUiLabels(labels, "ja", {
-    example: { ja: JSON.parse('{"search":"","showing":1}') },
+  const resolved = resolveUiLabels(labels, {
+    language: "ja",
+    overrides: { example: { ja: JSON.parse('{"search":"","showing":1}') } },
   });
   assert.equal(resolved.search, "検索");
   assert.equal(resolved.showing, "{total} 件中 {shown} 件を表示");
@@ -54,8 +60,8 @@ test("keeps template placeholders in plugin dictionaries", () => {
 });
 
 test("matches a primary subtag when the full locale differs", () => {
-  assert.equal(resolveUiLabels(labels, "ja-JP").search, "検索");
-  assert.equal(resolveUiLabels(labels, "en_US").search, "Search");
+  assert.equal(resolveUiLabels(labels, { language: "ja-JP" }).search, "検索");
+  assert.equal(resolveUiLabels(labels, { language: "en_US" }).search, "Search");
 });
 
 test("prefers an exact locale over the primary subtag", () => {
@@ -64,8 +70,14 @@ test("prefers an exact locale over the primary subtag", () => {
     pt: { label: "Português" },
     "pt-BR": { label: "Português (BR)" },
   });
-  assert.equal(resolveUiLabels(regional, "pt-BR").label, "Português (BR)");
-  assert.equal(resolveUiLabels(regional, "pt-PT").label, "Português");
+  assert.equal(
+    resolveUiLabels(regional, { language: "pt-BR" }).label,
+    "Português (BR)",
+  );
+  assert.equal(
+    resolveUiLabels(regional, { language: "pt-PT" }).label,
+    "Português",
+  );
 });
 
 test("client labels use the site locale and overrides", () => {
@@ -78,4 +90,28 @@ test("client labels use the site locale and overrides", () => {
   } finally {
     globalThis.__riebeckiteUi = undefined;
   }
+});
+
+test("traces the dictionary and override used for each label", () => {
+  const resolution = resolveUiLabelsWithTrace(labels, {
+    language: "ja-JP",
+    overrides: { example: { ja: { search: "サイト検索" } } },
+  });
+  assert.equal(resolution.builtInLocale, "ja");
+  assert.equal(resolution.overrideLocale, "ja");
+  assert.equal(resolution.sources.search, "override");
+  assert.equal(resolution.sources.showing, "built-in");
+});
+
+test("site locale takes priority over the output language", () => {
+  const context = createUiLabelContext(
+    {
+      ui: {
+        locale: "ja",
+        labels: { example: { ja: { search: "サイト検索" } } },
+      },
+    },
+    "en",
+  );
+  assert.equal(resolveUiLabels(labels, context).search, "サイト検索");
 });

@@ -3,6 +3,7 @@ import type {
   ContentManifest,
   ContentPublicLocation,
 } from "../types/content_manifest.js";
+import { createUiLabelContext } from "../types/ui_labels.js";
 import {
   type ContentBuildPlan,
   type FullRegenerationReason,
@@ -176,6 +177,12 @@ export async function createPipelineImpl(
       contentScopeFingerprint: m.pipelineFingerprint ?? undefined,
     },
     m.isBuildTime,
+    new Map(
+      [...locations.entries()].map(([slug, location]) => [
+        slug,
+        createUiLabelContext(m.pipelineOptions.config, location.language),
+      ]),
+    ),
   );
 }
 

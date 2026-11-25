@@ -28,7 +28,7 @@ export async function prepareMarkdownComponent(
   return {
     name: component.name,
     props: serializePublicClientConfig(resolved),
-    content: await component.render(resolved),
+    content: await component.render(resolved, context),
     interactive: component.client !== undefined,
   };
 }

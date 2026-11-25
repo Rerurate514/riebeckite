@@ -32,16 +32,19 @@ export const imageCompareComponent: PluginMarkdownComponent<ImageCompareProps> =
     resolveProps(props, context) {
       return resolveImageCompare(props, context);
     },
-    render(props) {
+    render(props, context) {
       if (props.error) return renderImageCompareError(props.error);
-      return renderImageCompare({
-        before: props.before ?? "",
-        after: props.after ?? "",
-        beforeAlt: props.beforeAlt ?? "Before",
-        afterAlt: props.afterAlt ?? "After",
-        orientation: props.orientation ?? "horizontal",
-        ...(props.label ? { label: props.label } : {}),
-      });
+      return renderImageCompare(
+        {
+          before: props.before ?? "",
+          after: props.after ?? "",
+          beforeAlt: props.beforeAlt ?? "Before",
+          afterAlt: props.afterAlt ?? "After",
+          orientation: props.orientation ?? "horizontal",
+          ...(props.label ? { label: props.label } : {}),
+        },
+        context.uiLabels,
+      );
     },
     renderError(error) {
       return renderImageCompareError(formatError(error));

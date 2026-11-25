@@ -56,7 +56,7 @@ Create a site:
 npx create-riebeckite
 ```
 
-For a first try, accept the defaults: `Starter site` (the `starter` preset), no extra project file changes, `This project`, `Not now`, and `Yes` for installing dependencies. The default folder is `my-riebeckite-site`. Then:
+For a first try, accept the defaults: `Starter site` (the `starter` preset), no extra project file changes, `This project`, `Not now`, and `Yes` for installing dependencies. Choose `npm` (the default) unless the project already uses pnpm. The default folder is `my-riebeckite-site`. Then:
 
 ```bash
 cd my-riebeckite-site
@@ -70,9 +70,9 @@ Open the URL printed in the terminal. Edit `content/index.md` and the page updat
 npm exec riebeckite build
 ```
 
-The static site is written to `dist/`. New notes appear once they have `publish: true` in their frontmatter. To change the site title, URL, or content folder, edit `riebeckite.config.ts` (`site.title`, `site.baseUrl`, `content.directory`). If you chose not to install dependencies, run `npm install` before `dev`.
+The static site is written to `dist/`. New notes appear once they have `publish: true` in their frontmatter. To change the site title, URL, or content folder, edit `riebeckite.config.ts` (`site.title`, `site.baseUrl`, `content.directory`). If you chose not to install dependencies, run `npm install` before `dev` (or `pnpm install` when the site uses pnpm).
 
-To run without prompts, pass a directory and preset, for example `npx create-riebeckite my-site --preset starter`. This mode does not install dependencies; run `npm install` in the folder before `dev`.
+To run without prompts, pass a directory and preset, for example `npx create-riebeckite my-site --preset starter`. This mode does not install dependencies; run `npm install` in the folder before `dev` (or `pnpm install` with `--package-manager pnpm`).
 
 Riebeckite needs Node.js `^22.13.0`, `^24.0.0`, or `^26.0.0` and npm (npm ships with Node.js). Local development does not require Git; Git and a GitHub account are needed only for deployment workflows that use GitHub.
 

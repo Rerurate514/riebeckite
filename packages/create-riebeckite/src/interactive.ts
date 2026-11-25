@@ -10,6 +10,7 @@ import type { CreateRiebeckiteOptions } from "./arguments.js";
 import type {
   ScaffoldAiOptions,
   ScaffoldDeployment,
+  ScaffoldPackageManager,
 } from "./scaffold/options.js";
 import {
   SCAFFOLD_PRESETS,
@@ -37,6 +38,7 @@ type InteractiveAnswers =
       readonly contentDirectory?: string;
       readonly deployment: InteractiveDeployment;
       readonly ai?: ScaffoldAiOptions;
+      readonly packageManager?: ScaffoldPackageManager;
     }
   | {
       readonly directory: string;
@@ -47,6 +49,7 @@ type InteractiveAnswers =
       readonly siteRepository: string;
       readonly cloneContent?: boolean;
       readonly ai?: ScaffoldAiOptions;
+      readonly packageManager?: ScaffoldPackageManager;
     };
 
 type InteractiveSetupAnswers = {
@@ -71,6 +74,9 @@ export function interactiveAnswersToOptions(
       ? { cloneContent: true }
       : {}),
     ...(answers.ai === undefined ? {} : { ai: answers.ai }),
+    ...(answers.packageManager === undefined
+      ? {}
+      : { packageManager: answers.packageManager }),
     deployment: deploymentFromAnswers(answers),
   };
 }
@@ -110,6 +116,16 @@ export async function promptInteractiveAnswers(): Promise<InteractiveSetupAnswer
   });
   if (isCancel(projectInput)) return null;
   const directory = projectInput.trim() || DEFAULT_DIRECTORY;
+
+  const packageManager = await select<ScaffoldPackageManager>({
+    message: "Which package manager?",
+    initialValue: "npm",
+    options: [
+      { value: "npm", label: "npm", hint: "Uses package-lock.json" },
+      { value: "pnpm", label: "pnpm", hint: "Commit pnpm-lock.yaml" },
+    ],
+  });
+  if (isCancel(packageManager)) return null;
 
   const preset = await select<ScaffoldPresetName>({
     message: "What would you like to build?",
@@ -204,6 +220,7 @@ export async function promptInteractiveAnswers(): Promise<InteractiveSetupAnswer
       siteRepository: siteRepository.trim(),
       cloneContent,
       ...(ai === undefined ? {} : { ai }),
+      packageManager,
     };
   } else {
     const deployment = await select<InteractiveDeployment>({
@@ -232,6 +249,7 @@ export async function promptInteractiveAnswers(): Promise<InteractiveSetupAnswer
       ...(contentDirectory === undefined ? {} : { contentDirectory }),
       deployment,
       ...(ai === undefined ? {} : { ai }),
+      packageManager,
     };
   }
 

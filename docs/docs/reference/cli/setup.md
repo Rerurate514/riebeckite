@@ -81,6 +81,16 @@ npm exec -- riebeckite init my-site --utilities editorconfig,npmrc,vscode
 
 The default is `gitignore,editorconfig,gitattributes,biome`, and `none` writes none. In interactive mode, choose `Yes` for `Customize extra project files?` to open the `Extra project files` prompt, which pre-selects the default set.
 
+### Choosing a package manager
+
+`--package-manager <npm|pnpm>` selects the package manager for the generated site (default: `npm`).
+
+```sh
+npm exec -- riebeckite init my-site --package-manager pnpm
+```
+
+With pnpm, the site manifest pins `pnpm@11.5.3`, the README uses pnpm commands, and the GitHub Actions workflow installs with `pnpm install --frozen-lockfile`. Commit `pnpm-lock.yaml`; npm sites commit `package-lock.json` instead.
+
 ### When files already exist
 
 `init` refuses to write into a directory that already contains generated files unless `--force` is passed.
@@ -93,13 +103,13 @@ Because `--force` affects existing files, review their contents before using it.
 
 ### `create-riebeckite`
 
-The `create-riebeckite` package runs the same generator through `npx create-riebeckite` and accepts the same `--preset` and `--list-presets` flags.
+The `create-riebeckite` package runs the same generator through `npx create-riebeckite` and accepts the same `--preset`, `--list-presets`, and `--package-manager` flags.
 
 ```sh
 npx create-riebeckite
 ```
 
-Passing a directory, for example `npx create-riebeckite my-site --preset starter`, skips the prompts and does not install dependencies; run `npm install` in the generated folder before `check` and `build`.
+Passing a directory, for example `npx create-riebeckite my-site --preset starter`, skips the prompts and does not install dependencies; run `npm install` (or `pnpm install` with `--package-manager pnpm`) in the generated folder before `check` and `build`.
 
 In interactive mode it asks for the content source and then for the deployment:
 

@@ -22,6 +22,8 @@ This page takes you from an empty machine to a running site. It assumes nothing 
 
 `npm` ships with Node.js, so you do not install it separately. Git and a GitHub account are optional; they are used for repository history and automatic deployment. If you publish to Cloudflare directly from your machine, you can add them later. See [Deployment](../guides/deployment/README.md).
 
+Generated sites use npm by default. Choose pnpm in the prompt (or pass `--package-manager pnpm`) to generate pnpm commands and a workflow that runs `pnpm install --frozen-lockfile`; pnpm 11.5.3 is pinned. With pnpm, commit `pnpm-lock.yaml`; with npm, commit `package-lock.json`.
+
 Confirm the tools are available:
 
 ```sh
@@ -42,11 +44,12 @@ npx create-riebeckite
 `npx` downloads `create-riebeckite` and runs it once; nothing is installed globally. The CLI asks, in order:
 
 1. **Project name** — the folder to create. The default is `my-riebeckite-site`; use `my-site` or another name if you prefer
-2. **What would you like to build?** ([[glossary/preset|preset]]) — the site's composition; keep `Starter site` (the `starter` preset) when unsure. See [Presets](./presets.md)
-3. **Customize extra project files?** — choose `Yes` to change generated editor or tool files. The default is `No`, which still generates the default project files
-4. **Where will you write content?** — `This project` keeps `content/` inside the site and is the simplest start. `Separate directory in this repository` keeps a vault beside the app. `Separate GitHub repository` is an advanced setup for an existing vault. See [Content Repositories](../guides/deployment/separate-content-repository.md)
-5. **Set up deployment?** — `Cloudflare Workers`, `GitHub Actions`, or `Not now`. `Cloudflare Workers` asks `Deploy now?` after installation, so you can publish your first version right away. `GitHub Actions` deploys on every push to `main`. `Not now` skips deployment setup; see [Deployment](../guides/deployment/README.md)
-6. **Install dependencies now?** — defaults to `Yes`. Choose `No` when you need to inspect or install the generated project later.
+2. **Which package manager?** — `npm` (default) or `pnpm`. With pnpm, commit `pnpm-lock.yaml` and use `pnpm install` / `pnpm exec` in place of the npm commands below
+3. **What would you like to build?** ([[glossary/preset|preset]]) — the site's composition; keep `Starter site` (the `starter` preset) when unsure. See [Presets](./presets.md)
+4. **Customize extra project files?** — choose `Yes` to change generated editor or tool files. The default is `No`, which still generates the default project files
+5. **Where will you write content?** — `This project` keeps `content/` inside the site and is the simplest start. `Separate directory in this repository` keeps a vault beside the app. `Separate GitHub repository` is an advanced setup for an existing vault. See [Content Repositories](../guides/deployment/separate-content-repository.md)
+6. **Set up deployment?** — `Cloudflare Workers`, `GitHub Actions`, or `Not now`. `Cloudflare Workers` asks `Deploy now?` after installation, so you can publish your first version right away. `GitHub Actions` deploys on every push to `main`. `Not now` skips deployment setup; see [Deployment](../guides/deployment/README.md)
+7. **Install dependencies now?** — defaults to `Yes`. Choose `No` when you need to inspect or install the generated project later.
 
 To script the same setup instead of answering prompts, pass arguments, for example:
 
@@ -57,7 +60,7 @@ npx create-riebeckite my-riebeckite-site --preset starter
 - If a generated top-level name conflicts with an existing entry, the command stops. Add `--force` only when you really want to overwrite.
 - Unrelated files in the target folder are allowed without `--force`.
 - List the available presets with `npx create-riebeckite --list-presets`.
-- Passing a directory makes the command non-interactive: it skips the preset, content, deployment, and install prompts, and it does not install dependencies. Run `npm install` in the folder before `dev` (see below).
+- Passing a directory makes the command non-interactive: it skips the preset, content, deployment, and install prompts, and it does not install dependencies. Add `--package-manager pnpm` when generating for pnpm. Run `npm install` (or `pnpm install`) in the folder before `dev` (see below).
 
 When you choose not to install dependencies in the prompt, move into the folder and install the packages:
 
@@ -68,7 +71,7 @@ npm install
 
 The `@riebeckite/*` packages are published to npm, so this is all it takes. The first install can take a minute. If npm reports vulnerabilities, review them with `npm audit`; many come from transitive build dependencies. Avoid `npm audit fix --force` unless you have checked the version changes it would make.
 
-These instructions use npm, the reference package manager for generated sites. pnpm works too: the generated `pnpm-workspace.yaml` approves the build scripts pnpm asks about (esbuild, puppeteer, sharp), so the first `pnpm install` does not stop with `ERR_PNPM_IGNORED_BUILDS`. That file only affects pnpm and leaves npm unchanged. Strict package managers do not expose transitive dependencies, so sites scaffolded before `@riebeckite/node`, `@riebeckite/runtime`, and `@riebeckite/spa` were declared in the site manifest need those packages added explicitly.
+These instructions use npm, the default package manager for generated sites. When you choose pnpm, the generator writes `"packageManager": "pnpm@11.5.3"`, prints pnpm commands, and makes the GitHub Actions workflow run `pnpm install --frozen-lockfile`; commit `pnpm-lock.yaml`. The generated `pnpm-workspace.yaml` approves the build scripts pnpm asks about (esbuild, puppeteer, sharp), so the first `pnpm install` does not stop with `ERR_PNPM_IGNORED_BUILDS`. Strict package managers do not expose transitive dependencies, so sites scaffolded before `@riebeckite/node`, `@riebeckite/runtime`, and `@riebeckite/spa` were declared in the site manifest need those packages added explicitly.
 
 Recent npm 11 releases can also skip dependency install scripts. If `npm install` reports `Ignored build scripts: esbuild`, approve it with `npm approve-scripts esbuild`, then rerun `npm install`.
 

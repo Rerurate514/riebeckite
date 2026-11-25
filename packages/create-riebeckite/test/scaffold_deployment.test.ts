@@ -185,7 +185,19 @@ test("the generated workflow is rendered from the packaged deployment template",
     .replaceAll(
       "{{cloudflareAccountId}}",
       GITHUB_ACTIONS_SECRETS.CLOUDFLARE_ACCOUNT_ID,
-    );
+    )
+    .replaceAll("{{packageManagerSetup}}", "")
+    .replaceAll("{{nodeCache}}", "npm")
+    .replaceAll(
+      "{{installSteps}}",
+      `          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi`,
+    )
+    .replaceAll("{{lockfile}}", "package-lock.json")
+    .replaceAll("{{exec}}", "npm exec --");
   assert.equal(
     normalized,
     expected,
@@ -196,11 +208,47 @@ test("the generated workflow is rendered from the packaged deployment template",
     "{{schedule}}",
     "{{cloudflareApiToken}}",
     "{{cloudflareAccountId}}",
+    "{{packageManagerSetup}}",
+    "{{nodeCache}}",
+    "{{installSteps}}",
+    "{{lockfile}}",
+    "{{exec}}",
   ]) {
     assert.ok(
       !normalized.includes(placeholder),
       `the generated workflow must not leak ${placeholder}`,
     );
+  }
+});
+
+test("pnpm workflows set up pnpm and install its lockfile", () => {
+  const files = deploymentTemplateFiles({ type: "local" }, undefined, {
+    packageManager: "pnpm",
+  });
+  const workflow = files.find(
+    (file) => file.path === ".github/workflows/publish.yml",
+  );
+  assert.ok(workflow, "deploymentTemplateFiles must include publish.yml");
+  const text =
+    typeof workflow.content === "string"
+      ? workflow.content
+      : new TextDecoder().decode(workflow.content);
+  assert.match(
+    text,
+    /pnpm\/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4\.3\.0/,
+  );
+  assert.match(text, /version: 11\.5\.3/);
+  assert.match(text, /cache: pnpm/);
+  assert.match(text, /if \[ -f pnpm-lock\.yaml \]; then/);
+  assert.match(text, /pnpm install --frozen-lockfile/);
+  assert.ok(text.includes("hashFiles('pnpm-lock.yaml')"));
+  assert.ok(text.includes("run: pnpm exec riebeckite check"));
+  assert.ok(text.includes("run: pnpm exec riebeckite publish gate"));
+  assert.ok(!text.includes("package-lock.json"));
+  assert.ok(!text.includes("npm ci"));
+  assert.ok(!text.includes("run: npm exec"));
+  for (const placeholder of ["{{packageManagerSetup}}", "{{exec}}"]) {
+    assert.ok(!text.includes(placeholder));
   }
 });
 

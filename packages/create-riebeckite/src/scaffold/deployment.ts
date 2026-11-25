@@ -1,7 +1,9 @@
+import { PNPM_VERSION } from "../package-manager.js";
 import {
   type ScaffoldContentSource,
   type ScaffoldDeployment,
   type ScaffoldDeploymentFlags,
+  type ScaffoldPackageManager,
   ScaffoldSiteError,
 } from "./options.js";
 import type { SiteTemplateFile } from "./template_types.js";
@@ -96,14 +98,64 @@ export type ScaffoldPublicationSchedule = {
 function renderDeployWorkflow(
   contentRepository?: string,
   schedule?: ScaffoldPublicationSchedule,
+  packageManager: ScaffoldPackageManager = "npm",
 ): string {
   const contentCheckout =
     contentRepository === undefined
       ? ""
       : contentCheckoutStep(contentRepository);
+  const values = workflowPackageManagerValues(packageManager);
   return substituteSecrets(readDeploymentTemplate("publish.yml"))
     .replace("{{contentCheckout}}", contentCheckout)
-    .replace("{{schedule}}", renderSchedule(schedule));
+    .replace("{{schedule}}", renderSchedule(schedule))
+    .split("{{packageManagerSetup}}")
+    .join(values.setup)
+    .split("{{nodeCache}}")
+    .join(values.cache)
+    .split("{{installSteps}}")
+    .join(values.installSteps)
+    .split("{{lockfile}}")
+    .join(values.lockfile)
+    .split("{{exec}}")
+    .join(values.exec);
+}
+
+function workflowPackageManagerValues(packageManager: ScaffoldPackageManager): {
+  readonly setup: string;
+  readonly cache: string;
+  readonly installSteps: string;
+  readonly lockfile: string;
+  readonly exec: string;
+} {
+  if (packageManager === "pnpm") {
+    return {
+      setup: `      - name: Set up pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4.3.0
+        with:
+          version: ${PNPM_VERSION}
+`,
+      cache: "pnpm",
+      installSteps: `          if [ -f pnpm-lock.yaml ]; then
+            pnpm install --frozen-lockfile
+          else
+            pnpm install
+          fi`,
+      lockfile: "pnpm-lock.yaml",
+      exec: "pnpm exec",
+    };
+  }
+
+  return {
+    setup: "",
+    cache: "npm",
+    installSteps: `          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi`,
+    lockfile: "package-lock.json",
+    exec: "npm exec --",
+  };
 }
 
 function renderSchedule(schedule?: ScaffoldPublicationSchedule): string {
@@ -114,10 +166,11 @@ function renderSchedule(schedule?: ScaffoldPublicationSchedule): string {
 export function deploymentWorkflow(
   content?: ScaffoldContentSource,
   schedule?: ScaffoldPublicationSchedule,
+  packageManager: ScaffoldPackageManager = "npm",
 ): string {
   const contentRepository =
     content?.type === "external" ? content.contentRepository : undefined;
-  return renderDeployWorkflow(contentRepository, schedule);
+  return renderDeployWorkflow(contentRepository, schedule, packageManager);
 }
 
 function notifySiteWorkflow(siteRepository: string): string {
@@ -144,6 +197,7 @@ function wranglerJsoncFile(
 export type ScaffoldDeploymentTemplateOptions = {
   readonly workerName?: string;
   readonly customDomain?: string;
+  readonly packageManager?: ScaffoldPackageManager;
 };
 
 export function deploymentTemplateFiles(
@@ -163,7 +217,11 @@ export function deploymentTemplateFiles(
     ),
     {
       path: ".github/workflows/publish.yml",
-      content: deploymentWorkflow(content, schedule),
+      content: deploymentWorkflow(
+        content,
+        schedule,
+        options.packageManager ?? "npm",
+      ),
     },
   ];
 

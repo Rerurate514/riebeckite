@@ -1,6 +1,7 @@
+import type { ScaffoldPackageManager } from "./scaffold/options.js";
 import { PACKAGE_MANAGER } from "./scaffold/wrangler-defaults.js";
 
-type PackageManagerName = "npm" | "pnpm";
+export const PNPM_VERSION = "11.5.3";
 
 export type PackageManagerCommand = {
   readonly command: string;
@@ -9,13 +10,13 @@ export type PackageManagerCommand = {
 };
 
 export type PackageManagerCommands = {
-  readonly name: PackageManagerName;
+  readonly name: ScaffoldPackageManager;
   readonly install: PackageManagerCommand;
   readonly deploy: PackageManagerCommand;
 };
 
 export function packageManagerCommands(
-  name: PackageManagerName = PACKAGE_MANAGER,
+  name: ScaffoldPackageManager = PACKAGE_MANAGER,
 ): PackageManagerCommands {
   if (name === "pnpm") {
     return {

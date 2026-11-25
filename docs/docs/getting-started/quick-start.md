@@ -23,6 +23,7 @@ npx create-riebeckite
 Answer the prompts (recommended answers shown):
 
 - **Project name** — press Enter for the default `my-riebeckite-site`
+- **Which package manager?** — keep `npm`, or choose `pnpm` to generate pnpm commands and a pnpm-based GitHub Actions workflow. With pnpm, commit `pnpm-lock.yaml` and replace `npm install` with `pnpm install` and `npm exec` with `pnpm exec` below
 - **What would you like to build?** ([[glossary/preset|preset]]) — keep `Starter site` (the `starter` preset) when unsure. Choose `Blog` if you are publishing posts, tags, and series; see [Presets](./presets.md)
 - **Customize extra project files?** — press Enter for `No`; the default project files are still generated
 - **Where will you write content?** — choose `This project` for `content/` inside the site, `Separate directory in this repository` for a vault next to the site (for example `../vault`), or `Separate GitHub repository` to keep content in another repository

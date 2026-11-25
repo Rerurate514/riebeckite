@@ -56,7 +56,7 @@ Obsidian 形式の Markdown が、ページ、ナビゲーション、検索、�
 npx create-riebeckite
 ```
 
-初めて試すなら、`Starter site`（`starter` プリセット）、追加のプロジェクトファイルの変更なし、`This project`、`Not now`、依存関係のインストールで `Yes` の既定のまま進めてください。既定のフォルダ名は `my-riebeckite-site` です。続けて:
+初めて試すなら、`Starter site`（`starter` プリセット）、追加のプロジェクトファイルの変更なし、`This project`、`Not now`、依存関係のインストールで `Yes` の既定のまま進めてください。プロジェクトが pnpm を使っていなければ、`npm`（既定）を選びます。既定のフォルダ名は `my-riebeckite-site` です。続けて:
 
 ```bash
 cd my-riebeckite-site
@@ -70,9 +70,9 @@ npm exec riebeckite dev
 npm exec riebeckite build
 ```
 
-静的サイトは `dist/` に出力されます。新しいノートは、frontmatter に `publish: true` があると公開対象になります。サイト名、URL、コンテンツのフォルダを変える場合は、`riebeckite.config.ts` の `site.title`、`site.baseUrl`、`content.directory` を編集してください。依存関係をインストールしなかった場合は、`dev` の前に `npm install` を実行します。
+静的サイトは `dist/` に出力されます。新しいノートは、frontmatter に `publish: true` があると公開対象になります。サイト名、URL、コンテンツのフォルダを変える場合は、`riebeckite.config.ts` の `site.title`、`site.baseUrl`、`content.directory` を編集してください。依存関係をインストールしなかった場合は、`dev` の前に `npm install` を実行します（pnpm のサイトでは `pnpm install`）。
 
-質問を省略する場合は、フォルダ名とプリセットを渡します（例: `npx create-riebeckite my-site --preset starter`）。この方法では依存関係がインストールされないため、`dev` の前にフォルダ内で `npm install` を実行してください。
+質問を省略する場合は、フォルダ名とプリセットを渡します（例: `npx create-riebeckite my-site --preset starter`）。この方法では依存関係がインストールされないため、`dev` の前にフォルダ内で `npm install` を実行してください（`--package-manager pnpm` なら `pnpm install`）。
 
 Riebeckite には Node.js `^22.13.0`、`^24.0.0`、`^26.0.0` のいずれかと npm が必要です（npm は Node.js に同梱されています）。ローカルでの開発に Git は不要です。Git と GitHub アカウントは、GitHub を使うデプロイの設定にだけ必要です。
 

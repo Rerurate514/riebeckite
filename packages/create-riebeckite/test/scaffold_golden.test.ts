@@ -40,6 +40,14 @@ const SCENARIOS: readonly GoldenScenario[] = [
     },
   },
   {
+    name: "deploy-github-actions-pnpm",
+    scaffold: {
+      preset: "minimal",
+      deployment: { type: "github-actions", content: { type: "local" } },
+      packageManager: "pnpm",
+    },
+  },
+  {
     name: "deploy-cloudflare-workers",
     scaffold: { preset: "minimal", deployment: { type: "cloudflare-workers" } },
   },

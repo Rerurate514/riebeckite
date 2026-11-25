@@ -27,6 +27,10 @@ export function initCommand(): CliCommandDefinition {
         description: "Comma-separated utility file names.",
         valueName: "names",
       }),
+      cliString("package-manager", {
+        description: "Package manager for the generated site: npm or pnpm.",
+        valueName: "npm|pnpm",
+      }),
       cliBoolean("force", { description: "Write into a non-empty directory." }),
       cliBoolean("list-presets", {
         description: "List available presets and exit.",
@@ -72,6 +76,14 @@ export function initCommand(): CliCommandDefinition {
           );
         }
         const { runInit } = await import("../commands/init.js");
+        const packageManager = input.options.packageManager;
+        if (
+          typeof packageManager === "string" &&
+          packageManager !== "npm" &&
+          packageManager !== "pnpm"
+        ) {
+          throw new Error("--package-manager accepts npm or pnpm.");
+        }
         await runInit({
           directory: input.arguments.directory,
           force: input.options.force,
@@ -93,6 +105,12 @@ export function initCommand(): CliCommandDefinition {
               ? { siteRepository: input.options.siteRepository }
               : {}),
           }),
+          ...(typeof packageManager === "string"
+            ? {
+                packageManager:
+                  packageManager as import("create-riebeckite/scaffold").ScaffoldPackageManager,
+              }
+            : {}),
         });
       } catch (error) {
         if (error instanceof CliUsageError) throw error;

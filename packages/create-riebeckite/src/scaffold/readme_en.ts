@@ -1,3 +1,4 @@
+import type { ScaffoldPackageManager } from "./options.js";
 import type { ScaffoldPreset } from "./presets_types.js";
 import {
   configurationReferenceLines,
@@ -13,6 +14,7 @@ import type { SiteTemplateVariables } from "./template_types.js";
 export function readmeEn(
   preset: ScaffoldPreset,
   variables: SiteTemplateVariables,
+  packageManager: ScaffoldPackageManager = "npm",
 ): string {
   const words = README_WORDS.en;
   const lines: string[] = [
@@ -43,15 +45,25 @@ export function readmeEn(
     }
   }
   lines.push(`## ${words.commands}`, "");
+  const commands =
+    packageManager === "pnpm"
+      ? [
+          "pnpm install",
+          "pnpm exec riebeckite check",
+          "pnpm exec riebeckite dev",
+          "pnpm exec riebeckite build",
+        ]
+      : [
+          "npm install",
+          "npm exec riebeckite check",
+          "npm exec riebeckite dev",
+          "npm exec riebeckite build",
+        ];
+  lines.push("```sh", ...commands, "```", "");
   lines.push(
-    "```sh",
-    "npm install",
-    "npm exec riebeckite check",
-    "npm exec riebeckite dev",
-    "npm exec riebeckite build",
-    "```",
-    "",
-    "npm is the reference package manager. pnpm 12 or newer works too; `pnpm-workspace.yaml` only affects pnpm.",
+    packageManager === "pnpm"
+      ? "This site uses pnpm 11 or newer. Commit `pnpm-lock.yaml`; the GitHub Actions workflow installs it with `pnpm install --frozen-lockfile`."
+      : "npm is the reference package manager. pnpm 12 or newer works too; `pnpm-workspace.yaml` only affects pnpm.",
     "",
   );
   if (preset.name !== "empty") {

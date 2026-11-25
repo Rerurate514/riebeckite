@@ -164,9 +164,10 @@ test("ai setup adds MCP, lint, rules, and Skills without overwriting AGENTS.md",
   assert.equal(manifest.scripts["content:lint"], "riebeckite check");
   assert.match(manifest.devDependencies["@riebeckite/ai"] ?? "", /^\^/);
   assert.match(manifest.devDependencies["@riebeckite/mcp"] ?? "", /^\^/);
-  assert.match(
-    await fs.readFile(path.join(directory, "RIEBECKITE_AI.md"), "utf8"),
-    /riebeckiteVersion: "0\.1\.0"/,
+  assert.ok(
+    (
+      await fs.readFile(path.join(directory, "RIEBECKITE_AI.md"), "utf8")
+    ).includes(`riebeckiteVersion: "${version}"`),
   );
   assert.match(
     await fs.readFile(path.join(directory, "RIEBECKITE_AI.md"), "utf8"),

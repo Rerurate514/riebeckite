@@ -47,9 +47,12 @@ export function riebeckiteContentWatch(
             if (timer) clearTimeout(timer);
             timer = setTimeout(() => {
               timer = undefined;
-              void invalidateApplicationRuntime(server, appRoot);
-              options.onInvalidate?.(server);
-              server.hot.send({ type: "full-reload" });
+              void invalidateApplicationRuntime(server, appRoot)
+                .catch(() => {})
+                .then(() => {
+                  options.onInvalidate?.(server);
+                  server.hot.send({ type: "full-reload" });
+                });
             }, CONTENT_RELOAD_DEBOUNCE_MS);
           };
           server.httpServer?.once("close", () => {

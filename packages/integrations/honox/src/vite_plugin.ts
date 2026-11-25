@@ -52,10 +52,7 @@ export type RiebeckiteViteOptions = RiebeckiteIntegrationOptions & {
   ssg?: RiebeckiteSsgOptions;
 };
 
-export function riebeckite(
-  options: RiebeckiteViteOptions = {},
-  onApplicationResolved?: (application: ResolvedHonoxApplication) => void,
-): Plugin[] {
+export function riebeckite(options: RiebeckiteViteOptions = {}): Plugin[] {
   let resolvedConfig: ResolvedRiebeckiteConfig | undefined;
   let application: ResolvedHonoxApplication | undefined;
   let contentVitePlugins: Plugin[] = [];
@@ -89,7 +86,6 @@ export function riebeckite(
           }) ?? [],
       ) as Plugin[];
       application = resolvedApplication;
-      onApplicationResolved?.(resolvedApplication);
       await writeRiebeckiteAssetEntries(resolvedConfig, {
         frameworkStyles: path.join(
           applicationAppRoot,
@@ -432,18 +428,15 @@ function requireApplication(
  */
 export function riebeckiteVite(options: RiebeckiteViteOptions = {}): Plugin[] {
   const { ssg, ssrExternals, ...integration } = options;
-  const fallbackSiteRoot = integration.configRoot ?? integration.appRoot;
-  let resolvedSiteRoot: string | undefined;
   return [
-    ...riebeckite(integration, (application) => {
-      resolvedSiteRoot = application.configRoot;
-    }),
+    ...riebeckite(integration),
     riebeckiteSsrExternals(
       [...defaultSsrExternals, ...(ssrExternals ?? [])],
-      () => {
+      (viteRoot) => {
         if (integration.workspaceRoot) return [];
-        const siteRoot = resolvedSiteRoot ?? fallbackSiteRoot;
-        return siteRoot ? siteRiebeckiteExternals(siteRoot) : [];
+        const siteRoot =
+          integration.configRoot ?? integration.appRoot ?? viteRoot;
+        return siteRiebeckiteExternals(siteRoot);
       },
     ),
     createRiebeckiteSsg(ssg),
@@ -452,16 +445,19 @@ export function riebeckiteVite(options: RiebeckiteViteOptions = {}): Plugin[] {
 
 function riebeckiteSsrExternals(
   externals: readonly string[],
-  siteExternals: () => readonly string[] = () => [],
+  siteExternals: (viteRoot: string) => readonly string[] = () => [],
 ): Plugin {
   return {
     name: "riebeckite-ssr-externals",
-    config() {
+    config(userConfig) {
+      const viteRoot = userConfig.root
+        ? path.resolve(userConfig.root)
+        : process.cwd();
       return {
         environments: {
           ssr: {
             resolve: {
-              external: [...externals, ...siteExternals()],
+              external: [...externals, ...siteExternals(viteRoot)],
             },
           },
         },

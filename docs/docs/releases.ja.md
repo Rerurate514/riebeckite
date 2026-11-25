@@ -14,6 +14,10 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 
 ## Unreleased
 
+No user-facing changes recorded.
+
+## 0.3.0 - 2026-11-25
+
 > **Breaking changes are included.** Read the migration notes before upgrading.
 
 ### Added
@@ -46,6 +50,8 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 
 - Update Zod to 4.6.7 to remove the advisory for memory exhaustion while validating oversized constrained collections. `@modelcontextprotocol/sdk` 1.32.2 accepts Zod 4, so the schemas are unchanged.
   Packages: `@riebeckite/mcp`
+
+[比較](https://github.com/Rerurate514/riebeckite/compare/v0.2.0...v0.3.0)
 
 ## 0.2.0 - 2026-11-23
 

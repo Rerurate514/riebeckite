@@ -12,6 +12,12 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 ## [Unreleased]
 
+No user-facing changes recorded.
+
+[Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.3.0...HEAD
+
+## [0.3.0] - 2026-11-25
+
 > **Breaking changes are included.** Read the migration notes before upgrading.
 
 ### Added
@@ -45,7 +51,7 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 - Update Zod to 4.6.7 to remove the advisory for memory exhaustion while validating oversized constrained collections. `@modelcontextprotocol/sdk` 1.32.2 accepts Zod 4, so the schemas are unchanged.
   Packages: `@riebeckite/mcp`
 
-[Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.2.0...HEAD
+[0.3.0]: https://github.com/Rerurate514/riebeckite/compare/v0.2.0...v0.3.0
 
 ## [0.2.0] - 2026-11-23
 

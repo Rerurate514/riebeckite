@@ -1,6 +1,6 @@
 {
   "name": "@riebeckite/cli",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "license": "Apache-2.0",
   "type": "module",
   "bin": {
@@ -67,7 +67,7 @@
     "static-site-generator"
   ],
   "engines": {
-    "node": "^20.19.0 || >=22.12.0"
+    "node": "^22.13.0 || ^24.0.0 || ^26.0.0"
   },
   "sideEffects": false
 }

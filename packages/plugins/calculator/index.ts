@@ -25,8 +25,8 @@ export function calculator() {
       version: "calculator-v1",
       dependencyMode: "none",
     },
-    extendMarkdownPipeline: (pipeline) => {
-      pipeline.use(remarkCalculator);
+    extendMarkdownPipeline: (pipeline, context) => {
+      pipeline.use(remarkCalculator, { uiLabels: context.uiLabels });
     },
     assets: [
       createStyleAsset("calculator", "@riebeckite/plugin-calculator/style.css"),

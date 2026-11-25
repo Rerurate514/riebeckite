@@ -1,3 +1,4 @@
+import type { UiLabelContext } from "@riebeckite/core";
 import type { Code, Html, Root } from "mdast";
 import { visit } from "unist-util-visit";
 import {
@@ -9,6 +10,7 @@ import {
 type RemarkCalculatorOptions = {
   readonly language?: string;
   readonly className?: string;
+  readonly uiLabels?: UiLabelContext;
 };
 
 export function remarkCalculator(options: RemarkCalculatorOptions = {}) {
@@ -22,7 +24,7 @@ export function remarkCalculator(options: RemarkCalculatorOptions = {}) {
 
       const html: Html = {
         type: "html",
-        value: renderCalculator(node.value, className),
+        value: renderCalculator(node.value, className, options.uiLabels),
       };
       parent.children.splice(index, 1, html);
     });

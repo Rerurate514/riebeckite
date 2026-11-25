@@ -20,7 +20,7 @@ pnpm add -D @riebeckite/test
 
 ## 単体テストの helper
 
-`assertGolden` と `assertGoldenJson` は、手で書くには大きすぎる出力を committed な golden ファイルとして記録します。Node 標準の snapshot 機能は Node 22.3+ が必要ですが、Riebeckite は Node 20.19+ をサポートするため、この helper が対応範囲をカバーします。
+`assertGolden` と `assertGoldenJson` は、手で書くには大きすぎる出力を committed な golden ファイルとして記録します。大きな期待値を committed なファイルに置き、明示的な差分として更新・確認できるようにするための helper です。
 
 ```ts
 import { assertGolden, assertGoldenJson } from "@riebeckite/test";

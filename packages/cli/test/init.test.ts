@@ -13,6 +13,7 @@ test("init defaults the directory and leaves preset defaults to the generator", 
     cloudflareWorkers: false,
     contentRepository: undefined,
     siteRepository: undefined,
+    packageManager: undefined,
   });
 });
 
@@ -46,6 +47,14 @@ test("init reads the project file selection", () => {
   assert.throws(
     () => resolveInput(["init", "--utilities"]),
     /requires a value/,
+  );
+});
+
+test("init reads the package manager", () => {
+  assert.equal(
+    resolveInput(["init", "site", "--package-manager", "pnpm"]).options
+      .packageManager,
+    "pnpm",
   );
 });
 

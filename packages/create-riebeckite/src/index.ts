@@ -70,6 +70,9 @@ export async function runCreateRiebeckite(
       ...(options.customDomain === undefined
         ? {}
         : { customDomain: options.customDomain }),
+      ...(options.packageManager === undefined
+        ? {}
+        : { packageManager: options.packageManager }),
     });
   } catch (error) {
     if (error instanceof ScaffoldSiteError) {
@@ -170,7 +173,7 @@ async function prepareInteractiveSite(
   result: ScaffoldSiteResult,
   contentClone?: ContentCloneOutcome,
 ): Promise<void> {
-  const commands = packageManagerCommands();
+  const commands = packageManagerCommands(options.packageManager);
   console.log(`Installing dependencies with ${commands.name}...`);
   try {
     await installDependencies(targetDirectory, commands, spawnCommand);
@@ -181,7 +184,12 @@ async function prepareInteractiveSite(
   }
 
   if (options.deployment.type === "cloudflare-workers") {
-    await publishCloudflareSite(targetDirectory, relative, false);
+    await publishCloudflareSite(
+      targetDirectory,
+      relative,
+      options.packageManager,
+      false,
+    );
     return;
   }
   printScaffoldNextSteps(options, result, relative, true, contentClone);
@@ -214,6 +222,9 @@ function printScaffoldNextSteps(
       ...(options.contentDirectory === undefined
         ? {}
         : { contentDirectory: options.contentDirectory }),
+      ...(options.packageManager === undefined
+        ? {}
+        : { packageManager: options.packageManager }),
     }),
   );
 }
@@ -236,9 +247,10 @@ function externalContentRepository(
 async function publishCloudflareSite(
   targetDirectory: string,
   relative: string,
+  packageManager: CreateRiebeckiteOptions["packageManager"],
   install = true,
 ): Promise<void> {
-  const commands = packageManagerCommands();
+  const commands = packageManagerCommands(packageManager);
 
   if (install) {
     console.log(`Installing dependencies with ${commands.name}...`);
@@ -246,7 +258,7 @@ async function publishCloudflareSite(
       await installDependencies(targetDirectory, commands, spawnCommand);
     } catch (error) {
       if (!(error instanceof DeploymentFailure)) throw error;
-      reportDeploymentFailure(error, relative);
+      reportDeploymentFailure(error, relative, packageManager);
       return;
     }
   }
@@ -262,7 +274,7 @@ async function publishCloudflareSite(
     await deploySite(targetDirectory, commands, spawnCommand);
   } catch (error) {
     if (!(error instanceof DeploymentFailure)) throw error;
-    reportDeploymentFailure(error, relative);
+    reportDeploymentFailure(error, relative, packageManager);
     return;
   }
 
@@ -275,7 +287,7 @@ function reportInstallationFailure(
   relative: string,
   options: CreateRiebeckiteOptions,
 ): void {
-  const commands = packageManagerCommands();
+  const commands = packageManagerCommands(options.packageManager);
   console.error("");
   console.error("Project created successfully.");
   console.error(error.message);
@@ -291,8 +303,9 @@ function reportInstallationFailure(
 function reportDeploymentFailure(
   error: DeploymentFailure,
   relative: string,
+  packageManager: CreateRiebeckiteOptions["packageManager"],
 ): void {
-  const commands = packageManagerCommands();
+  const commands = packageManagerCommands(packageManager);
   console.error("");
   console.error(formatDeploymentFailure(relative, commands, error));
   process.exitCode = 1;

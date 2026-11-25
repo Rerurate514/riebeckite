@@ -2,6 +2,7 @@ import path from "node:path";
 import {
   formatScaffoldNextSteps,
   type ScaffoldDeployment,
+  type ScaffoldPackageManager,
   type ScaffoldPresetName,
   type ScaffoldUtilityName,
   scaffoldRiebeckiteSite,
@@ -13,6 +14,7 @@ type InitOptions = {
   readonly preset: ScaffoldPresetName;
   readonly utilities: readonly ScaffoldUtilityName[];
   readonly deployment: ScaffoldDeployment;
+  readonly packageManager?: ScaffoldPackageManager;
 };
 
 export async function runInit(options: InitOptions): Promise<void> {
@@ -23,6 +25,9 @@ export async function runInit(options: InitOptions): Promise<void> {
     preset: options.preset,
     utilities: options.utilities,
     deployment: options.deployment,
+    ...(options.packageManager === undefined
+      ? {}
+      : { packageManager: options.packageManager }),
   });
 
   const relative = path.relative(process.cwd(), result.targetDirectory) || ".";
@@ -42,6 +47,9 @@ export async function runInit(options: InitOptions): Promise<void> {
       options.deployment.content.type === "external"
         ? { contentRepository: options.deployment.content.contentRepository }
         : {}),
+      ...(options.packageManager === undefined
+        ? {}
+        : { packageManager: options.packageManager }),
     }),
   );
 }

@@ -236,7 +236,7 @@ test("localized timelines select one language per page and expose fallback badge
     renderTimelinePage(
       fallback[0]?.entries ?? [],
       resolveTimelineOptions({ localeMode: "fallback" }),
-      fallback[0]?.locale,
+      { language: fallback[0]?.locale },
     ).html,
     /rr-language-badge/,
   );

@@ -1,4 +1,8 @@
-import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
+import {
+  escapeHtml,
+  escapeHtmlAttribute,
+  type UiLabelContext,
+} from "@riebeckite/core";
 import type {
   CanvasDocument,
   CanvasLayoutNode,
@@ -17,6 +21,7 @@ export type RenderCanvasInput = {
   source: string;
   options: ResolvedCanvasOptions;
   resolver: CanvasResolver;
+  uiLabels?: UiLabelContext;
 };
 
 export function renderCanvasPage(input: {

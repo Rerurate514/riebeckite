@@ -1,6 +1,8 @@
 import type { ScaffoldPresetName } from "./presets.js";
 import type { ScaffoldUtilityName } from "./utilities.js";
 
+export type ScaffoldPackageManager = "npm" | "pnpm";
+
 export type ScaffoldSiteMetadata = {
   readonly title?: string;
   readonly description?: string;
@@ -42,6 +44,7 @@ export type ScaffoldSiteOptions = {
   readonly customDomain?: string;
   readonly overwrite?: boolean;
   readonly ai?: ScaffoldAiOptions;
+  readonly packageManager?: ScaffoldPackageManager;
 };
 
 export type ScaffoldSiteResult = {

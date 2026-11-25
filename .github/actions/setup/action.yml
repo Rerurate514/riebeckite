@@ -1,6 +1,10 @@
 name: Setup Node and pnpm
 description: Install the locked workspace dependencies with the shared pnpm store cache.
 inputs:
+  node-version:
+    description: Node.js version to install instead of the version in node-version-file.
+    required: false
+    default: ""
   node-version-file:
     required: false
     default: ".node-version"
@@ -19,7 +23,8 @@ runs:
         version: ${{ inputs.pnpm-version }}
     - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
       with:
-        node-version-file: ${{ inputs.node-version-file }}
+        node-version: ${{ inputs.node-version }}
+        node-version-file: ${{ inputs.node-version == '' && inputs.node-version-file || '' }}
         cache: pnpm
     - shell: bash
       env:

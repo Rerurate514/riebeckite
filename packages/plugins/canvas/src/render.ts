@@ -1,5 +1,11 @@
-import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
+import {
+  escapeHtml,
+  escapeHtmlAttribute,
+  type UiLabelContext,
+} from "@riebeckite/core";
+import { resolveUiLabels } from "@riebeckite/ui/labels";
 import { slug } from "github-slugger";
+import { canvasLabels } from "./labels.js";
 import { buildCanvasLayout } from "./parse.js";
 import {
   CANVAS_NOTE_HREF,
@@ -20,14 +26,14 @@ import type {
 } from "./types.js";
 
 export function renderCanvas(input: RenderCanvasInput): string {
-  const { document, source, options, resolver } = input;
+  const { document, source, options, resolver, uiLabels } = input;
   const layout = buildCanvasLayout({
     nodes: limitNodes(document.nodes, options.maxNodes),
     edges: document.edges,
   });
 
   const parts: string[] = [];
-  const staticHtml = renderStatic(layout, resolver, source);
+  const staticHtml = renderStatic(layout, resolver, source, uiLabels);
   if (staticHtml) parts.push(staticHtml);
   if (options.render === "client" || options.render === "both") {
     parts.push('<div class="rb-canvas__stage" data-canvas-stage></div>');
@@ -45,15 +51,17 @@ function renderStatic(
   layout: CanvasLayout,
   resolver: CanvasResolver,
   source: string,
+  uiLabels?: UiLabelContext,
 ): string {
+  const labels = resolveUiLabels(canvasLabels, uiLabels);
   if (layout.nodes.length === 0) {
-    return '<div class="rb-canvas__static rb-canvas__empty">This canvas has no nodes.</div>';
+    return `<div class="rb-canvas__static rb-canvas__empty">${labels.empty}</div>`;
   }
   const edges = renderEdges(layout, source);
   const cards = layout.nodes
     .map((node) => renderNodeCard(node, resolver))
     .join("\n");
-  return `<div class="rb-canvas__static" data-canvas-static><div class="rb-canvas__world" data-canvas-world role="img" aria-label="Canvas" style="width:${layout.width}px;height:${layout.height}px">${edges}${cards}</div></div>`;
+  return `<div class="rb-canvas__static" data-canvas-static><div class="rb-canvas__world" data-canvas-world role="img" aria-label="${escapeHtmlAttribute(labels.canvas)}" style="width:${layout.width}px;height:${layout.height}px">${edges}${cards}</div></div>`;
 }
 
 function renderEdges(layout: CanvasLayout, source: string): string {

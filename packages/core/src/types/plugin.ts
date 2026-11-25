@@ -129,7 +129,10 @@ export type RiebeckitePlugin<TOptions = unknown> = {
     pipeline: MarkdownPipeline,
     context: MarkdownPipelineContext,
   ): void;
-  extendHtmlPipeline?(pipeline: HtmlPipeline): void;
+  extendHtmlPipeline?(
+    pipeline: HtmlPipeline,
+    context: MarkdownPipelineContext,
+  ): void;
   addDiagnostics?(context: PluginContext): Diagnostic[] | Promise<Diagnostic[]>;
   /**
    * Inspects final HTML pages after the SSG stage. Integrations that finish HTML

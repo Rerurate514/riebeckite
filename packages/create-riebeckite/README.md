@@ -7,8 +7,8 @@ Create a new Riebeckite site from an official starter preset.
 ## Usage
 
 Interactive (recommended): run without arguments and answer the prompts for
-the project name, preset, extra project files, content source, deployment,
-and dependency installation.
+the project name, package manager, preset, extra project files, content source,
+deployment, and dependency installation.
 
 ```sh
 npx create-riebeckite
@@ -30,6 +30,7 @@ The prompts ask, in order:
 | Prompt | Options | Recommendation |
 | --- | --- | --- |
 | Project name | the folder to create (empty input uses the default name) | any name, e.g. `my-site` |
+| Which package manager? | `npm`, `pnpm` | `npm`; use `pnpm` if the project already uses it |
 | What would you like to build? | `Starter site`, `Digital garden`, `Blog`, `Writer`, `Documentation`, `Portfolio`, `Minimal site`, `Empty application` | `Starter site` (`starter`) for most sites |
 | Customize extra project files? | `Yes` or `No`; `Yes` then selects project files | `No` uses the recommended set |
 | Where will you write content? | `This project`, `Separate directory in this repository`, `Separate GitHub repository` | `This project` to start |
@@ -50,6 +51,7 @@ Deployment can be added later, described in
 | `--help`, `-h` | Print usage and exit |
 | `--preset <name>` | Starter composition, e.g. `blog` (default: `starter`) |
 | `--utilities <names>` | Comma-separated project files to generate: `gitignore`, `editorconfig`, `gitattributes`, `biome`, `npmrc`, `vscode`, or `none` (default: `gitignore,editorconfig,gitattributes,biome`) |
+| `--package-manager <npm\|pnpm>` | Package manager for the generated site (default: `npm`) |
 | `--force` | Overwrite generated top-level entries on conflict; unrelated files are allowed |
 | `--list-presets` | Print the available presets and their descriptions, then exit |
 | `--github-actions` | Generate the Cloudflare deployment workflow |
@@ -65,6 +67,14 @@ For example, scaffold a publishing-focused site:
 ```sh
 npx create-riebeckite my-site --preset blog
 ```
+
+## Package managers
+
+Generated sites default to npm. Choose pnpm in the prompt or pass
+`--package-manager pnpm` to write `"packageManager": "pnpm@11.5.3"`, print
+pnpm commands, and make the GitHub Actions workflow install with
+`pnpm install --frozen-lockfile`. Commit `pnpm-lock.yaml`. npm sites commit
+`package-lock.json` instead.
 
 ## Project files
 

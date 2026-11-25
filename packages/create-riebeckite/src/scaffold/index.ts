@@ -35,6 +35,7 @@ export {
   type ScaffoldContentSource,
   type ScaffoldDeployment,
   type ScaffoldDeploymentFlags,
+  type ScaffoldPackageManager,
   ScaffoldSiteError,
   type ScaffoldSiteMetadata,
   type ScaffoldSiteOptions,
@@ -89,6 +90,9 @@ export async function scaffoldRiebeckiteSite(
         ? {}
         : { contentDirectory: options.contentDirectory }),
       ...(options.ai === undefined ? {} : { ai: options.ai }),
+      ...(options.packageManager === undefined
+        ? {}
+        : { packageManager: options.packageManager }),
     }),
     ...deploymentTemplateOrConfig(deployment, targetDirectory, options),
   ];
@@ -154,6 +158,9 @@ function deploymentTemplateOrConfig(
         ...(options.customDomain === undefined
           ? {}
           : { customDomain: options.customDomain }),
+        ...(options.packageManager === undefined
+          ? {}
+          : { packageManager: options.packageManager }),
       });
     case "cloudflare-workers":
       return [

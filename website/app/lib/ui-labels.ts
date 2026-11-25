@@ -1,40 +1,8 @@
 import { config } from "virtual:riebeckite/config";
+import { createUiLabelContext } from "@riebeckite/core";
+import { resolveUiLabels } from "@riebeckite/ui";
+import { siteLabels } from "../../labels";
 
-export type UiLabels = {
-  documentation: string;
-  tableOfContents: string;
-  menu: string;
-  navigation: string;
-  primaryNavigation: string;
-  secondaryNavigation: string;
-  footerNavigation: string;
-};
-
-const en: UiLabels = {
-  documentation: "Documentation",
-  tableOfContents: "Table of contents",
-  menu: "Menu",
-  navigation: "Navigation",
-  primaryNavigation: "Primary navigation",
-  secondaryNavigation: "Secondary navigation",
-  footerNavigation: "Footer navigation",
-};
-
-export function resolveUiLabels(language: string | undefined): UiLabels {
-  const locale = config.ui?.locale ?? language;
-  const dictionary =
-    locale === undefined
-      ? undefined
-      : Object.entries(config.ui?.labels ?? {}).find(
-          ([key]) => key.toLowerCase() === locale.toLowerCase(),
-        )?.[1];
-  if (dictionary === undefined) return en;
-  const resolved = { ...en };
-  for (const key of Object.keys(en)) {
-    const value = dictionary[key];
-    if (typeof value === "string" && value !== "") {
-      resolved[key as keyof UiLabels] = value;
-    }
-  }
-  return resolved;
+export function resolveShellLabels(language: string | undefined) {
+  return resolveUiLabels(siteLabels, createUiLabelContext(config, language));
 }

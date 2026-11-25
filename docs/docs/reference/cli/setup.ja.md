@@ -68,6 +68,16 @@ npm exec -- riebeckite init my-site --utilities editorconfig,npmrc,vscode
 
 既定値は `gitignore,editorconfig,gitattributes,biome` で、`none` を指定すると何も書き込みません。対話モードでは、`Customize extra project files?` で `Yes` を選ぶと、`Extra project files` の質問で既定のセットを個別に切り替えられます。
 
+### パッケージマネージャの選び方
+
+`--package-manager <npm|pnpm>` で、生成するサイトのパッケージマネージャを選びます（既定値: `npm`）。
+
+```sh
+npm exec -- riebeckite init my-site --package-manager pnpm
+```
+
+pnpm を選ぶと、サイトのマニフェストは `pnpm@11.5.3` を固定し、README は pnpm のコマンドを使い、GitHub Actions の workflow は `pnpm install --frozen-lockfile` でインストールします。`pnpm-lock.yaml` をコミットしてください。npm のサイトは代わりに `package-lock.json` をコミットします。
+
 ### 生成先にファイルがすでにある場合
 
 `init` は、生成対象のファイルがすでにあるディレクトリには、`--force` を指定しない限り書き込みません。
@@ -80,13 +90,13 @@ npm exec -- riebeckite init my-site --force
 
 ### `create-riebeckite`
 
-`create-riebeckite` パッケージを使うと、`npx create-riebeckite` から同じジェネレーターを実行できます。`--preset` と `--list-presets` フラグも同じように受け付けます。
+`create-riebeckite` パッケージを使うと、`npx create-riebeckite` から同じジェネレーターを実行できます。`--preset`、`--list-presets`、`--package-manager` フラグも同じように受け付けます。
 
 ```sh id="kyw0rx"
 npx create-riebeckite
 ```
 
-フォルダ名を渡すと（例: `npx create-riebeckite my-site --preset starter`）、質問は省略され、依存関係もインストールされません。生成したフォルダで `npm install` を実行してから `check` と `build` を使ってください。
+フォルダ名を渡すと（例: `npx create-riebeckite my-site --preset starter`）、質問は省略され、依存関係もインストールされません。`--package-manager pnpm` の場合は `pnpm install`、それ以外は `npm install` を生成したフォルダで実行してから `check` と `build` を使ってください。
 
 対話モードでは、[[glossary/content-source|コンテンツソース]]を尋ねたあと、デプロイ方法を尋ねます。
 

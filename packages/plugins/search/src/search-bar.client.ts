@@ -1,5 +1,7 @@
 import { createDialogController } from "@riebeckite/ui/dialog";
+import { resolveClientUiLabels } from "@riebeckite/ui/labels";
 import { createLoadingController } from "@riebeckite/ui/loading";
+import { searchLabels } from "./labels.js";
 import {
   parseSearchQuery,
   type SearchItem,
@@ -31,6 +33,7 @@ export function initSearch(context: SearchInitContext = {}): () => void {
 
   if (!root || !modal || !input || !status || !results) return () => {};
 
+  const labels = resolveClientUiLabels(searchLabels);
   const loading = createLoadingController(modal);
   const resultsView = mountSearchResults(results);
   let searchItems: SearchItem[] | null = null;
@@ -56,7 +59,7 @@ export function initSearch(context: SearchInitContext = {}): () => void {
     if (searchItems && !loadFailed) return true;
 
     loading.start();
-    status.textContent = "Loading search index...";
+    status.textContent = labels.loading;
     try {
       const response = await fetch("/search-data.json");
       if (!response.ok) throw new Error("Failed to load search index.");
@@ -68,7 +71,7 @@ export function initSearch(context: SearchInitContext = {}): () => void {
       searchItems = [];
       loadFailed = true;
       status.textContent = "";
-      loading.fail("Failed to load search index.");
+      loading.fail(labels.loadError);
       return false;
     }
   };
@@ -89,14 +92,14 @@ export function initSearch(context: SearchInitContext = {}): () => void {
     if (normalizedQuery.length === 0 && parsedQuery.filters.length === 0) {
       currentResults = [];
       renderCurrentResults();
-      status.textContent = "Type a keyword or use tag:, lang:, or path:.";
+      status.textContent = labels.emptyQuery;
       return;
     }
 
     if (searchItems === null) {
       currentResults = [];
       renderCurrentResults();
-      status.textContent = "Loading search index...";
+      status.textContent = labels.loading;
       return;
     }
 
@@ -107,8 +110,11 @@ export function initSearch(context: SearchInitContext = {}): () => void {
     renderCurrentResults();
     status.textContent =
       currentResults.length === 0
-        ? "No results found. Try a shorter keyword or filter."
-        : `${currentResults.length} result${currentResults.length === 1 ? "" : "s"}`;
+        ? labels.noResults
+        : (currentResults.length === 1
+            ? labels.result
+            : labels.results
+          ).replace("{count}", String(currentResults.length));
   };
 
   const moveSelection = (step: number) => {

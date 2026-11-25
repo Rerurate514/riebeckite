@@ -1,3 +1,9 @@
+import {
+  type ResolvedUiLabels,
+  resolveClientUiLabels,
+} from "@riebeckite/ui/labels";
+import { marpLabels } from "./labels.js";
+
 const FIGURE_SELECTOR = "figure[data-marp]";
 const DECK_SELECTOR = ":scope > div";
 const COUNTER_SEPARATOR = " / ";
@@ -11,6 +17,8 @@ const COUNTER_SEPARATOR = " / ";
 export function initMarpDecks(): void {
   if (typeof document === "undefined") return;
 
+  const labels = resolveClientUiLabels(marpLabels);
+
   for (const figure of document.querySelectorAll<HTMLElement>(
     FIGURE_SELECTOR,
   )) {
@@ -19,7 +27,7 @@ export function initMarpDecks(): void {
     if (!deck) continue;
     const slides = Array.from(deck.children);
     if (slides.length < 2) continue;
-    mountViewer(figure, deck, slides);
+    mountViewer(figure, deck, slides, labels);
   }
 }
 
@@ -27,6 +35,7 @@ function mountViewer(
   figure: HTMLElement,
   deck: HTMLElement,
   slides: Element[],
+  labels: ResolvedUiLabels<typeof marpLabels>,
 ): void {
   figure.dataset.marpViewer = "";
   figure.tabIndex = 0;
@@ -34,8 +43,8 @@ function mountViewer(
   const controls = document.createElement("div");
   controls.className = "rb-marp__controls";
 
-  const previous = createButton("Previous slide", "\u2190");
-  const next = createButton("Next slide", "\u2192");
+  const previous = createButton(labels.previousSlide, "\u2190");
+  const next = createButton(labels.nextSlide, "\u2192");
   const counter = document.createElement("span");
   counter.className = "rb-marp__counter";
   counter.setAttribute("aria-live", "polite");
@@ -43,7 +52,7 @@ function mountViewer(
   controls.append(previous, next, counter);
 
   if (typeof figure.requestFullscreen === "function") {
-    const fullscreen = createButton("Fullscreen", "\u26f6");
+    const fullscreen = createButton(labels.fullscreen, "\u26f6");
     fullscreen.addEventListener("click", () => {
       if (document.fullscreenElement === figure) {
         void document.exitFullscreen();
@@ -55,8 +64,8 @@ function mountViewer(
       fullscreen.setAttribute(
         "aria-label",
         document.fullscreenElement === figure
-          ? "Exit fullscreen"
-          : "Fullscreen",
+          ? labels.exitFullscreen
+          : labels.fullscreen,
       );
     });
     controls.append(fullscreen);

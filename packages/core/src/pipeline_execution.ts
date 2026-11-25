@@ -41,6 +41,7 @@ import type {
   MarkdownPipelineContext,
 } from "./types/plugin_pipeline.js";
 import type { PostContent, PostFrontmatter } from "./types/post_content.js";
+import { createUiLabelContext } from "./types/ui_labels.js";
 export async function executeWithEmbedStateImpl(
   m: PipelineContext,
   markDownContent: string,
@@ -158,9 +159,17 @@ export async function executeWithEmbedStateImpl(
       dependencyTracker,
       context.sourceSlug,
     ),
-    renderContent: m.createContentRenderer(effectiveContentSource),
+    renderContent: undefined,
     contentSource: effectiveContentSource,
+    uiLabels:
+      (context.sourceSlug
+        ? m.uiLabelsBySlug.get(context.sourceSlug)
+        : undefined) ?? createUiLabelContext(m.options.config),
   };
+  markdownPipelineContext.renderContent = m.createContentRenderer(
+    effectiveContentSource,
+    markdownPipelineContext.uiLabels,
+  );
 
   for (const plugin of plugins) {
     for (const remarkPlugin of plugin.remarkPlugins ?? []) {
@@ -178,6 +187,7 @@ export async function executeWithEmbedStateImpl(
 
   const componentContext = {
     sourceSlug: context.sourceSlug,
+    uiLabels: markdownPipelineContext.uiLabels,
     resolveAssetUrl: (input: string) =>
       context.sourceSlug
         ? resolveContentAssetUrl(input, context.sourceSlug)
@@ -214,11 +224,14 @@ export async function executeWithEmbedStateImpl(
     for (const rehypePlugin of plugin.rehypePlugins ?? []) {
       m.use(processor, rehypePlugin);
     }
-    plugin.extendHtmlPipeline?.({
-      use: (pipelinePlugin, options) => {
-        m.use(processor, pipelinePlugin, options);
+    plugin.extendHtmlPipeline?.(
+      {
+        use: (pipelinePlugin, options) => {
+          m.use(processor, pipelinePlugin, options);
+        },
       },
-    });
+      markdownPipelineContext,
+    );
   }
 
   const hastTransforms = plugins.flatMap(

@@ -9,6 +9,7 @@ import type {
   PluginPageType,
   ResolvedPluginPage,
 } from "../types/plugin_page.js";
+import { createUiLabelContext } from "../types/ui_labels.js";
 import type {
   PluginContextBase,
   PluginContextWithCache,
@@ -51,11 +52,14 @@ export class PluginPageResolver {
     for (const plugin of this.options.plugins()) {
       for (const pageType of plugin.pageTypes ?? []) {
         const pagePathname = normalizePageTypePath(pathname, pageType);
+        const baseContext = this.options.createContext(contentIndex);
+        const locale = resolvePageLocale(manifest, pagePathname);
         const context = {
-          ...this.options.createContext(contentIndex),
+          ...baseContext,
           manifest,
           pathname: pagePathname,
-          locale: resolvePageLocale(manifest, pagePathname),
+          locale,
+          uiLabels: createUiLabelContext(baseContext.config, locale),
           renderMarkdown: this.options.renderMarkdown,
         };
         const page = await pageType.resolve(
@@ -111,11 +115,14 @@ export class PluginPageResolver {
       const resolveRoute = pageType.resolveRoute;
       if (!resolveRoute) return undefined;
       const pagePathname = normalizePageTypePath(pathname, pageType);
+      const baseContext = this.options.createContext(contentIndex);
+      const locale = resolvePageLocale(manifest, pagePathname);
       const context = {
-        ...this.options.createContext(contentIndex),
+        ...baseContext,
         manifest,
         pathname: pagePathname,
-        locale: resolvePageLocale(manifest, pagePathname),
+        locale,
+        uiLabels: createUiLabelContext(baseContext.config, locale),
         renderMarkdown: this.options.renderMarkdown,
       };
       const page = await resolveRoute(
@@ -184,11 +191,14 @@ export class PluginPageResolver {
     const outputs = await Promise.all(
       (await this.getPageDeclarations(manifest, contentIndex)).map(
         async ({ pathname, plugin, pageType }) => {
+          const baseContext = this.options.createContext(contentIndex);
+          const locale = resolvePageLocale(manifest, pathname);
           const context = {
-            ...this.options.createContext(contentIndex),
+            ...baseContext,
             manifest,
             pathname,
-            locale: resolvePageLocale(manifest, pathname),
+            locale,
+            uiLabels: createUiLabelContext(baseContext.config, locale),
             renderMarkdown: this.options.renderMarkdown,
           };
           const dependencies = pageType.outputDependencies

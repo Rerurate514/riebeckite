@@ -5,7 +5,11 @@ import type {
   OutputDependency,
   ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
-import { selectLocalizedEntries } from "@riebeckite/core";
+import {
+  createUiLabelContext,
+  selectLocalizedEntries,
+  type UiLabelContext,
+} from "@riebeckite/core";
 import { analyzeBasesDependencies } from "./dependencies.js";
 import {
   BASES_ATTRIBUTE,
@@ -33,7 +37,7 @@ export function createBasesRuntime(options: BasesOptions): BasesRuntime {
   const dependencies = new Map<string, readonly OutputDependency[]>();
   let documentDependencies = new Map<string, readonly OutputDependency[]>();
   return {
-    resolve(manifest, diagnostics, _config) {
+    resolve(manifest, diagnostics, config) {
       const entries = manifest.discoverableEntries;
       for (const entry of manifest.publicEntries) {
         if (!entry.html.includes(BASES_ATTRIBUTE)) continue;
@@ -49,6 +53,7 @@ export function createBasesRuntime(options: BasesOptions): BasesRuntime {
           }),
           options,
           diagnostics,
+          createUiLabelContext(config, entry.publicLocation.language),
         );
         dependencies.set(entry.slug, resolved.dependencies);
         const html = resolved.html;
@@ -74,6 +79,7 @@ function replacePlaceholders(
   entries: readonly ContentManifestEntry[],
   options: BasesOptions,
   diagnostics: Diagnostic[],
+  uiLabels: UiLabelContext,
 ): {
   readonly html: string;
   readonly dependencies: readonly OutputDependency[];
@@ -91,7 +97,13 @@ function replacePlaceholders(
 
     try {
       dependencies.push(analyzeBasesDependencies(payload.spec));
-      return renderBases(payload.spec, options, entries, payload.source);
+      return renderBases(
+        payload.spec,
+        options,
+        entries,
+        payload.source,
+        uiLabels,
+      );
     } catch (error) {
       const message = `Base block in \`${entry.slug}\` failed to render (${formatError(error)}).`;
       diagnostics.push(diagnostic(entry, message));

@@ -1,6 +1,12 @@
-import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
+import {
+  escapeHtml,
+  escapeHtmlAttribute,
+  type UiLabelContext,
+} from "@riebeckite/core";
+import { resolveUiLabels } from "@riebeckite/ui/labels";
 import type { Code, Html, Root } from "mdast";
 import { visit } from "unist-util-visit";
+import { autocardlinkLabels } from "./labels.js";
 import type { AutoCardLink, AutoCardLinkOptions } from "./types.js";
 
 const CARD_CLASS = "rr-cardlink";
@@ -17,7 +23,13 @@ const fieldPrefixes = {
   image: "image: ",
 } as const;
 
-export function remarkAutoCardLink(options: AutoCardLinkOptions = {}) {
+export function remarkAutoCardLink(
+  input: {
+    readonly options?: AutoCardLinkOptions;
+    readonly uiLabels?: UiLabelContext;
+  } = {},
+) {
+  const options = input.options ?? {};
   const extraClassName = options.className?.trim() ?? "";
   const maxLine = resolveMaxLine(options.maxLine);
   const showCopyButton = options.showCopyButton !== false;
@@ -33,7 +45,13 @@ export function remarkAutoCardLink(options: AutoCardLinkOptions = {}) {
       parent.children.splice(
         index,
         1,
-        renderAutoCardLink(cardLink, extraClassName, maxLine, showCopyButton),
+        renderAutoCardLink(
+          cardLink,
+          extraClassName,
+          maxLine,
+          showCopyButton,
+          input.uiLabels,
+        ),
       );
     });
   };
@@ -104,6 +122,7 @@ function renderAutoCardLink(
   extraClassName: string,
   maxLine: number | null,
   showCopyButton: boolean,
+  uiLabels: UiLabelContext | undefined,
 ): Html {
   const title = cardLink.title || cardLink.url;
   const label = resolveHostLabel(cardLink);
@@ -135,18 +154,19 @@ function renderAutoCardLink(
       </span>
     </span>
   </a>
-  ${showCopyButton ? renderCopyButton(cardLink.url) : ""}
+  ${showCopyButton ? renderCopyButton(cardLink.url, uiLabels) : ""}
 </div>`,
   };
 }
 
-function renderCopyButton(url: string): string {
-  return `<button type="button" class="${CARD_CLASS}__copy" data-rr-cardlink-copy="${escapeHtmlAttribute(url)}" aria-label="Copy URL to clipboard">
+function renderCopyButton(url: string, uiLabels?: UiLabelContext): string {
+  const labels = resolveUiLabels(autocardlinkLabels, uiLabels);
+  return `<button type="button" class="${CARD_CLASS}__copy" data-rr-cardlink-copy="${escapeHtmlAttribute(url)}" aria-label="${escapeHtmlAttribute(labels.copyUrl)}">
   <svg class="${CARD_CLASS}__copy-icon" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false">
     <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
   </svg>
-  <span class="${CARD_CLASS}__copy-label">Copy URL</span>
+  <span class="${CARD_CLASS}__copy-label">${escapeHtml(labels.copy)}</span>
 </button>`;
 }
 

@@ -1,12 +1,15 @@
 import { copyText } from "@riebeckite/ui/copy";
+import { resolveClientUiLabels } from "@riebeckite/ui/labels";
+import { codeEnhanceLabels } from "./labels.js";
 import type { CodeEnhanceClientOptions } from "./types.js";
 
 export const DEFAULT_COPY_LABEL = "Copy";
 export const DEFAULT_COPIED_LABEL = "Copied";
 
 export function initCodeEnhance(options: CodeEnhanceClientOptions = {}) {
-  const copyLabel = options.copyLabel ?? DEFAULT_COPY_LABEL;
-  const copiedLabel = options.copiedLabel ?? DEFAULT_COPIED_LABEL;
+  const labels = resolveClientUiLabels(codeEnhanceLabels);
+  const copyLabel = options.copyLabel ?? labels.copy;
+  const copiedLabel = options.copiedLabel ?? labels.copied;
   const timers = new Set<number>();
 
   const onClick = async (event: MouseEvent) => {
@@ -30,7 +33,8 @@ export function initCodeEnhance(options: CodeEnhanceClientOptions = {}) {
     const collapseButton = target.closest<HTMLButtonElement>(
       "[data-code-collapse-toggle]",
     );
-    if (collapseButton) toggleCollapse(collapseButton);
+    if (collapseButton)
+      toggleCollapse(collapseButton, labels.expand, labels.collapse);
   };
 
   document.addEventListener("click", onClick);
@@ -76,7 +80,11 @@ function toggleWrap(button: HTMLButtonElement) {
   button.setAttribute("aria-pressed", String(enabled));
 }
 
-function toggleCollapse(button: HTMLButtonElement) {
+function toggleCollapse(
+  button: HTMLButtonElement,
+  expandLabel: string,
+  collapseLabel: string,
+) {
   const figure = button.closest<HTMLElement>(".rr-code");
   const body = figure?.querySelector<HTMLElement>(".rr-code__body");
   if (!figure || !body) return;
@@ -85,5 +93,5 @@ function toggleCollapse(button: HTMLButtonElement) {
   figure.dataset.collapsed = String(collapsed);
   body.hidden = collapsed;
   button.setAttribute("aria-expanded", String(!collapsed));
-  button.textContent = collapsed ? "Expand" : "Collapse";
+  button.textContent = collapsed ? expandLabel : collapseLabel;
 }

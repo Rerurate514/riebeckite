@@ -1,4 +1,10 @@
-import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
+import {
+  escapeHtml,
+  escapeHtmlAttribute,
+  type UiLabelContext,
+} from "@riebeckite/core";
+import { resolveUiLabels } from "@riebeckite/ui/labels";
+import { vaultHeatmapLabels } from "./labels.js";
 import type { VaultActivity, VaultHeatmapSpec } from "./types.js";
 
 export const VAULT_HEATMAP_CLASS = "rr-vault-heatmap";
@@ -13,6 +19,7 @@ type Cell = {
 export function renderVaultHeatmap(
   spec: VaultHeatmapSpec,
   activity: VaultActivity,
+  uiLabels?: UiLabelContext,
 ): string {
   const end = spec.end ?? activity.latest;
   if (!end) return renderEmpty(spec.title);
@@ -50,9 +57,19 @@ export function renderVaultHeatmap(
 
   const viewedTotal = cells.reduce((sum, cell) => sum + cell.count, 0);
   const viewedDays = cells.filter((cell) => cell.count > 0).length;
-  const summary = `${viewedTotal} ${
-    viewedTotal === 1 ? "update" : "updates"
-  } on ${viewedDays} ${viewedDays === 1 ? "day" : "days"}`;
+  const labels = resolveUiLabels(vaultHeatmapLabels, uiLabels);
+  let summary: string;
+  if (viewedTotal === 0) {
+    summary = labels.noActivity;
+  } else {
+    const type = viewedTotal === 1 ? labels.update : labels.updates;
+    const day = viewedDays === 1 ? labels.day : labels.days;
+    summary = labels.summaryFormat
+      .replace("{total}", String(viewedTotal))
+      .replace("{type}", type)
+      .replace("{days}", String(viewedDays))
+      .replace("{day}", day);
+  }
   const range = `${formatDate(gridStart)} to ${formatDate(gridEnd)}`;
 
   return [

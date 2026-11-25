@@ -13,7 +13,7 @@ This guide walks through the GitHub and Cloudflare screens, including where to c
 You need:
 
 - A GitHub account
-- Node.js `^20.19.0` or `>=22.12.0`
+- Node.js `^22.13.0`, `^24.0.0`, or `^26.0.0`
 - A Cloudflare account
 - A terminal
 

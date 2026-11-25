@@ -6,6 +6,7 @@ import type {
   ContentPublicLocation,
 } from "../types/content_manifest.js";
 import type { Diagnostic } from "../types/diagnostic.js";
+import { createUiLabelContext } from "../types/ui_labels.js";
 import { mapConcurrent } from "../utils/concurrency.js";
 import type { ContentBuildPlan } from "./content_build_plan.js";
 import type { ContentManagerContext } from "./content_manager_context.js";
@@ -123,6 +124,11 @@ export async function assembleManifestImpl(
     manifest,
     m.pluginRuntime.getMarkdownComponents(),
     deferredDiagnostics,
+    (slug) =>
+      createUiLabelContext(
+        m.pipelineOptions.config,
+        manifest.bySlug.get(slug)?.publicLocation.language,
+      ),
   );
   m.manifestAssembler.synchronizeHtml(manifest, cacheManifestEntries);
   manifest.assets = m.pluginRuntime.collectAssets();

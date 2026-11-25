@@ -6,6 +6,7 @@ import type {
   PluginMarkdownComponent,
   PluginMarkdownComponentResolveContext,
 } from "./types/plugin_component.js";
+import type { UiLabelContext } from "./types/ui_labels.js";
 
 const DEFERRED_PATTERN =
   /<div data-riebeckite-component="([^"]+)" data-riebeckite-component-props="([^"]+)" data-riebeckite-component-deferred="true"><\/div>/g;
@@ -16,6 +17,7 @@ export async function finalizeDeferredMarkdownComponents(
   diagnostics: NonNullable<
     PluginMarkdownComponentResolveContext["diagnostics"]
   > = [],
+  uiLabelsFor: (slug: string) => UiLabelContext = () => ({}),
 ): Promise<void> {
   const registry = new Map(
     markdownComponents
@@ -38,6 +40,7 @@ export async function finalizeDeferredMarkdownComponents(
         manifest,
         registry,
         diagnostics,
+        uiLabelsFor(entry.slug),
       );
       lastIndex = index + match[0].length;
     }
@@ -54,6 +57,7 @@ async function renderDeferred(
   diagnostics: NonNullable<
     PluginMarkdownComponentResolveContext["diagnostics"]
   >,
+  uiLabels: UiLabelContext,
 ): Promise<string> {
   const component = registry.get(name);
   if (!component) return "";
@@ -65,6 +69,7 @@ async function renderDeferred(
     sourceSlug: slug,
     manifest,
     diagnostics,
+    uiLabels,
     resolveAssetUrl: (input) => resolveContentAssetUrl(input, slug),
   };
 

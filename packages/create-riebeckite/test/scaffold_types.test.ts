@@ -1,6 +1,7 @@
 import type {
   ScaffoldAiOptions,
   ScaffoldDeployment,
+  ScaffoldPackageManager,
   ScaffoldPresetName,
   ScaffoldSiteMetadata,
   ScaffoldSiteOptions,
@@ -27,6 +28,7 @@ export type ScaffoldSiteOptionsShapeIsPinned = Assert<
       readonly customDomain?: string;
       readonly overwrite?: boolean;
       readonly ai?: ScaffoldAiOptions;
+      readonly packageManager?: ScaffoldPackageManager;
     }
   >
 >;

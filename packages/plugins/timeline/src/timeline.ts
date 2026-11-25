@@ -1,4 +1,8 @@
-import type { ContentManifest, ContentManifestEntry } from "@riebeckite/core";
+import type {
+  ContentManifest,
+  ContentManifestEntry,
+  UiLabelContext,
+} from "@riebeckite/core";
 import {
   escapeHtml,
   escapeHtmlAttribute,
@@ -7,6 +11,8 @@ import {
   selectLocalizedEntries,
   toCalendarDate,
 } from "@riebeckite/core";
+import { resolveUiLabels } from "@riebeckite/ui";
+import { timelineLabels } from "./labels.js";
 import type {
   ResolvedTimelineOptions,
   ResolvedTimelineSelector,
@@ -131,15 +137,16 @@ export function buildTimelinePages(
 export function renderTimelinePage(
   entries: readonly TimelineEntry[],
   options: ResolvedTimelineOptions,
-  locale?: string,
+  uiLabels: UiLabelContext = {},
 ) {
+  const resolvedLabels = resolveUiLabels(timelineLabels, uiLabels);
   const className = escapeHtmlAttribute(options.className);
   const rootClassName = `${DEFAULT_TIMELINE_CLASS_NAME} ${className}`;
   const items = entries
     .map((entry) => {
       const badge =
-        entry.language && entry.language !== locale
-          ? `<span class="rr-language-badge" lang="${escapeHtmlAttribute(entry.language)}" aria-label="Language: ${escapeHtmlAttribute(entry.language)}">${escapeHtml(entry.language)}</span> `
+        entry.language && entry.language !== uiLabels.language
+          ? `<span class="rr-language-badge" lang="${escapeHtmlAttribute(entry.language)}" aria-label="${escapeHtmlAttribute(resolvedLabels.language.replace("{language}", entry.language))}">${escapeHtml(entry.language)}</span> `
           : "";
       return `<li class="${DEFAULT_TIMELINE_CLASS_NAME}__item"><time class="${DEFAULT_TIMELINE_CLASS_NAME}__date" datetime="${escapeHtmlAttribute(entry.date)}">${escapeHtml(entry.date)}</time>${badge}<a class="${DEFAULT_TIMELINE_CLASS_NAME}__link" href="${escapeHtmlAttribute(entry.permalink)}">${escapeHtml(entry.title)}</a></li>`;
     })

@@ -18,7 +18,7 @@ cd my-site
 npm install
 ```
 
-`--github-actions` を付けると `wrangler.jsonc` と `.github/workflows/publish.yml` が生成されます。`npm install` は `package-lock.json` を作り、ワークフローはこのファイルがある場合に `npm ci` を使います。
+`--github-actions` を付けると `wrangler.jsonc` と `.github/workflows/publish.yml` が生成されます。`npm install` は `package-lock.json` を作り、ワークフローはこのファイルがある場合に `npm ci` を使います。`--package-manager pnpm` を選んだ場合は `pnpm install` を実行して `pnpm-lock.yaml` をコミットしてください。ワークフローは `pnpm install --frozen-lockfile` を使います。
 
 ## 2. Worker 名とドメインを設定する
 

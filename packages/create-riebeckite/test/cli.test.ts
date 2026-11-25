@@ -255,6 +255,32 @@ test("Cloudflare Workers can be selected outside interactive mode", () => {
   });
 });
 
+test("--package-manager selects pnpm", () => {
+  const options = parseArguments(["my-site", "--package-manager", "pnpm"]);
+  assert.equal(options.packageManager, "pnpm");
+  assert.equal(
+    parseArguments(["my-site", "--package-manager", "npm"]).packageManager,
+    "npm",
+  );
+  assert.equal(parseArguments(["my-site"]).packageManager, undefined);
+  assert.throws(
+    () => parseArguments(["my-site", "--package-manager", "yarn"]),
+    /accepts npm or pnpm/,
+  );
+});
+
+test("interactive answers keep the selected package manager", () => {
+  const options = interactiveAnswersToOptions({
+    directory: "my-site",
+    preset: "starter",
+    utilities: ["editorconfig"],
+    contentSource: "local",
+    deployment: "none",
+    packageManager: "pnpm",
+  });
+  assert.equal(options.packageManager, "pnpm");
+});
+
 test("--utilities selects the generated project files", () => {
   const options = parseArguments([
     "my-site",

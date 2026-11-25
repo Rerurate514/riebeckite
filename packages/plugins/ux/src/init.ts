@@ -1,3 +1,5 @@
+import { resolveClientUiLabels } from "@riebeckite/ui/labels";
+import { uxLabels } from "./labels.js";
 import {
   DEFAULT_UX_CONFIG,
   UX_CONFIG_ELEMENT_ID,
@@ -83,7 +85,10 @@ function setupProgress(): (() => void) | undefined {
   const track = document.createElement("div");
   track.className = PROGRESS_CLASS;
   track.setAttribute("role", "progressbar");
-  track.setAttribute("aria-label", "Reading progress");
+  track.setAttribute(
+    "aria-label",
+    resolveClientUiLabels(uxLabels).readingProgress,
+  );
   track.setAttribute("aria-valuemin", "0");
   track.setAttribute("aria-valuemax", "100");
 

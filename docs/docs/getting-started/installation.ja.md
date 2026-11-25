@@ -14,7 +14,7 @@ sidebar.order: 30
 
 | 項目 | 用途 |
 | --- | --- |
-| Node.js | `^20.19.0` または `>=22.12.0`。Riebeckite のコマンドを動かす |
+| Node.js | `^22.13.0`、`^24.0.0`、`^26.0.0` のいずれか。Riebeckite のコマンドを動かす |
 | npm | パッケージのインストールに使う。Node.js に同梱されています |
 | ターミナル | コマンドを実行する。Windows なら **PowerShell**、macOS なら **ターミナル** |
 | Git | 任意。リポジトリ履歴と GitHub デプロイで使う |
@@ -23,6 +23,8 @@ sidebar.order: 30
 
 `npm` は Node.js に同梱されているため、別途インストールする必要はありません。Git と GitHub アカウントは任意で、リポジトリ履歴と自動デプロイに使います。手元から Cloudflare へ直接公開する場合は、後から用意しても構いません。詳しくは [デプロイ](../guides/deployment/README.ja.md) を参照してください。
 
+生成するサイトは既定で npm を使います。対話モードで pnpm を選ぶ（または `--package-manager pnpm` を渡す）と、pnpm 用のコマンドと `pnpm install --frozen-lockfile` を実行する workflow が生成されます。pnpm は 11.5.3 に固定されます。pnpm では `pnpm-lock.yaml` を、npm では `package-lock.json` をコミットしてください。
+
 次のコマンドで、ツールが使えることを確認します。
 
 ```bash
@@ -30,7 +32,7 @@ node -v
 npm -v
 ```
 
-`node -v` が `^20.19.0` または `>=22.12.0` に一致すれば準備できています（例: `v20.19.0`、`v22.12.0`、`v24`）。古い場合や `v21` のような非対応バージョンの場合は Node.js を更新してください。コマンドが見つからない場合は、そのツールをインストールしてからターミナルを開き直してください。Git が入っていない場合は [git-scm.com](https://git-scm.com/) からインストールできます。
+`node -v` が `^22.13.0`、`^24.0.0`、`^26.0.0` のいずれかに一致すれば準備できています（例: `v22.13.0`、`v24`、`v26`）。古い場合や `v23` のような非対応バージョンの場合は Node.js を更新してください。コマンドが見つからない場合は、そのツールをインストールしてからターミナルを開き直してください。Git が入っていない場合は [git-scm.com](https://git-scm.com/) からインストールできます。
 
 ## サイトを作る
 
@@ -43,11 +45,12 @@ npx create-riebeckite
 `npx` は `create-riebeckite` をダウンロードして一度だけ実行するため、グローバルには何もインストールしません。CLI は次の順に確認します。
 
 1. **Project name**：作るフォルダ名。既定値は `my-riebeckite-site`。好みで `my-site` などに変えられます
-2. **What would you like to build?**（[[glossary/preset|プリセット]]）：サイトの構成。迷ったら `Starter site`（`starter` プリセット）のまま。比較は [プリセット](./presets.ja.md)
-3. **Customize extra project files?**：エディタやツール用の生成ファイルを変える場合は `Yes`。既定の `No` でも既定のプロジェクトファイルは生成されます
-4. **Where will you write content?**：`This project` は `content/` をサイト内に置く最も簡単な形です。`Separate directory in this repository` はアプリの隣に Vault を置きます。`Separate GitHub repository` は既存の Vault 向けの高度な構成です。詳細は [Content Repositories](../guides/deployment/separate-content-repository.ja.md)
-5. **Set up deployment?**：`Cloudflare Workers`、`GitHub Actions`、`Not now` から選びます。`Cloudflare Workers` はインストール後に `Deploy now?` と確認されるため、その場で初回公開まで進められます。`GitHub Actions` は `main` への push ごとの自動公開です。`Not now` はデプロイの設定を省略します。詳細は [デプロイ](../guides/deployment/README.ja.md)
-6. **Install dependencies now?**：既定は `Yes` です。生成したプロジェクトを確認してからインストールしたいときは `No` を選びます。
+2. **Which package manager?**：`npm`（既定）または `pnpm`。pnpm では `pnpm-lock.yaml` をコミットし、以下の npm コマンドを `pnpm install` / `pnpm exec` に読み替えてください
+3. **What would you like to build?**（[[glossary/preset|プリセット]]）：サイトの構成。迷ったら `Starter site`（`starter` プリセット）のまま。比較は [プリセット](./presets.ja.md)
+4. **Customize extra project files?**：エディタやツール用の生成ファイルを変える場合は `Yes`。既定の `No` でも既定のプロジェクトファイルは生成されます
+5. **Where will you write content?**：`This project` は `content/` をサイト内に置く最も簡単な形です。`Separate directory in this repository` はアプリの隣に Vault を置きます。`Separate GitHub repository` は既存の Vault 向けの高度な構成です。詳細は [Content Repositories](../guides/deployment/separate-content-repository.ja.md)
+6. **Set up deployment?**：`Cloudflare Workers`、`GitHub Actions`、`Not now` から選びます。`Cloudflare Workers` はインストール後に `Deploy now?` と確認されるため、その場で初回公開まで進められます。`GitHub Actions` は `main` への push ごとの自動公開です。`Not now` はデプロイの設定を省略します。詳細は [デプロイ](../guides/deployment/README.ja.md)
+7. **Install dependencies now?**：既定は `Yes` です。生成したプロジェクトを確認してからインストールしたいときは `No` を選びます。
 
 プロンプトに答える代わりに、コマンドラインで同じ設定を渡すこともできます。
 
@@ -58,7 +61,7 @@ npx create-riebeckite my-riebeckite-site --preset starter
 - 生成されたトップレベルの名前が既存のエントリと衝突する場合、コマンドは停止します。上書きしたい場合は `--force` を追加してください。
 - ターゲットフォルダにあるその他のファイルは `--force` なしで許可されます。
 - 利用できる[[glossary/preset|プリセット]]は `npx create-riebeckite --list-presets` で確認できます。
-- フォルダ名を渡すと非対話で実行されます。プリセット、コンテンツの取得元、デプロイ、インストールの質問は省略され、依存関係もインストールされません。`dev` の前に、フォルダ内で `npm install` を実行してください（下記参照）。
+- フォルダ名を渡すと非対話で実行されます。プリセット、コンテンツの取得元、デプロイ、インストールの質問は省略され、依存関係もインストールされません。pnpm 用に生成する場合は `--package-manager pnpm` を追加してください。`dev` の前に、フォルダ内で `npm install`（または `pnpm install`）を実行してください（下記参照）。
 
 プロンプトでインストールしなかった場合は、フォルダへ移動してパッケージを入れます。
 
@@ -69,7 +72,7 @@ npm install
 
 `@riebeckite/*` は npm で公開されているため、これだけで足ります。最初のインストールには少し時間がかかることがあります。npm が脆弱性を報告した場合は `npm audit` で内容を確認してください。ビルド用の推移的依存関係に由来するものも多く含まれます。`npm audit fix --force` は、変更されるバージョンを確認してからでないと実行しないでください。
 
-この手順では、生成されるサイトの基準である npm を使います。pnpm でも動きます。生成される `pnpm-workspace.yaml` がビルドスクリプトを承認するため（esbuild、puppeteer、sharp）、最初の `pnpm install` が `ERR_PNPM_IGNORED_BUILDS` で止まることはありません。このファイルは pnpm にだけ作用し、npm の挙動は変えません。厳格なパッケージマネージャーは推移的依存を解決しないため、`@riebeckite/node`、`@riebeckite/runtime`、`@riebeckite/spa` がサイトのマニフェストに追加される前に作成したサイトでは、これらを明示的に追加する必要があります。
+この手順では、生成されるサイトの既定である npm を使います。pnpm を選ぶと、生成器は `"packageManager": "pnpm@11.5.3"` を書き、pnpm 用のコマンドを表示し、GitHub Actions の workflow が `pnpm install --frozen-lockfile` を実行するようにします。`pnpm-lock.yaml` をコミットしてください。生成される `pnpm-workspace.yaml` がビルドスクリプトを承認するため（esbuild、puppeteer、sharp）、最初の `pnpm install` が `ERR_PNPM_IGNORED_BUILDS` で止まることはありません。厳格なパッケージマネージャーは推移的依存を解決しないため、`@riebeckite/node`、`@riebeckite/runtime`、`@riebeckite/spa` がサイトのマニフェストに追加される前に作成したサイトでは、これらを明示的に追加する必要があります。
 
 最近の npm 11 では依存パッケージのインストールスクリプトが実行されないことがあります。`npm install` が `Ignored build scripts: esbuild` と表示した場合は、`npm approve-scripts esbuild` で承認してから `npm install` を再実行してください。
 

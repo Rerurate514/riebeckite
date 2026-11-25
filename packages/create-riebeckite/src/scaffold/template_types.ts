@@ -1,4 +1,4 @@
-import type { ScaffoldAiOptions } from "./options.js";
+import type { ScaffoldAiOptions, ScaffoldPackageManager } from "./options.js";
 import type { ScaffoldUtilityName } from "./utilities.js";
 
 export type SiteTemplateVariables = {
@@ -17,6 +17,7 @@ export type SiteTemplateOptions = {
   readonly utilities?: readonly ScaffoldUtilityName[];
   readonly contentDirectory?: string;
   readonly ai?: ScaffoldAiOptions;
+  readonly packageManager?: ScaffoldPackageManager;
 };
 
 export type SiteTemplateFile = {

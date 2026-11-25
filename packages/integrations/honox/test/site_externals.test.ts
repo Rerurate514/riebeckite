@@ -3,7 +3,9 @@ import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
+import type { UserConfig } from "vite";
 import { siteRiebeckiteExternals } from "../src/site_externals.js";
+import { riebeckiteVite } from "../src/vite_plugin.js";
 
 async function withSite(
   packageJson: string | undefined,
@@ -65,4 +67,33 @@ test("site externals are empty when dependencies are absent", async () => {
   await withSite(JSON.stringify({ name: "site" }), (siteRoot) => {
     assert.deepEqual(siteRiebeckiteExternals(siteRoot), []);
   });
+});
+
+test("site externals are configured from the Vite root before the application resolves", async () => {
+  await withSite(
+    JSON.stringify({
+      dependencies: {
+        "@riebeckite/core": "^0.2.0",
+        "@riebeckite/plugin-mdx": "^0.2.0",
+      },
+    }),
+    (siteRoot) => {
+      const plugin = riebeckiteVite().find(
+        (candidate) => candidate.name === "riebeckite-ssr-externals",
+      );
+      assert.ok(plugin);
+      const config = plugin.config;
+      assert.equal(typeof config, "function");
+      const resolved = (config as (config: UserConfig) => UserConfig)({
+        root: siteRoot,
+      });
+      const environments = resolved.environments as
+        | { ssr?: { resolve?: { external?: string[] } } }
+        | undefined;
+      assert.deepEqual(environments?.ssr?.resolve?.external?.slice(-2), [
+        "@riebeckite/core",
+        "@riebeckite/plugin-mdx",
+      ]);
+    },
+  );
 });

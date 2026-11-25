@@ -2,6 +2,7 @@ import {
   type ContentSource,
   readContentSourceEntry,
   reportVFileDiagnostic,
+  type UiLabelContext,
 } from "@riebeckite/core";
 import { parseCanvas } from "./parse.js";
 import { renderCanvas } from "./render.js";
@@ -12,6 +13,7 @@ type RemarkCanvasOptions = {
   options: ResolvedCanvasOptions;
   contentIndex: Map<string, string>;
   contentSource?: ContentSource;
+  uiLabels?: UiLabelContext;
 };
 
 type MdNode = {
@@ -76,6 +78,7 @@ async function replaceCanvasBlock(
       source: content.source,
       options: input.options,
       resolver,
+      uiLabels: input.uiLabels,
     }),
   } as MdNode;
 }

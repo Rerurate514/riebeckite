@@ -34,6 +34,7 @@ You do not have to read Reference from start to finish. When you want to check a
 | [Design Philosophy](../philosophy.md) | Why Riebeckite is designed this way |
 | [Configuration](./configuration.md) | `riebeckite.config.ts`, roots, content, theme, plugins |
 | [Configuration reference](./configuration-reference.md) | Every `riebeckite.config.ts` field, its type, and its default |
+| [UI labels](./ui-labels.md) | How plugins define, resolve, and override UI strings |
 | [CLI](./cli.md) | `init`, `create`, `dev`, `check`, `doctor`, `build`, `clean`, `deploy`, `publish`, `content`, `migrate`, `upgrade`, `profile`, `inspect`, `help`, `completion`, `theme preview`, `plugin dev`, `plugin verify` |
 | [CLI Extension API](./cli-extension.md) | Typed command definitions, Plugin CLI commands, JSON and error contracts, completion |
 | [Plugin API](./plugin-api.md) | `definePlugin`, lifecycle hooks, assets, endpoints, diagnostics |

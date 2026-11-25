@@ -1,0 +1,17 @@
+.site-article {
+  display: block;
+  width: min(100% - 2rem, var(--rb-layout-article-max, 48rem));
+  margin: 0 auto;
+  padding-block: 1rem 4rem;
+}
+
+.rb-article-body {
+  min-width: 0;
+  padding-inline: var(--rb-space-2, 1rem);
+}
+
+.site-powered-by {
+  margin-block: var(--rb-space-6, 3rem) 0;
+  color: var(--rb-color-text-muted, color-mix(in oklab, currentColor 65%, transparent));
+  font-size: var(--rb-font-size-sm, 0.875rem);
+}

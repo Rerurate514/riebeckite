@@ -4,6 +4,9 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { scaffoldRiebeckiteSite } from "../src/scaffold/index.js";
+import { RIEBECKITE_VERSION } from "../src/scaffold/version.js";
+
+const version = RIEBECKITE_VERSION.replace(/^\^/, "");
 
 test("adds selected AI development support", async (t) => {
   const directory = await fs.mkdtemp(
@@ -43,9 +46,10 @@ test("adds selected AI development support", async (t) => {
     ),
     /RIEBECKITE_AI\.md/,
   );
-  assert.match(
-    await fs.readFile(path.join(directory, "RIEBECKITE_AI.md"), "utf8"),
-    /riebeckiteVersion: "0\.1\.0"/,
+  assert.ok(
+    (
+      await fs.readFile(path.join(directory, "RIEBECKITE_AI.md"), "utf8")
+    ).includes(`riebeckiteVersion: "${version}"`),
   );
   assert.match(
     await fs.readFile(
@@ -54,12 +58,19 @@ test("adds selected AI development support", async (t) => {
     ),
     /publishStrategy/,
   );
-  assert.match(
-    await fs.readFile(
-      path.join(directory, ".agents", "skills", "riebeckite-theme", "SKILL.md"),
-      "utf8",
-    ),
-    /riebeckiteVersion: "0\.1\.0"/,
+  assert.ok(
+    (
+      await fs.readFile(
+        path.join(
+          directory,
+          ".agents",
+          "skills",
+          "riebeckite-theme",
+          "SKILL.md",
+        ),
+        "utf8",
+      )
+    ).includes(`riebeckiteVersion: "${version}"`),
   );
   assert.match(
     await fs.readFile(

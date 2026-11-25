@@ -1,3 +1,4 @@
+import type { UiLabelContext } from "@riebeckite/core";
 import rehypePrettyCode from "rehype-pretty-code";
 import {
   DEFAULT_THEME,
@@ -11,7 +12,13 @@ import { enhancePrettyCodeFigures } from "./code_enhance_pretty.js";
 import { mergeClassName } from "./hast.js";
 import type { CodeEnhanceOptions, ElementNode, HastNode } from "./types.js";
 
-export function rehypeCodeEnhance(options: CodeEnhanceOptions = {}) {
+export function rehypeCodeEnhance(
+  input: {
+    readonly options?: CodeEnhanceOptions;
+    readonly uiLabels?: UiLabelContext;
+  } = {},
+) {
+  const options = input.options ?? {};
   const prettyCode = rehypePrettyCode({
     getHighlighter: getDeterministicHighlighter,
     theme: (options.theme ?? DEFAULT_THEME) as never,
@@ -53,6 +60,6 @@ export function rehypeCodeEnhance(options: CodeEnhanceOptions = {}) {
         prettyCode as (tree: HastNode, file: unknown) => Promise<void> | void
       )(tree, file);
     }
-    enhancePrettyCodeFigures(tree, options);
+    enhancePrettyCodeFigures(tree, options, input.uiLabels);
   };
 }

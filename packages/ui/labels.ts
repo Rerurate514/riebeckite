@@ -1,129 +1,156 @@
-export type UiLabels = {
-  /** Table of contents landmark label. */
-  contents: string;
-  /** Table of contents eyebrow. */
-  contentsHeading: string;
-  /** Placeholder for the sidebar filter input. */
-  filter: string;
-  /** Screen-reader label for the sidebar filter. */
-  filterNavigation: string;
-  /** Label for collapsible sections and disclosure buttons. */
-  collapse: string;
-  expand: string;
-  /** Screen-reader label for the note search input. */
-  searchNotes: string;
-  /** Placeholder for the note search input. */
-  searchPlaceholder: string;
-  /** Placeholder for compact note search inputs. */
-  searchNotesPlaceholder: string;
-  /** Heading of the local graph section. */
-  nearbyNotes: string;
-  /** Landmark label for series navigation. */
-  seriesNavigation: string;
-  /** Landmark label for the language switcher. */
-  language: string;
-  sidebarNavigation: string;
-  localGraph: string;
-  openInExplorer: string;
-  localGraphTruncated: string;
-  localGraphTruncatedExplorer: string;
-  explorer: string;
-  explorerPanels: string;
-  clearFilters: string;
-  tags: string;
-  folders: string;
-  notes: string;
-  showingNotes: string;
-  noteGraph: string;
-  localGraphMode: string;
-  globalGraphMode: string;
-  localMode: string;
-  globalMode: string;
-  selectNoteHint: string;
-  history: string;
-  historyChanges: string;
-  historyToggle: string;
-  commitHistory: string;
-  untitledChange: string;
-  search: string;
-  closeSearch: string;
-  searchQuery: string;
-  searchFilterHint: string;
-  searchResults: string;
-  seriesPosition: string;
-  selectedNote: string;
-  outgoingLinks: string;
-  backlinks: string;
-  relatedNotes: string;
-  noNotes: string;
+import type { UiLabelContext, UiLabelOverrides } from "@riebeckite/core";
+
+export type UiLabelDictionary = Readonly<Record<string, string>>;
+export type UiLabelDictionaries = Readonly<Record<string, UiLabelDictionary>>;
+
+export type UiLabelsDefinition<
+  D extends UiLabelDictionaries = UiLabelDictionaries,
+> = {
+  readonly namespace: string;
+  readonly dictionaries: D;
 };
 
-export const DEFAULT_UI_LABELS: UiLabels = {
-  contents: "Contents",
-  contentsHeading: "CONTENTS",
-  filter: "Filter",
-  filterNavigation: "Filter navigation",
-  collapse: "Collapse",
-  expand: "Expand",
-  searchNotes: "Search notes",
-  searchPlaceholder: "Search notes or use tag:, lang:, path:...",
-  searchNotesPlaceholder: "Search notes...",
-  nearbyNotes: "Nearby Notes",
-  seriesNavigation: "Series navigation",
-  language: "Language",
-  sidebarNavigation: "Sidebar navigation",
-  localGraph: "Local Graph",
-  openInExplorer: "Open in Explorer",
-  localGraphTruncated:
-    "This neighbourhood is large, so the graph stops after 320 nodes.",
-  localGraphTruncatedExplorer: "Use the Explorer for the full network.",
-  explorer: "Explorer",
-  explorerPanels: "Explorer panels",
-  clearFilters: "Clear filters",
-  tags: "Tags",
-  folders: "Folders",
-  notes: "Notes",
-  showingNotes: "showing {shown} of {total}",
-  noteGraph: "Note graph",
-  localGraphMode: "Local graph",
-  globalGraphMode: "Global graph · {count} notes",
-  localMode: "Local",
-  globalMode: "Global",
-  selectNoteHint: "Select a note to inspect links.",
-  history: "History",
-  historyChanges: "{count} changes",
-  historyToggle: "Toggle history",
-  commitHistory: "Commit history",
-  untitledChange: "Untitled change",
-  search: "Search",
-  closeSearch: "Close search",
-  searchQuery: "Search query",
-  searchFilterHint: "Filter with tag:, lang:, or path:.",
-  searchResults: "Search results",
-  seriesPosition: "Part {index} of {total}",
-  selectedNote: "Selected Note",
-  outgoingLinks: "Outgoing Links",
-  backlinks: "Backlinks",
-  relatedNotes: "Related Notes",
-  noNotes: "No notes.",
+type DefinitionWithEnglish = UiLabelsDefinition<
+  { readonly en: UiLabelDictionary } & UiLabelDictionaries
+>;
+
+export type ResolvedUiLabels<T extends DefinitionWithEnglish> = {
+  readonly [K in keyof T["dictionaries"]["en"]]: string;
 };
 
-export function resolveUiLabels(
-  language: string | undefined,
-  labels?: Readonly<Record<string, Readonly<Record<string, string>>>>,
-): UiLabels {
-  const dictionary =
-    language === undefined
+export type UiLabelResolution<T extends DefinitionWithEnglish> = {
+  readonly labels: ResolvedUiLabels<T>;
+  readonly language?: string;
+  readonly builtInLocale?: string;
+  readonly overrideLocale?: string;
+  readonly sources: Readonly<Record<string, "en" | "built-in" | "override">>;
+};
+
+const definitions = new Map<string, DefinitionWithEnglish>();
+
+export function defineUiLabels<
+  const D extends { readonly en: UiLabelDictionary } & UiLabelDictionaries,
+>(namespace: string, dictionaries: D): UiLabelsDefinition<D> {
+  const definition = { namespace, dictionaries };
+  definitions.set(namespace, definition);
+  return definition;
+}
+
+export function getUiLabelDefinitions(): readonly DefinitionWithEnglish[] {
+  return [...definitions.values()];
+}
+
+export type ClientUiConfig = {
+  readonly locale?: string;
+  readonly labels?: UiLabelOverrides;
+};
+
+declare global {
+  var __riebeckiteUi: ClientUiConfig | undefined;
+}
+
+export function resolveClientUiLabels<
+  D extends { readonly en: UiLabelDictionary } & UiLabelDictionaries,
+>(
+  definition: UiLabelsDefinition<D>,
+  language?: string,
+): ResolvedUiLabels<UiLabelsDefinition<D>> {
+  const ui =
+    typeof globalThis === "undefined" ? undefined : globalThis.__riebeckiteUi;
+  const sourceLanguage =
+    language ??
+    (typeof document === "undefined"
       ? undefined
-      : Object.entries(labels ?? {}).find(
-          ([locale]) => locale.toLowerCase() === language.toLowerCase(),
-        )?.[1];
-  if (dictionary === undefined) return DEFAULT_UI_LABELS;
-  const resolved = { ...DEFAULT_UI_LABELS };
+      : document.documentElement.lang);
+  return resolveUiLabels(definition, {
+    language: ui?.locale ?? sourceLanguage,
+    overrides: ui?.labels,
+  });
+}
+
+export function resolveUiLabels<
+  D extends { readonly en: UiLabelDictionary } & UiLabelDictionaries,
+>(
+  definition: UiLabelsDefinition<D>,
+  context: UiLabelContext = {},
+): ResolvedUiLabels<UiLabelsDefinition<D>> {
+  return resolveUiLabelsWithTrace(definition, context).labels;
+}
+
+export function resolveUiLabelsWithTrace<
+  D extends { readonly en: UiLabelDictionary } & UiLabelDictionaries,
+>(
+  definition: UiLabelsDefinition<D>,
+  context: UiLabelContext = {},
+): UiLabelResolution<UiLabelsDefinition<D>> {
+  const labels: Record<string, string> = { ...definition.dictionaries.en };
+  const sources: Record<string, "en" | "built-in" | "override"> =
+    Object.fromEntries(Object.keys(labels).map((key) => [key, "en"]));
+  const builtIn = mergeDictionary(
+    labels,
+    sources,
+    definition.dictionaries,
+    context.language,
+    "built-in",
+  );
+  const override = mergeDictionary(
+    labels,
+    sources,
+    context.overrides?.[definition.namespace],
+    context.language,
+    "override",
+  );
+  return {
+    labels: labels as ResolvedUiLabels<UiLabelsDefinition<D>>,
+    ...(context.language ? { language: context.language } : {}),
+    ...(builtIn ? { builtInLocale: builtIn } : {}),
+    ...(override ? { overrideLocale: override } : {}),
+    sources,
+  };
+}
+
+function mergeDictionary(
+  target: Record<string, string>,
+  sources: Record<string, "en" | "built-in" | "override">,
+  dictionaries: UiLabelDictionaries | undefined,
+  language: string | undefined,
+  source: "built-in" | "override",
+): string | undefined {
+  if (dictionaries === undefined || language === undefined) return undefined;
+  const entry = findDictionary(dictionaries, language);
+  if (entry === undefined) return undefined;
+  const [locale, dictionary] = entry;
   for (const [key, value] of Object.entries(dictionary)) {
-    if (typeof value === "string" && value !== "" && key in resolved) {
-      resolved[key as keyof UiLabels] = value;
+    if (
+      Object.hasOwn(target, key) &&
+      typeof value === "string" &&
+      value !== ""
+    ) {
+      target[key] = value;
+      sources[key] = source;
     }
   }
-  return resolved;
+  return locale;
+}
+
+function findDictionary(
+  dictionaries: UiLabelDictionaries,
+  language: string,
+): [string, UiLabelDictionary] | undefined {
+  const entries = Object.entries(dictionaries);
+  const normalized = normalizeLocale(language);
+  const exact = entries.find(
+    ([locale]) => normalizeLocale(locale) === normalized,
+  );
+  if (exact) return exact;
+  const primary = primarySubtag(normalized);
+  return entries.find(([locale]) => primarySubtag(locale) === primary);
+}
+
+function normalizeLocale(value: string): string {
+  return value.trim().replace(/_/g, "-").toLowerCase();
+}
+
+function primarySubtag(value: string): string {
+  return normalizeLocale(value).split("-")[0] ?? "";
 }

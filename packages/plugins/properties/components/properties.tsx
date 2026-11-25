@@ -1,4 +1,7 @@
-import type { PluginSiteComponent } from "@riebeckite/core";
+import {
+  createUiLabelContext,
+  type PluginSiteComponent,
+} from "@riebeckite/core";
 import { useArticleContext, useSiteContext } from "@riebeckite/ui";
 import { html, raw } from "hono/html";
 import { getProperties } from "../src/component-data.js";
@@ -37,12 +40,15 @@ const Properties = (({
 
   const extraClass = className?.trim();
   return raw(
-    renderPropertiesData({
-      ...data,
-      className: extraClass
-        ? `${data.className} ${extraClass}`
-        : data.className,
-    }),
+    renderPropertiesData(
+      {
+        ...data,
+        className: extraClass
+          ? `${data.className} ${extraClass}`
+          : data.className,
+      },
+      createUiLabelContext(site?.config, site?.language),
+    ),
   );
 }) satisfies PluginSiteComponent<PropertiesProps>;
 

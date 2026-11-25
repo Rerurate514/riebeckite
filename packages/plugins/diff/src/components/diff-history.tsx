@@ -1,8 +1,9 @@
 /** @jsxRuntime automatic */
 /** @jsxImportSource hono/jsx */
 
-import { type UiLabels, useUiLabels } from "@riebeckite/ui";
+import { useUiLabels } from "@riebeckite/ui";
 import { renderToString } from "hono/jsx/dom/server";
+import { type DiffLabels, diffLabels } from "../labels.js";
 import type { DiffRevision, MarkdownRevision, PostDiff } from "../types.js";
 import { DiffViewer } from "./diff-viewer.js";
 import { formatDiffDate } from "./format-date.js";
@@ -11,14 +12,14 @@ type DiffHistoryInput = {
   revisions: MarkdownRevision[];
   selected: PostDiff | null;
   payloadPath?: string;
-  labels?: UiLabels;
+  labels?: DiffLabels;
 };
 
 type DiffHistoryProps = {
   revisions: MarkdownRevision[];
   selected: PostDiff;
   payloadPath?: string;
-  labels?: UiLabels;
+  labels?: DiffLabels;
 };
 
 export function renderDiffHistory(input: DiffHistoryInput): string {
@@ -40,7 +41,7 @@ function DiffHistory({
   payloadPath,
   labels: providedLabels,
 }: DiffHistoryProps) {
-  const contextLabels = useUiLabels();
+  const contextLabels = useUiLabels(diffLabels);
   const labels = providedLabels ?? contextLabels;
   return (
     <section class="rr-diff-history" data-rr-diff-history>

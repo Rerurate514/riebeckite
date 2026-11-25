@@ -1,8 +1,20 @@
+import type { UiLabelContext } from "@riebeckite/core";
+import { resolveUiLabels } from "@riebeckite/ui";
+import { sidenotesLabels } from "./labels.js";
 import type { ResolvedSidenotesOptions, SidenotesOptions } from "./types.js";
 
-const DEFAULT_SIDENOTES_ARIA_LABEL = "Sidenote";
-const DEFAULT_SIDENOTES_OPEN_LABEL = "Footnote";
-const DEFAULT_SIDENOTES_PLACEMENT = "end";
+/**
+ */
+function resolveSidenotesLabels(uiLabels?: UiLabelContext): {
+  ariaLabel: string;
+  openLabel: string;
+} {
+  const resolved = resolveUiLabels(sidenotesLabels, uiLabels);
+  return {
+    ariaLabel: resolved.ariaLabel,
+    openLabel: resolved.openLabel,
+  };
+}
 
 /**
  * Applies defaults to `SidenotesOptions`. Pure and deterministic so the
@@ -10,21 +22,15 @@ const DEFAULT_SIDENOTES_PLACEMENT = "end";
  */
 export function resolveSidenotesOptions(
   options: SidenotesOptions = {},
+  uiLabels?: UiLabelContext,
 ): ResolvedSidenotesOptions {
+  const { ariaLabel: resolvedAriaLabel, openLabel: resolvedOpenLabel } =
+    resolveSidenotesLabels(uiLabels);
   return {
     className: normalizeNonEmpty(options.className, ""),
-    ariaLabel: normalizeNonEmpty(
-      options.ariaLabel,
-      DEFAULT_SIDENOTES_ARIA_LABEL,
-    ),
-    openLabel: normalizeNonEmpty(
-      options.openLabel,
-      DEFAULT_SIDENOTES_OPEN_LABEL,
-    ),
-    placement: normalizePlacement(
-      options.placement,
-      DEFAULT_SIDENOTES_PLACEMENT,
-    ),
+    ariaLabel: normalizeNonEmpty(options.ariaLabel, resolvedAriaLabel),
+    openLabel: normalizeNonEmpty(options.openLabel, resolvedOpenLabel),
+    placement: normalizePlacement(options.placement, "end"),
   };
 }
 

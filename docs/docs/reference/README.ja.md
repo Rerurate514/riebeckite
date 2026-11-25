@@ -34,6 +34,7 @@ flowchart TD
 | Riebeckite の設計方針 | [設計思想](../philosophy.ja.md) |
 | `riebeckite.config.ts`、ルート、コンテンツ、テーマ、プラグインの設定 | [設定](./configuration.ja.md) |
 | `riebeckite.config.ts` の全フィールド、型、既定値 | [設定リファレンス](./configuration-reference.ja.md) |
+| プラグインの UI 文言の定義・解決・上書き | [UI ラベル](./ui-labels.ja.md) |
 | `init`、`create`、`dev`、`check`、`doctor`、`build`、`clean`、`deploy`、`publish`、`content`、`migrate`、`upgrade`、`profile`、`inspect`、`help`、`completion`、`theme preview`、`plugin dev`、`plugin verify` | [CLI](./cli.ja.md) |
 | 型付きコマンド定義、プラグインのCLIコマンド、JSONとエラーの取り決め、補完 | [CLI拡張API](./cli-extension.ja.md) |
 | `definePlugin`、ライフサイクルフック、アセット、エンドポイント、診断 | [Plugin API](./plugin-api.ja.md) |

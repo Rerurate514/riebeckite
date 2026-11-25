@@ -1,8 +1,10 @@
-import type {
-  ContentManifest,
-  ContentManifestEntry,
-  DerivedViewRegistry,
-  Diagnostic,
+import {
+  type ContentManifest,
+  type ContentManifestEntry,
+  createUiLabelContext,
+  type DerivedViewRegistry,
+  type Diagnostic,
+  type ResolvedRiebeckiteConfig,
 } from "@riebeckite/core";
 import { dateKey, vaultActivityView } from "./activity.js";
 import { parseVaultHeatmap } from "./parse.js";
@@ -28,6 +30,7 @@ export function createVaultHeatmapRuntime(
       manifest: ContentManifest,
       derived: DerivedViewRegistry,
       diagnostics: Diagnostic[],
+      config: ResolvedRiebeckiteConfig | undefined,
     ): Promise<void> {
       const entries = manifest.entries.filter((entry) =>
         entry.html.includes(VAULT_HEATMAP_ATTRIBUTE),
@@ -65,7 +68,14 @@ export function createVaultHeatmapRuntime(
         entry.html = entry.html.replace(
           createVaultHeatmapPlaceholderPattern(),
           (_match, encoded: string) =>
-            resolveBlock(entry.slug, encoded, options, activity, diagnostics),
+            resolveBlock(
+              entry.slug,
+              encoded,
+              options,
+              activity,
+              diagnostics,
+              createUiLabelContext(config, entry.publicLocation.language),
+            ),
         );
       }
     },
@@ -90,6 +100,7 @@ function resolveBlock(
   options: ResolvedVaultHeatmapOptions,
   activity: VaultActivity,
   diagnostics: Diagnostic[],
+  uiLabels: import("@riebeckite/core").UiLabelContext,
 ): string {
   let source: string;
   try {
@@ -115,7 +126,7 @@ function resolveBlock(
     );
   }
 
-  return renderVaultHeatmap(parsed.spec, activity);
+  return renderVaultHeatmap(parsed.spec, activity, uiLabels);
 }
 
 function replaceEverywhere(

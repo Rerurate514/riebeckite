@@ -1,4 +1,6 @@
-import { reportVFileDiagnostic } from "@riebeckite/core";
+import { reportVFileDiagnostic, type UiLabelContext } from "@riebeckite/core";
+import { resolveUiLabels } from "@riebeckite/ui";
+import { qrCodeLabels } from "./labels.js";
 import { qrElementClassName } from "./options.js";
 import type {
   ElementNode,
@@ -14,13 +16,18 @@ const CAPTION_PATTERN =
 const META_TITLE_PATTERN = /title=(?:"([^"]*)"|'([^']*)'|(\S+))/;
 const PLUGIN_SOURCE = "@riebeckite/plugin-qr-code";
 
-export function rehypeQrCode(options: ResolvedQrCodeOptions) {
+export function rehypeQrCode(
+  options: ResolvedQrCodeOptions,
+  uiLabels: UiLabelContext = { language: options.language },
+) {
   return async (tree: HastNode, file: unknown) => {
     const replacements: Promise<void>[] = [];
     visitElements(tree, (node, parent, index) => {
       if (!parent || index === undefined) return;
       if (!isQrCodeBlock(node, options.language)) return;
-      replacements.push(replaceQrBlock(parent, index, node, file, options));
+      replacements.push(
+        replaceQrBlock(parent, index, node, file, options, uiLabels),
+      );
     });
     await Promise.all(replacements);
   };
@@ -32,6 +39,7 @@ async function replaceQrBlock(
   pre: ElementNode,
   file: unknown,
   options: ResolvedQrCodeOptions,
+  uiLabels: UiLabelContext,
 ) {
   const code = findDirectChild(pre, "code");
   const rawSource = code
@@ -59,6 +67,7 @@ async function replaceQrBlock(
       source,
       caption,
       options,
+      uiLabels,
       result.message,
       file,
     );
@@ -68,6 +77,7 @@ async function replaceQrBlock(
       result.svg,
       caption,
       options,
+      uiLabels,
     );
   }
 }
@@ -77,28 +87,34 @@ function buildRenderedFigure(
   svg: string,
   caption: string | null,
   options: ResolvedQrCodeOptions,
+  uiLabels: UiLabelContext,
 ): ElementNode {
-  return buildFigure(source, caption, options, "rendered", [raw(svg)]);
+  return buildFigure(source, caption, options, uiLabels, "rendered", [
+    raw(svg),
+  ]);
 }
 
 function buildErrorFigure(
   source: string,
   caption: string | null,
   options: ResolvedQrCodeOptions,
+  uiLabels: UiLabelContext,
   message: string,
   file: unknown,
 ): ElementNode {
   reportDiagnostic(file, `QR code could not be rendered: ${message}`, "render");
-  return buildFigure(source, caption, options, "error", []);
+  return buildFigure(source, caption, options, uiLabels, "error", []);
 }
 
 function buildFigure(
   source: string,
   caption: string | null,
   options: ResolvedQrCodeOptions,
+  uiLabels: UiLabelContext,
   state: "rendered" | "error",
   canvasChildren: HastNode[],
 ): ElementNode {
+  const labels = resolveUiLabels(qrCodeLabels, uiLabels);
   const labelId = `${figureId(source, options)}-caption`;
   return element(
     "figure",
@@ -116,7 +132,7 @@ function buildFigure(
           className: qrElementClassName(options.className, "canvas"),
           role: "img",
           ariaLabelledby: caption ? labelId : undefined,
-          ariaLabel: caption ? undefined : "QR code",
+          ariaLabel: caption ? undefined : labels.qrCode,
         },
         canvasChildren,
       ),

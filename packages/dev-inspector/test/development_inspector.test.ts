@@ -10,6 +10,7 @@ import {
 } from "@riebeckite/core";
 import { FileSystemContentSource } from "@riebeckite/node";
 import { markdown, withTemporaryDirectory } from "@riebeckite/test";
+import { defineUiLabels } from "@riebeckite/ui";
 import type { ViteDevServer } from "vite";
 import type { ResolvedInspectorApplication } from "../src/application.js";
 import {
@@ -728,6 +729,59 @@ test("development inspector shares one report across concurrent requests", async
       JSON.parse(firstOutput.body).output,
       JSON.parse(secondOutput.body).output,
     );
+  });
+});
+
+test("development inspector reports resolved UI labels", async () => {
+  await withTemporaryDirectory(async (directory) => {
+    const contentRoot = path.join(directory, "content");
+    await fs.mkdir(contentRoot, { recursive: true });
+    await fs.writeFile(
+      path.join(contentRoot, "index.md"),
+      markdown("# Home", { title: "Home", visibility: "public" }),
+    );
+    defineUiLabels("inspector-test", {
+      en: { title: "Title" },
+      ja: { title: "題名" },
+    });
+    const plugin = inspector(() => ({
+      config: resolveConfig({
+        site: { title: "Test", locale: "en" },
+        ui: {
+          locale: "ja",
+          labels: {
+            "inspector-test": { ja: { title: "上書き", unknownKey: "無視" } },
+            "missing-namespace": { ja: { title: "無視" } },
+          },
+        },
+      }),
+      configRoot: directory,
+      configFile: path.join(directory, "riebeckite.config.ts"),
+      appRoot: directory,
+      contentRoot,
+    }));
+    const { body } = await requestReport(
+      inspectorStack(plugin),
+      "/__riebeckite/inspector/report?path=%2F",
+    );
+    const report = JSON.parse(body);
+    assert.deepEqual(
+      report.labels.find(
+        (label: { namespace: string }) => label.namespace === "inspector-test",
+      ),
+      {
+        namespace: "inspector-test",
+        labels: { title: "上書き" },
+        language: "ja",
+        builtInLocale: "ja",
+        overrideLocale: "ja",
+        sources: { title: "override" },
+      },
+    );
+    assert.deepEqual(report.unknownLabelOverrides, [
+      "inspector-test.ja.unknownKey",
+      "missing-namespace.*",
+    ]);
   });
 });
 

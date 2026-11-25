@@ -1,3 +1,5 @@
+import type { UiLabelContext } from "@riebeckite/core";
+import { resolveUiLabels } from "@riebeckite/ui/labels";
 import {
   findDirectChild,
   getLanguage,
@@ -13,12 +15,15 @@ import {
   text,
   visitElements,
 } from "./hast.js";
+import { codeEnhanceLabels } from "./labels.js";
 import type { CodeEnhanceOptions, ElementNode, HastNode } from "./types.js";
 
 export function enhancePrettyCodeFigures(
   tree: HastNode,
   options: CodeEnhanceOptions,
+  uiLabels: UiLabelContext = { language: options.locale },
 ) {
+  const labels = resolveUiLabels(codeEnhanceLabels, uiLabels);
   visitElements(tree, (node) => {
     if (!isPrettyCodeFigure(node)) return;
 
@@ -73,6 +78,10 @@ export function enhancePrettyCodeFigures(
       buildHeader({
         title: options.filename === false ? null : displayTitle,
         language,
+        copyLabel: options.copyLabel ?? labels.copyCode,
+        copyText: labels.copy,
+        wrapLabel: labels.wrap,
+        collapseLabel: labels.collapse,
         copyButton: options.copyButton !== false,
         wrapToggle: options.wrapToggle !== false,
         collapsible: options.collapsible === true,
@@ -93,6 +102,10 @@ export function enhancePrettyCodeFigures(
 export function buildHeader(input: {
   title: string | null;
   language: string;
+  copyLabel: string;
+  copyText: string;
+  wrapLabel: string;
+  collapseLabel: string;
   copyButton: boolean;
   wrapToggle: boolean;
   collapsible: boolean;
@@ -108,7 +121,7 @@ export function buildHeader(input: {
           dataCodeWrapToggle: "true",
           ariaPressed: "true",
         },
-        [text("Wrap")],
+        [text(input.wrapLabel)],
       ),
     );
   }
@@ -120,9 +133,9 @@ export function buildHeader(input: {
           type: "button",
           className: "rr-code__action",
           dataCodeCopy: "true",
-          ariaLabel: "Copy code",
+          ariaLabel: input.copyLabel,
         },
-        [text("Copy")],
+        [text(input.copyText)],
       ),
     );
   }
@@ -136,7 +149,7 @@ export function buildHeader(input: {
           dataCodeCollapseToggle: "true",
           ariaExpanded: "true",
         },
-        [text("Collapse")],
+        [text(input.collapseLabel)],
       ),
     );
   }

@@ -204,7 +204,7 @@ export function series(options: SeriesOptions = {}) {
             pathname,
             title: entry.index.title,
             body,
-            ...(entry.locale ? { language: entry.locale } : {}),
+            language: entry.locale,
           };
         },
         resolveRoute: ({ manifest, pathname }) => {

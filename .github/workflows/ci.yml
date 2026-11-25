@@ -163,6 +163,25 @@ jobs:
       - run: pnpm --filter @riebeckite/core test
       - run: pnpm --filter @riebeckite/honox exec node --max-old-space-size=4096 --import tsx --test --test-concurrency=1 "test/*.test.ts"
 
+  node-compat:
+    name: node-compat (${{ matrix.node }})
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 26]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: ./.github/actions/setup
+        with:
+          node-version: ${{ matrix.node }}
+          pnpm-version: ${{ env.PNPM_VERSION }}
+          browsers: chrome-headless-shell
+      - run: pnpm build:packages
+      - run: pnpm typecheck
+      - run: pnpm test
+
   integration-e2e:
     name: integration-e2e
     needs: [changes, build]

@@ -51,13 +51,13 @@ export function taxonomy(options: TaxonomyOptions = {}) {
             ? taxonomyPageOutputDependencies(model.term, resolved.related)
             : [{ type: "unknown" }];
         },
-        resolve: ({ manifest, pathname, config }) => {
+        resolve: ({ manifest, pathname, config, uiLabels }) => {
           const model = findTaxonomyModel(
             taxonomyModels(manifest, resolved, config),
             pathname,
           );
           if (!model?.term) return null;
-          const page = renderTaxonomyPage(model.term, resolved);
+          const page = renderTaxonomyPage(model.term, resolved, uiLabels);
           return {
             type: "taxonomy-term",
             layout: resolved.layout,
@@ -68,13 +68,13 @@ export function taxonomy(options: TaxonomyOptions = {}) {
             language: model.model.locale,
           };
         },
-        resolveRoute: ({ manifest, pathname, config }) => {
+        resolveRoute: ({ manifest, pathname, config, uiLabels }) => {
           const model = findTaxonomyModel(
             taxonomyModels(manifest, resolved, config),
             pathname,
           );
           if (!model?.term) return null;
-          const page = renderTaxonomyPage(model.term, resolved);
+          const page = renderTaxonomyPage(model.term, resolved, uiLabels);
           return {
             type: "taxonomy-term",
             layout: resolved.layout,
@@ -111,7 +111,7 @@ export function taxonomy(options: TaxonomyOptions = {}) {
             ? [...pageProjectionDependencies, dependency]
             : [{ type: "unknown" }];
         },
-        resolve: ({ manifest, pathname, config }) => {
+        resolve: ({ manifest, pathname, config, uiLabels }) => {
           const models = taxonomyModels(manifest, resolved, config);
           const kind = resolveTaxonomyIndexPath(pathname, models);
           if (!kind) return null;
@@ -125,6 +125,7 @@ export function taxonomy(options: TaxonomyOptions = {}) {
             kind,
             kind === "tag" ? model.index.tags : model.index.folders,
             resolved,
+            uiLabels,
           );
           return {
             type: "taxonomy-index",
@@ -135,7 +136,7 @@ export function taxonomy(options: TaxonomyOptions = {}) {
             language: model.locale,
           };
         },
-        resolveRoute: ({ manifest, pathname, config }) => {
+        resolveRoute: ({ manifest, pathname, config, uiLabels }) => {
           const models = taxonomyModels(manifest, resolved, config);
           const kind = resolveTaxonomyIndexPath(pathname, models);
           if (!kind) return null;
@@ -149,6 +150,7 @@ export function taxonomy(options: TaxonomyOptions = {}) {
             kind,
             kind === "tag" ? model.index.tags : model.index.folders,
             resolved,
+            uiLabels,
           );
           return {
             type: "taxonomy-index",

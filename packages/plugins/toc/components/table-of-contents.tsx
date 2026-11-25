@@ -1,4 +1,5 @@
 import { useArticleContext, useUiLabels } from "@riebeckite/ui";
+import { tocLabels } from "../src/labels.js";
 import type { TableOfContentsItem } from "../src/table-of-contents.js";
 import { extractTableOfContents } from "../src/table-of-contents.js";
 
@@ -14,7 +15,7 @@ export type TableOfContentsProps = {
 
 export default function TableOfContents(props: TableOfContentsProps) {
   const article = useArticleContext();
-  const labels = useUiLabels();
+  const labels = useUiLabels(tocLabels);
   const items =
     props.items ??
     (article ? extractTableOfContents(article.post.html ?? "") : undefined);

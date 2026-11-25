@@ -1,3 +1,4 @@
+import type { ScaffoldPackageManager } from "./options.js";
 import type { ScaffoldPreset } from "./presets_types.js";
 import {
   configurationReferenceLines,
@@ -13,6 +14,7 @@ import type { SiteTemplateVariables } from "./template_types.js";
 export function readmeJa(
   preset: ScaffoldPreset,
   variables: SiteTemplateVariables,
+  packageManager: ScaffoldPackageManager = "npm",
 ): string {
   const words = README_WORDS.ja;
   const lines: string[] = [
@@ -43,15 +45,25 @@ export function readmeJa(
     }
   }
   lines.push(`## ${words.commands}`, "");
+  const commands =
+    packageManager === "pnpm"
+      ? [
+          "pnpm install",
+          "pnpm exec riebeckite check",
+          "pnpm exec riebeckite dev",
+          "pnpm exec riebeckite build",
+        ]
+      : [
+          "npm install",
+          "npm exec riebeckite check",
+          "npm exec riebeckite dev",
+          "npm exec riebeckite build",
+        ];
+  lines.push("```sh", ...commands, "```", "");
   lines.push(
-    "```sh",
-    "npm install",
-    "npm exec riebeckite check",
-    "npm exec riebeckite dev",
-    "npm exec riebeckite build",
-    "```",
-    "",
-    "基準のパッケージマネージャは npm です。pnpm 12 以降でも動作します（`pnpm-workspace.yaml` は pnpm にのみ作用します）。",
+    packageManager === "pnpm"
+      ? "このサイトは pnpm 11 以降を使います。`pnpm-lock.yaml` をコミットしてください。GitHub Actions の workflow は `pnpm install --frozen-lockfile` で依存関係をインストールします。"
+      : "基準のパッケージマネージャは npm です。pnpm 12 以降でも動作します（`pnpm-workspace.yaml` は pnpm にのみ作用します）。",
     "",
   );
   if (preset.name !== "empty") {

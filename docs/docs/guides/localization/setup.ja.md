@@ -126,24 +126,61 @@ docs/
 
 ## UI の文言
 
-l10n プラグインがローカライズするのは、コンテンツの URL、本文中のリンク、head タグです。フレームワークとプラグインが描画する UI の文言は翻訳されないため、`ui` で指定します。
+l10n プラグインがローカライズするのは、コンテンツの URL、本文中のリンク、head タグです。フレームワークとプラグインが描画する UI の文言は翻訳されません。各プラグインは、コンポーネントの隣に英語と日本語のラベルを持っているため、設定なしでコンテンツの言語に追従します。UI の言語を固定するには `ui.locale` を指定します。
+
+```ts
+export default defineConfig({
+  ui: { locale: "ja" },
+});
+```
+
+個々の文言を変更するには、プラグインの名前空間、言語、キーごとに上書きします。
 
 ```ts
 export default defineConfig({
   ui: {
-    locale: "ja",
     labels: {
-      ja: {
-        contents: "目次",
-        searchPlaceholder: "ノートを検索 (tag:, lang:, path: ...)",
+      search: {
+        ja: { searchPlaceholder: "ノートを検索" },
+      },
+      toc: {
+        ja: { contentsHeading: "目次" },
       },
     },
   },
 });
 ```
 
-`ui.locale` を指定すると、コンテンツの言語とは独立に UI の言語を固定できます。日本語のサイトでも UI は英語のままにできます。`ui.labels` は言語コードごとの辞書で、言語コードは大文字と小文字を区別しません。辞書にないキーや、辞書のない言語は、内蔵の英語の文言にフォールバックします。
+`ui.labels` は、プラグインの名前空間から言語コード、ラベルキーへと対応付けます。名前空間はパッケージ名から `@riebeckite/plugin-` を除いたものです（例: `search`、`local-graph`、`garden-explorer`）。言語コードは大文字と小文字を区別せず、アンダースコアとハイフンは同じに扱います。`ja-JP` や `ja_JP` のような完全なタグは、完全一致する辞書がなければ主要サブタグ（`ja`）に一致します。名前空間とキーは完全一致です。キーが見つからない場合は、その言語のプラグイン内の辞書、次に英語へフォールバックします。
 
-組み込みの英語ラベルがあるキーは `contents`、`contentsHeading`、`filter`、`filterNavigation`、`collapse`、`expand`、`searchNotes`、`searchPlaceholder`、`searchNotesPlaceholder`、`nearbyNotes`、`seriesNavigation`、`language` です。プラグインが描画する UI の文言には、さらに `sidebarNavigation`、`localGraph`、`openInExplorer`、`localGraphTruncated`、`localGraphTruncatedExplorer`、`explorer`、`explorerPanels`、`clearFilters`、`tags`、`folders`、`notes`、`showingNotes`、`noteGraph`、`localGraphMode`、`globalGraphMode`、`localMode`、`globalMode`、`selectNoteHint`、`history`、`historyChanges`、`historyToggle`、`commitHistory`、`untitledChange`、`search`、`closeSearch`、`searchQuery`、`searchFilterHint`、`searchResults`、`seriesPosition` を指定できます。ガーデンエクスプローラーの詳細パネルには、さらに `selectedNote`、`outgoingLinks`、`backlinks`、`relatedNotes`、`noNotes` を指定できます。`showingNotes`、`globalGraphMode`、`historyChanges`、`seriesPosition` はテンプレートなので、翻訳でも `{...}` のプレースホルダーを残してください。プラグインのコンポーネントは `useUiLabels()` からこの辞書を読むため、プラグイン側のコードを変更する必要はありません。
+名前空間ごとのキーは次のとおりです。
 
-辞書には、サイト独自のシェル用のキーも追加できます。このサイトでは `documentation`、`tableOfContents`、`menu`、`navigation`、`primaryNavigation`、`secondaryNavigation`、`footerNavigation` を `website/app/lib/ui-labels.ts` で `config.ui.labels` から読んでいます。これらはフレームワークの取り決めではなくシェル側のラベルなので、シェルが自分で辞書を読む構成です。`<html lang>` と記事の日付のロケールはコンテンツの言語に従い、`website/app/components/article/article.tsx` で設定しています。
+- `toc`: `contents`、`contentsHeading`
+- `navigation`: `filter`、`filterNavigation`、`collapse`、`expand`、`sidebarNavigation`、`siteNavigation`、`menu`
+- `search`: `search`、`searchNotes`、`closeSearch`、`searchQuery`、`searchPlaceholder`、`searchFilterHint`、`searchResults`、`loading`、`loadError`、`notFound`、`notFoundActions`、`noResults`、`result`、`results`、`emptyQuery`、`candidatesHeading`、`homeLabel`、`notFoundDescription`、`searchLabel`
+- `series`: `seriesNavigation`、`seriesPosition`
+- `l10n`: `language`
+- `local-graph`: `localGraph`、`nearbyNotes`、`openInExplorer`、`localGraphTruncated`、`localGraphTruncatedExplorer`
+- `diff`: `history`、`historyChanges`、`collapse`、`expand`、`historyToggle`、`commitHistory`、`untitledChange`
+- `garden-explorer`: `explorer`、`explorerPanels`、`searchNotes`、`searchNotesPlaceholder`、`clearFilters`、`tags`、`folders`、`notes`、`showingNotes`、`noteGraph`、`localGraphMode`、`globalGraphMode`、`localMode`、`globalMode`、`selectNoteHint`、`selectedNote`、`outgoingLinks`、`backlinks`、`relatedNotes`、`noNotes`
+- `article-metadata`: `regionLabel`
+- `autocardlink`: `copyUrl`、`copy`、`copied`
+- `bases`: `tableView`、`cards`、`view`、`baseDefinition`、`matchingNotes`、`noMatchingNotes`、`noMatchingNotesInThisGroup`、`noValue`、`viewsNotAvailableInStaticBuild`
+- `calculator`: `calculating`、`result`
+- `canvas`: `canvas`、`empty`、`controls-aria`、`zoom-in`、`zoom-out`、`zoom-to-fit`、`zoom-to-selection`、`reset-zoom`
+- `code-enhance`: `copyCode`、`copy`、`copied`、`wrap`、`collapse`、`expand`
+- `flashcards`: `flashcards`
+- `image-compare`: `comparison`、`comparisonPosition`、`before`、`after`
+- `marp`: `previousSlide`、`nextSlide`、`fullscreen`、`exitFullscreen`
+- `properties`: `properties`
+- `qr-code`: `qrCode`
+- `sidenotes`: `openLabel`、`ariaLabel`
+- `taxonomy`: `relatedTags`、`feeds`、`foldersTitle`、`tagsTitle`
+- `timeline`: `language`
+- `vault-heatmap`: `summaryFormat`、`noActivity`、`update`、`updates`、`day`、`days`
+- `ux`: `readingProgress`
+- `site`: `documentation`、`tableOfContents`、`menu`、`navigation`、`primaryNavigation`、`secondaryNavigation`、`footerNavigation`
+
+`showingNotes`、`globalGraphMode`、`historyChanges`、`seriesPosition`、`bases.view`、`timeline.language`、`search.result`、`search.results` はテンプレートなので、上書きでも `{...}` のプレースホルダーを残してください。
+
+プラグインは `defineUiLabels(namespace, { en, ja })` で文言を宣言し、`useUiLabels(definition)` で読みます。翻訳は、それを描画する機能の隣に置かれます。サイト独自のシェルも同じ組み合わせを使えます。このサイトでは `website/labels.ts` に `site` のラベルを宣言し、`resolveUiLabels(siteLabels, createUiLabelContext(config, language))` で解決しているため、上書きは `ui.labels.site` の下に置きます。`<html lang>` と記事の日付のロケールはコンテンツの言語に従い、`website/app/components/article/article.tsx` で設定しています。プラグイン作者向けの API は [UI ラベル](../../reference/ui-labels.ja.md) にあります。

@@ -15,10 +15,12 @@ import type {
   MarkdownPipelineContext,
 } from "./types/plugin_pipeline.js";
 import type { PostContent } from "./types/post_content.js";
+import type { UiLabelContext } from "./types/ui_labels.js";
 
 export interface PipelineContext {
   contentIndex: Map<string, string>;
   permalinks: ReadonlyMap<string, string>;
+  uiLabelsBySlug: ReadonlyMap<string, UiLabelContext>;
   getMarkdownBySlug?: (slug: string) => Promise<string>;
   options: PipelineOptions;
   isBuildTime: unknown;
@@ -68,6 +70,7 @@ export interface PipelineContext {
   resolvePlugins(): RiebeckitePlugin[];
   createContentRenderer(
     contentSource: ContentSource | undefined,
+    uiLabels: UiLabelContext,
   ): MarkdownPipelineContext["renderContent"];
   cacheFor(plugin: RiebeckitePlugin, observability: Observability): PluginCache;
   derivedCache(): PluginCache;

@@ -2,6 +2,7 @@ import { scaffoldDeploymentFromFlags } from "./scaffold/deployment.js";
 import type {
   ScaffoldAiOptions,
   ScaffoldDeployment,
+  ScaffoldPackageManager,
 } from "./scaffold/options.js";
 import {
   isScaffoldPresetName,
@@ -26,10 +27,11 @@ export type CreateRiebeckiteOptions = {
   readonly customDomain?: string;
   readonly cloneContent?: boolean;
   readonly ai?: ScaffoldAiOptions;
+  readonly packageManager?: ScaffoldPackageManager;
 };
 
 export const CREATE_RIEBECKITE_USAGE =
-  "Usage: create-riebeckite [directory] [--preset <name>] [--utilities <names>] [--ai <mcp,lint,rules,skills>] [--content-directory <path>] [--domain <hostname>] [--github-actions | --cloudflare-workers] [--content-repository <owner/repository>] [--site-repository <owner/repository>] [--clone-content] [--force] [-h | --help]";
+  "Usage: create-riebeckite [directory] [--preset <name>] [--utilities <names>] [--ai <mcp,lint,rules,skills>] [--package-manager <npm|pnpm>] [--content-directory <path>] [--domain <hostname>] [--github-actions | --cloudflare-workers] [--content-repository <owner/repository>] [--site-repository <owner/repository>] [--clone-content] [--force] [-h | --help]";
 
 export function parseArguments(
   arguments_: readonly string[],
@@ -47,6 +49,7 @@ export function parseArguments(
   let customDomain: string | undefined;
   let cloneContent = false;
   let ai: ScaffoldAiOptions | undefined;
+  let packageManager: ScaffoldPackageManager | undefined;
 
   for (let index = 0; index < arguments_.length; index += 1) {
     const argument = arguments_[index];
@@ -140,6 +143,15 @@ export function parseArguments(
       index += 1;
       continue;
     }
+    if (argument === "--package-manager") {
+      const value = arguments_[index + 1];
+      if (value !== "npm" && value !== "pnpm") {
+        throw new Error("--package-manager accepts npm or pnpm.");
+      }
+      packageManager = value;
+      index += 1;
+      continue;
+    }
     if (argument.startsWith("-")) {
       throw new Error(`Unknown option: ${argument}`);
     }
@@ -177,6 +189,7 @@ export function parseArguments(
     ...(customDomain === undefined ? {} : { customDomain }),
     ...(cloneContent ? { cloneContent: true } : {}),
     ...(ai === undefined ? {} : { ai }),
+    ...(packageManager === undefined ? {} : { packageManager }),
     deployment,
   };
 }

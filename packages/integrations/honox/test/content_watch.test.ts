@@ -107,9 +107,12 @@ async function configure(
   assert.equal(plugin.apply, "serve");
   const hook = plugin.configureServer as (server: ViteDevServer) => void;
   hook(fake.server);
-  for (let i = 0; i < 50; i += 1) {
-    await new Promise<void>((resolve) => setImmediate(resolve));
+  if (fake.watcher.watched.includes(contentRoot)) return;
+  for (let i = 0; i < 1_000; i += 1) {
+    if (fake.watcher.watched.includes(contentRoot)) return;
+    await new Promise<void>((resolve) => setTimeout(resolve, 5));
   }
+  assert.fail("content watch did not configure");
 }
 
 describe("isSiteAssetPath", () => {

@@ -23,6 +23,7 @@ npx create-riebeckite
 プロンプトに次のように答えます（推奨される回答）。
 
 - **Project name**：既定値の `my-riebeckite-site` のまま Enter を押します
+- **Which package manager?**：`npm` のままか、`pnpm` を選ぶと pnpm 用のコマンドと GitHub Actions workflow が生成されます。pnpm の場合は `pnpm-lock.yaml` をコミットし、以下の `npm install` を `pnpm install`、`npm exec` を `pnpm exec` に読み替えてください
 - **What would you like to build?**（[[glossary/preset|プリセット]]）：迷ったら `Starter site`（`starter` プリセット）のまま。記事、タグ、シリーズを公開するなら `Blog` を選びます。[Presets](./presets.ja.md) を参照
 - **Customize extra project files?**：変更する必要がなければ `No` のまま Enter を押します。既定のプロジェクトファイルは生成されます
 - **Where will you write content?**：`This project` ならサイト内の `content/`、`Separate directory in this repository` ならサイトの隣の Vault（例：`../vault`）、`Separate GitHub repository` なら別リポジトリにコンテンツを置きます

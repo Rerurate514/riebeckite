@@ -17,11 +17,13 @@ export type UiConfig = {
    */
   locale?: string;
   /**
-   * Per-language UI label dictionaries. Keys are language codes matched
-   * case-insensitively against the UI language; missing keys fall back to the
-   * built-in English labels.
+   * Per-plugin label dictionaries: namespace → language → label. Namespace and
+   * language are matched against plugin label definitions case-insensitively;
+   * missing labels fall back to the label shipped with the plugin.
    */
-  labels?: Readonly<Record<string, Readonly<Record<string, string>>>>;
+  labels?: Readonly<
+    Record<string, Readonly<Record<string, Readonly<Record<string, string>>>>>
+  >;
 };
 
 export interface RiebeckiteIntegrations {

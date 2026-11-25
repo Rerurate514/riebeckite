@@ -80,6 +80,7 @@ export async function resolveBaseDocument(
     readonly contentSource?: ContentSource;
     readonly pathname: string;
     readonly locale?: string;
+    readonly uiLabels?: import("@riebeckite/core").UiLabelContext;
     readonly diagnostics: Diagnostic[];
   },
   options: BasesOptions,
@@ -115,6 +116,7 @@ export async function resolveBaseDocument(
           : {}),
       }),
       source,
+      input.uiLabels,
     );
   } catch (error) {
     const message = `Base \`${slug}\` failed to render (${formatError(error)}).`;

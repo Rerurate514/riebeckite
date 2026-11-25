@@ -1,3 +1,4 @@
+import { PNPM_VERSION } from "../package-manager.js";
 import { aiRuleFiles } from "./ai_rules.js";
 import { aiSkillFiles } from "./ai_skills.js";
 import { contentPageFiles } from "./content-pages.js";
@@ -42,7 +43,10 @@ export function siteTemplateFiles(
   );
   const files: readonly SiteTemplateFile[] = [
     { path: "package.json", content: packageJson(preset, variables, options) },
-    { path: "pnpm-workspace.yaml", content: pnpmWorkspace() },
+    {
+      path: "pnpm-workspace.yaml",
+      content: pnpmWorkspace(options.packageManager),
+    },
     {
       path: "riebeckite.config.ts",
       content: riebeckiteConfig(preset, variables, options),
@@ -60,7 +64,10 @@ export function siteTemplateFiles(
           ...contentPageFiles(variables, preset),
         ]
       : []),
-    { path: "README.md", content: readme(preset, variables) },
+    {
+      path: "README.md",
+      content: readme(preset, variables, options.packageManager),
+    },
   ];
   return variables.externalContent === true
     ? ignoreContentDirectory(files)
@@ -195,10 +202,15 @@ function replaceTitle(
     : content;
 }
 
-function pnpmWorkspace(): string {
+function pnpmWorkspace(packageManager = "npm"): string {
   const allowBuilds = ["esbuild", "puppeteer", "sharp"];
-  return `# npm is the reference package manager for this site. This file only
-# affects pnpm, which skips install scripts unless they are approved here.
+  const comment =
+    packageManager === "pnpm"
+      ? `# pnpm skips install scripts unless they are approved here.
+# Commit pnpm-lock.yaml so the GitHub Actions workflow can install with it.`
+      : `# npm is the reference package manager for this site. This file only
+# affects pnpm, which skips install scripts unless they are approved here.`;
+  return `${comment}
 allowBuilds:\n${allowBuilds.map((name) => `  ${name}: true`).join("\n")}\n`;
 }
 
@@ -235,6 +247,9 @@ function packageJson(
       private: true,
       version: "0.0.0",
       type: "module",
+      ...(options.packageManager === "pnpm"
+        ? { packageManager: `pnpm@${PNPM_VERSION}` }
+        : {}),
       scripts: {
         dev: "riebeckite dev",
         build: "riebeckite build",

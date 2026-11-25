@@ -7,9 +7,9 @@ CLI ツールです。
 
 ## 使い方
 
-対話モード（推奨）: 引数なしで実行すると、プロジェクト名・preset・
-プロジェクトファイル・コンテンツの格納場所・デプロイ・
-依存関係のインストールについて順に確認します。
+対話モード（推奨）: 引数なしで実行すると、プロジェクト名・
+パッケージマネージャ・preset・プロジェクトファイル・コンテンツの格納場所・
+デプロイ・依存関係のインストールについて順に確認します。
 
 ```sh
 npx create-riebeckite
@@ -31,6 +31,7 @@ npm exec riebeckite build
 | 質問 | 選択肢 | 推奨 |
 | --- | --- | --- |
 | Project name | 作るフォルダ名（空なら既定の名前） | 任意。例: `my-site` |
+| Which package manager? | `npm`、`pnpm` | `npm`。プロジェクトが pnpm なら `pnpm` |
 | What would you like to build? | `Starter site`、`Digital garden`、`Blog`、`Writer`、`Documentation`、`Portfolio`、`Minimal site`、`Empty application` | 大半のサイトは `Starter site`（`starter`） |
 | Customize extra project files? | `Yes` または `No`。`Yes` ならプロジェクトファイルを選択 | `No` で推奨セットを使用 |
 | Where will you write content? | `This project`、`Separate directory in this repository`、`Separate GitHub repository` | 最初は `This project` |
@@ -47,6 +48,7 @@ npm exec riebeckite build
 | `--help`、`-h` | 使い方を表示して終了する |
 | `--preset <name>` | 使用するスターター構成（既定は `starter`） |
 | `--utilities <names>` | 生成するプロジェクトファイルをカンマ区切りで指定する（`gitignore`、`editorconfig`、`gitattributes`、`biome`、`npmrc`、`vscode`、または `none`。既定は `gitignore,editorconfig,gitattributes,biome`） |
+| `--package-manager <npm\|pnpm>` | 生成するサイトのパッケージマネージャ（既定は `npm`） |
 | `--force` | 生成対象のトップレベル項目が既にある場合に上書きする。無関係なファイルは許可される |
 | `--list-presets` | 利用可能な preset と説明を一覧表示して終了する |
 | `--github-actions` | Cloudflare へのデプロイ workflow を生成する |
@@ -62,6 +64,15 @@ npm exec riebeckite build
 ```sh
 npx create-riebeckite my-site --preset blog
 ```
+
+## パッケージマネージャ
+
+生成するサイトは既定で npm を使います。対話モードで pnpm を選ぶか、
+`--package-manager pnpm` を渡すと、`"packageManager": "pnpm@11.5.3"` を書き、
+pnpm のコマンドを表示し、GitHub Actions の workflow は
+`pnpm install --frozen-lockfile` でインストールするようになります。
+`pnpm-lock.yaml` をコミットしてください。npm のサイトは代わりに
+`package-lock.json` をコミットします。
 
 ## Project files
 

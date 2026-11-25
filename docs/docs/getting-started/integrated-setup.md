@@ -18,7 +18,7 @@ cd my-site
 npm install
 ```
 
-`--github-actions` creates `wrangler.jsonc` and `.github/workflows/publish.yml`. `npm install` creates `package-lock.json`, which the workflow uses when it is present.
+`--github-actions` creates `wrangler.jsonc` and `.github/workflows/publish.yml`. `npm install` creates `package-lock.json`, which the workflow uses when it is present. With `--package-manager pnpm`, run `pnpm install` and commit `pnpm-lock.yaml` instead; the workflow then runs `pnpm install --frozen-lockfile`.
 
 ## 2. Name the Worker and set the domain
 

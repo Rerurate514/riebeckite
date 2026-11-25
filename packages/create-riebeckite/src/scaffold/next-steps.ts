@@ -1,13 +1,14 @@
+import type { ScaffoldPackageManager } from "./options.js";
 import { GITHUB_ACTIONS_SECRETS } from "./wrangler-defaults.js";
 
 // The post-scaffold instructions printed by `create-riebeckite` and
 // `riebeckite init`. They share one implementation so the two entry points
-// cannot drift apart. npm is the reference package manager for generated
-// sites: the generated GitHub Actions workflow runs `npm ci` against the
-// committed `package-lock.json`, so the printed instructions must produce
-// that lockfile rather than a pnpm one. `riebeckite` is a local dependency,
-// so `npm exec riebeckite` resolves the binary from `node_modules/.bin`
-// instead of the registry.
+// cannot drift apart. Generated sites default to npm, where the workflow runs
+// `npm ci` against the committed `package-lock.json`; sites created with pnpm
+// commit `pnpm-lock.yaml` and install it with `pnpm install --frozen-lockfile`.
+// `riebeckite` is a local dependency, so `npm exec riebeckite` and
+// `pnpm exec riebeckite` resolve the binary from `node_modules/.bin` instead
+// of the registry.
 export type ScaffoldNextStepsOptions = {
   /** First Markdown file to edit, when the scaffold wrote one. */
   readonly editFile?: string;
@@ -20,6 +21,7 @@ export type ScaffoldNextStepsOptions = {
   /** The site reads content from another directory. */
   readonly contentDirectory?: string;
   readonly dependenciesInstalled?: boolean;
+  readonly packageManager?: ScaffoldPackageManager;
 };
 
 export function formatScaffoldNextSteps(
@@ -30,12 +32,14 @@ export function formatScaffoldNextSteps(
   if (relativeDirectory !== ".") {
     lines.push(`  cd "${relativeDirectory}"`);
   }
+  const pnpm = options.packageManager === "pnpm";
+  const exec = pnpm ? "pnpm exec" : "npm exec";
   if (options.dependenciesInstalled !== true) {
-    lines.push("  npm install");
+    lines.push(pnpm ? "  pnpm install" : "  npm install");
   }
-  lines.push("  npm exec riebeckite check");
-  lines.push("  npm exec riebeckite dev");
-  lines.push("  npm exec riebeckite build");
+  lines.push(`  ${exec} riebeckite check`);
+  lines.push(`  ${exec} riebeckite dev`);
+  lines.push(`  ${exec} riebeckite build`);
   if (options.editFile !== undefined) {
     lines.push("");
     lines.push("Then edit:");

@@ -1,5 +1,7 @@
-import type { ContentIcon } from "@riebeckite/core";
+import type { ContentIcon, UiLabelContext } from "@riebeckite/core";
 import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
+import { resolveUiLabels } from "@riebeckite/ui";
+import { propertiesLabels } from "./labels.js";
 import { buildPropertiesData } from "./model.js";
 import {
   DEFAULT_PROPERTIES_CLASS,
@@ -13,7 +15,10 @@ import type {
   PropertyValue,
 } from "./types.js";
 
-export function renderPropertiesData(data: PropertiesData): string {
+export function renderPropertiesData(
+  data: PropertiesData,
+  uiLabels?: UiLabelContext,
+): string {
   if (data.items.length === 0) return "";
 
   const className = data.className.trim() || DEFAULT_PROPERTIES_CLASS;
@@ -28,7 +33,10 @@ export function renderPropertiesData(data: PropertiesData): string {
   const rootClass = escapeHtmlAttribute(className);
   if (data.collapsed) {
     const summary = title ? escapeHtml(title) : "";
-    const label = title ? "" : ' aria-label="Properties"';
+    const labels = resolveUiLabels(propertiesLabels, uiLabels);
+    const label = title
+      ? ""
+      : ` aria-label="${escapeHtmlAttribute(labels.properties)}"`;
     return (
       `<details class="${rootClass}" ${attributes} data-collapsed>` +
       `<summary class="${escapeHtmlAttribute(cls)}__summary"${label}>${summary}</summary>` +
@@ -53,10 +61,12 @@ export function renderPropertiesPanel(
   frontmatter: Readonly<Record<string, unknown>> | null | undefined,
   options: PropertiesOptions = {},
   context: PropertiesRenderContext = {},
+  uiLabels?: UiLabelContext,
 ): string {
   const resolved = resolvePropertiesOptions(options);
   return renderPropertiesData(
     buildPropertiesData(frontmatter, resolved, context),
+    uiLabels,
   );
 }
 

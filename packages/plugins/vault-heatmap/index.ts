@@ -68,6 +68,7 @@ export function vaultHeatmap(options: VaultHeatmapOptions = {}) {
         context.manifest,
         context.derived,
         context.diagnostics,
+        context.config,
       );
     },
     assets: [

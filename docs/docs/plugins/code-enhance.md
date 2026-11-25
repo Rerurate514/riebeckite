@@ -86,12 +86,13 @@ foreground without selecting highlighted-code descendants.
 | `commandPrompt` | `boolean` | `true` | `$` prompt prefix on shell-language lines |
 | `wrapToggle` | `boolean` | `true` | Show the wrap toggle button |
 | `defaultCollapsed` | `boolean` | `false` | Start collapsed (requires `collapsible`) |
-| `copyLabel` | `string` | `"Copy"` | Copy button label forwarded to the client |
-| `copiedLabel` | `string` | `"Copied"` | Label after copying, forwarded to the client |
+| `copyLabel` | `string` | `"Copy"` | Copy button label override |
+| `copiedLabel` | `string` | `"Copied"` | Label after copying, override |
+| `locale` | `string` | — | Language for the generated copy, wrap, and collapse labels (English when omitted) |
 
 ## Client
 
-`codeEnhance()` forwards `copyLabel` / `copiedLabel` to the client entry.
+`codeEnhance()` forwards explicitly set `copyLabel` / `copiedLabel` to the client entry; otherwise the client uses the shared labels for the page language.
 `initCodeEnhance(options?)` installs a document-level click handler for copy,
 wrap, and collapse buttons.
 

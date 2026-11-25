@@ -192,3 +192,8 @@ export {
   ThemeSettingsValidationError,
   validateThemeSettings,
 } from "./src/types/theme_config.js";
+export {
+  createUiLabelContext,
+  type UiLabelContext,
+  type UiLabelOverrides,
+} from "./src/types/ui_labels.js";

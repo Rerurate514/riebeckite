@@ -7,6 +7,7 @@ import { createDerivedViewRegistry } from "./derived/derived_view.js";
 import type { PipelineContext } from "./pipeline_context.js";
 import type { PipelineOptions } from "./pipeline_types.js";
 import type { PluginCache } from "./plugin/plugin_cache.js";
+import type { UiLabelContext } from "./types/ui_labels.js";
 
 export function initializePipeline(
   m: PipelineContext,
@@ -15,9 +16,11 @@ export function initializePipeline(
   getMarkdownBySlug?: (slug: string) => Promise<string>,
   options: PipelineOptions = {},
   isBuildTime = false,
+  uiLabelsBySlug: ReadonlyMap<string, UiLabelContext> = new Map(),
 ): void {
   m.contentIndex = contentIndex;
   m.permalinks = permalinks;
+  m.uiLabelsBySlug = uiLabelsBySlug;
   m.getMarkdownBySlug = getMarkdownBySlug;
   m.options = options;
   m.isBuildTime = isBuildTime;

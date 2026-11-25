@@ -1,0 +1,6 @@
+# pnpm skips install scripts unless they are approved here.
+# Commit pnpm-lock.yaml so the GitHub Actions workflow can install with it.
+allowBuilds:
+  esbuild: true
+  puppeteer: true
+  sharp: true

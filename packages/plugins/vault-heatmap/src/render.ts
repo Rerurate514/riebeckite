@@ -1,6 +1,6 @@
 import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
 import { resolveUiLabels } from "@riebeckite/ui/labels";
-import { vaultHeatmapLabels } from "./labels.ts";
+import { vaultHeatmapLabels } from "./labels.js";
 import type { VaultActivity, VaultHeatmapSpec } from "./types.js";
 
 export const VAULT_HEATMAP_CLASS = "rr-vault-heatmap";

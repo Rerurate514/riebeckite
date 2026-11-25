@@ -1608,6 +1608,10 @@ importers:
         version: 4.22.4
 
   packages/plugins/sidenotes:
+    dependencies:
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
     devDependencies:
       '@riebeckite/core':
         specifier: workspace:*
@@ -1645,6 +1649,10 @@ importers:
         version: 4.22.4
 
   packages/plugins/taxonomy:
+    dependencies:
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
     devDependencies:
       '@riebeckite/core':
         specifier: workspace:*

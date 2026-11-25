@@ -16,6 +16,11 @@ The Unreleased section lists changes that are merged but not yet published to np
 
 > **Breaking changes are included.** Read the migration notes before upgrading.
 
+### Added
+
+- Generated sites can use npm (the default) or pnpm, selected with the new `Which package manager?` prompt or `--package-manager <npm|pnpm>` on `create-riebeckite` and `riebeckite init`. pnpm sites pin `pnpm@11.5.3`, print pnpm commands, and generate a workflow that installs with `pnpm install --frozen-lockfile`.
+  Packages: `create-riebeckite`, `@riebeckite/cli`
+
 ### Changed
 
 - **Breaking:** Plugin UI strings now ship with the plugin that renders them, in English and Japanese. The UI follows the content language by default, `ui.locale` still pins it, and `ui.labels` overrides individual strings per plugin namespace, for example `ui.labels.search.ja.searchPlaceholder`. Sites no longer copy framework dictionaries into their config to get a translated interface.

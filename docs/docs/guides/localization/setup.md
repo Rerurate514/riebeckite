@@ -140,7 +140,7 @@ The keys by namespace are:
 
 - `toc`: `contents`, `contentsHeading`
 - `navigation`: `filter`, `filterNavigation`, `collapse`, `expand`, `sidebarNavigation`, `siteNavigation`, `menu`
-- `search`: `search`, `searchNotes`, `closeSearch`, `searchQuery`, `searchPlaceholder`, `searchFilterHint`, `searchResults`, `loading`, `notFound`, `notFoundActions`, `noResults`, `result`, `results`, `emptyQuery`, `candidatesHeading`, `homeLabel`, `notFoundDescription`, `searchLabel`
+- `search`: `search`, `searchNotes`, `closeSearch`, `searchQuery`, `searchPlaceholder`, `searchFilterHint`, `searchResults`, `loading`, `loadError`, `notFound`, `notFoundActions`, `noResults`, `result`, `results`, `emptyQuery`, `candidatesHeading`, `homeLabel`, `notFoundDescription`, `searchLabel`
 - `series`: `seriesNavigation`, `seriesPosition`
 - `l10n`: `language`
 - `local-graph`: `localGraph`, `nearbyNotes`, `openInExplorer`, `localGraphTruncated`, `localGraphTruncatedExplorer`

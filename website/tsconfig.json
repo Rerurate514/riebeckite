@@ -28,6 +28,7 @@
       "@riebeckite/ui/dialog": ["packages/ui/dialog.ts"],
       "@riebeckite/ui/copy": ["packages/ui/copy.ts"],
       "@riebeckite/ui/behaviors": ["packages/ui/behaviors.ts"],
+      "@riebeckite/ui/labels": ["packages/ui/labels.ts"],
       "@riebeckite/plugin-*": ["packages/plugins/*/index.ts"],
       "@riebeckite/plugin-*/client": ["packages/plugins/*/client.ts"],
       "@riebeckite/theme-*": ["packages/themes/*/src/index.ts"]

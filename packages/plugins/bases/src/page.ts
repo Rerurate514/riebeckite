@@ -115,6 +115,7 @@ export async function resolveBaseDocument(
           : {}),
       }),
       source,
+      input.locale,
     );
   } catch (error) {
     const message = `Base \`${slug}\` failed to render (${formatError(error)}).`;

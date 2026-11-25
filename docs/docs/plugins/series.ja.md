@@ -97,7 +97,7 @@ series_order: 2
 - `renderSeriesList(manifest, options?, label?)`：全シリーズを並べた `<section>` ブロック。無ければ `""`
 - `seriesLandingPath(name, options?)`：シリーズのランディングパス。生成無効時は `""`
 - `seriesSlug(name)`：ランディングページの URL セグメント
-- `renderSeriesNavigation(index, currentSlug, options?)`：ナビゲーション 1 つ分
+- `renderSeriesNavigation(index, currentSlug, options?, language?)`：ナビゲーション 1 つ分
 - `collectSeriesIndexes(manifest, options?)`：全シリーズを出現順で取得
 - `resolveSeriesOptions(options?)`：既定値を適用したオプション
 - `DEFAULT_SERIES_BASE_PATH`：既定の `basePath`（`"/series"`）

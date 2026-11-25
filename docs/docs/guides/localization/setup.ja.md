@@ -156,14 +156,28 @@ export default defineConfig({
 名前空間ごとのキーは次のとおりです。
 
 - `toc`: `contents`、`contentsHeading`
-- `navigation`: `filter`、`filterNavigation`、`collapse`、`expand`、`sidebarNavigation`
-- `search`: `search`、`searchNotes`、`closeSearch`、`searchQuery`、`searchPlaceholder`、`searchFilterHint`、`searchResults`
+- `navigation`: `filter`、`filterNavigation`、`collapse`、`expand`、`sidebarNavigation`、`siteNavigation`
+- `search`: `search`、`searchNotes`、`closeSearch`、`searchQuery`、`searchPlaceholder`、`searchFilterHint`、`searchResults`、`loading`、`notFound`、`notFoundActions`、`noResults`、`result`、`results`
 - `series`: `seriesNavigation`、`seriesPosition`
 - `l10n`: `language`
 - `local-graph`: `localGraph`、`nearbyNotes`、`openInExplorer`、`localGraphTruncated`、`localGraphTruncatedExplorer`
 - `diff`: `history`、`historyChanges`、`collapse`、`expand`、`historyToggle`、`commitHistory`、`untitledChange`
 - `garden-explorer`: `explorer`、`explorerPanels`、`searchNotes`、`searchNotesPlaceholder`、`clearFilters`、`tags`、`folders`、`notes`、`showingNotes`、`noteGraph`、`localGraphMode`、`globalGraphMode`、`localMode`、`globalMode`、`selectNoteHint`、`selectedNote`、`outgoingLinks`、`backlinks`、`relatedNotes`、`noNotes`
+- `article-metadata`: `regionLabel`
+- `autocardlink`: `copyUrl`、`copy`、`copied`
+- `bases`: `tableView`、`cards`、`view`
+- `calculator`: `calculating`
+- `canvas`: `canvas`
+- `code-enhance`: `copyCode`、`copied`、`wrap`、`collapse`、`expand`
+- `flashcards`: `flashcards`
+- `image-compare`: `comparisonPosition`、`before`、`after`
+- `marp`: `previousSlide`、`nextSlide`
+- `properties`: `properties`
+- `qr-code`: `qrCode`
+- `sidenotes`: `openLabel`、`ariaLabel`
+- `taxonomy`: `relatedTags`、`feeds`
+- `timeline`: `language`
 
-`showingNotes`、`globalGraphMode`、`historyChanges`、`seriesPosition` はテンプレートなので、上書きでも `{...}` のプレースホルダーを残してください。
+`showingNotes`、`globalGraphMode`、`historyChanges`、`seriesPosition`、`bases.view`、`timeline.language`、`search.result`、`search.results` はテンプレートなので、上書きでも `{...}` のプレースホルダーを残してください。
 
-プラグインは `defineUiLabels(namespace, { en, ja })` で文言を宣言し、`useUiLabels(definition)` で読みます。翻訳は、それを描画する機能の隣に置かれます。サイト独自のシェルも同じ組み合わせを使えます。このサイトでは `website/labels.ts` に `site` のラベルを宣言し、`resolveUiLabels(siteLabels, language, config.ui?.labels)` で解決しているため、上書きは `ui.labels.site` の下に置きます。`<html lang>` と記事の日付のロケールはコンテンツの言語に従い、`website/app/components/article/article.tsx` で設定しています。
+プラグインは `defineUiLabels(namespace, { en, ja })` で文言を宣言し、`useUiLabels(definition)` で読みます。翻訳は、それを描画する機能の隣に置かれます。サイト独自のシェルも同じ組み合わせを使えます。このサイトでは `website/labels.ts` に `site` のラベルを宣言し、`resolveUiLabels(siteLabels, language, config.ui?.labels)` で解決しているため、上書きは `ui.labels.site` の下に置きます。`<html lang>` と記事の日付のロケールはコンテンツの言語に従い、`website/app/components/article/article.tsx` で設定しています。プラグイン作者向けの API は [UI ラベル](../../reference/ui-labels.ja.md) にあります。

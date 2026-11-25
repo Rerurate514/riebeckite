@@ -64,12 +64,13 @@ export function greet(name: string) {
 | `commandPrompt` | `boolean` | `true` | シェル言語の行に `$` を付ける |
 | `wrapToggle` | `boolean` | `true` | 折り返し切替ボタンを表示する |
 | `defaultCollapsed` | `boolean` | `false` | `collapsible` 有効時に折りたたんで開始する |
-| `copyLabel` | `string` | `"Copy"` | クライアントに渡すコピー前の文言 |
-| `copiedLabel` | `string` | `"Copied"` | コピー後に表示する文言 |
+| `copyLabel` | `string` | `"Copy"` | クライアントに渡すコピー前の文言の上書き |
+| `copiedLabel` | `string` | `"Copied"` | コピー後に表示する文言の上書き |
+| `locale` | `string` | — | 生成するコピー・折り返し・折りたたみラベルの言語（省略時は英語） |
 
 ## クライアント側の初期化
 
-`codeEnhance()` は `copyLabel` と `copiedLabel` をクライアントエントリーへ渡します。`initCodeEnhance(options?)` はコピー、折り返し、折りたたみボタンのためにドキュメント全体のクリックハンドラーを登録します。直接呼び出す場合も同じ 2 つの文言を指定できます。
+`codeEnhance()` は明示的に指定した `copyLabel` と `copiedLabel` をクライアントエントリーへ渡します。指定が無い場合、クライアントはページ言語に対応する共有ラベルを使います。`initCodeEnhance(options?)` はコピー、折り返し、折りたたみボタンのためにドキュメント全体のクリックハンドラーを登録します。直接呼び出す場合も同じ 2 つの文言を指定できます。
 
 ## 公開 API
 

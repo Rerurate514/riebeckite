@@ -1,8 +1,13 @@
 /** @jsxRuntime automatic */
 /** @jsxImportSource hono/jsx */
+
+import { resolveUiLabels } from "@riebeckite/ui";
 import { useState } from "hono/jsx";
 import { createRoot } from "hono/jsx/dom/client";
+import { flashcardsLabels } from "./labels.js";
 import type { FlashcardsCard } from "./types.js";
+
+const FLASHCARDS_LABELS = resolveUiLabels(flashcardsLabels, undefined);
 
 export type FlashcardsDeckProps = {
   cards: readonly FlashcardsCard[];
@@ -50,7 +55,7 @@ export function FlashcardsDeck({
     <div
       class={`${prefix}__deck`}
       role="group"
-      aria-label="Flashcards"
+      aria-label={FLASHCARDS_LABELS.flashcards}
       tabindex={0}
       onKeyDown={handleKeyDown}
     >

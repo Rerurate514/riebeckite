@@ -115,7 +115,7 @@ to percent-encoding. Set `basePath` to match a custom routing scheme, or pass
 - `seriesLandingPath(name, options?)` — landing path for a series, or `""` when
   the pages are disabled
 - `seriesSlug(name)` — URL segment used by a series landing page
-- `renderSeriesNavigation(index, currentSlug, options?)` — a single navigation
+- `renderSeriesNavigation(index, currentSlug, options?, language?)` — a single navigation
   block
 - `collectSeriesIndexes(manifest, options?)` — every series in first-seen order
 - `resolveSeriesOptions(options?)` — options with defaults applied

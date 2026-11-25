@@ -1,4 +1,5 @@
-import { useSiteContext } from "@riebeckite/ui";
+import { useSiteContext, useUiLabels } from "@riebeckite/ui";
+import { searchLabels } from "../src/labels.js";
 import { findSmart404Candidates, searchQueryFromPath } from "../src/search.js";
 import { buildSearchItems } from "../src/search-index.server.js";
 
@@ -34,6 +35,8 @@ export default function SmartNotFound({
       )
     : [];
 
+  const { notFoundActions } = useUiLabels(searchLabels);
+
   return (
     <div class="rr-search-not-found">
       <p class="rr-search-not-found__status">404</p>
@@ -55,7 +58,7 @@ export default function SmartNotFound({
           </ul>
         </section>
       ) : null}
-      <nav class="rr-search-not-found__actions" aria-label="Not found actions">
+      <nav class="rr-search-not-found__actions" aria-label={notFoundActions}>
         <a href={`${searchHref}?search=${encodeURIComponent(query)}`}>
           {searchLabel}
         </a>

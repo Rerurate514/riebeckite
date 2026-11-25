@@ -3,7 +3,9 @@ import {
   escapeHtml,
   escapeHtmlAttribute,
 } from "@riebeckite/core";
+import { type ResolvedUiLabels, resolveUiLabels } from "@riebeckite/ui/labels";
 import { matchesCondition } from "./evaluate.js";
+import { basesLabels } from "./labels.js";
 import {
   BUILTIN_LABELS,
   DATE_ONLY,
@@ -22,19 +24,23 @@ import {
 } from "./transform.js";
 import type { BasesOptions, BasesSpec, BasesView } from "./types.js";
 
+type BasesLabels = ResolvedUiLabels<typeof basesLabels>;
+
 /** Renders a compiled Base definition to HTML. */
 export function renderBases(
   spec: BasesSpec,
   options: BasesOptions,
   entries: readonly ContentManifestEntry[],
   source: string,
+  language?: string,
 ): string {
+  const labels = resolveUiLabels(basesLabels, language);
   const className = options.className ?? "rb-bases";
   const views = selectViews(spec, options.view);
   const limit = resolveLimit(options.limit);
   const sections = views
     .map((view, index) =>
-      renderView(view, spec, className, entries, limit, index),
+      renderView(view, spec, className, entries, limit, index, labels),
     )
     .join("");
   const fallback =
@@ -53,6 +59,7 @@ function renderView(
   entries: readonly ContentManifestEntry[],
   limit: number,
   index: number,
+  labels: BasesLabels,
 ): string {
   const pool = entries.filter(
     (entry) =>
@@ -69,14 +76,17 @@ function renderView(
   const count = `<p class="${escapeHtmlAttribute(className)}__count">${selected.length} matching ${selected.length === 1 ? "note" : "notes"}</p>`;
   const body =
     view.type === "cards"
-      ? renderCards(view, groups, spec, className, index)
+      ? renderCards(view, groups, spec, className, index, labels)
       : view.type === "list"
         ? renderList(view, groups, className)
         : view.type === "table"
-          ? renderTable(view, groups, spec, className)
+          ? renderTable(view, groups, spec, className, labels)
           : renderUnsupportedView(view, className);
 
-  return `<section class="${escapeHtmlAttribute(className)}__view" data-bases-view="${view.type}" aria-label="${escapeHtmlAttribute(view.name ?? `${view.type} view ${index + 1}`)}">${name}${count}${body}</section>`;
+  const viewTypeLabel = labels.view
+    .replace("{type}", view.type)
+    .replace("{n}", String(index + 1));
+  return `<section class="${escapeHtmlAttribute(className)}__view" data-bases-view="${view.type}" aria-label="${escapeHtmlAttribute(view.name ?? viewTypeLabel)}">${name}${count}${body}</section>`;
 }
 
 function renderTable(
@@ -84,6 +94,7 @@ function renderTable(
   groups: readonly BasesGroup[],
   spec: BasesSpec,
   className: string,
+  labels: BasesLabels,
 ): string {
   const entries = groups.flatMap((group) => group.entries);
   if (groups.length === 0) return renderEmpty(className);
@@ -128,7 +139,7 @@ function renderTable(
     footer ? `<tfoot>${footer}</tfoot>` : "",
     "</table>",
   ].join("");
-  return `<div class="${escapeHtmlAttribute(className)}__table-scroll" role="region" aria-label="${escapeHtmlAttribute(view.name ?? "Table view")}" tabindex="0">${table}</div>`;
+  return `<div class="${escapeHtmlAttribute(className)}__table-scroll" role="region" aria-label="${escapeHtmlAttribute(view.name ?? labels.tableView)}" tabindex="0">${table}</div>`;
 }
 
 function renderCards(
@@ -137,6 +148,7 @@ function renderCards(
   spec: BasesSpec,
   className: string,
   viewIndex: number,
+  labels: BasesLabels,
 ): string {
   if (groups.length === 0) return renderEmpty(className);
 
@@ -173,7 +185,7 @@ function renderCards(
           : "";
       const labelledBy = view.groupBy
         ? ` aria-labelledby="${escapeHtmlAttribute(groupId)}"`
-        : ' aria-label="Cards"';
+        : ` aria-label="${escapeHtmlAttribute(labels.cards)}"`;
       return `<section class="${escapeHtmlAttribute(className)}__card-group">${heading}<ul class="${escapeHtmlAttribute(className)}__cards"${labelledBy}>${items}${empty}</ul></section>`;
     })
     .join("");

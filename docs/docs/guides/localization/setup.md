@@ -139,14 +139,28 @@ export default defineConfig({
 The keys by namespace are:
 
 - `toc`: `contents`, `contentsHeading`
-- `navigation`: `filter`, `filterNavigation`, `collapse`, `expand`, `sidebarNavigation`
-- `search`: `search`, `searchNotes`, `closeSearch`, `searchQuery`, `searchPlaceholder`, `searchFilterHint`, `searchResults`
+- `navigation`: `filter`, `filterNavigation`, `collapse`, `expand`, `sidebarNavigation`, `siteNavigation`
+- `search`: `search`, `searchNotes`, `closeSearch`, `searchQuery`, `searchPlaceholder`, `searchFilterHint`, `searchResults`, `loading`, `notFound`, `notFoundActions`, `noResults`, `result`, `results`
 - `series`: `seriesNavigation`, `seriesPosition`
 - `l10n`: `language`
 - `local-graph`: `localGraph`, `nearbyNotes`, `openInExplorer`, `localGraphTruncated`, `localGraphTruncatedExplorer`
 - `diff`: `history`, `historyChanges`, `collapse`, `expand`, `historyToggle`, `commitHistory`, `untitledChange`
 - `garden-explorer`: `explorer`, `explorerPanels`, `searchNotes`, `searchNotesPlaceholder`, `clearFilters`, `tags`, `folders`, `notes`, `showingNotes`, `noteGraph`, `localGraphMode`, `globalGraphMode`, `localMode`, `globalMode`, `selectNoteHint`, `selectedNote`, `outgoingLinks`, `backlinks`, `relatedNotes`, `noNotes`
+- `article-metadata`: `regionLabel`
+- `autocardlink`: `copyUrl`, `copy`, `copied`
+- `bases`: `tableView`, `cards`, `view`
+- `calculator`: `calculating`
+- `canvas`: `canvas`
+- `code-enhance`: `copyCode`, `copied`, `wrap`, `collapse`, `expand`
+- `flashcards`: `flashcards`
+- `image-compare`: `comparisonPosition`, `before`, `after`
+- `marp`: `previousSlide`, `nextSlide`
+- `properties`: `properties`
+- `qr-code`: `qrCode`
+- `sidenotes`: `openLabel`, `ariaLabel`
+- `taxonomy`: `relatedTags`, `feeds`
+- `timeline`: `language`
 
-`showingNotes`, `globalGraphMode`, `historyChanges`, and `seriesPosition` are templates: keep their `{...}` placeholders in an override.
+`showingNotes`, `globalGraphMode`, `historyChanges`, `seriesPosition`, `bases.view`, `timeline.language`, `search.result`, and `search.results` are templates: keep their `{...}` placeholders in an override.
 
-Plugins declare their strings with `defineUiLabels(namespace, { en, ja })` and read them through `useUiLabels(definition)`, so translations live beside the feature that renders them. Your own shell can use the same pair: this site declares `site` labels in `website/labels.ts` and resolves them with `resolveUiLabels(siteLabels, language, config.ui?.labels)`, so overrides still go under `ui.labels.site`. `<html lang>` and the article date locale follow the content language and are set in `website/app/components/article/article.tsx`.
+Plugins declare their strings with `defineUiLabels(namespace, { en, ja })` and read them through `useUiLabels(definition)`, so translations live beside the feature that renders them. Your own shell can use the same pair: this site declares `site` labels in `website/labels.ts` and resolves them with `resolveUiLabels(siteLabels, language, config.ui?.labels)`, so overrides still go under `ui.labels.site`. `<html lang>` and the article date locale follow the content language and are set in `website/app/components/article/article.tsx`. For the plugin-author side of the system, see [UI labels](../../reference/ui-labels.md).

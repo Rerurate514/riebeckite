@@ -55,7 +55,8 @@ export function renderSidenotesReference(
   const { href, id, index, options } = input;
   const key = sidenotesKey(href);
   const target = key === null ? href : `#${sidenotesNoteId(key)}`;
-  const label = `${options.openLabel} ${index}`.trim();
+  const openLabel = options.openLabel;
+  const label = `${openLabel} ${index}`.trim();
   return (
     "" +
     `<a href="${escapeHtmlAttribute(target)}" ` +
@@ -83,7 +84,8 @@ export function renderSidenotesNote(input: SidenotesNoteInput): string {
     SIDENOTES_NOTE_CLASS,
     ...(options.className === "" ? [] : [options.className]),
   ].join(" ");
-  const label = `${options.ariaLabel} ${index}`.trim();
+  const ariaLabel = options.ariaLabel;
+  const label = `${ariaLabel} ${index}`.trim();
   return (
     "" +
     `<aside class="${escapeHtmlAttribute(className)}" ` +

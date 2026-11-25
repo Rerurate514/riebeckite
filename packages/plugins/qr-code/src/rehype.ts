@@ -1,4 +1,6 @@
 import { reportVFileDiagnostic } from "@riebeckite/core";
+import { resolveUiLabels } from "@riebeckite/ui";
+import { qrCodeLabels } from "./labels.js";
 import { qrElementClassName } from "./options.js";
 import type {
   ElementNode,
@@ -8,6 +10,8 @@ import type {
   ResolvedQrCodeOptions,
   TextNode,
 } from "./types.js";
+
+const QR_CODE_LABELS = resolveUiLabels(qrCodeLabels, undefined);
 
 const CAPTION_PATTERN =
   /^[ \t]*#[ \t]*caption[ \t]*:[ \t]*(.+?)[ \t]*(?:\r?\n|$)/i;
@@ -116,7 +120,7 @@ function buildFigure(
           className: qrElementClassName(options.className, "canvas"),
           role: "img",
           ariaLabelledby: caption ? labelId : undefined,
-          ariaLabel: caption ? undefined : "QR code",
+          ariaLabel: caption ? undefined : QR_CODE_LABELS.qrCode,
         },
         canvasChildren,
       ),

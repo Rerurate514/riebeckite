@@ -21,6 +21,7 @@
     "./style.css": "./style.css"
   },
   "dependencies": {
+    "@riebeckite/ui": "workspace:*",
     "@marp-team/marp-core": "^4.4.0"
   },
   "peerDependencies": {

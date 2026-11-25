@@ -39,6 +39,7 @@
       "@riebeckite/ui/dialog": ["packages/ui/dialog.ts"],
       "@riebeckite/ui/copy": ["packages/ui/copy.ts"],
       "@riebeckite/ui/behaviors": ["packages/ui/behaviors.ts"],
+      "@riebeckite/ui/labels": ["packages/ui/labels.ts"],
       "@riebeckite/ui/loading": ["packages/ui/loading.ts"],
       "create-riebeckite": ["packages/create-riebeckite/src/index.ts"],
       "create-riebeckite/scaffold": [

@@ -57,7 +57,11 @@ export function taxonomy(options: TaxonomyOptions = {}) {
             pathname,
           );
           if (!model?.term) return null;
-          const page = renderTaxonomyPage(model.term, resolved);
+          const page = renderTaxonomyPage(
+            model.term,
+            resolved,
+            model.model.locale,
+          );
           return {
             type: "taxonomy-term",
             layout: resolved.layout,
@@ -74,7 +78,11 @@ export function taxonomy(options: TaxonomyOptions = {}) {
             pathname,
           );
           if (!model?.term) return null;
-          const page = renderTaxonomyPage(model.term, resolved);
+          const page = renderTaxonomyPage(
+            model.term,
+            resolved,
+            model.model.locale,
+          );
           return {
             type: "taxonomy-term",
             layout: resolved.layout,

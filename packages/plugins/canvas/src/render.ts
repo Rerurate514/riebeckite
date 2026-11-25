@@ -1,5 +1,7 @@
 import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
+import { resolveUiLabels } from "@riebeckite/ui/labels";
 import { slug } from "github-slugger";
+import { canvasLabels } from "./labels.js";
 import { buildCanvasLayout } from "./parse.js";
 import {
   CANVAS_NOTE_HREF,
@@ -46,14 +48,15 @@ function renderStatic(
   resolver: CanvasResolver,
   source: string,
 ): string {
+  const labels = resolveUiLabels(canvasLabels, undefined);
   if (layout.nodes.length === 0) {
-    return '<div class="rb-canvas__static rb-canvas__empty">This canvas has no nodes.</div>';
+    return `<div class="rb-canvas__static rb-canvas__empty">${labels.empty}</div>`;
   }
   const edges = renderEdges(layout, source);
   const cards = layout.nodes
     .map((node) => renderNodeCard(node, resolver))
     .join("\n");
-  return `<div class="rb-canvas__static" data-canvas-static><div class="rb-canvas__world" data-canvas-world role="img" aria-label="Canvas" style="width:${layout.width}px;height:${layout.height}px">${edges}${cards}</div></div>`;
+  return `<div class="rb-canvas__static" data-canvas-static><div class="rb-canvas__world" data-canvas-world role="img" aria-label="${labels.canvas}" style="width:${layout.width}px;height:${layout.height}px">${edges}${cards}</div></div>`;
 }
 
 function renderEdges(layout: CanvasLayout, source: string): string {

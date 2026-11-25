@@ -1,6 +1,8 @@
 import type { ContentIcon } from "@riebeckite/core";
 import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
+import { resolveUiLabels } from "@riebeckite/ui";
 import { buildFeedHeadTags } from "./feeds.js";
+import { taxonomyLabels } from "./labels.js";
 import type {
   ResolvedTaxonomyOptions,
   TaxonomyKind,
@@ -16,6 +18,7 @@ import type {
 export function renderTaxonomyPage(
   term: TaxonomyTerm,
   options: ResolvedTaxonomyOptions,
+  language?: string,
 ): TaxonomyPage {
   const className = escapeHtmlAttribute(options.className);
   const entries = term.entries
@@ -26,8 +29,8 @@ export function renderTaxonomyPage(
         )}">${renderIcon(entry.icon)}${escapeHtml(entry.title)}</a></li>`,
     )
     .join("");
-  const feeds = renderFeedLinks(term, className);
-  const related = renderRelatedTerms(term, options);
+  const feeds = renderFeedLinks(term, className, language);
+  const related = renderRelatedTerms(term, options, language);
 
   const html = `<section class="${className}" data-rr-taxonomy="${term.kind}" data-rr-taxonomy-value="${escapeHtmlAttribute(
     term.value,
@@ -45,10 +48,12 @@ export function renderTaxonomyPage(
 export function renderRelatedTerms(
   term: TaxonomyTerm,
   options: ResolvedTaxonomyOptions,
+  language?: string,
 ): string {
   if (!options.related || term.kind !== "tag" || term.related.length === 0) {
     return "";
   }
+  const resolvedLabels = resolveUiLabels(taxonomyLabels, language ?? "en");
   const className = escapeHtmlAttribute(options.className);
   const items = term.related
     .map(
@@ -58,7 +63,7 @@ export function renderRelatedTerms(
         )}" data-rr-taxonomy-related-count="${related.count}">${renderIcon(related.icon)}${escapeHtml(related.title)}</a></li>`,
     )
     .join("");
-  return `<nav class="${className}__related" aria-label="Related tags" data-rr-taxonomy-related><ul>${items}</ul></nav>`;
+  return `<nav class="${className}__related" aria-label="${resolvedLabels.relatedTags}" data-rr-taxonomy-related><ul>${items}</ul></nav>`;
 }
 
 export function renderTaxonomyIndexPage(
@@ -94,7 +99,12 @@ function renderIcon(icon: ContentIcon | undefined): string {
   return icon ? `<span class="rr-taxonomy__icon">${icon.html}</span>` : "";
 }
 
-function renderFeedLinks(term: TaxonomyTerm, className: string): string {
+function renderFeedLinks(
+  term: TaxonomyTerm,
+  className: string,
+  language?: string,
+): string {
+  const resolvedLabels = resolveUiLabels(taxonomyLabels, language ?? "en");
   const links: string[] = [];
   if (term.feeds.rss) {
     links.push(
@@ -112,5 +122,5 @@ function renderFeedLinks(term: TaxonomyTerm, className: string): string {
     );
   }
   if (links.length === 0) return "";
-  return `<nav class="${className}__feeds" aria-label="Feeds" data-rr-taxonomy-feeds>${links.join("")}</nav>`;
+  return `<nav class="${className}__feeds" aria-label="${resolvedLabels.feeds}" data-rr-taxonomy-feeds>${links.join("")}</nav>`;
 }

@@ -7,6 +7,8 @@ import {
   type PublicContentView,
   selectLocalizedEntries,
 } from "@riebeckite/core";
+import { resolveUiLabels } from "@riebeckite/ui";
+import { seriesLabels } from "./labels.js";
 import { buildSeriesIndex, collectSeriesIndexes } from "./series_index.js";
 import { resolveSeriesOptions, seriesSlug } from "./series_options.js";
 import type { SeriesIndex, SeriesOptions } from "./types.js";
@@ -57,6 +59,7 @@ export function renderSeriesNavigation(
   index: SeriesIndex,
   currentSlug: string,
   options: SeriesOptions = {},
+  language?: string,
 ): string {
   const resolved = resolveSeriesOptions(options);
   const cls = resolved.className;
@@ -68,18 +71,22 @@ export function renderSeriesNavigation(
       ? members[position + 1]
       : undefined;
 
+  const resolvedLabels = resolveUiLabels(seriesLabels, language ?? "en");
+
   const parts: string[] = [
     `<nav class="${escapeHtmlAttribute(cls)}" data-series="${escapeHtmlAttribute(
       index.name,
-    )}" aria-label="Series navigation">`,
+    )}" aria-label="${resolvedLabels.seriesNavigation}">`,
   ];
 
   if (resolved.heading && members.length > 0) {
     const label =
       resolved.positionLabel && position >= 0
-        ? ` <span class="${escapeHtmlAttribute(
-            cls,
-          )}__position">${escapeHtml(formatPosition(position + 1, members.length))}</span>`
+        ? ` <span class="${escapeHtmlAttribute(cls)}__position">${escapeHtml(
+            resolvedLabels.seriesPosition
+              .replace("{index}", String(position + 1))
+              .replace("{total}", String(members.length)),
+          )}</span>`
         : "";
     parts.push(
       `<p class="${escapeHtmlAttribute(

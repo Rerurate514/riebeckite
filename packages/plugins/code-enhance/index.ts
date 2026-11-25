@@ -6,7 +6,6 @@ import {
 } from "@riebeckite/core";
 import type { CodeCopyProps } from "./src/copy_component.js";
 import { renderCodeCopy } from "./src/copy_component.js";
-import { DEFAULT_COPIED_LABEL, DEFAULT_COPY_LABEL } from "./src/init.js";
 import { rehypeCodeEnhance } from "./src/rehype.js";
 import { remarkCodeMeta } from "./src/remark.js";
 import type { CodeEnhanceOptions } from "./src/types.js";
@@ -72,8 +71,12 @@ export function codeEnhance(options: CodeEnhanceOptions = {}) {
         moduleSpecifier: "@riebeckite/plugin-code-enhance/client",
         exportName: "initCodeEnhance",
         publicConfig: {
-          copyLabel: options.copyLabel ?? DEFAULT_COPY_LABEL,
-          copiedLabel: options.copiedLabel ?? DEFAULT_COPIED_LABEL,
+          ...(options.copyLabel === undefined
+            ? {}
+            : { copyLabel: options.copyLabel }),
+          ...(options.copiedLabel === undefined
+            ? {}
+            : { copiedLabel: options.copiedLabel }),
         },
         presenceSelector: ".rr-code, [data-code-copy]",
       }),

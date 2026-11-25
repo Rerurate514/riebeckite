@@ -1,4 +1,6 @@
 import { copyText } from "@riebeckite/ui/copy";
+import { resolveUiLabels } from "@riebeckite/ui/labels";
+import { autocardlinkLabels } from "./labels.js";
 
 const CARD_CLASS = "rr-cardlink";
 const IMAGE_CLASS = "rr-cardlink__image";
@@ -19,6 +21,10 @@ export function initAutoCardLink(
   const cardClass = options.cardClass ?? CARD_CLASS;
   const imageClass = options.imageClass ?? IMAGE_CLASS;
   const copyClass = options.copyClass ?? COPY_CLASS;
+  const labels = resolveUiLabels(
+    autocardlinkLabels,
+    document.documentElement.lang,
+  );
   const cards = Array.from(root.querySelectorAll<HTMLElement>(`.${cardClass}`));
   const pending: { image: HTMLImageElement; onError: () => void }[] = [];
   const copyHandlers: {
@@ -50,8 +56,12 @@ export function initAutoCardLink(
     const url = button.getAttribute("data-rr-cardlink-copy");
     if (!url) continue;
 
+    button.setAttribute("aria-label", labels.copyUrl);
+    const copyLabel = button.querySelector(`.${COPY_LABEL_CLASS}`);
+    if (copyLabel) copyLabel.textContent = labels.copy;
+
     const onClick = () => {
-      void copyUrl(button, url, copyClass, timers);
+      void copyUrl(button, url, copyClass, timers, labels.copy, labels.copied);
     };
     button.addEventListener("click", onClick);
     copyHandlers.push({ button, onClick });
@@ -73,13 +83,15 @@ async function copyUrl(
   url: string,
   copyClass: string,
   timers: number[],
+  copyLabelText: string,
+  copiedLabelText: string,
 ): Promise<void> {
   if (!(await copyText(url))) return;
 
   const label = button.querySelector(`.${COPY_LABEL_CLASS}`);
-  const original = label?.textContent ?? "Copy URL";
+  const original = label?.textContent ?? copyLabelText;
   button.classList.add(`${copyClass}--copied`);
-  if (label) label.textContent = "Copied";
+  if (label) label.textContent = copiedLabelText;
   timers.push(
     window.setTimeout(() => {
       button.classList.remove(`${copyClass}--copied`);

@@ -1,7 +1,10 @@
+import { resolveUiLabels } from "@riebeckite/ui";
+import { sidenotesLabels } from "./labels.js";
 import type { ResolvedSidenotesOptions, SidenotesOptions } from "./types.js";
 
-const DEFAULT_SIDENOTES_ARIA_LABEL = "Sidenote";
-const DEFAULT_SIDENOTES_OPEN_LABEL = "Footnote";
+const SIDENOTES_LABELS = resolveUiLabels(sidenotesLabels, undefined);
+const DEFAULT_SIDENOTES_ARIA_LABEL = SIDENOTES_LABELS.ariaLabel;
+const DEFAULT_SIDENOTES_OPEN_LABEL = SIDENOTES_LABELS.openLabel;
 const DEFAULT_SIDENOTES_PLACEMENT = "end";
 
 /**

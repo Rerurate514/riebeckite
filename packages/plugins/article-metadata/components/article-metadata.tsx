@@ -3,7 +3,8 @@ import {
   buildTaxonomyTagHref,
   resolveTaxonomyOptionsFromConfig,
 } from "@riebeckite/plugin-taxonomy";
-import { useArticleContext, useSiteContext } from "@riebeckite/ui";
+import { useArticleContext, useSiteContext, useUiLabels } from "@riebeckite/ui";
+import { articleMetadataLabels } from "../src/labels.js";
 
 export type ArticleMetadataProps = {
   readonly locale?: string;
@@ -21,6 +22,7 @@ export default function ArticleMetadata({
 }: ArticleMetadataProps) {
   const article = useArticleContext();
   const site = useSiteContext();
+  const { regionLabel } = useUiLabels(articleMetadataLabels);
   if (!article) return null;
 
   const tags = normalizeTags(article.post.frontmatter.tags);
@@ -44,10 +46,7 @@ export default function ArticleMetadata({
   }
 
   return (
-    <aside
-      class="rb-article-meta rr-article-metadata"
-      aria-label="Article metadata"
-    >
+    <aside class="rb-article-meta rr-article-metadata" aria-label={regionLabel}>
       {createdDate ? (
         <time
           class="rr-article-metadata__date"

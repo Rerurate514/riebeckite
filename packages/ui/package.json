@@ -65,6 +65,12 @@
       "source": "./behaviors.ts",
       "default": "./dist/behaviors.js"
     },
+    "./labels": {
+      "types": "./dist/labels.d.ts",
+      "import": "./dist/labels.js",
+      "source": "./labels.ts",
+      "default": "./dist/labels.js"
+    },
     "./loading": {
       "types": "./dist/loading.d.ts",
       "import": "./dist/loading.js",

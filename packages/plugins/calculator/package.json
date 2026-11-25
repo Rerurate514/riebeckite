@@ -27,6 +27,7 @@
     "./style.css": "./style.css"
   },
   "dependencies": {
+    "@riebeckite/ui": "workspace:*",
     "@riebeckite/runtime": "workspace:*",
     "@types/mdast": "catalog:",
     "unist-util-visit": "catalog:"

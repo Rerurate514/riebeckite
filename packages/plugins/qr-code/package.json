@@ -15,6 +15,7 @@
     "./style.css": "./style.css"
   },
   "dependencies": {
+    "@riebeckite/ui": "workspace:*",
     "qrcode": "^1.5.4"
   },
   "peerDependencies": {

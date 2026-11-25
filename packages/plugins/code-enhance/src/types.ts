@@ -11,6 +11,7 @@ export type CodeEnhanceClientOptions = {
 };
 
 export type CodeEnhanceOptions = CodeEnhanceClientOptions & {
+  locale?: string;
   theme?: CodeEnhanceTheme;
   lineNumbers?: boolean;
   copyButton?: boolean;

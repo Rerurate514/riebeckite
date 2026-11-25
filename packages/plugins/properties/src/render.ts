@@ -1,5 +1,7 @@
 import type { ContentIcon } from "@riebeckite/core";
 import { escapeHtml, escapeHtmlAttribute } from "@riebeckite/core";
+import { resolveUiLabels } from "@riebeckite/ui";
+import { propertiesLabels } from "./labels.js";
 import { buildPropertiesData } from "./model.js";
 import {
   DEFAULT_PROPERTIES_CLASS,
@@ -12,6 +14,8 @@ import type {
   PropertyInlinePart,
   PropertyValue,
 } from "./types.js";
+
+const PROPERTIES_LABELS = resolveUiLabels(propertiesLabels, undefined);
 
 export function renderPropertiesData(data: PropertiesData): string {
   if (data.items.length === 0) return "";
@@ -28,7 +32,7 @@ export function renderPropertiesData(data: PropertiesData): string {
   const rootClass = escapeHtmlAttribute(className);
   if (data.collapsed) {
     const summary = title ? escapeHtml(title) : "";
-    const label = title ? "" : ' aria-label="Properties"';
+    const label = title ? "" : ` aria-label="${PROPERTIES_LABELS.properties}"`;
     return (
       `<details class="${rootClass}" ${attributes} data-collapsed>` +
       `<summary class="${escapeHtmlAttribute(cls)}__summary"${label}>${summary}</summary>` +

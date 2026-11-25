@@ -541,6 +541,9 @@ importers:
 
   packages/plugins/bases:
     dependencies:
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
       '@types/mdast':
         specifier: 'catalog:'
         version: 4.0.4
@@ -576,6 +579,9 @@ importers:
       '@riebeckite/runtime':
         specifier: workspace:*
         version: link:../../runtime
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
       '@types/mdast':
         specifier: 'catalog:'
         version: 4.0.4
@@ -589,6 +595,9 @@ importers:
 
   packages/plugins/canvas:
     dependencies:
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
       github-slugger:
         specifier: ^2.0.0
         version: 2.0.0
@@ -895,6 +904,9 @@ importers:
 
   packages/plugins/flashcards:
     dependencies:
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
       '@types/mdast':
         specifier: 'catalog:'
         version: 4.0.4
@@ -1059,6 +1071,9 @@ importers:
 
   packages/plugins/image-compare:
     dependencies:
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
       '@types/mdast':
         specifier: 'catalog:'
         version: 4.0.4
@@ -1199,6 +1214,9 @@ importers:
       '@marp-team/marp-core':
         specifier: ^4.4.0
         version: 4.4.0
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
     devDependencies:
       '@riebeckite/core':
         specifier: workspace:*
@@ -1393,6 +1411,9 @@ importers:
 
   packages/plugins/qr-code:
     dependencies:
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
       qrcode:
         specifier: ^1.5.4
         version: 1.5.4
@@ -1653,6 +1674,9 @@ importers:
 
   packages/plugins/timeline:
     dependencies:
+      '@riebeckite/ui':
+        specifier: workspace:*
+        version: link:../../ui
       remark-parse:
         specifier: 'catalog:'
         version: 11.0.0

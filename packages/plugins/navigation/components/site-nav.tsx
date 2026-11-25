@@ -1,4 +1,5 @@
-import { useSiteContext } from "@riebeckite/ui";
+import { useSiteContext, useUiLabels } from "@riebeckite/ui";
+import { navigationLabels } from "../src/labels.js";
 import { resolveSiteNavigation } from "../src/navigation.js";
 import type { NavigationItem } from "../src/types.js";
 
@@ -37,6 +38,7 @@ export type MobileSiteNavProps = SiteNavProps & {
  */
 export function SiteNav(props: SiteNavProps) {
   const site = useSiteContext();
+  const labels = useUiLabels(navigationLabels);
   const navigation = site
     ? resolveSiteNavigation(
         site.config,
@@ -53,7 +55,7 @@ export function SiteNav(props: SiteNavProps) {
   return (
     <nav
       class={joinClassNames("rb-nav", props.class, props.className)}
-      aria-label={props.label ?? "Site navigation"}
+      aria-label={props.label ?? labels.siteNavigation}
     >
       <NavigationItems
         items={items}

@@ -22,6 +22,9 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
   Packages: `@riebeckite/core`, `@riebeckite/ui`, `@riebeckite/plugin-toc`, `@riebeckite/plugin-navigation`, `@riebeckite/plugin-search`, `@riebeckite/plugin-series`, `@riebeckite/plugin-l10n`, `@riebeckite/plugin-local-graph`, `@riebeckite/plugin-diff`, `@riebeckite/plugin-garden-explorer`
   Migration: Replace `ui.labels.<language>.<key>` with `ui.labels.<plugin>.<language>.<key>`. If you build UI with `@riebeckite/ui`, declare labels with `defineUiLabels(namespace, { en, ja })` and read them with `useUiLabels(definition)`. `DEFAULT_UI_LABELS`, the flat `UiLabels` type, and `resolveUiLabels(language, labels)` are removed.
 
+- The remaining plugin UI strings now come from the shared label definitions in English and Japanese instead of hardcoded English, including the search status messages, copy buttons, canvas, bases views, slides, and timeline labels. Overrides use the same `ui.labels.<plugin>.<language>.<key>` shape. `@riebeckite/ui` also exposes a `@riebeckite/ui/labels` entry point for code that needs label resolution without the component runtime.
+  Packages: `@riebeckite/ui`, `@riebeckite/plugin-article-metadata`, `@riebeckite/plugin-autocardlink`, `@riebeckite/plugin-bases`, `@riebeckite/plugin-calculator`, `@riebeckite/plugin-canvas`, `@riebeckite/plugin-code-enhance`, `@riebeckite/plugin-flashcards`, `@riebeckite/plugin-image-compare`, `@riebeckite/plugin-marp`, `@riebeckite/plugin-navigation`, `@riebeckite/plugin-properties`, `@riebeckite/plugin-qr-code`, `@riebeckite/plugin-search`, `@riebeckite/plugin-series`, `@riebeckite/plugin-sidenotes`, `@riebeckite/plugin-taxonomy`, `@riebeckite/plugin-timeline`
+
 ## 0.2.0 - 2026-11-23
 
 > **Breaking changes are included.** Read the migration notes before upgrading.

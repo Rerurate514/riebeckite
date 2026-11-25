@@ -26,6 +26,7 @@ Answer the prompts (recommended answers shown):
 - **Which package manager?** — keep `npm`, or choose `pnpm` to generate pnpm commands and a pnpm-based GitHub Actions workflow. With pnpm, commit `pnpm-lock.yaml` and replace `npm install` with `pnpm install` and `npm exec` with `pnpm exec` below
 - **What would you like to build?** ([[glossary/preset|preset]]) — keep `Starter site` (the `starter` preset) when unsure. Choose `Blog` if you are publishing posts, tags, and series; see [Presets](./presets.md)
 - **Customize extra project files?** — press Enter for `No`; the default project files are still generated
+- **Add AI development support?** — press Enter for `No`; choose `Yes` to add the Riebeckite MCP server, a content lint script, AI site rules, and development Skills for OpenCode
 - **Where will you write content?** — choose `This project` for `content/` inside the site, `Separate directory in this repository` for a vault next to the site (for example `../vault`), or `Separate GitHub repository` to keep content in another repository
 - **Set up deployment?** — press Enter for `Not now` if you want a local project first. Choose `Cloudflare Workers` only when you want local publishing set up immediately. It installs dependencies and then asks `Deploy now?`: `Yes` publishes immediately, `Later` finishes the scaffold. Choose `GitHub Actions` to deploy on every push to `main`; see [Deployment](../guides/deployment/README.md)
 - **Install dependencies now?** — press Enter for `Yes` so the generator installs the site's packages

@@ -12,7 +12,10 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 ## [Unreleased]
 
-No user-facing changes recorded.
+### Fixed
+
+- Try both IPv4 and IPv6 loopback addresses when waiting for the development server, so sites bound only to `::1` no longer report a false startup failure after five minutes.
+  Packages: `@riebeckite/cli`, `@riebeckite/honox`
 
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.3.0...HEAD
 

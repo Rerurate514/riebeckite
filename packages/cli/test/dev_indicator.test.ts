@@ -22,6 +22,24 @@ test("waitForFirstResponse resolves with the first response status", async () =>
   }
 });
 
+test("waitForFirstResponse falls back to the other loopback family", async () => {
+  const calls: string[] = [];
+  const response = await waitForFirstResponse("http://localhost:5173/", {
+    fetchImplementation: (async (input: string | URL | Request) => {
+      const url = String(input);
+      calls.push(url);
+      if (url === "http://[::1]:5173/") return new Response("ok");
+      throw new Error("ECONNREFUSED");
+    }) as typeof fetch,
+  });
+  assert.deepEqual(response, { url: "http://localhost:5173/", status: 200 });
+  assert.deepEqual(calls, [
+    "http://localhost:5173/",
+    "http://127.0.0.1:5173/",
+    "http://[::1]:5173/",
+  ]);
+});
+
 test("waitForFirstResponse retries until the server accepts connections", async () => {
   const server = http.createServer((_request, response) => {
     response.statusCode = 200;

@@ -47,9 +47,10 @@ npx create-riebeckite
 2. **Which package manager?** — `npm` (default) or `pnpm`. With pnpm, commit `pnpm-lock.yaml` and use `pnpm install` / `pnpm exec` in place of the npm commands below
 3. **What would you like to build?** ([[glossary/preset|preset]]) — the site's composition; keep `Starter site` (the `starter` preset) when unsure. See [Presets](./presets.md)
 4. **Customize extra project files?** — choose `Yes` to change generated editor or tool files. The default is `No`, which still generates the default project files
-5. **Where will you write content?** — `This project` keeps `content/` inside the site and is the simplest start. `Separate directory in this repository` keeps a vault beside the app. `Separate GitHub repository` is an advanced setup for an existing vault. See [Content Repositories](../guides/deployment/separate-content-repository.md)
-6. **Set up deployment?** — `Cloudflare Workers`, `GitHub Actions`, or `Not now`. `Cloudflare Workers` asks `Deploy now?` after installation, so you can publish your first version right away. `GitHub Actions` deploys on every push to `main`. `Not now` skips deployment setup; see [Deployment](../guides/deployment/README.md)
-7. **Install dependencies now?** — defaults to `Yes`. Choose `No` when you need to inspect or install the generated project later.
+5. **Add AI development support?** — defaults to `No`. Choose `Yes` to add the Riebeckite MCP server, a content lint script, AI site rules, and development Skills for OpenCode
+6. **Where will you write content?** — `This project` keeps `content/` inside the site and is the simplest start. `Separate directory in this repository` keeps a vault beside the app. `Separate GitHub repository` is an advanced setup for an existing vault. See [Content Repositories](../guides/deployment/separate-content-repository.md)
+7. **Set up deployment?** — `Cloudflare Workers`, `GitHub Actions`, or `Not now`. `Cloudflare Workers` asks `Deploy now?` after installation, so you can publish your first version right away. `GitHub Actions` deploys on every push to `main`. `Not now` skips deployment setup; see [Deployment](../guides/deployment/README.md)
+8. **Install dependencies now?** — defaults to `Yes`. Choose `No` when you need to inspect or install the generated project later.
 
 To script the same setup instead of answering prompts, pass arguments, for example:
 
@@ -85,7 +86,7 @@ Recent npm 11 releases can also skip dependency install scripts. If `npm install
 | `public/` | Static assets copied as-is: `favicon.ico` and `riebeckite-logo.png`. The bundled favicon and header logo are placeholders; replace them when you brand the site. The `starter` preset does not generate a link-preview/OG image; the `blog` and `writer` presets do. See [Branding your site](../guides/branding.md) |
 | `vite.config.ts` | Build settings. You normally leave this alone |
 | `package.json` | The packages and the `riebeckite` commands |
-| `pnpm-workspace.yaml` | Only for pnpm: approves the build scripts pnpm would otherwise skip (esbuild, puppeteer, sharp). npm ignores it |
+| `pnpm-workspace.yaml` | Generated for npm and pnpm. pnpm uses it to approve the build scripts it would otherwise skip (esbuild, puppeteer, sharp); npm ignores it |
 | `README.md` | A short note specific to the generated site |
 | `.gitignore`, `.editorconfig`, `.gitattributes`, `biome.json` | Default project files. Choose the `Customize extra project files?` prompt or `--utilities` to change them |
 
@@ -102,7 +103,7 @@ my-site/
 ├─ app/                   Generated app code (rarely edited)
 ├─ riebeckite.config.ts   Site configuration
 ├─ package.json
-├─ pnpm-workspace.yaml   Used by pnpm only (npm ignores it)
+├─ pnpm-workspace.yaml   pnpm build-script approvals (npm ignores it)
 ├─ vite.config.ts
 ├─ tsconfig.json
 ├─ biome.json             Default project files

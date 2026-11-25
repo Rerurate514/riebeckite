@@ -14,7 +14,10 @@ The Unreleased section lists changes that are merged but not yet published to np
 
 ## Unreleased
 
-No user-facing changes recorded.
+### Fixed
+
+- Try both IPv4 and IPv6 loopback addresses when waiting for the development server, so sites bound only to `::1` no longer report a false startup failure after five minutes.
+  Packages: `@riebeckite/cli`, `@riebeckite/honox`
 
 ## 0.3.0 - 2026-11-25
 

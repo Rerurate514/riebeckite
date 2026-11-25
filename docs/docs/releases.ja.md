@@ -14,7 +14,10 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 
 ## Unreleased
 
-No user-facing changes recorded.
+### Fixed
+
+- 開発サーバーの応答待ちで IPv4 と IPv6 のループバックアドレスを両方試すようにしたため、`::1` のみで待ち受けるサイトでも5分後に誤った起動失敗を報告しなくなりました。
+  Packages: `@riebeckite/cli`, `@riebeckite/honox`
 
 ## 0.3.0 - 2026-11-25
 

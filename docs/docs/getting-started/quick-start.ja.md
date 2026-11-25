@@ -26,6 +26,7 @@ npx create-riebeckite
 - **Which package manager?**：`npm` のままか、`pnpm` を選ぶと pnpm 用のコマンドと GitHub Actions workflow が生成されます。pnpm の場合は `pnpm-lock.yaml` をコミットし、以下の `npm install` を `pnpm install`、`npm exec` を `pnpm exec` に読み替えてください
 - **What would you like to build?**（[[glossary/preset|プリセット]]）：迷ったら `Starter site`（`starter` プリセット）のまま。記事、タグ、シリーズを公開するなら `Blog` を選びます。[Presets](./presets.ja.md) を参照
 - **Customize extra project files?**：変更する必要がなければ `No` のまま Enter を押します。既定のプロジェクトファイルは生成されます
+- **Add AI development support?**：既定の `No` のまま Enter を押します。`Yes` を選ぶと、Riebeckite MCP サーバー、コンテンツ lint スクリプト、AI 向けサイトルール、OpenCode 用の開発 Skills が追加されます
 - **Where will you write content?**：`This project` ならサイト内の `content/`、`Separate directory in this repository` ならサイトの隣の Vault（例：`../vault`）、`Separate GitHub repository` なら別リポジトリにコンテンツを置きます
 - **Set up deployment?**：まず手元で試すなら、既定値の `Not now` のまま Enter を押します。すぐに公開準備まで進めたい場合だけ `Cloudflare Workers` を選びます。依存関係のインストール後に `Deploy now?` と聞かれ、`Yes` でそのまま初回公開、`Later` で後回しにできます。`main` への push ごとの自動公開は `GitHub Actions`。[Deployment](../guides/deployment/README.ja.md) を参照
 - **Install dependencies now?**：既定値の `Yes` のまま Enter を押すと、生成されたサイトの package もインストールされます

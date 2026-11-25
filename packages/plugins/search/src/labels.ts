@@ -1,4 +1,4 @@
-import { defineUiLabels } from "@riebeckite/ui";
+import { defineUiLabels } from "@riebeckite/ui/labels";
 
 export const searchLabels = defineUiLabels("search", {
   en: {

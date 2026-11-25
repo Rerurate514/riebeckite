@@ -1141,6 +1141,11 @@
       "type": false
     },
     {
+      "name": "createUiLabelContext",
+      "value": true,
+      "type": false
+    },
+    {
       "name": "createUnavailableGeneratedOutputSink",
       "value": true,
       "type": false
@@ -3097,6 +3102,16 @@
     },
     {
       "name": "UiConfig",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "UiLabelContext",
+      "value": false,
+      "type": true
+    },
+    {
+      "name": "UiLabelOverrides",
       "value": false,
       "type": true
     },

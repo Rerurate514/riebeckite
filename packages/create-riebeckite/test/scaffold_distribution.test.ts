@@ -284,7 +284,19 @@ test("packed @riebeckite/cli scaffolds from the installed create-riebeckite pack
       .replaceAll(
         "{{cloudflareAccountId}}",
         GITHUB_ACTIONS_SECRETS.CLOUDFLARE_ACCOUNT_ID,
-      );
+      )
+      .replaceAll("{{packageManagerSetup}}", "")
+      .replaceAll("{{nodeCache}}", "npm")
+      .replaceAll(
+        "{{installSteps}}",
+        `          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install
+          fi`,
+      )
+      .replaceAll("{{lockfile}}", "package-lock.json")
+      .replaceAll("{{exec}}", "npm exec --");
     assert.equal(
       generatedWorkflow,
       renderedTemplate,

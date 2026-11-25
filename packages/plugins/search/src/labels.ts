@@ -10,6 +10,7 @@ export const searchLabels = defineUiLabels("search", {
     searchFilterHint: "Filter with tag:, lang:, or path:.",
     searchResults: "Search results",
     loading: "Loading search index...",
+    loadError: "Failed to load search index.",
     notFound: "Page not found",
     notFoundActions: "Not found actions",
     notFoundDescription: "The page you requested is not available.",
@@ -30,7 +31,8 @@ export const searchLabels = defineUiLabels("search", {
     searchFilterHint: "tag:、lang:、path: で絞り込めます。",
     searchResults: "検索結果",
     loading: "検索インデックスを読み込み中...",
-    notFound: "検索インデックスの読み込みに失敗しました。",
+    loadError: "検索インデックスの読み込みに失敗しました。",
+    notFound: "ページが見つかりません",
     notFoundActions: "見つからない場合の操作",
     notFoundDescription: "ご希望のページは利用できません。",
     noResults:

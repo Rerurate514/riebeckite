@@ -71,7 +71,7 @@ export function initSearch(context: SearchInitContext = {}): () => void {
       searchItems = [];
       loadFailed = true;
       status.textContent = "";
-      loading.fail(labels.notFound);
+      loading.fail(labels.loadError);
       return false;
     }
   };

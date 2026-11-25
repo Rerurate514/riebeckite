@@ -70,6 +70,10 @@ async function createClientModule(
     }
   }
   const hasRuntimes = runtimeEntries.size > 0;
+  const uiConfig = {
+    ...(config.ui?.locale === undefined ? {} : { locale: config.ui.locale }),
+    ...(config.ui?.labels === undefined ? {} : { labels: config.ui.labels }),
+  };
 
   imports.push('import { ClientLifecycle } from "@riebeckite/core/client";');
   if (interactiveMarkdownComponents.length > 0) {
@@ -202,10 +206,7 @@ function createPluginRuntimeHost(root, ids) {
 
   return `${imports.join("\n")}
 
-globalThis.__riebeckiteUi = ${serializePublicClientConfig({
-    locale: config.ui?.locale,
-    labels: config.ui?.labels,
-  })};
+globalThis.__riebeckiteUi = ${serializePublicClientConfig(uiConfig)};
 const lifecycle = new ClientLifecycle();
 ${runtimeSupport}const clientModuleDevelopment = ${development ? "true" : "false"};
 const conditionalInitializerLoads = new Map();

@@ -177,6 +177,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           pnpm-version: ${{ env.PNPM_VERSION }}
+          browsers: chrome-headless-shell
       - run: pnpm build:packages
       - run: pnpm typecheck
       - run: pnpm test

@@ -48,7 +48,11 @@ export const config = defineConfig({
 ## 単体レシーバー
 
 ```ts
-import { createWorker, d1Storage } from "@riebeckite/webmention-cloudflare";
+import {
+  createWorker,
+  d1RateLimiter,
+  d1Storage,
+} from "@riebeckite/webmention-cloudflare";
 
 interface Env {
   WEBMENTION_DB: D1Database;
@@ -59,6 +63,11 @@ export default {
     createWorker({
       storage: d1Storage(env.WEBMENTION_DB),
       allowedTargets: ["https://www.example.com/"],
+      fetchSource: verifySourceThroughService(env.VERIFIER_URL),
+      rateLimit: d1RateLimiter(env.WEBMENTION_DB, {
+        maxRequests: 30,
+        windowMs: 60_000,
+      }),
     }).fetch(request),
 };
 ```
@@ -66,6 +75,13 @@ export default {
 単体レシーバーは `allowedTargets` のターゲットしか知らず、content manifest を
 持たないため、フィードの要素に記事サマリーは付きません。サイト Worker と同居する
 場合はプラグインの `endpoints` を使い、公開 entry とメンションを対応付けてください。
+
+Worker は送信元検証用の DNS 解決と接続先固定を行えません。そのため `fetchSource` は必須で、
+ホストごとに名前解決し、プライベートアドレスを拒否し、検証済みアドレスへ接続を固定する
+検証サービスを使う必要があります。`rateLimit` も必須です。Worker isolate 間で制限を共有する
+には `d1RateLimiter` を使用してください。
+この D1 リミッターはクライアントごと・時間枠ごとに 1 行を保持します。長期保持が問題になる
+場合は、スケジュールされた Worker で期限切れの行を削除してください。
 
 ## エンドポイントと検証
 
@@ -77,8 +93,7 @@ export default {
   `{ version, generatedAt, count, mentions }` を返します。`query` capability を持たない
   ストレージでは `501` を返します。
 
-既定の送信元 fetcher は loopback とプライベートネットワーク宛てを拒否し、本文サイズを
-制限し、タイムアウトします。Webmention の送信元はサーバーであるため
+Webmention の送信元はサーバーであるため
 `allowMissingOrigin` は既定で `true` です。ブラウザ origin は明示的に列挙しない限り
 拒否されます。
 
@@ -89,6 +104,7 @@ Worker はリクエスト中に D1 をマイグレーションしてはいけま
 
 ```sh
 pnpm exec wrangler d1 execute WEBMENTION_DB --file node_modules/@riebeckite/webmention-cloudflare/migrations/0001_webmentions.sql
+pnpm exec wrangler d1 execute WEBMENTION_DB --file node_modules/@riebeckite/webmention-cloudflare/migrations/0002_webmention_rate_limits.sql
 pnpm exec wrangler deploy
 ```
 

@@ -89,11 +89,9 @@ export function createWebmentionSourceFetcher(
 const MAX_REDIRECTS = 10;
 const REDIRECT_STATUSES = new Set([301, 302, 303, 307, 308]);
 
-class WebmentionDnsUnavailableError extends Error {}
-
 const defaultResolveHostname: WebmentionHostResolver = async (hostname) => {
   const dns = await import("node:dns/promises").catch(() => null);
-  if (dns === null) throw new WebmentionDnsUnavailableError();
+  if (dns === null) throw new Error("DNS resolution is unavailable");
   const records = await dns.lookup(hostname, { all: true });
   return records.map((record) => record.address);
 };
@@ -126,10 +124,7 @@ async function resolveSourceUrl(
   let addresses: readonly string[];
   try {
     addresses = await resolveHostname(host);
-  } catch (error) {
-    if (error instanceof WebmentionDnsUnavailableError) {
-      return { blocked: false };
-    }
+  } catch {
     return { blocked: true };
   }
   if (addresses.length === 0) return { blocked: true };

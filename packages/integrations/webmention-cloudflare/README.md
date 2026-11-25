@@ -48,7 +48,11 @@ export const config = defineConfig({
 ## Standalone receiver
 
 ```ts
-import { createWorker, d1Storage } from "@riebeckite/webmention-cloudflare";
+import {
+  createWorker,
+  d1RateLimiter,
+  d1Storage,
+} from "@riebeckite/webmention-cloudflare";
 
 interface Env {
   WEBMENTION_DB: D1Database;
@@ -59,6 +63,11 @@ export default {
     createWorker({
       storage: d1Storage(env.WEBMENTION_DB),
       allowedTargets: ["https://www.example.com/"],
+      fetchSource: verifySourceThroughService(env.VERIFIER_URL),
+      rateLimit: d1RateLimiter(env.WEBMENTION_DB, {
+        maxRequests: 30,
+        windowMs: 60_000,
+      }),
     }).fetch(request),
 };
 ```
@@ -67,6 +76,13 @@ The standalone receiver knows only the targets in `allowedTargets`; it has no
 content manifest, so feed entries carry no article summary. When the receiver
 shares the site Worker, prefer the plugin's `endpoints` so mentions are matched
 to published entries.
+
+Workers cannot resolve and pin DNS for source verification. `fetchSource` is
+therefore required and must use a verification service that resolves every host,
+rejects private addresses, and pins the validated address. `rateLimit` is also
+required; use `d1RateLimiter` to share the limit across Worker isolates.
+The D1 limiter keeps one row per client and time window; delete expired rows
+from a scheduled Worker if long-term retention matters.
 
 ## Endpoints and validation
 
@@ -78,8 +94,7 @@ to published entries.
   `{ version, generatedAt, count, mentions }`. Requires storage with the
   `query` capability, otherwise `501`.
 
-The default source fetcher blocks loopback and private-network hosts, caps the
-response size, and times out. Webmention senders are servers, so
+Webmention senders are servers, so
 `allowMissingOrigin` defaults to `true`; browser origins remain denied unless
 explicitly listed.
 
@@ -90,6 +105,7 @@ deploying:
 
 ```sh
 pnpm exec wrangler d1 execute WEBMENTION_DB --file node_modules/@riebeckite/webmention-cloudflare/migrations/0001_webmentions.sql
+pnpm exec wrangler d1 execute WEBMENTION_DB --file node_modules/@riebeckite/webmention-cloudflare/migrations/0002_webmention_rate_limits.sql
 pnpm exec wrangler deploy
 ```
 

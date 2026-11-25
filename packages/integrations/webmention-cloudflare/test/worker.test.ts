@@ -8,6 +8,7 @@ import {
 import {
   createWorker,
   D1WebmentionStorage,
+  d1RateLimiter,
   d1Storage,
   KvWebmentionStorage,
   kvStorage,
@@ -16,6 +17,11 @@ import {
 const SOURCE = "https://source.example/entry";
 const TARGET = "https://target.example/post";
 const SOURCE_HTML = `<html><body><a href="${TARGET}/">link</a></body></html>`;
+const allowAllRateLimit = {
+  async check() {
+    return "allowed" as const;
+  },
+};
 
 function makeMention(
   overrides: Partial<WebmentionMention> = {},
@@ -128,6 +134,39 @@ test("KV storage is store-only and rejects reads", async () => {
   assert.equal(kvStorage(namespace).capabilities.has("query"), false);
 });
 
+test("D1 rate limiter uses one shared fixed-window bucket", async () => {
+  const calls: { sql: string; values: readonly unknown[] }[] = [];
+  const database = {
+    prepare(sql: string) {
+      let values: readonly unknown[] = [];
+      const statement = {
+        bind(...bound: readonly unknown[]) {
+          values = bound;
+          return statement;
+        },
+        async all<T = unknown>() {
+          calls.push({ sql, values });
+          return { results: [{ hits: 3 }] as T[] };
+        },
+        async run() {
+          return {};
+        },
+      };
+      return statement;
+    },
+  };
+
+  const result = await d1RateLimiter(database, {
+    maxRequests: 3,
+    windowMs: 60_000,
+    now: () => 123_456,
+  }).check("198.51.100.77");
+
+  assert.equal(result, "allowed");
+  assert.match(calls[0]?.sql ?? "", /webmention_rate_limits/);
+  assert.deepEqual(calls[0]?.values, ["198.51.100.77", 120_000]);
+});
+
 test("worker receives a verified mention and serves the feed", async () => {
   const storage = memoryStorage();
   const worker = createWorker({
@@ -135,6 +174,7 @@ test("worker receives a verified mention and serves the feed", async () => {
     allowedTargets: [TARGET],
     fetchSource: async (url) =>
       url === SOURCE ? { url, html: SOURCE_HTML } : null,
+    rateLimit: allowAllRateLimit,
   });
 
   const body = new URLSearchParams({ source: SOURCE, target: `${TARGET}/` });
@@ -163,6 +203,7 @@ test("worker rejects unknown targets and unlinked sources", async () => {
     storage,
     allowedTargets: [TARGET],
     fetchSource: async (url) => ({ url, html: "<p>no links</p>" }),
+    rateLimit: allowAllRateLimit,
   });
 
   const unknown = await worker.fetch(
@@ -197,9 +238,40 @@ test("worker returns 501 for a capture-only storage feed", async () => {
       async put() {},
     }),
     allowedTargets: [TARGET],
+    fetchSource: async () => null,
+    rateLimit: allowAllRateLimit,
   });
   const response = await worker.fetch(
     new Request("https://target.example/webmentions"),
   );
   assert.equal(response.status, 501);
+});
+
+test("worker applies its limiter to Cloudflare's connecting IP", async () => {
+  const keys: string[] = [];
+  const worker = createWorker({
+    storage: memoryStorage(),
+    allowedTargets: [TARGET],
+    fetchSource: async (url) => ({ url, html: SOURCE_HTML }),
+    rateLimit: {
+      async check(key) {
+        keys.push(key);
+        return "limited";
+      },
+    },
+  });
+
+  const response = await worker.fetch(
+    new Request("https://target.example/webmentions", {
+      method: "POST",
+      headers: {
+        "cf-connecting-ip": "198.51.100.77",
+        "content-type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams({ source: SOURCE, target: TARGET }),
+    }),
+  );
+
+  assert.equal(response.status, 429);
+  assert.deepEqual(keys, ["198.51.100.77"]);
 });

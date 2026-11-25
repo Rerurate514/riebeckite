@@ -16,8 +16,7 @@ export type WebmentionSourceFetcher = (
 /**
  * Resolves a hostname to every IP address it currently points at. It is
  * injectable so a runtime (or a test) can supply its own resolver. The default
- * uses `node:dns` and falls back to no resolution when the builtin is
- * unavailable, such as in a Worker without a DNS module.
+ * uses `node:dns`.
  */
 export type WebmentionHostResolver = (
   hostname: string,
@@ -36,8 +35,7 @@ export type WebmentionSourceFetcherOptions = Readonly<{
   allowPrivateHosts?: boolean;
   /**
    * Hostname resolver used for DNS-rebinding checks. Defaults to the runtime's
-   * `node:dns` resolver. When resolution is unavailable, the hostname string
-   * and literal-IP checks still apply.
+   * `node:dns` resolver.
    */
   resolveHostname?: WebmentionHostResolver;
 }>;

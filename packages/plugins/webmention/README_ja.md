@@ -63,7 +63,7 @@ curl -i -X POST http://localhost:5173/webmentions \
 - `WebmentionProvider` がストレージとランタイムの境界です。`store` / `query` のケイパビリティを公開し、`store(mention)` と `query(query)` を持ちます。認証情報・データベースハンドル・実行時バインディングはアダプター内に留まり、プラグインの options や生成物へ漏れません。
 - `MemoryWebmentionProvider` はテスト・ローカルプレビュー・プロバイダーの実装例として同梱されています。プロセスや isolate をまたいで永続化はせず、最大 1,000 件のメンションを保持して、それを超えると古いものから削除します。
 - プラグインは `endpoints` を宣言します。`POST {endpoint}` が Webmention を受信し、`GET {endpoint}` が検証済みメンションのフィードを返します。ルートフレームワークの詳細はこのパッケージへ入りません。HonoX 連携（`mountRiebeckiteEndpoints`）がエンドポイントをホストルーターへマウントします。
-- 検証は注入可能な `WebmentionSourceFetcher` を通じて送信元を取得し、ターゲットへの発リンクを確認したうえで、軽量な引用メタデータ（title・excerpt・author・公開日・`rel` 由来の種別）を記録します。既定のフェッチャーは HTTP(S) だけを受け付け、認証情報を拒否し、リダイレクトと本文サイズを制限し、タイムアウトし、DNS 解決後にループバックとプライベートネットワーク宛てを拒否します。DNS 解決に失敗した場合は取得を拒否し、検証済みのアドレスを接続に固定します。DNS モジュールのないランタイムでは、ホスト名とリテラル IP の検証だけが適用されます。
+- 検証は注入可能な `WebmentionSourceFetcher` を通じて送信元を取得し、ターゲットへの発リンクを確認したうえで、軽量な引用メタデータ（title・excerpt・author・公開日・`rel` 由来の種別）を記録します。既定のフェッチャーは HTTP(S) だけを受け付け、認証情報を拒否し、リダイレクトと本文サイズを制限し、タイムアウトし、DNS 解決後にループバックとプライベートネットワーク宛てを拒否します。DNS 解決に失敗した場合は取得を拒否し、検証済みのアドレスを接続に固定します。
 
 ## 本番用のストレージ
 
@@ -71,6 +71,7 @@ curl -i -X POST http://localhost:5173/webmentions \
 
 ```sh
 pnpm exec wrangler d1 execute WEBMENTION_DB --file node_modules/@riebeckite/webmention-cloudflare/migrations/0001_webmentions.sql
+pnpm exec wrangler d1 execute WEBMENTION_DB --file node_modules/@riebeckite/webmention-cloudflare/migrations/0002_webmention_rate_limits.sql
 ```
 
 次の `env` バインディングは Worker ランタイムが提供します。完全な配線は [Cloudflare 連携の README](https://github.com/Rerurate514/riebeckite/blob/main/packages/integrations/webmention-cloudflare/README_ja.md) を参照してください。
@@ -98,7 +99,7 @@ export default {
 拒否コード: `invalid_request`、`missing_source_or_target`、`target_not_found`、
 `invalid_source`、`invalid_target`、`source_unreachable`、`no_link_found`。
 
-`POST` は 64 KiB を超える本文に `413` と `payload_too_large` を返します。また、クライアントごとに 1 分あたり 30 リクエストまで許可し、利用可能なプロキシヘッダー（`cf-connecting-ip`、`x-real-ip`、`x-forwarded-for` の順）または共有の `unknown` バケットで識別し、超過時は `429` と `Retry-After: 60` を返します。この制限はプロセス・isolate 単位のベストエフォートであり、公開環境では認証やエッジでのレート制限を追加してください。
+`POST` は 64 KiB を超える本文に `413` と `payload_too_large` を返します。また、プロセスごとに 1 分あたり 30 リクエストまで許可し、超過時は `429` と `Retry-After: 60` を返します。公開前に永続的なエッジのレート制限を設定してください。
 
 ## 記事近くのメンション表示
 

@@ -42,6 +42,11 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 - Keep a site's Riebeckite dependencies external to the development server's SSR bundle, so sites that use the MDX plugin start without `require is not defined`.
   Packages: `@riebeckite/honox`
 
+### Security
+
+- Update Zod to 4.6.7 to remove the advisory for memory exhaustion while validating oversized constrained collections. `@modelcontextprotocol/sdk` 1.32.2 accepts Zod 4, so the schemas are unchanged.
+  Packages: `@riebeckite/mcp`
+
 ## 0.2.0 - 2026-11-23
 
 > **Breaking changes are included.** Read the migration notes before upgrading.

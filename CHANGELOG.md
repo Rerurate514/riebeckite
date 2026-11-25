@@ -40,6 +40,11 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 - Keep a site's Riebeckite dependencies external to the development server's SSR bundle, so sites that use the MDX plugin start without `require is not defined`.
   Packages: `@riebeckite/honox`
 
+### Security
+
+- Update Zod to 4.6.7 to remove the advisory for memory exhaustion while validating oversized constrained collections. `@modelcontextprotocol/sdk` 1.32.2 accepts Zod 4, so the schemas are unchanged.
+  Packages: `@riebeckite/mcp`
+
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.2.0...HEAD
 
 ## [0.2.0] - 2026-11-23

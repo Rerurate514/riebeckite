@@ -1,6 +1,7 @@
 ---
 packages:
   - "@riebeckite/honox"
+  - "@riebeckite/cli"
 type: fixed
 breaking: false
 migration: ""

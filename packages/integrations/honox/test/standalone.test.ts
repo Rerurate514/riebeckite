@@ -15,6 +15,10 @@ const frameworkRequire = createRequire(
   new URL("../src/ssg/standalone.ts", import.meta.url),
 );
 
+type StandaloneConfig = NonNullable<
+  Parameters<typeof loadStandaloneSsgBundle>[0]["config"]
+>;
+
 test("standalone SSG loads dynamic chunks from the same bundle instance", async (t) => {
   const root = await fs.mkdtemp(
     path.join(tmpdir(), "riebeckite-standalone-bundle-"),
@@ -79,10 +83,10 @@ test("standalone SSG does not reuse Vite internal plugins", async () => {
       "export default { request() { return new Response('ok'); } };\n",
     );
     const applied: string[] = [];
-    const config = {
+    const config: StandaloneConfig = {
       define: {},
       oxc: {},
-      resolve: {},
+      resolve: {} as StandaloneConfig["resolve"],
       plugins: [
         {
           name: "native:manifest",
@@ -97,7 +101,7 @@ test("standalone SSG does not reuse Vite internal plugins", async () => {
           },
         },
       ],
-    } as unknown as Parameters<typeof loadStandaloneSsgBundle>[0]["config"];
+    };
 
     await loadStandaloneSsgBundle({
       root,

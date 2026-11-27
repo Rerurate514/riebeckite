@@ -27,10 +27,10 @@
     "unist-util-visit": "5.1.0"
   },
   "peerDependencies": {
-    "@riebeckite/core": "^0.3.0"
+    "@riebeckite/core": "^0.3.1"
   },
   "devDependencies": {
-    "@riebeckite/core": "^0.3.0",
+    "@riebeckite/core": "^0.3.1",
     "@types/mdast": "4.0.4",
     "tsx": "^4.22.4",
     "typescript": "^5"

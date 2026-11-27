@@ -12,12 +12,23 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 ## [Unreleased]
 
+No user-facing changes recorded.
+
+[Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.3.1...HEAD
+
+## [0.3.1] - 2026-11-27
+
 ### Fixed
 
 - Try both IPv4 and IPv6 loopback addresses when waiting for the development server, so sites bound only to `::1` no longer report a false startup failure after five minutes.
   Packages: `@riebeckite/cli`, `@riebeckite/honox`
 
-[Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.3.0...HEAD
+### Security
+
+- Webmention receive endpoints no longer trust client-supplied proxy headers for rate limiting: the plugin applies a best-effort limit per handler instance, and `@riebeckite/webmention-cloudflare` adds a D1-backed rate limiter for durable per-client limits. Cloudflare deployments must apply `migrations/0002_webmention_rate_limits.sql`.
+  Packages: `@riebeckite/webmention-cloudflare`, `@riebeckite/plugin-webmention`
+
+[0.3.1]: https://github.com/Rerurate514/riebeckite/compare/v0.3.0...v0.3.1
 
 ## [0.3.0] - 2026-11-25
 

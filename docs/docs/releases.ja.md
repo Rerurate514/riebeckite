@@ -14,10 +14,21 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 
 ## Unreleased
 
+No user-facing changes recorded.
+
+## 0.3.1 - 2026-11-27
+
 ### Fixed
 
-- 開発サーバーの応答待ちで IPv4 と IPv6 のループバックアドレスを両方試すようにしたため、`::1` のみで待ち受けるサイトでも5分後に誤った起動失敗を報告しなくなりました。
+- Try both IPv4 and IPv6 loopback addresses when waiting for the development server, so sites bound only to `::1` no longer report a false startup failure after five minutes.
   Packages: `@riebeckite/cli`, `@riebeckite/honox`
+
+### Security
+
+- Webmention receive endpoints no longer trust client-supplied proxy headers for rate limiting: the plugin applies a best-effort limit per handler instance, and `@riebeckite/webmention-cloudflare` adds a D1-backed rate limiter for durable per-client limits. Cloudflare deployments must apply `migrations/0002_webmention_rate_limits.sql`.
+  Packages: `@riebeckite/webmention-cloudflare`, `@riebeckite/plugin-webmention`
+
+[比較](https://github.com/Rerurate514/riebeckite/compare/v0.3.0...v0.3.1)
 
 ## 0.3.0 - 2026-11-25
 

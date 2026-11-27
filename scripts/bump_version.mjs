@@ -1,6 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
-import { PACKAGE_DIRECTORIES } from "./package_metadata.mjs";
+import {
+  PACKAGE_DIRECTORIES,
+  PLUGIN_DX_FIXTURE_DIRECTORIES,
+} from "./package_metadata.mjs";
 
 const repositoryRoot = path.resolve(import.meta.dirname, "..");
 const SEMVER_PATTERN =
@@ -95,12 +98,6 @@ function writeScaffoldVersion(version) {
   }
 }
 
-const pluginDxFixtureDirectories = [
-  "tests/plugin-dx/plugins/demo",
-  "tests/plugin-dx/plugins/markdown-highlight",
-  "tests/plugin-dx/plugins/related-posts",
-];
-
 function updatePluginDxFixtureCoreRange(manifest, version) {
   const range = `^${version}`;
   let changed = false;
@@ -131,7 +128,7 @@ function main() {
   }
 
   const manifests = PACKAGE_DIRECTORIES.map(readManifest);
-  const fixtureManifests = pluginDxFixtureDirectories.map(readManifest);
+  const fixtureManifests = PLUGIN_DX_FIXTURE_DIRECTORIES.map(readManifest);
   if (dryRun) {
     const changed = manifests.filter(
       ({ manifest }) => manifest.version !== version,

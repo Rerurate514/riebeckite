@@ -1,9 +1,9 @@
 {
   "version": 1,
   "lastSuccess": {
-    "runId": "58bdb0b8-a619-48b4-a827-eaa5e9c999cc",
-    "publishedAt": "2026-11-25T15:07:02.674Z",
-    "publicationFingerprint": "5d0aa6e0d5b11b94edd9b483769450d0dfc96f6ba58b982b5fcff1edd5580571",
+    "runId": "85892717-fe4d-4434-80ea-2788a514fef5",
+    "publishedAt": "2026-11-27T08:28:35.871Z",
+    "publicationFingerprint": "62a49e843b9959fd647ff15a67c5f42c72e8d8f146c85df4562f50eead456a1a",
     "entries": [
       {
         "slug": "blog/how-this-blog-is-built",
@@ -1122,16 +1122,16 @@
         "permalink": "/docs/getting-started/installation",
         "title": "Installation",
         "visibility": "public",
-        "fingerprint": "3a5abc690e233423f30d84e6f44464ae7f5d1b54462e016baff34e7b9ba4d54e",
-        "contentFingerprint": "64a095e7333b62ffcc09b57b6fdda8a787722dd317d9d7b84e3c58f87ee6454a"
+        "fingerprint": "c9067ed99cc658f0ef67588707ec86854f0a1d0f307aa2c587640d2366fdf3dd",
+        "contentFingerprint": "64cb8bfb6ca51b5522e916292ed830eba9fe76b4dd4820ce228ee0cf775fb4cb"
       },
       {
         "slug": "docs/getting-started/installation.ja",
         "permalink": "/ja/docs/getting-started/installation",
         "title": "インストール",
         "visibility": "public",
-        "fingerprint": "4cabcece6a9744f970c022143218ffa0352c0b064b0fdd428252ada916d16539",
-        "contentFingerprint": "8b09ea33051ccf54322948aae8fb1fbe0a47b9511faa39326c4c51e4904e44a1"
+        "fingerprint": "7631a44f490f7873660e89336cf8917046146189d301e4d729260ee81a04a70e",
+        "contentFingerprint": "5109418c26759c30ae35bb8d1ed21098d333b0191d849b1d65d8546c27751b47"
       },
       {
         "slug": "docs/getting-started/integrated-setup",
@@ -1202,16 +1202,16 @@
         "permalink": "/docs/getting-started/quick-start",
         "title": "Quick Start",
         "visibility": "public",
-        "fingerprint": "fad428b13af12ae189e5100907555cb97a56df7b2e17338c14924eb902f38c71",
-        "contentFingerprint": "44610f59103c3c67efaac68969a3e201a2dd6fec47b868a806fe994baca919ce"
+        "fingerprint": "fd117419d953d93f11a004cc9e286a2e3d7fc516392d6ded2410d55e80cd2e6c",
+        "contentFingerprint": "08e1247ac586a666d1ccbd797d3a1922a615a2b4384d5bd16a4aa3fa6c885965"
       },
       {
         "slug": "docs/getting-started/quick-start.ja",
         "permalink": "/ja/docs/getting-started/quick-start",
         "title": "クイックスタート",
         "visibility": "public",
-        "fingerprint": "b9bdf1cb88f31d02ca74f26a6fa5ca05651fd023a6b94e80909466ffc1c5f35f",
-        "contentFingerprint": "436b82e901e793c7c3e3427d1e32a8c48a7388eeb5177bf906d32ee63a39b182"
+        "fingerprint": "4214f16eedee0210a0a94c17e842c03e3f819d218be5c1e416a86fe36eab14b1",
+        "contentFingerprint": "0b4acac11f23f4dba060cb905e8677f14a04e6d98d5063fde18bdabde5d0e50b"
       },
       {
         "slug": "docs/getting-started/README",
@@ -5746,16 +5746,16 @@
         "permalink": "/docs/plugins/webmention",
         "title": "Webmention",
         "visibility": "public",
-        "fingerprint": "b7cfe4afb566c08051d10d0a119be0d6b87c9db771aa0cc3c9b428c6f381671d",
-        "contentFingerprint": "1c948e8cff9bd22ae60338c49c58534086373b63f0d010e1a42f4499c43f5936"
+        "fingerprint": "77bba64014c7a74fdd0d1b726792e0d28c11e532004afdc9dd2280faf6fd0ca7",
+        "contentFingerprint": "afdcb14640e8013f28ab4867cc86a5435a5fcb866453e75b3baf79878b6c9a87"
       },
       {
         "slug": "docs/plugins/webmention.ja",
         "permalink": "/ja/docs/plugins/webmention",
         "title": "Webmention",
         "visibility": "public",
-        "fingerprint": "bf46c0ecfb8bcc7d5885024b192478a1f51c7557fbceef149ac5b3fecafbc646",
-        "contentFingerprint": "c7d32090432d714fb58afeff7abbf8601371e804026022ee1a80fcfda91cf184"
+        "fingerprint": "da6354c537d842a619bd497bd55553bc29bbc474eefb58fa83125d9bda8b39b6",
+        "contentFingerprint": "ba00c947421f59cb5dccc14e27946f72232021f9e8402b3df4ea06f9dcb2d1c9"
       },
       {
         "slug": "docs/plugins/writing-a-plugin",
@@ -6306,24 +6306,24 @@
         "permalink": "/docs/releases",
         "title": "Release Notes",
         "visibility": "public",
-        "fingerprint": "c1f4d49f20546f263315863a574fcba4620b698a260c70304e73062f7ac9e442",
-        "contentFingerprint": "1d002c109ad5507f288af1ead963ca94580da160d133ca4bbb521cc034ceb934"
+        "fingerprint": "2e478438186acb1dd2273bfa19ea2a5af04cd0bafdfc361d497656fd2c5c7a72",
+        "contentFingerprint": "953d6e811de1fd9954c112e86fc0ca0257497ac7c778d057d6d93a444e0e90cc"
       },
       {
         "slug": "docs/releases.ja",
         "permalink": "/ja/docs/releases",
         "title": "リリースノート",
         "visibility": "public",
-        "fingerprint": "93bab8387836a122b67197811c6eed2f4f58c1d75906430411a241b4fb7f90c5",
-        "contentFingerprint": "0a9da3cdf42e6ae764083161896733e55ee76b3254bf5ffc4c18dcf414f3da55"
+        "fingerprint": "ae0bdf744f76d5e7bc894ed6d57a2a636159644ebe7f3c5dfe8ff3d15e70ad2c",
+        "contentFingerprint": "12acbac2fcec0381e0464b6a902cce653f7fe7d19dab2aeaa1932eb688ffe628"
       },
       {
         "slug": "docs/security",
         "permalink": "/docs/security",
         "title": "Security model",
         "visibility": "public",
-        "fingerprint": "6341de3093134be8fa55935a0c915afa63e2ad42c178ed897e2d436cd45f7aa2",
-        "contentFingerprint": "e2fd7ca37660bef68377107269c8a3bd10e28dd3de0fdc1169b04bad8636112a"
+        "fingerprint": "b0d8837829d4b9c7462b7f88a559cadc710cc8ef47c58dd390ea4cf45a17ad59",
+        "contentFingerprint": "05faa95cfe169fe847820324347f456eea793ca680fe0cea42e5dd57f4a15c0b"
       },
       {
         "slug": "docs/security.ja",
@@ -6840,7 +6840,7 @@
         "status": 301
       }
     ],
-    "artifactFingerprint": "5f661929093dd52ba95e0b81a54bca26a851c7159f44028ac0d9b887129f7301",
+    "artifactFingerprint": "7d5ef2348c4d3f1cc3f517b1df5440895f6d5d5a085b7e4bff09e42ec28f4d22",
     "provider": "cloudflare-workers"
   }
 }

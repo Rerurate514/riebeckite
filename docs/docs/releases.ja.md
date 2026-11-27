@@ -14,10 +14,16 @@ Unreleased は、マージ済みでまだ npm に公開されていない変更�
 
 ## Unreleased
 
+No user-facing changes recorded.
+
+## 0.3.2 - 2026-11-27
+
 ### Fixed
 
 - Do not reuse Vite's internal plugins when the SSG bundle is built, so generated sites keep building with Vite 8.4 and later.
   Packages: `@riebeckite/honox`, `@riebeckite/cli`
+
+[比較](https://github.com/Rerurate514/riebeckite/compare/v0.3.1...v0.3.2)
 
 ## 0.3.1 - 2026-11-27
 

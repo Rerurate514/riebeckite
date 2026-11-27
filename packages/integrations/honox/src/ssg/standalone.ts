@@ -6,6 +6,7 @@ import { build, type Plugin, type ResolvedConfig } from "vite";
 import type { SsgModule } from "./types.js";
 
 const standaloneSsgMode = "riebeckite-ssr";
+const viteInternalPluginPrefixes = ["vite:", "native:", "builtin:"];
 const frameworkRequire = createRequire(import.meta.url);
 
 export type StandaloneSsgBundle = {
@@ -39,7 +40,10 @@ export async function loadStandaloneSsgBundle(input: {
               (plugin) =>
                 plugin.name !== "riebeckite-ssg" &&
                 plugin.name !== "riebeckite-ssr-externals" &&
-                !plugin.name.startsWith("@hono/vite-build/"),
+                !plugin.name.startsWith("@hono/vite-build/") &&
+                !viteInternalPluginPrefixes.some((prefix) =>
+                  plugin.name.startsWith(prefix),
+                ),
             ),
             createFrameworkResolutionPlugin(),
             createRuntimeExternalPlugin(),

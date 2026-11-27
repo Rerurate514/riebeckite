@@ -12,7 +12,10 @@ Release history in this file begins with 0.0.36. Earlier releases are available 
 
 ## [Unreleased]
 
-No user-facing changes recorded.
+### Fixed
+
+- Do not reuse Vite's internal plugins when the SSG bundle is built, so generated sites keep building with Vite 8.4 and later.
+  Packages: `@riebeckite/honox`
 
 [Unreleased]: https://github.com/Rerurate514/riebeckite/compare/v0.3.1...HEAD
 

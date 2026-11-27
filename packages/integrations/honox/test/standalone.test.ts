@@ -69,6 +69,49 @@ test("standalone SSG imports its bundle from a stable module URL", () => {
   assert.equal(url.includes("?"), false);
 });
 
+test("standalone SSG does not reuse Vite internal plugins", async () => {
+  const root = await fs.mkdtemp(
+    path.join(tmpdir(), "riebeckite-standalone-internal-"),
+  );
+  try {
+    await fs.writeFile(
+      path.join(root, "entry.js"),
+      "export default { request() { return new Response('ok'); } };\n",
+    );
+    const applied: string[] = [];
+    const config = {
+      define: {},
+      oxc: {},
+      resolve: {},
+      plugins: [
+        {
+          name: "native:manifest",
+          configResolved() {
+            throw new Error("Vite internal plugins must not be reused");
+          },
+        },
+        {
+          name: "test-user-plugin",
+          configResolved() {
+            applied.push("test-user-plugin");
+          },
+        },
+      ],
+    } as unknown as Parameters<typeof loadStandaloneSsgBundle>[0]["config"];
+
+    await loadStandaloneSsgBundle({
+      root,
+      entry: path.join(root, "entry.js"),
+      outputDirectory: path.join(root, "ssg-bundle"),
+      config,
+    });
+
+    assert.deepEqual(applied, ["test-user-plugin"]);
+  } finally {
+    await fs.rm(root, { recursive: true, force: true });
+  }
+});
+
 test("standalone SSG keeps one JSX runtime across dynamic chunks", async () => {
   const root = await fs.mkdtemp(
     path.join(tmpdir(), "riebeckite-standalone-runtime-"),

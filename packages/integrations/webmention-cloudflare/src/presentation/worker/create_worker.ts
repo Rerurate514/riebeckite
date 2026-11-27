@@ -1,5 +1,4 @@
 import {
-  createWebmentionSourceFetcher,
   parseWebmentionRequestBody,
   UnsupportedWebmentionQueryError,
   urlComparisonKey,
@@ -7,6 +6,7 @@ import {
   type WebmentionMention,
   type WebmentionSourceFetcher,
 } from "@riebeckite/plugin-webmention";
+import type { WebmentionRateLimiter } from "../../domain/webmention/rate_limit.js";
 import type { WebmentionStorage } from "../../domain/webmention/storage.js";
 
 const MAX_REQUEST_BODY_BYTES = 64 * 1024;
@@ -27,13 +27,9 @@ export type WebmentionWorkerOptions = Readonly<{
   storage: WebmentionStorage;
   /** Absolute target URLs accepted by this receiver. No default. */
   allowedTargets: readonly string[];
-  /** Source fetcher override, mainly for tests. */
-  fetchSource?: WebmentionSourceFetcher;
+  fetchSource: WebmentionSourceFetcher;
+  rateLimit: WebmentionRateLimiter;
   cors?: WebmentionCorsOptions;
-  timeoutMs?: number;
-  maxBytes?: number;
-  userAgent?: string;
-  allowPrivateHosts?: boolean;
 }>;
 
 export type WebmentionWorker = Readonly<{
@@ -50,14 +46,6 @@ export type WebmentionWorker = Readonly<{
 export function createWorker(
   options: WebmentionWorkerOptions,
 ): WebmentionWorker {
-  const fetchSource =
-    options.fetchSource ??
-    createWebmentionSourceFetcher({
-      timeoutMs: options.timeoutMs,
-      maxBytes: options.maxBytes,
-      userAgent: options.userAgent,
-      allowPrivateHosts: options.allowPrivateHosts,
-    });
   const allowedTargets = new Set(
     options.allowedTargets.map((target) => urlComparisonKey(target)),
   );
@@ -80,7 +68,8 @@ export function createWorker(
           request,
           options.storage,
           allowedTargets,
-          fetchSource,
+          options.fetchSource,
+          options.rateLimit,
           corsHeaders,
         );
       }
@@ -97,6 +86,7 @@ async function receive(
   storage: WebmentionStorage,
   allowedTargets: ReadonlySet<string>,
   fetchSource: WebmentionSourceFetcher,
+  rateLimit: WebmentionRateLimiter,
   headers: Headers,
 ): Promise<Response> {
   if (!storage.capabilities.has("store")) {
@@ -125,6 +115,9 @@ async function receive(
   if (!allowedTargets.has(urlComparisonKey(target))) {
     return json({ error: "target_not_found" }, 400, headers);
   }
+  if ((await rateLimit.check(clientIp(request))) === "limited") {
+    return json({ error: "rate_limited" }, 429, headers);
+  }
 
   const verification = await verifyWebmention({ source, target, fetchSource });
   if ("reason" in verification) {
@@ -136,6 +129,10 @@ async function receive(
     return json({ error: "storage_unavailable" }, 503, headers);
   }
   return json({ status: "accepted" }, 202, headers);
+}
+
+function clientIp(request: Request): string {
+  return request.headers.get("cf-connecting-ip") ?? "unknown";
 }
 
 async function feed(

@@ -1,5 +1,8 @@
 import path from "node:path";
-import { PACKAGE_DIRECTORIES } from "./package_metadata.mjs";
+import {
+  PACKAGE_DIRECTORIES,
+  PLUGIN_DX_FIXTURE_DIRECTORIES,
+} from "./package_metadata.mjs";
 import { ARTIFACT_LEDGER_PATH } from "./release_artifacts.mjs";
 import {
   ReleaseError,
@@ -141,8 +144,13 @@ export function commitAndTag(version) {
     path.join(directory, "package.json"),
   );
 
+  const fixtureManifests = PLUGIN_DX_FIXTURE_DIRECTORIES.map((directory) =>
+    path.join(directory, "package.json"),
+  );
+
   const releaseFiles = [
     ...manifests,
+    ...fixtureManifests,
     scaffoldVersionFile,
     scaffoldGoldenDirectory,
     "CHANGELOG.md",

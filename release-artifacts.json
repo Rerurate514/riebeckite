@@ -3,14 +3,14 @@
   "packages": {
     "@riebeckite/ai": "c0ae65c2e32cb159ca0597020ba30e53bc964657062c54dde8293c93cac40d63",
     "@riebeckite/analytics-cloudflare": "e2072c72d67392250bf0fbd6c43c1ffc188c85389f02e768f3416833dadaceed",
-    "@riebeckite/cli": "556700ef39605446f5b116bfa2c4dc131885dffaf45acbb11327a7fc79130717",
+    "@riebeckite/cli": "1c14033e1ac86f23fed5317a3b781a69e4411055f9ea371117ce2c68ff75806b",
     "@riebeckite/core": "c718483de4c0a566710669c85b41568ff2579dbdd5a29d623cae543172587cd6",
     "@riebeckite/dev-inspector": "99c55279be9da11665e0346d0060e56e502a738efe0939cae29301d1420beeba",
     "@riebeckite/diagnostics": "e507317236665e855b21298319c8944f1422e1a4156139e0fc4f927e72319823",
     "@riebeckite/diagram": "b234e2b82756259320c24dbd215a939c99cd6fa8e2f33c0f0fcd90b0effcf957",
     "@riebeckite/git-history": "069a64315d96c2a2a0f17d2035de44a195dde1353937d603fef0f652e270e9e8",
     "@riebeckite/graph": "d1c8823ffa3df96fd3f0ac315f88e60ee04a9d4aa4bdcc0e929846537d738467",
-    "@riebeckite/honox": "b4384b111ab63e220b208df00fea3bcc649ba078082b0f456e0931873f3db6d0",
+    "@riebeckite/honox": "3f9378769882440317428017da96efe33b7f3aadddf5c2de5a9f3fa9ac44b5dc",
     "@riebeckite/mcp": "dcf58ba9596985c24d91052d867de8ed71fde43b74d2a7b2d21d784252f95a59",
     "@riebeckite/node": "a2f8848bab21f1563b48f9ab698d5484bcc1b6ccb76b848aca1cc52c2c81c70c",
     "@riebeckite/og-image": "237ebe31791b69e45d9725b109537e57d86c5e285ff14978aa53ca5773d9a8e8",
@@ -99,7 +99,7 @@
     "@riebeckite/plugin-vault-heatmap": "f06b730368550f638d9338e2aa1026553386d794b85222bc1dcded9ec99cf555",
     "@riebeckite/plugin-vega-lite": "59f9b89fc08f9f8c9574e70abc4ccd5eee9be2526fc4b0e78a630587394bac42",
     "@riebeckite/plugin-wavedrom": "abec6c156af3b29eafd7276dc546c82169db4f14dc9dda0719eed505689beae4",
-    "@riebeckite/plugin-webmention": "4d73e0b75498c7c858ed8731534dad898ed71f0966e99c175c87e3e51681eed0",
+    "@riebeckite/plugin-webmention": "0902e7fcfc20107921e80f75e03015ac1c4437694993ff858efac695d04ae222",
     "@riebeckite/preview": "ceb3a58994dc8e3ee978e19be1dbf02559886d629defd00ef62eb20ecbf8f951",
     "@riebeckite/runtime": "c5909b81ca7657f63a5fdbeb738992da71998f9f92fa69288ca60f6a20e580c7",
     "@riebeckite/spa": "451e4fbec32de9414db913304eed6e082b6a83fda7e09f1eb45ab6b2171313db",
@@ -119,7 +119,7 @@
     "@riebeckite/theme-terminal": "ee266add5b0210036f76b01de2ff7404d9c932d625b314073cdc3f97aa0a58ef",
     "@riebeckite/theme-tokyonight": "0d8d3e052887bf917537dd45dfea64b398fb0047a619e4fd1132de1d0d76eab1",
     "@riebeckite/ui": "5766076573906116ab2f12e743e0c35752d005400c9602f5c4816db70dfc56d2",
-    "@riebeckite/webmention-cloudflare": "4bad135360ef487ddd0b0f8172b6719d82529a7bc14079a4da3112fa2969e834",
-    "create-riebeckite": "98d99fc526821fee126c6067998c73eeab02ebcd44e9ec5dacd0f91f3872d3ef"
+    "@riebeckite/webmention-cloudflare": "615cf3ee7d6676d6ba1640e4228ddae3df846efd3b9bdd8a9598bd67b8b12d69",
+    "create-riebeckite": "37ed9657e55f903afdd16e076dad5ebadc0047001bdb5416a12b59778903c155"
   }
 }

@@ -16,6 +16,29 @@ The Unreleased section lists changes that are merged but not yet published to np
 
 No user-facing changes recorded.
 
+## 0.3.2 - 2026-11-27
+
+### Fixed
+
+- Do not reuse Vite's internal plugins when the SSG bundle is built, so generated sites keep building with Vite 8.4 and later.
+  Packages: `@riebeckite/honox`, `@riebeckite/cli`
+
+[Compare](https://github.com/Rerurate514/riebeckite/compare/v0.3.1...v0.3.2)
+
+## 0.3.1 - 2026-11-27
+
+### Fixed
+
+- Try both IPv4 and IPv6 loopback addresses when waiting for the development server, so sites bound only to `::1` no longer report a false startup failure after five minutes.
+  Packages: `@riebeckite/cli`, `@riebeckite/honox`
+
+### Security
+
+- Webmention receive endpoints no longer trust client-supplied proxy headers for rate limiting: the plugin applies a best-effort limit per handler instance, and `@riebeckite/webmention-cloudflare` adds a D1-backed rate limiter for durable per-client limits. Cloudflare deployments must apply `migrations/0002_webmention_rate_limits.sql`.
+  Packages: `@riebeckite/webmention-cloudflare`, `@riebeckite/plugin-webmention`
+
+[Compare](https://github.com/Rerurate514/riebeckite/compare/v0.3.0...v0.3.1)
+
 ## 0.3.0 - 2026-11-25
 
 > **Breaking changes are included.** Read the migration notes before upgrading.

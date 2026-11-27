@@ -350,7 +350,7 @@ test("receive handler reports unavailable storage without store support", async 
   assert.equal(response.status, 503);
 });
 
-test("receive handler rate limits repeated requests", async () => {
+test("receive handler rate limits requests with changing forwarded headers", async () => {
   const provider = new MemoryWebmentionProvider();
   const options = resolveWebmentionOptions({ provider });
   const handler = createWebmentionReceiveHandler(options, provider);
@@ -359,10 +359,6 @@ test("receive handler rate limits repeated requests", async () => {
     url: "https://target.example/webmentions",
     path: "/webmentions",
     query: {},
-    headers: {
-      "content-type": "application/x-www-form-urlencoded",
-      "x-forwarded-for": "198.51.100.77",
-    },
     body: `source=${SOURCE_URL}&target=https://target.example/missing`,
   };
 
@@ -370,7 +366,13 @@ test("receive handler rate limits repeated requests", async () => {
     const response = await handler({
       config: makeConfig(),
       manifest: makeManifest([makeEntry()]),
-      request,
+      request: {
+        ...request,
+        headers: {
+          "content-type": "application/x-www-form-urlencoded",
+          "x-forwarded-for": `198.51.100.${index}`,
+        },
+      },
     });
     assert.equal(response.status, 400);
   }
@@ -378,7 +380,13 @@ test("receive handler rate limits repeated requests", async () => {
   const limited = await handler({
     config: makeConfig(),
     manifest: makeManifest([makeEntry()]),
-    request,
+    request: {
+      ...request,
+      headers: {
+        "content-type": "application/x-www-form-urlencoded",
+        "x-forwarded-for": "203.0.113.1",
+      },
+    },
   });
   assert.equal(limited.status, 429);
   assert.equal(limited.headers?.["retry-after"], "60");

@@ -92,14 +92,30 @@ export async function waitForFirstResponse(
   const deadline = performance.now() + timeoutMs;
   while (performance.now() < deadline) {
     if (options.isAborted?.()) return undefined;
-    try {
-      const response = await fetchImplementation(url, {
-        redirect: "manual",
-      });
-      return { url, status: response.status };
-    } catch {
-      await new Promise((resolve) => setTimeout(resolve, retryDelayMs));
+    for (const candidate of loopbackProbeUrls(url)) {
+      try {
+        const response = await fetchImplementation(candidate, {
+          redirect: "manual",
+        });
+        return { url, status: response.status };
+      } catch {}
     }
+    await new Promise((resolve) => setTimeout(resolve, retryDelayMs));
   }
   return undefined;
+}
+
+function loopbackProbeUrls(url: string): readonly string[] {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return [url];
+  }
+  if (parsed.hostname.toLowerCase() !== "localhost") return [url];
+  const ipv4 = new URL(url);
+  ipv4.hostname = "127.0.0.1";
+  const ipv6 = new URL(url);
+  ipv6.hostname = "[::1]";
+  return [url, ipv4.href, ipv6.href];
 }

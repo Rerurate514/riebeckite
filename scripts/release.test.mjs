@@ -589,6 +589,35 @@ test("the release commit includes the changelog, release notes, and change entri
   }
 });
 
+test("the release commit includes the plugin-dx fixture manifests", async () => {
+  const harness = createHarness();
+
+  await withHarness(harness, () => runRelease([VERSION]));
+
+  const addStep = harness.state.steps.find((step) => step.label === "git add");
+  const commitStep = harness.state.steps.find(
+    (step) => step.label === "git commit",
+  );
+
+  for (const plugin of ["demo", "markdown-highlight", "related-posts"]) {
+    const relativePath = path.join(
+      "tests",
+      "plugin-dx",
+      "plugins",
+      plugin,
+      "package.json",
+    );
+    assert.ok(
+      addStep.args.includes(relativePath),
+      `git add must include ${relativePath}`,
+    );
+    assert.ok(
+      commitStep.args.includes(relativePath),
+      `git commit must include ${relativePath}`,
+    );
+  }
+});
+
 test("dry-run does not regenerate or stage the scaffold golden snapshots", async () => {
   const harness = createHarness();
 

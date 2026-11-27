@@ -302,14 +302,31 @@ async function waitForDevWarmup(
 ): Promise<number | undefined> {
   const deadline = performance.now() + timeoutMs;
   while (performance.now() < deadline) {
-    try {
-      return (await fetch(origin, { redirect: "manual" })).status;
-    } catch {}
+    for (const candidate of loopbackProbeUrls(origin)) {
+      try {
+        return (await fetch(candidate, { redirect: "manual" })).status;
+      } catch {}
+    }
     await new Promise((resolve) => {
       setTimeout(resolve, 100).unref();
     });
   }
   return undefined;
+}
+
+function loopbackProbeUrls(url: string): readonly string[] {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return [url];
+  }
+  if (parsed.hostname.toLowerCase() !== "localhost") return [url];
+  const ipv4 = new URL(url);
+  ipv4.hostname = "127.0.0.1";
+  const ipv6 = new URL(url);
+  ipv6.hostname = "[::1]";
+  return [url, ipv4.href, ipv6.href];
 }
 
 function contentBareImportResolver(

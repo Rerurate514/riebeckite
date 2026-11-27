@@ -120,3 +120,9 @@ export const PACKAGE_DIRECTORIES = [
   "packages/themes/terminal",
   "packages/themes/tokyonight",
 ];
+
+export const PLUGIN_DX_FIXTURE_DIRECTORIES = [
+  "tests/plugin-dx/plugins/demo",
+  "tests/plugin-dx/plugins/markdown-highlight",
+  "tests/plugin-dx/plugins/related-posts",
+];

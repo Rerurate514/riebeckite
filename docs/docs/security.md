@@ -83,7 +83,7 @@ Content received from other people still needs review for accuracy, links, and p
 ## Current built-in policies
 
 - Rich embeds accept only `https:` provider URLs. Known providers are converted to sandboxed iframe URLs, and generic iframes require an explicit host allow-list.
-- Webmention source fetching accepts only HTTP(S), rejects credentials, limits redirects and body size, rejects private hosts after DNS resolution, fails closed when DNS resolution fails, and pins the validated address for the connection; on runtimes without a DNS module, hostname and literal-IP checks still apply. The receive endpoint applies a best-effort per-client rate limit, and the default memory provider keeps at most 1,000 mentions.
+- Webmention source fetching accepts only HTTP(S), rejects credentials, limits redirects and body size, rejects private hosts after DNS resolution, fails closed when DNS resolution fails, and pins the validated address for the connection. The receive endpoint applies a best-effort per-process rate limit, and the default memory provider keeps at most 1,000 mentions.
 - Analytics collector URLs must be site-relative or HTTPS; plain HTTP is accepted only for localhost. The Cloudflare worker integration validates JSON shape and body size.
 - Autocard metadata links and images are escaped and restricted to relative, `http:`, or `https:` URLs.
 - Diagram and media Plugins may cause the browser to load configured external providers. Treat those provider URLs as trusted configuration.

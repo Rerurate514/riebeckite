@@ -48,9 +48,10 @@ npx create-riebeckite
 2. **Which package manager?**：`npm`（既定）または `pnpm`。pnpm では `pnpm-lock.yaml` をコミットし、以下の npm コマンドを `pnpm install` / `pnpm exec` に読み替えてください
 3. **What would you like to build?**（[[glossary/preset|プリセット]]）：サイトの構成。迷ったら `Starter site`（`starter` プリセット）のまま。比較は [プリセット](./presets.ja.md)
 4. **Customize extra project files?**：エディタやツール用の生成ファイルを変える場合は `Yes`。既定の `No` でも既定のプロジェクトファイルは生成されます
-5. **Where will you write content?**：`This project` は `content/` をサイト内に置く最も簡単な形です。`Separate directory in this repository` はアプリの隣に Vault を置きます。`Separate GitHub repository` は既存の Vault 向けの高度な構成です。詳細は [Content Repositories](../guides/deployment/separate-content-repository.ja.md)
-6. **Set up deployment?**：`Cloudflare Workers`、`GitHub Actions`、`Not now` から選びます。`Cloudflare Workers` はインストール後に `Deploy now?` と確認されるため、その場で初回公開まで進められます。`GitHub Actions` は `main` への push ごとの自動公開です。`Not now` はデプロイの設定を省略します。詳細は [デプロイ](../guides/deployment/README.ja.md)
-7. **Install dependencies now?**：既定は `Yes` です。生成したプロジェクトを確認してからインストールしたいときは `No` を選びます。
+5. **Add AI development support?**：既定は `No`。`Yes` を選ぶと、Riebeckite MCP サーバー、コンテンツ lint スクリプト、AI 向けサイトルール、OpenCode 用の開発 Skills が追加されます
+6. **Where will you write content?**：`This project` は `content/` をサイト内に置く最も簡単な形です。`Separate directory in this repository` はアプリの隣に Vault を置きます。`Separate GitHub repository` は既存の Vault 向けの高度な構成です。詳細は [Content Repositories](../guides/deployment/separate-content-repository.ja.md)
+7. **Set up deployment?**：`Cloudflare Workers`、`GitHub Actions`、`Not now` から選びます。`Cloudflare Workers` はインストール後に `Deploy now?` と確認されるため、その場で初回公開まで進められます。`GitHub Actions` は `main` への push ごとの自動公開です。`Not now` はデプロイの設定を省略します。詳細は [デプロイ](../guides/deployment/README.ja.md)
+8. **Install dependencies now?**：既定は `Yes` です。生成したプロジェクトを確認してからインストールしたいときは `No` を選びます。
 
 プロンプトに答える代わりに、コマンドラインで同じ設定を渡すこともできます。
 
@@ -86,7 +87,7 @@ npm install
 | `public/` | そのままコピーされた静的ファイル：`favicon.ico` と `riebeckite-logo.png`。同梱の favicon とヘッダーロゴはプレースホルダーなので、サイトのブランドに合わせて置き換えてください。`starter` プリセットはリンクプレビュー（OG）画像を生成しませんが、`blog` と `writer` プリセットは生成します。[サイトのアイコンとロゴ](../guides/branding.ja.md) を参照してください |
 | `vite.config.ts` | ビルド設定。通常は変更しない |
 | `package.json` | 依存パッケージと `riebeckite` コマンド |
-| `pnpm-workspace.yaml` | pnpm 専用。pnpm が既定でスキップするビルドスクリプト（esbuild、puppeteer、sharp）を承認する。npm は読まない |
+| `pnpm-workspace.yaml` | npm と pnpm の両方で生成される。pnpm が既定でスキップするビルドスクリプト（esbuild、puppeteer、sharp）を承認するために使い、npm は読まない |
 | `README.md` | 生成されたサイト向けの短い説明 |
 | `.gitignore`、`.editorconfig`、`.gitattributes`、`biome.json` | 既定のプロジェクトファイル。`Customize extra project files?` のプロンプトまたは `--utilities` で変更できる |
 
@@ -103,7 +104,7 @@ my-site/
 ├─ app/                   生成されたアプリコード（通常は編集しない）
 ├─ riebeckite.config.ts   サイト設定
 ├─ package.json
-├─ pnpm-workspace.yaml    pnpm 専用（npm は読まない）
+├─ pnpm-workspace.yaml    pnpm のビルドスクリプト承認（npm は読まない）
 ├─ vite.config.ts
 ├─ tsconfig.json
 ├─ biome.json             既定のプロジェクトファイル

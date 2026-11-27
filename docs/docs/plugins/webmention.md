@@ -91,8 +91,7 @@ curl -i -X POST http://localhost:5173/webmentions \
   date, and `rel`-derived type). The default fetcher accepts only HTTP(S),
   rejects credentials, limits redirects and response size, times out, rejects
   loopback and private-network hosts after DNS resolution, fails closed when DNS
-  resolution fails, and pins the validated address for the connection. On
-  runtimes without a DNS module, hostname and literal-IP checks still apply.
+  resolution fails, and pins the validated address for the connection.
 
 ## Production storage
 
@@ -101,6 +100,7 @@ adapter and apply its D1 schema before deploying:
 
 ```sh
 pnpm exec wrangler d1 execute WEBMENTION_DB --file node_modules/@riebeckite/webmention-cloudflare/migrations/0001_webmentions.sql
+pnpm exec wrangler d1 execute WEBMENTION_DB --file node_modules/@riebeckite/webmention-cloudflare/migrations/0002_webmention_rate_limits.sql
 ```
 
 The `env` binding below is provided by your Worker runtime. See the
@@ -135,11 +135,9 @@ Rejection codes: `invalid_request`, `missing_source_or_target`,
 `no_link_found`.
 
 `POST` returns `413` with `payload_too_large` for bodies over 64 KiB. The
-endpoint also allows 30 requests per minute per client, using the first
-available proxy header (`cf-connecting-ip`, `x-real-ip`, or `x-forwarded-for`)
-or a shared `unknown` bucket, and returns `429` with `Retry-After: 60` beyond
-that. The limit is per process/isolate and is only a best-effort defense; add
-authentication or edge rate limiting for public deployments.
+endpoint allows 30 requests per minute per process and returns `429` with
+`Retry-After: 60` beyond that. Deploy a durable edge rate limiter before
+exposing the endpoint publicly.
 
 ## Rendering
 
